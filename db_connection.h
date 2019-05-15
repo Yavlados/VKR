@@ -1,19 +1,35 @@
 #ifndef DB_CONNECTION_H
 #define DB_CONNECTION_H
+
 #include <QSqlQuery>
 #include <QDebug>
 
 /* в перспективе сделать класс подключения, если появится необходимость
         в диалоговом окне подключения. Пока реализована функция*/
 
-class Connection
+class db_connection
 {
 public:
-    void db_connect();
-    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-private:
+    /// Доступ к статической переменной класса
+    static db_connection *instance();
+
+    ~db_connection(); ///Деструктор класса
+
+    bool db_connect();
+
+    QSqlDatabase db;
     bool ok;
+
+    QString lastError;
+
+private:
+    /// Скрытый конструктор
+    db_connection();  /// Единственный конструктор без аргументов
+
+    /// Скрытая перемнная - единственный экземпляр класса
+    static db_connection *_instance;
 };
+
 
 
 #endif // DB_CONNECTION_H

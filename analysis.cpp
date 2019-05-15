@@ -4,7 +4,7 @@
 #include <QDebug>
 #include "an_result.h"
 #include <QValidator>
-#include  "crud.h"
+#include  "_Crud.h"
 
 Analysis::Analysis(QWidget *parent) :
     QWidget(parent),

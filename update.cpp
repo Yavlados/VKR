@@ -1,17 +1,21 @@
 #include "update.h"
 #include "ui_update.h"
-#include "crud.h"
-#include "owners_tel.h"
-#include "contacts.h"
-#include "telephones_upd.h"
+#include "_Crud.h"
+#include "_Owners_tel.h"
+#include "_Contacts.h"
+
+#include <QSqlRecord>
+#include <QStringRef>
 
 Update::Update(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Update)
 {
     ui->setupUi(this);
+    connect(ui->pb_add_line_telephone, SIGNAL(clicked()), ot_model, SLOT(addRow_owner_tel()));
+    connect(this, SIGNAL(Add_contact_row(int)),contacts_model,SLOT(addRow_contact(int)));
 
-   // connect(ui->rb_adres_liv, SIGNAL(clicked()),this, SLOT(radio_button2_checked()));
+    set_validators();
 }
 
 Update::~Update()
@@ -21,13 +25,21 @@ Update::~Update()
 
 void Update::Recieve_data(int id)
 {
-
+    clear_ALL();
      Crud *cr = new Crud(id);
      cr->call_update_list();
      ui->le_last_name->setText(cr->lastname);
      ui->le_name->setText(cr->name);
      ui->le_mid_name->setText(cr->mid_name);
-     ui->lineEdit_4->setText(cr->birth_date);
+
+     QString day = cr->birth_date.left(2);
+     QString month = cr->birth_date.mid(3,2);
+     QString year = cr->birth_date.right(4);
+
+     ui->le_birth_date_day->setText(day);
+     ui->le_birth_date_month->setText(month);
+     ui->le_birth_date_year->setText(year);
+
      ui->le_check_for->setText(cr->check_for);
      ui->le_dop_info->setText(cr->dop_info);
 
@@ -43,26 +55,11 @@ void Update::Recieve_data(int id)
      ui->le_reg_corp->setText(cr->reg_corp);
      ui->le_reg_flat->setText(cr->reg_flat);
 
-//     cr->select_telephone();
-//     ui->tableView->setModel(cr->model);
-        zk_id = id;
-//     cr->check();
+     if(Owners_tel::selectZkTel(otList, id) && Contacts::selectAll(contactList))
+            ot_model->setOTList(otList);
+        ot_model->state = Edit; ///меняю флаги для изменения
+        ui->tableView->setModel(ot_model);
 
-     model = new QSqlTableModel(this);
-     model->setEditStrategy(QSqlTableModel::OnManualSubmit); //при изменении клетки надо добавить в
-     model->setTable("owners_tel");                      //в поле фк соответствующий ключ
-     QString str = QString::number(id);
-
-     model->setFilter("\"FK_Telephone_Zk\" IS NULL OR \"FK_Telephone_Zk\" = " + str);
-
-     qDebug() << str;
-     model->select();
-
-    ui->tableView->setModel(model);
-    model->setHeaderData(2,Qt::Horizontal, QObject::tr("Номер телефона"));
-    ui->tableView->setColumnHidden(0,true);
-    ui->tableView->setColumnHidden(1,true);
-    ui->tableView->resizeColumnsToContents();
      delete cr;
 }
 
@@ -77,29 +74,38 @@ void Update::on_pb_Update_clicked()
     case QMessageBox::Cancel:
         break;
     case QMessageBox::Ok:
-    qDebug() << zk_id;
+
     Crud *cr = new Crud(zk_id,ui->le_last_name->text(),ui->le_name->text(),
                         ui->le_mid_name->text(), ui->le_check_for->text(),ui->le_dop_info->text(),
                         adres_reg, adres_liv,
                         ui->le_reg_city->text(),ui->le_reg_street->text(),ui->le_reg_house->text(),
                         ui->le_reg_corp ->text(),ui->le_reg_flat->text());
-
-    Owners_tel *o_t = new Owners_tel();
-
-    cr->check();
+    cr->birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
     cr->update_zk();
     adres_reg = "";
     adres_liv = "";
 
-    o_t->new_zk_id = zk_id;
-    o_t->get_filter_for_add();
+    if( Owners_tel::saveAll(otList))
+    {
+        if( Contacts::saveAll(contactList) )
+        {
+            QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные сохранены в БД!"));
+            //reopen();
+        }
+        else
+            QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить запрос: %1").arg(
+                                      db_connection::instance()->lastError));
+    }
+    else
+        QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить запрос: %1").arg(
+                                  db_connection::instance()->lastError));
 
     emit Ready_for_update();
     delete cr;
-    delete o_t;
     }
 }
 
+//////////////////////////////////////////////////
 void Update::on_rb_adres_reg_clicked()
 {
     if (adres_reg.isEmpty())
@@ -111,6 +117,7 @@ void Update::on_rb_adres_reg_clicked()
     qDebug() << adres_liv;
 }
 
+//////////////////////////////////////////////////
 void Update::on_rb_adres_liv_clicked()
 {
     if (adres_liv.isEmpty())
@@ -122,133 +129,61 @@ void Update::on_rb_adres_liv_clicked()
     qDebug() << adres_reg;
 }
 
-void Update::on_pb_add_line_telephone_clicked()
+
+void Update::on_pb_Back_to_Main_clicked()
 {
-    qDebug() << "inserting row" << model->insertRow(model->rowCount());
+    clear_ALL();
+     emit Ready_for_update();
+}
+
+
+void Update::on_tableView_clicked(const QModelIndex &index)
+{
+    qDebug() << otList->at(index.row())->tel_id;
+
+    contacts_model->setContactList(contactList, otList->at(index.row())->tel_id);
+
+    contacts_model->state = Edit;
+    ui->tableView_2->setModel(contacts_model);
 }
 
 void Update::on_pb_del_line_telephone_clicked()
 {
-    int selectedRow = ui->tableView->currentIndex().row();
-    if (selectedRow >= 0)
+    QModelIndex ind = ui->tableView->currentIndex();
+    if( ind.isValid())
     {
-        if(ui->tableView->currentIndex().data() != "")
-        {
-            msgbx.setText("Подтверждение");
-            msgbx.setInformativeText("Вы действительно хотите удалить из записной книги номер " +tel_num);
-            msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            int ret = msgbx.exec();
-
-            switch (ret) {
-            case QMessageBox::Cancel:
-                break;
-            case QMessageBox::Ok:
-                qDebug() << "deleting row" << model->removeRow(selectedRow);
-                model->submitAll();
-            break;
-            }
-        }
-        else {
-            qDebug() << "deleting row" << model->removeRow(selectedRow);
-        }
-    }
-    else {
-        qDebug() << "No rows selected";
+        ot_model->delRow_owner_tel(ind);
     }
 }
 
-void Update::on_pb_Back_to_Main_clicked()
+void Update::on_pb_del_contact_line_clicked()
 {
-     emit Ready_for_update();
-}
-
-void Update::on_tableView_clicked(const QModelIndex &index)
-{
-    Owners_tel *ow = new Owners_tel();
-    ow->recieve_tel_id(index.data().toString());
-    tel_id = ow->tel_id;
-    tel_num = index.data().toString();
-    qDebug() << tel_id;
-
-    model_2 = new QSqlTableModel(this);
-    model_2->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model_2->setTable("contacts");
-    QString str = QString::  number(tel_id);
-
-    model_2->setFilter("\"FK_Cl_telephone\" IS NULL OR \"FK_Cl_telephone\" = " + str);
-
-    qDebug() << str;
-
-    model_2->select();
-
-   ui->tableView_2->setModel(model_2);
-   ui->tableView_2->setColumnHidden(0,true);
-   model_2->setHeaderData(1,Qt::Horizontal, QObject::tr("Номер телефона"));
-   model_2->setHeaderData(2,Qt::Horizontal, QObject::tr("Пометка"));
-   ui->tableView_2->setColumnHidden(3,true);
-   ui->tableView_2->resizeColumnsToContents();
-
-     delete ow;
+    QModelIndex ind = ui->tableView_2->currentIndex();
+    if( ind.isValid())
+    {
+        contacts_model->delRow_contact(ind);
+    }
 }
 
 void Update::on_pb_add_contact_line_clicked()
 {
-    qDebug() << "inserting row" << model_2->insertRow(model_2->rowCount());
-
+    QModelIndex index = ui->tableView->currentIndex();
+    emit Add_contact_row(otList->at(index.row())->tel_id);
 }
 
-void Update::on_pb_add_contact_clicked()
+void Update::clear_ALL()
 {
-    msgbx.setText("Подтверждение");
-
-    msgbx.setInformativeText("Вы готовы завершить заполнение записной книги для номера: "+ tel_num+" ?");
-    msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-    int ret = msgbx.exec();
-
-    switch (ret) {
-    case QMessageBox::Cancel:
-        break;
-    case QMessageBox::Ok:
-        model_2->submitAll();
-        Contacts *cnt = new Contacts;
-        cnt->add_fk_contact(tel_id);
-        delete cnt;
-        break;
-    }
+  if (!otList->isEmpty())
+      otList->clear();
+  ot_model->reset_model();
+   if (!contactList->isEmpty())
+       contactList->clear();
+   contacts_model->reset_model();
 }
 
-void Update::on_pb_remove_contact_line_clicked()
+void Update::set_validators()
 {
-    int selectedRow = ui->tableView_2->currentIndex().row();
-    qDebug() << selectedRow;
-    if (selectedRow >= 0)
-    {
-        if(ui->tableView_2->currentIndex().data() != "")
-        {
-            msgbx.setText("Подтверждение");
-            msgbx.setInformativeText("Вы действительно хотите удалить выбранный номер из списка контактов?");
-            msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            int ret = msgbx.exec();
-
-            switch (ret) {
-            case QMessageBox::Cancel:
-                break;
-            case QMessageBox::Ok:
-                qDebug() << "deleting row" << model_2->removeRow(selectedRow);
-                model_2->submitAll();
-            break;
-            }
-        }
-        else {
-            qDebug() << "deleting row" << model_2->removeRow(selectedRow);
-        }
-    }
-    else {
-        qDebug() << "No rows selected";
-    }
-}
-
-void Update::on_pb_add_telephone_clicked()
-{
-      model->submitAll();
+    ui->le_birth_date_day->setValidator(new QIntValidator(1,31));
+    ui->le_birth_date_month->setValidator(new QIntValidator(1,12));
+    ui->le_birth_date_year->setValidator(new QIntValidator(1960,2100));
 }

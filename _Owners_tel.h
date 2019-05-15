@@ -10,7 +10,7 @@
 #include <QSqlQueryModel>
 #include <QSqlError>
 #include <QMessageBox>
-#include "crud.h"
+#include "_Crud.h"
 #include <QDate>
 
 
@@ -23,33 +23,38 @@ private:
 
 public:
 
-    Owners_tel()
-{
-}
-
-    Owners_tel(int t_d): tel_id(t_d)
-{
-}
-    Owners_tel(int id,QString l,QString n,QString m_n, QString b_d,
+Owners_tel();
+Owners_tel(int t_d);
+Owners_tel(int, int, DbState);
+Owners_tel(int id,QString l,QString n,QString m_n, QString b_d,
                QString r_c, QString r_s, QString r_h, QString r_cor,
-               QString r_f, QString d_a, QString t_n, QString p_f, QString p_t):
-     Crud(id,l, n, m_n, b_d, r_c, r_s, r_h, r_cor,r_f, d_a),
-      tel_num(t_n), period_from(p_f),period_to(p_t)
-{
-        auto list = period_from.split('-');
-        Date_From.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
-        list.clear();
-        list = period_to.split('-');
-        Date_To.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
-}
-
+               QString r_f, QString d_a, QString t_n, QString p_f, QString p_t);
+Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
+~Owners_tel();
+    int tel_id;
     QString tel_num;
+    int parentZK_id;
+    DbState state;
+
+    static bool selectAll(QList<Owners_tel*> *list);
+    static bool saveAll(QList<Owners_tel*> *list);
+    static bool selectZkTel(QList<Owners_tel*> *list, int);
+    static bool selectZkTelForAdd(QList<Owners_tel*> *list, int);
+
+     bool insert(bool setState=true);
+     bool update(bool setState=true);
+     bool remove();
+
+///////////////////////////////////////////////////
     QString period_from, period_to;
     QDate Date_From, Date_To;
 
     int null_counter;
 
     int new_zk_id;
+
+    bool stop = false;
+    bool drop = false;
 
     void append_telephones(QString);
 
@@ -81,7 +86,6 @@ public:
 
     void check_tel_num(QString);
 
-    int tel_id;
 
     QSqlQuery querry;
     QSqlQuery temp;

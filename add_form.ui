@@ -55,6 +55,19 @@
           </widget>
          </item>
          <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -63,7 +76,7 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
-                 <pointsize>15</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -76,7 +89,7 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
-                 <pointsize>15</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -89,7 +102,7 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
-                 <pointsize>15</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -102,13 +115,31 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QLineEdit" name="le_last_name"/>
+              <widget class="QLineEdit" name="le_last_name">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="le_name"/>
+              <widget class="QLineEdit" name="le_name">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="le_mid_name"/>
+              <widget class="QLineEdit" name="le_mid_name">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -121,7 +152,7 @@
              <property name="font">
               <font>
                <family>Arial</family>
-               <pointsize>15</pointsize>
+               <pointsize>10</pointsize>
               </font>
              </property>
              <property name="text">
@@ -136,7 +167,7 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
-                 <pointsize>15</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -158,6 +189,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="maxLength">
                 <number>2</number>
                </property>
@@ -172,7 +208,7 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
-                 <pointsize>15</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -191,6 +227,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="maxLength">
                 <number>2</number>
                </property>
@@ -205,7 +246,7 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
-                 <pointsize>15</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -218,6 +259,11 @@
              </item>
              <item>
               <widget class="QLineEdit" name="le_birth_date_year">
+               <property name="font">
+                <font>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="maxLength">
                 <number>4</number>
                </property>
@@ -241,7 +287,7 @@
              <property name="font">
               <font>
                <family>Arial</family>
-               <pointsize>15</pointsize>
+               <pointsize>10</pointsize>
               </font>
              </property>
              <property name="text">
@@ -259,7 +305,7 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
-                 <pointsize>15</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -272,7 +318,7 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
-                 <pointsize>15</pointsize>
+                 <pointsize>10</pointsize>
                 </font>
                </property>
                <property name="text">
@@ -291,7 +337,7 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
-                   <pointsize>15</pointsize>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -304,7 +350,7 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
-                   <pointsize>15</pointsize>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -317,7 +363,7 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
-                   <pointsize>15</pointsize>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -330,7 +376,7 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
-                   <pointsize>15</pointsize>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -343,7 +389,7 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
-                   <pointsize>15</pointsize>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -356,19 +402,49 @@
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_12">
                <item>
-                <widget class="QLineEdit" name="le_reg_city"/>
+                <widget class="QLineEdit" name="le_reg_city">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="le_reg_street"/>
+                <widget class="QLineEdit" name="le_reg_street">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="le_reg_house"/>
+                <widget class="QLineEdit" name="le_reg_house">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="le_reg_corp"/>
+                <widget class="QLineEdit" name="le_reg_corp">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                </widget>
                </item>
                <item>
-                <widget class="QLineEdit" name="le_reg_flat"/>
+                <widget class="QLineEdit" name="le_reg_flat">
+                 <property name="font">
+                  <font>
+                   <pointsize>10</pointsize>
+                  </font>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -383,7 +459,7 @@
              <property name="font">
               <font>
                <family>Arial</family>
-               <pointsize>15</pointsize>
+               <pointsize>10</pointsize>
               </font>
              </property>
              <property name="text">
@@ -392,7 +468,13 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="le_check_for"/>
+            <widget class="QLineEdit" name="le_check_for">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -451,18 +533,20 @@
               <layout class="QVBoxLayout" name="verticalLayout_11">
                <item>
                 <widget class="QPushButton" name="pb_add_line_telephone">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
                  <property name="text">
                   <string>+</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pb_del_line_telephone">
+                <widget class="QPushButton" name="pushButton">
+                 <property name="text">
+                  <string>Чек</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pb_remove_line_telephone">
                  <property name="font">
                   <font>
                    <pointsize>12</pointsize>
@@ -470,18 +554,6 @@
                  </property>
                  <property name="text">
                   <string>-</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pb_add_telephone">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Добавить телефон</string>
                  </property>
                 </widget>
                </item>
@@ -494,7 +566,7 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
-                   <pointsize>15</pointsize>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -525,7 +597,7 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
-                   <pointsize>15</pointsize>
+                   <pointsize>10</pointsize>
                   </font>
                  </property>
                  <property name="text">
@@ -571,18 +643,6 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QPushButton" name="pb_add_contact">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Добавить контакты</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </item>
             </layout>
@@ -599,7 +659,7 @@
              <property name="font">
               <font>
                <family>Arial</family>
-               <pointsize>15</pointsize>
+               <pointsize>10</pointsize>
               </font>
              </property>
              <property name="text">
@@ -611,7 +671,13 @@
             </widget>
            </item>
            <item>
-            <widget class="QPlainTextEdit" name="le_dop_info"/>
+            <widget class="QPlainTextEdit" name="le_dop_info">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>

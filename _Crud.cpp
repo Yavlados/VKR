@@ -1,8 +1,50 @@
-#include "crud.h"
+#include "_Crud.h"
 #include <QMessageBox>
 #include <QDialogButtonBox>
 
 #include <QMetaObject>
+
+Crud::Crud(int id, QString l, QString n, QString m, QString b_d, QString c_f, QString d_i, QString d_a, QString t_a):
+    zk_id(id), lastname(l), name(n), mid_name(m),
+    birth_date(b_d), check_for(c_f),
+    dop_info(d_i),date_add(d_a), time_add(t_a)
+{
+}
+
+Crud::Crud(QString t_n): telephone_num(t_n)
+{
+}
+
+Crud::Crud(int id): zk_id(id)
+{
+}
+
+Crud::Crud(int id, QString l, QString n, QString m, QString c_f, QString d_i, QString a_r, QString a_l, QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f):
+    zk_id(id),lastname(l), name(n), mid_name(m), check_for(c_f), dop_info(d_i),
+    adres_reg(a_r), adres_liv(a_l),
+    reg_city(r_c),reg_street(r_s),reg_home(r_h),reg_corp(r_cor),reg_flat(r_f)
+
+{ // Временный конструктор редактирования
+}
+
+Crud::Crud(QString l, QString n, QString m, QString b_d, QString c_f, QString d_i, QString a_r, QString a_l, QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f):
+    lastname(l), name(n), mid_name(m), birth_date(b_d), check_for(c_f), dop_info(d_i),
+    adres_reg(a_r), adres_liv(a_l),
+    reg_city(r_c),reg_street(r_s),reg_home(r_h),reg_corp(r_cor),reg_flat(r_f)
+{   //Временный конструктор добавления
+}
+
+Crud::Crud(int id, QString l, QString n, QString m_n, QString b_d, QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f, QString d_a):
+    zk_id(id),lastname(l), name(n), mid_name(m_n),
+    birth_date(b_d),
+    reg_city(r_c),reg_street(r_s),reg_home(r_h),reg_corp(r_cor),reg_flat(r_f),
+    date_add(d_a)
+{   //Временный конструктор для поиска
+}
+
+Crud::Crud()
+{
+}
 
 void Crud::select_all()
 {
@@ -66,26 +108,6 @@ void Crud::check() const
 
 }
 
-void Crud::select_telephone()
-{
-    querry.prepare("SELECT \"owners_tel\".\"Telephone_num\" "
-                   "FROM  \"owners_tel\" "
-                   "WHERE "
-                   " \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
-
-        querry.bindValue(":id",zk_id);
-
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    model->setQuery(querry);
-    model->setHeaderData(0,Qt::Horizontal, QObject::tr("Номер телефона"));
-    querry.clear();
-}
-
-void Crud::refresh_table()
-{
-    model_2->clear();
-}
 
 void Crud::recieve_tel_list()
 {
@@ -146,7 +168,7 @@ void Crud::call_update_list()
         lastname = querry.value(0).toString();
         name = querry.value(1).toString();
         mid_name = querry.value(2).toString();
-        //birth_date.fromString(querry.value(3).toString());
+        birth_date = querry.value(3).toString();
 
 //        adres_reg = querry.value(4).toString();
 //        adres_liv = querry.value(5).toString();
@@ -171,6 +193,7 @@ void Crud::update_zk()
                    "\"Name\" = (:name),"
                    "\"Mid_name\" = (:mid_name),"
                    ""
+                   "\"Birth_date\" = (:b_d),"
                    //"\"Adres_reg\" = (:a_r),"
                    //"\"Adres_liv\" = (:a_l),"
                    ""
@@ -186,6 +209,7 @@ void Crud::update_zk()
     querry.bindValue(":lastname",lastname);
     querry.bindValue(":name",name);
     querry.bindValue(":mid_name",mid_name);
+    querry.bindValue(":b_d",birth_date);
 
     //querry.bindValue(":a_r", adres_reg);
     //querry.bindValue(":a_l", adres_liv);

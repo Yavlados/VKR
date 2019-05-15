@@ -1,5 +1,6 @@
 #ifndef UPDATE_H
 #define UPDATE_H
+#include "MyTableModel.h"
 
 #include <QWidget>
 #include <QDebug>
@@ -17,7 +18,6 @@ class Update : public QWidget
     Q_OBJECT
 
 public:
-    int tel_id;
     int zk_id;
     QString adres_reg;
     QString adres_liv;
@@ -25,9 +25,11 @@ public:
 
     QMessageBox msgbx;
 
-    QSqlTableModel* model;  //для телефонов
-    QSqlTableModel* model_2; //для контактов
-    QList<QString> temp;
+    MyTableModel *contacts_model = new MyTableModel;
+    MyTableModel *ot_model = new MyTableModel;
+
+    QList<Contacts*> *contactList = new QList<Contacts*>;
+    QList<Owners_tel*> *otList = new QList<Owners_tel*>;
 
     explicit Update(QWidget *parent = nullptr);
 
@@ -38,8 +40,15 @@ private:
 
 signals:
     void Ready_for_update();
+    void Update_old_tel(int);
+    void Add_contact_row(int);
 
 private slots:
+
+
+    void clear_ALL();
+
+    void set_validators();
 
     void Recieve_data(int);
     void on_pb_Update_clicked();
@@ -49,13 +58,10 @@ private slots:
     void on_rb_adres_reg_clicked();
     void on_rb_adres_liv_clicked();
 
-    void on_pb_add_contact_line_clicked();
-    void on_pb_add_contact_clicked();
-    void on_pb_add_line_telephone_clicked();
-    void on_pb_del_line_telephone_clicked();
-    void on_pb_remove_contact_line_clicked();
-    void on_pb_add_telephone_clicked();
 
+    void on_pb_del_line_telephone_clicked();
+    void on_pb_del_contact_line_clicked();
+    void on_pb_add_contact_line_clicked();
 };
 
 #endif // UPDATE_H

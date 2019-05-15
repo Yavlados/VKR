@@ -1,9 +1,8 @@
 #include "add_form.h"
 #include "ui_add_form.h"
-#include "crud.h"
-#include "owners_tel.h"
-#include "telephones_upd.h"
-#include "contacts.h"
+#include "_Crud.h"
+#include "_Owners_tel.h"
+#include "_Contacts.h"
 #include <QSqlRecord>
 #include "db_connection.h"
 
@@ -16,11 +15,15 @@ Add_form::Add_form(QWidget *parent) :
 
     connect(ui->radioButton, SIGNAL(clicked()),this, SLOT(radio_button1_checked()));
     connect(ui->radioButton_2, SIGNAL(clicked()),this, SLOT(radio_button2_checked()));
-    connect(this, SIGNAL(Refresh_tab()), this, SLOT(Fill_table_in_add()));
-    connect(this, SIGNAL(Clear_All()),this,SLOT(Clear()));
-    connect(this, SIGNAL(Check_for_accept()),this,SLOT(Check_accept()));
-}
 
+    connect(this, SIGNAL(Add_contact_row(int)),contacts_model,SLOT(addRow_contact(int)));
+    connect(ui->pb_add_line_telephone, SIGNAL(clicked()), ot_model, SLOT(addRow_owner_tel()));
+
+    set_validators();
+    QModelIndex index = ui->tableView->currentIndex();
+    qDebug() << index.column();
+}
+///////////////////////////////////////////////
 void Add_form::radio_button1_checked()
 {
     if (adres_liv == "X")
@@ -29,7 +32,7 @@ void Add_form::radio_button1_checked()
     adres_reg = "X";
     qDebug() << adres_reg;
 }
-
+///////////////////////////////////////////////
 void Add_form::radio_button2_checked()
 {
     if (adres_reg == "X")
@@ -38,7 +41,7 @@ void Add_form::radio_button2_checked()
     adres_liv = "X";
     qDebug() << adres_liv;
 }
-
+///////////////////////////////////////////////
 void Add_form::on_pb_back_to_main_clicked()
 {
     msgbx.setText("Подтверждение");
@@ -50,122 +53,67 @@ void Add_form::on_pb_back_to_main_clicked()
     case QMessageBox::Cancel:
         break;
     case QMessageBox::Ok:
-    emit Clear_All();
+    Clear();
     break;
     }
 }
 
-void Add_form::on_pb_add_line_telephone_clicked()
-{
-    qDebug() << "inserting row" << model->insertRow(model->rowCount());
-}
 
-void Add_form::on_pb_del_line_telephone_clicked()
+void Add_form::on_pb_remove_line_telephone_clicked()
 {
-    int selectedRow = ui->tableView->currentIndex().row();
-    if (selectedRow >= 0)
+    QModelIndex ind = ui->tableView->currentIndex();
+    if( ind.isValid())
     {
-        if(ui->tableView->currentIndex().data() != "")
-        {
-            msgbx.setText("Подтверждение");
-            msgbx.setInformativeText("Вы действительно хотите удалить из записной книги номер "+tel_num);
-            msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            int ret = msgbx.exec();
-
-            switch (ret) {
-            case QMessageBox::Cancel:
-                break;
-            case QMessageBox::Ok:
-                qDebug() << "deleting row" << model->removeRow(selectedRow);
-                model->submitAll();
-            break;
-            }
-        }
-        else {
-            qDebug() << "deleting row" << model->removeRow(selectedRow);
-        }
-    }
-    else {
-        qDebug() << "No rows selected";
+        ot_model->delRow_owner_tel(ind);
     }
 }
 
+void Add_form::on_tableView_clicked(const QModelIndex &index)
+{
+    qDebug() << otList->at(index.row())->tel_id;
+
+    contacts_model->setContactList(contactList, otList->at(index.row())->tel_id);
+
+    contacts_model->state = Edit;
+    ui->tableView_2->setModel(contacts_model);
+        qDebug() << index;
+}
+
+void Add_form::set_validators()
+{
+   ui->le_birth_date_day->setValidator(new QIntValidator(1,31));
+   ui->le_birth_date_month->setValidator(new QIntValidator(1,12));
+   ui->le_birth_date_year->setValidator(new QIntValidator(1960,2100));
+}
 
 void Add_form::on_pb_add_contact_line_clicked()
 {
-    qDebug() << "inserting row" << model_2->insertRow(model_2->rowCount());
+    QModelIndex index = ui->tableView->currentIndex();
+    emit Add_contact_row(otList->at(index.row())->tel_id);
 }
+
 
 void Add_form::on_pb_remove_contact_line_clicked()
 {
-    int selectedRow = ui->tableView_2->currentIndex().row();
-    qDebug() << selectedRow;
-    if (selectedRow >= 0)
+    QModelIndex ind = ui->tableView_2->currentIndex();
+    if( ind.isValid())
     {
-        if(ui->tableView_2->currentIndex().data() != "")
-        {
-            msgbx.setText("Подтверждение");
-            msgbx.setInformativeText("Вы действительно хотите удалить выбранный контакт");
-            msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            int ret = msgbx.exec();
-
-            switch (ret) {
-            case QMessageBox::Cancel:
-                break;
-            case QMessageBox::Ok:
-                qDebug() << "deleting row" << model_2->removeRow(selectedRow);
-                model_2->submitAll();
-            break;
-            }
-        }
-        qDebug() << "deleting row" << model_2->removeRow(selectedRow);
-    }
-    else {
-        qDebug() << "No rows selected";
+        contacts_model->delRow_contact(ind);
     }
 }
 
-void Add_form::add_abort()
-{
-    emit toMainForm();
-}
 
+/////////// Метод, выполняемый после перехода на форму ///////////////////
 void Add_form::Fill_table_in_add()
 {
-    model = new QSqlTableModel(this);
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->setTable("owners_tel");
-    Owners_tel *ot = new Owners_tel();
-    ot->get_new_zk_id();
-    QString str = QString::number(ot->new_zk_id + 1);
-
-    model->setFilter("\"FK_Telephone_Zk\" IS NULL OR \"FK_Telephone_Zk\" =" + str);
-    qDebug() << ot->new_zk_id;
-    qDebug() << str;
-     model->select();
-
-   ui->tableView->setModel(model);
-   model->setHeaderData(2,Qt::Horizontal, QObject::tr("Номер телефона"));
-   ui->tableView->setColumnHidden(0,true);
-   ui->tableView->setColumnHidden(1,true);
-   ui->tableView->resizeColumnsToContents();
-   delete ot;
+    Crud *cr = new Crud();
+    cr->get_max_zk();
+    if(Owners_tel::selectZkTelForAdd(otList, cr->zk_id+1) && Contacts::selectAll(contactList))
+           ot_model->setOTList(otList);
+       ot_model->state = Edit; ///меняю флаги для изменения
+       ui->tableView->setModel(ot_model);
 }
 
-void Add_form::on_pb_add_telephone_clicked()
-{
-
-    qDebug() << model->rowCount();
-    QString result;
-    Owners_tel *ow = new Owners_tel();
-     for (int i=0; i < model->rowCount(); i++)
-     {
-         result = model->record(i).value("Telephone_num").toString();
-         qDebug() << result;
-         ow->check_tel_num(result);
-     }
-     delete ow;
-}
 
 void Add_form::on_pb_add_zk_final_clicked()
 {
@@ -187,106 +135,55 @@ void Add_form::on_pb_add_zk_final_clicked()
                             ui->le_reg_corp ->text(),ui->le_reg_flat->text());
         cr->check();
         cr->add_zk();
-        zk_id = cr->zk_id;
 
-         emit Check_for_accept();
-
-         Owners_tel *ow = new Owners_tel();
-         ow->get_new_zk_id(); // переопределяю зк ид
-         ow->get_filter_for_add();
-         qDebug() << ow->new_zk_id;
-        delete ow;
+        if( Owners_tel::saveAll(otList))
+        {
+            if( Contacts::saveAll(contactList) )
+            {
+                QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные сохранены в БД!"));
+                //reopen();
+            }
+            else
+                QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить запрос: %1").arg(
+                                          db_connection::instance()->lastError));
+        }
+        else
+            QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить запрос: %1").arg(
+                                      db_connection::instance()->lastError));
         delete cr;
-         emit Clear_All();
-         emit toMainForm();
+         Clear();
         break;
     }
 }
 
-void Add_form::on_tableView_clicked(const QModelIndex &index)
-{
-    Owners_tel *ow = new Owners_tel();
-    ow->recieve_tel_id(index.data().toString());
-    tel_id = ow->tel_id;
-    tel_num = index.data().toString();
-    qDebug() << tel_id;
-
-    model_2 = new QSqlTableModel(this);
-    model_2->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model_2->setTable("contacts");
-    QString str = QString::  number(tel_id);
-
-    model_2->setFilter("\"FK_Cl_telephone\" IS NULL OR \"FK_Cl_telephone\" = " + str);
-
-    qDebug() << str;
-
-    model_2->select();
-
-   ui->tableView_2->setModel(model_2);
-   ui->tableView_2->setColumnHidden(0,true);
-   model_2->setHeaderData(1,Qt::Horizontal, QObject::tr("Номер телефона"));
-   model_2->setHeaderData(2,Qt::Horizontal, QObject::tr("Пометка"));
-   ui->tableView_2->setColumnHidden(3,true);
-   ui->tableView_2->resizeColumnsToContents();
-
-     delete ow;
-}
-
-void Add_form::on_pb_add_contact_clicked()
-{
-   msgbx.setText("Подтверждение");
-
-   msgbx.setInformativeText("Вы готовы завершить заполнение записной книги для номера: "+ tel_num+" ?");
-   msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-   int ret = msgbx.exec();
-
-   switch (ret) {
-   case QMessageBox::Cancel:
-       break;
-   case QMessageBox::Ok:
-       model_2->submitAll();
-       Contacts *cnt = new Contacts;
-       cnt->add_fk_contact(tel_id);
-       delete cnt;
-       break;
-   }
-}
-
 void Add_form::Clear()
 {
-//    model->clear();
-//    model_2->clear();
     foreach (QLineEdit *l, this->findChildren<QLineEdit*>())
     {
         l->clear();
     }
-    Owners_tel *ow = new Owners_tel();
-    ow->del_where_fk_null();
-    delete ow;
+    if (!otList->isEmpty())
+        otList->clear();
+    ot_model->reset_model();
+     if (!contactList->isEmpty())
+         contactList->clear();
+     contacts_model->reset_model();
+
     emit toMainForm();
-}
-
-void Add_form::Check_accept()
-{
-    Owners_tel *ow = new Owners_tel();
-    ow->check_for_null();
-    if (ow->null_counter == 0)
-    {
-        msgbx.setText("ВНИМАНИЕ");
-
-        msgbx.setInformativeText("Вы не подтвердили добавление номера!");
-        msgbx.setStandardButtons(QMessageBox::Ok);
-    }
-    delete ow;
-}
-
-void Add_form::on_tableView_2_clicked(const QModelIndex &index)
-{
-    (void)index;
-    emit Check_for_accept();
 }
 
 Add_form::~Add_form()
 {
     delete ui;
+}
+
+void Add_form::on_pushButton_clicked()
+{
+    QModelIndex index = ui->tableView->currentIndex();
+    //QModelIndex index2 = ui->tableView_2->currentIndex();
+    QString str = QString::number(otList->at(index.row())->tel_id);
+    QString str2 = QString::number(otList->at(index.row())->parentZK_id);
+    QString str5 = QString::number(otList->at(index.row())->state);
+    qDebug() << str + " "+ otList->at(index.row())->tel_num +" "+ str2 + " " + str5;
+
 }

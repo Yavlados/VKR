@@ -30,35 +30,34 @@ SOURCES += \
         mainwindow.cpp \
     analysis.cpp \
     update.cpp \
-    crud.cpp \
-    owners_tel.cpp \
-    contacts.cpp \
-    telephones_upd.cpp \
     search.cpp \
     add_form.cpp \
     for_analysis.cpp \
     an_result.cpp \
-    db_connection.cpp
+    db_connection.cpp \
+    _Contacts.cpp \
+    _Crud.cpp \
+    _Owners_tel.cpp \
+    MyTableModel.cpp
 
 HEADERS += \
         mainwindow.h \
     db_connection.h \
-    crud.h \
     analysis.h \
     update.h \
-    owners_tel.h \
-    contacts.h \
-    telephones_upd.h \
     search.h \
     add_form.h \
     for_analysis.h \
-    an_result.h
+    an_result.h \
+    _Contacts.h \
+    _Owners_tel.h \
+    _Crud.h \
+    MyTableModel.h
 
 FORMS += \
         mainwindow.ui \
     analysis.ui \
     update.ui \
-    telephones_upd.ui \
     search.ui \
     add_form.ui \
     an_result.ui

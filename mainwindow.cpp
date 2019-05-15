@@ -1,4 +1,4 @@
-#include "crud.h"
+#include "_Crud.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -8,24 +8,21 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    connect(this, SIGNAL(start_radio_button()), add, SLOT(radio_button1_checked()));
-    //connect(this, SIGNAL(start_radio_button()), upd, SLOT(radio_button1_checked()));
-
-    connect (add, SIGNAL (toMainForm()), this, SLOT(ShowThisTab()));
-    connect(this,SIGNAL(Send_data(int)),upd, SLOT(Recieve_data(int)));
-    connect(upd, SIGNAL(Ready_for_update()), this, SLOT(ShowThisTab()));
-    connect (this, SIGNAL(Refresh_tab()), this, SLOT(ShowThisTab()));
-    connect(this, SIGNAL(Fill_table_add()),add, SLOT(Fill_table_in_add()));
-
-    connect(sr, SIGNAL(Send_Model(QSqlQueryModel*)),this, SLOT(Search_result(QSqlQueryModel*)));
-    connect(sr,SIGNAL(Cancel_search()),this, SLOT(ShowThisTab()));
     ui->setupUi(this);
 
-    MainWindow::showMaximized();
+    set_connections();
 
-    Connection *con = new Connection;   //подключение к бд
-    con->db_connect();                  //через указатель
-    delete con;                         //и удаление его
+     auto tabbar = ui->tabWidget->tabBar();
+    tabbar->tabButton(0,QTabBar::RightSide)->deleteLater();
+    tabbar->setTabButton(0, QTabBar::RightSide, nullptr);
+
+    showMaximized();
+
+    // reopen();
+//    contacts_model->type = ContactMod;
+//    ot_model->type = OTMod;
+    //ui->tableView_3->setModel(contacts_model);
+
     Crud *cr = new Crud();
     cr->select_all();
     ui->tableView->setModel(cr->model);
@@ -39,11 +36,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
 void MainWindow::on_tableView_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Владельцами номеров
 {
     (void)index;
-    ui->action_delete->setEnabled(true); //включаю кнопку редактировать
-    ui->action_update->setEnabled(true);
+    ui->action_delete->setEnabled(true);
+    ui->action_update->setEnabled(true); //включаю кнопку редактировать
     QLayout *layout = ui->vl_cancel_button->layout();
     while (layout->count() != 0)
         {
@@ -57,49 +55,26 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index) //Обрабат
 
     QModelIndexList *indexes = new QModelIndexList;
     *indexes = ui->tableView->selectionModel()->selection().indexes();
-    Crud *cr = new Crud(indexes->value(0).data().toInt(),
-                        indexes->value(1).data().toString(),
-                        indexes->value(2).data().toString(),
-                        indexes->value(3).data().toString(),
-                        indexes->value(4).data().toString(),
-                        indexes->value(5).data().toString(),
-                        indexes->value(6).data().toString(),
-                        indexes->value(7).data().toString(),
-                        indexes->value(8).data().toString());
+    Crud *cr = new Crud(indexes->value(0).data().toInt());
     temp_id = indexes->value(0).data().toInt();
-    cr->select_telephone();
-    ui->tableView_2->setModel(cr->model);
-    ui->tableView_2->setColumnWidth(0,200);
+    if(Owners_tel::selectZkTel(otList,cr->zk_id))
+        ot_model->setOTList(otList);
+    ui->tableView_2->setModel(ot_model);
+    contacts_model->reset_model();
     delete indexes;
     delete cr;
 
-    //Очистка третьей таблицы
-    Crud *clear = new Crud();
-    clear->refresh_table();
-    ui->tableView_3->setModel(clear->model);
-    delete clear;
 }
 
 
 void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Номерами владельцев
 {
-    Crud *cr = new Crud(index.data().toString());
-    cr->recieve_tel_list();
-    ui->tableView_3->setModel(cr->model);
-    ui->tableView_3->resizeColumnsToContents();
+    qDebug() << otList->at(index.row())->tel_id;
 
+    if(Contacts::selectTelContacts(contactList,  otList->at(index.row())->tel_id))
+        contacts_model->setContactList(contactList);
 
-//    if (p_b_counter < 1)
-//    {
-//        QPushButton *p_b = new QPushButton;
-//        p_b->setText("Редактировать номер телефона");
-//        ui->verticalLayout_4->addWidget(p_b);
-//            p_b_counter++;
-//        qDebug()<<p_b_counter;
-
-//        connect(p_b, SIGNAL(clicked()), an ,SLOT(show()));
-//    }
-    delete cr;
+    ui->tableView_3->setModel(contacts_model);
 }
 
 void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
@@ -116,9 +91,8 @@ void MainWindow::ShowThisTab() //Открытие main окна и рефреш 
     Crud *cr = new Crud();
     cr->select_all();
     ui->tableView->setModel(cr->model);
-    cr->refresh_table();
-    ui->tableView_2->setModel(cr->model_2);
-    ui->tableView_3->setModel(cr->model_2);
+    ot_model->reset_model();
+    contacts_model->reset_model();
 
     QLayout *layout = ui->vl_cancel_button->layout();
     while (layout->count() != 0)
@@ -166,10 +140,7 @@ void MainWindow::on_action_delete_triggered()
 
 void MainWindow::on_action_update_triggered()
 {
-    emit Send_data(temp_id);
-     ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,upd,"Редактировать");
-     ui->tabWidget->autoFillBackground();
-     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+   MainWindow::open_upd_tab(temp_id);
 }
 
 void MainWindow::on_action_analysis_triggered()
@@ -230,3 +201,34 @@ void MainWindow::add_cancel_button()
     }
 }
 
+void MainWindow::open_upd_tab(int temp_id)
+{
+    emit Send_data(temp_id);
+     ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,upd,"Редактировать");
+     ui->tabWidget->autoFillBackground();
+     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+}
+
+void MainWindow::set_connections()
+{
+    connect(this, SIGNAL(start_radio_button()), add, SLOT(radio_button1_checked()));
+    //connect(this, SIGNAL(start_radio_button()), upd, SLOT(radio_button1_checked()));
+
+    connect (add, SIGNAL (toMainForm()), this, SLOT(ShowThisTab()));
+    connect(this,SIGNAL(Send_data(int)), upd, SLOT(Recieve_data(int)));
+    connect(upd, SIGNAL(Ready_for_update()), this, SLOT(ShowThisTab()));
+    connect (this, SIGNAL(Refresh_tab()), this, SLOT(ShowThisTab()));
+    connect(this, SIGNAL(Fill_table_add()),add, SLOT(Fill_table_in_add()));
+
+    connect(sr, SIGNAL(Send_Model(QSqlQueryModel*)),this, SLOT(Search_result(QSqlQueryModel*)));
+    connect(sr,SIGNAL(Cancel_search()),this, SLOT(ShowThisTab()));
+}
+
+void MainWindow::reopen()
+{
+    if(Contacts::selectAll(contactList))
+         contacts_model->setContactList(contactList);
+
+    if(Owners_tel::selectAll(otList))
+        ot_model->setOTList(otList);
+}

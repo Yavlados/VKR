@@ -1,13 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
 #include "add_form.h"
-#include <QPushButton>
-#include <QMessageBox>
 #include "analysis.h"
 #include "update.h"
 #include "search.h"
+#include "db_connection.h"
+#include "MyTableModel.h"
+
+
+#include <QMainWindow>
+#include <QPushButton>
+#include <QMessageBox>
 #include <QSqlQueryModel>
 
 namespace Ui {
@@ -29,14 +33,25 @@ public:
 
     bool search;
 
+    MyTableModel *contacts_model = new MyTableModel;
+    MyTableModel *ot_model = new MyTableModel;
+
+    QList<Contacts*> *contactList = new QList<Contacts*>;
+    QList<Owners_tel*> *otList = new QList<Owners_tel*>;
+
     int p_b_counter = 0;
     int temp_id = 0;
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void reopen();
+
+private:
+    Ui::MainWindow *ui;
+
+
 private slots:
-
-
     void on_tableView_clicked(const QModelIndex &index);
 
     void on_tableView_2_clicked(const QModelIndex &index);
@@ -61,8 +76,11 @@ private slots:
 
     void add_cancel_button();
 
+    void open_upd_tab(int);
+
+    void set_connections();
 signals:
-    void Send_data(int id);
+    void Send_data(int);
 
     void Refresh_tab();
 
@@ -72,8 +90,6 @@ signals:
 
     void Set_validators_an();
 
-private:
-    Ui::MainWindow *ui;
 };
 
 

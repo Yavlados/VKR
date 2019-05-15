@@ -1,6 +1,6 @@
 #include "search.h"
 #include "ui_search.h"
-#include "owners_tel.h"
+#include "_Owners_tel.h"
 
 Search::Search(QWidget *parent) :
     QWidget(parent),
@@ -31,6 +31,7 @@ ui->le_form_year->text()+"-"+ui->le_form_month->text()+"-"+ui->le_form_day->text
                         ui->le_tel_num->text(),
 ui->le_period_from_year->text()+"-"+ui->le_period_from_month->text()+"-"+ui->le_period_from_day->text(),
 ui->le_period_to_year->text()+"-"+ui->le_period_to_month->text()+"-"+ui->le_period_to_day->text());
+
     o_t->check();
     o_t->zk_search();
 
