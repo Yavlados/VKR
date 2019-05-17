@@ -101,7 +101,6 @@ void MyTableModel::setOTList(QList<Owners_tel *> *OTList)
             if( otlist->at(i)->state!=IsRemoved )
                 actotlist.append(otlist->at(i));
     }
-
     endResetModel();
 }
 
@@ -125,10 +124,8 @@ QVariant MyTableModel::data(const QModelIndex &index, int role) const
             {
         case 0:            /// 1 колонка - номер телефона
            return actlist.at(row)->contact_tel_num;
-            break;
         case 1:             /// 2 колонка - пометка к номеру
             return actlist.at(row)->mark;
-            break;
             }
         }
       return QVariant();
@@ -146,7 +143,6 @@ QVariant MyTableModel::data(const QModelIndex &index, int role) const
                 {
                 case 0:            /// 1 колонка - Номер телефона
                     return actotlist.at(row)->tel_num;
-                    break;
                 }
             }
             return QVariant();
@@ -154,12 +150,37 @@ QVariant MyTableModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void MyTableModel::reset_model()
+void MyTableModel::reset_OTModel()
 {
     beginResetModel();
         actotlist.clear();
-        actlist.clear();
+        endResetModel();
+}
+
+void MyTableModel::reset_ContactModel()
+{
+    beginResetModel();
+    actlist.clear();
     endResetModel();
+}
+
+QVariant MyTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (role != Qt::DisplayRole)
+             return QVariant();
+
+    if (orientation == Qt::Horizontal)
+        switch (section)
+      {
+         case 0:
+            return QString("Номер телефона");
+        case 1:
+            return QString("Пометка");
+      }
+    else {
+        return QString("%1").arg(section+1);
+    }
+
 }
 
 Qt::ItemFlags MyTableModel::flags ( const QModelIndex & index ) const
@@ -246,7 +267,6 @@ void MyTableModel::addRow_contact(int OTid)
     }
     while (temp->next())
     {
-        auto a = actlist.size();
         beginInsertRows(QModelIndex(),actlist.size(),actlist.size());
 
         Contacts *newc = new Contacts();
@@ -260,7 +280,7 @@ void MyTableModel::addRow_contact(int OTid)
         newc->parent_OT_id = OTid;
         actlist.append(newc);
         clist->append(newc);
-
+        newc->check();
         endInsertRows();
     }
 }
@@ -281,68 +301,101 @@ void MyTableModel::addRow_owner_tel()
      {
          beginInsertRows(QModelIndex(),actotlist.size(),actotlist.size());
 
-         Owners_tel *newc = new Owners_tel();
-         if (actotlist.size() > 0 && actotlist.at(actotlist.size()-1)->tel_id > temp->value(0).toInt())
-                newc->tel_id = actotlist.at(actotlist.size()-1)->tel_id + 1;
-         else
-                newc->tel_id = temp->value(0).toInt() +1;
+            Owners_tel *newc = new Owners_tel();
+            if (actotlist.size() > 0 && actotlist.at(actotlist.size()-1)->tel_id > temp->value(0).toInt())
+                   newc->tel_id = actotlist.at(actotlist.size()-1)->tel_id + 1;
+            else
+                   newc->tel_id = temp->value(0).toInt() +1;
 
-         newc->parentZK_id = actotlist.at(actotlist.size()-1)->parentZK_id;
-         newc->state = IsNewing;
-         actotlist.append(newc);
-         otlist->append(newc);
+            newc->parentZK_id = actotlist.at(actotlist.size()-1)->parentZK_id;
+            newc->state = IsNewing;
+            actotlist.append(newc);
+            otlist->append(newc);
 
-         endInsertRows();
-     }
-     delete temp;
-}
+            endInsertRows();
+        }
+        delete temp;
+   }
 
 void MyTableModel::delRow_owner_tel(const QModelIndex &index)
-{
-    if (otlist==nullptr)
-        return;
+   {
+       if (otlist==nullptr)
+           return;
 
-    beginRemoveRows(QModelIndex(),index.row(),index.row());
+       beginRemoveRows(QModelIndex(),index.row(),index.row());
 
-    Owners_tel *ot = actotlist.at(index.row());
-    if( ot!=nullptr)
-    {
-        actotlist.removeAt(index.row());
-
-        if( ot->state==IsNewing )
-        {
-            otlist->removeAll(ot);
-            delete ot;
-        }
-        else
-        {
-            ot->state = IsRemoved;
-        }
-    }
-    endRemoveRows();
-}
+       Owners_tel *ot = actotlist.at(index.row());
+       if( ot!=nullptr)
+       {
+           actotlist.removeAt(index.row());
+           if( ot->state==IsNewing )
+           {
+               otlist->removeAll(ot);
+               delete ot;
+           }
+           else
+           {
+               ot->state = IsRemoved;
+           }
+           //delBindedContacts(ot->tel_id, contact_list);
+       }
+       endRemoveRows();
+   }
 
 void MyTableModel::delRow_contact(const QModelIndex &index)
+   {
+       if (clist==nullptr)
+           return;
+
+       beginRemoveRows(QModelIndex(),index.row(),index.row());
+
+       Contacts *cont = actlist.at(index.row());
+       if( cont!=nullptr)
+       {
+           actlist.removeAt(index.row());
+
+           if( cont->cont_state==IsNewing )
+           {
+               clist->removeAll(cont);
+               delete cont;
+           }
+           else
+           {
+               cont->cont_state = IsRemoved;
+           }
+       }
+       endRemoveRows();
+   }
+
+void MyTableModel::delBindedContacts(int tel_id)
 {
-    if (clist==nullptr)
-        return;
+       if (clist == nullptr)
+          return;
 
-    beginRemoveRows(QModelIndex(),index.row(),index.row());
+       qDebug() << clist->size();
+       QList<Contacts*> *temp_list = new  QList<Contacts*>;
+       for (int i =0; i < clist->size(); i++)
+       {
+           qDebug() << clist->at(i)->contact_id;
 
-    Contacts *cont = actlist.at(index.row());
-    if( cont!=nullptr)
-    {
-        actlist.removeAt(index.row());
-
-        if( cont->cont_state==IsNewing )
-        {
-            clist->removeAll(cont);
-            delete cont;
-        }
-        else
-        {
-            cont->cont_state = IsRemoved;
-        }
-    }
-    endRemoveRows();
+           Contacts *cnt = clist->at(i);
+           if (cnt->parent_OT_id == tel_id)
+           {
+               temp_list->append(cnt); ///выношу во временный список
+              delete cnt;
+           }
+       }
+       if(temp_list->isEmpty())
+       {
+           return;
+       }
+       else
+       {
+         for (int i =0;  i < temp_list->size(); i++)
+             {
+               Contacts *cnt = temp_list->at(i);
+               clist->removeAll(cnt);
+             }
+                delete temp_list;
+       }
 }

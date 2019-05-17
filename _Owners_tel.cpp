@@ -15,15 +15,11 @@ Owners_tel::Owners_tel(int zk, int id, DbState st)
     state = st;
 }
 
-Owners_tel::Owners_tel(int id, QString l, QString n, QString m_n, QString b_d, QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f, QString d_a, QString t_n, QString p_f, QString p_t):
+Owners_tel::Owners_tel(int id, QString l, QString n, QString m_n, QString b_d, QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f, QString d_a, QString t_n):
     Crud(id,l, n, m_n, b_d, r_c, r_s, r_h, r_cor,r_f, d_a),
-    tel_num(t_n), period_from(p_f),period_to(p_t)
-{
-    auto list = period_from.split('-');
-    Date_From.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
-    list.clear();
-    list = period_to.split('-');
-    Date_To.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
+    tel_num(t_n)
+{           ///Конструктор поиска
+
 }
 
 Owners_tel::Owners_tel(QString t_n, int t_id, int zk, DbState st):
@@ -34,7 +30,7 @@ Owners_tel::Owners_tel(QString t_n, int t_id, int zk, DbState st):
 
 Owners_tel::~Owners_tel()
 {
-  qDebug()<<"delete contact"<<tel_id;
+  qDebug()<<"delete telephone"<<tel_id;
 }
 
 bool Owners_tel::selectAll(QList<Owners_tel *> *list)
@@ -91,8 +87,10 @@ bool Owners_tel::saveAll(QList<Owners_tel *> *list)
         case IsNewing:
             if ( ! list->at(i)->tel_num.isEmpty())
                 isOk = list->at(i)->insert(false);
-
+            else
+                isOk = list->at(i)->remove();
             break;
+
         case IsChanged:
             isOk = list->at(i)->update(false);
             break;
@@ -151,32 +149,54 @@ bool Owners_tel::selectZkTel(QList<Owners_tel *> *list, int zk)
         Owners_tel *ot = new Owners_tel(temp.value(0).toString(), temp.value(1).toInt(), temp.value(2).toInt(),IsReaded);
         list->append(ot);
     }
-
     return true;
 }
 
 //////// Вместо вызова списка, создаю пустой для формы добавления ///////////
-bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk_id)
+bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
 {
     if(list==nullptr)
         return false;
 
     qDeleteAll(*list);
     list->clear();
-    QSqlQuery *temp = new QSqlQuery(db_connection::instance()->db);
-    temp->prepare("SELECT MAX( \"owners_tel\".\"Telephone_id\")"
-                 "FROM \"owners_tel\"");
-    if (!temp->exec())
+
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QSqlQuery temp(db_connection::instance()->db);
+    temp.prepare("SELECT \"owners_tel\".\"Telephone_num\", \"owners_tel\".\"Telephone_id\", \"owners_tel\".\"FK_Telephone_Zk\" "
+                 "FROM  \"owners_tel\""
+                 "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+    temp.bindValue(":id", zk);
+    if (!temp.exec())
     {
-        qDebug() << temp->lastError();
+        qDebug() << temp.lastError();
         return false;
     }
-    while (temp->next())
+
+    while (temp.next())
     {
-    //////создаю модель с двумя - id и FK///////
-    Owners_tel *ot = new Owners_tel(zk_id,temp->value(0).toInt() +1 ,IsNewing);
-    list->append(ot);
-   return true;
+        Owners_tel *ot = new Owners_tel(temp.value(0).toString(), temp.value(1).toInt(), temp.value(2).toInt(),IsReaded);
+        list->append(ot);
+    }
+    /// Если у зк нет телефонов при редактировании
+    if(list->isEmpty())
+    {
+        temp.prepare("SELECT MAX( \"owners_tel\".\"Telephone_id\")"
+                     "FROM \"owners_tel\"");
+        if (!temp.exec())
+        {
+            qDebug() << temp.lastError();
+            return false;
+        }
+        while (temp.next())
+        {
+        //////создаю модель с двумя - id и FK///////
+        Owners_tel *ot = new Owners_tel(zk,temp.value(0).toInt() +1 ,IsNewing);
+        list->append(ot);
+       return true;
+        }
     }
 }
 
@@ -194,6 +214,8 @@ bool Owners_tel::insert(bool setState)
     if (!temp.exec())
     {
         db_connection::instance()->lastError = temp.lastError().text();
+        db_connection::instance()->error = temp.lastError();
+        db_connection::instance()->error_tel_num = tel_num;
         qDebug() << temp.lastError();
         return false;
     }
@@ -207,6 +229,7 @@ bool Owners_tel::insert(bool setState)
             return true;
     }
         db_connection::instance()->lastError = temp.lastError().text();
+        db_connection::instance()->error = temp.lastError();
         return false;
 }
 
@@ -257,171 +280,7 @@ bool Owners_tel::remove()
 }
 
 //////////////////////////////////////////////////////////////////////
-void Owners_tel::append_telephones(QString tel)
-{
-    telephones.append(tel);
-}
 
-void Owners_tel::return_values() const
-{
-    if (telephones.size() > 0)
-    {
-        for (int i=0; i < telephones.size(); i++)
-        {
-            qDebug() << telephones.value(i);
-        }
-    }
-    else {
-        qDebug() << "list is empty";
-    }
-}
-
-void Owners_tel::add_numbers(int zk_id)
-{
-    for (int i =0; i< telephones.size(); i++)
-    {
-        querry.prepare("INSERT INTO \"owners_tel\""
-                       "(\"Telephone_num\", \"FK_Telephone_Zk\")"
-                       "VALUES((:telephone),(:zk_id))");
-        querry.bindValue(":telephone", telephones.value(i));
-        querry.bindValue(":zk_id", zk_id);
-        if (!querry.exec())
-        {
-                qDebug() << "querry.lastError()";
-        }
-        querry.clear();
-    }
-}
-
-void Owners_tel::recieve_contacts(int tel_id)
-{
-    querry.prepare("SELECT \"contacts\".\"cl_telephone\",\"contacts\".\"cl_info\""
-                   "FROM \"contacts\""
-                   "WHERE \"contacts\".\"FK_Cl_telephone\" = (:id) ");
-    querry.bindValue(":id", tel_id);
-        if (!querry.exec())
-            qDebug() << querry.lastError();
-    model->setQuery(querry);
-    querry.clear();
-}
-
-//Возвращает случайное число из диапазона int если нет записи
-
-void Owners_tel::recieve_tel_id(QString telephone_num)
-{
-    querry.prepare("SELECT \"owners_tel\".\"Telephone_id\""
-                   "FROM \"owners_tel\""
-                   "WHERE \"owners_tel\".\"Telephone_num\" = (:tel)");
-
-    querry.bindValue(":tel", telephone_num);
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-
-       if (querry.next())
-        {
-            qDebug() << querry.value(0);
-           tel_id = querry.value(0).toInt();
-
-        qDebug() << querry.executedQuery();
-        qDebug() << tel_id;
-        }
-     else {
-         tel_id = 0;
-     }
-}
-
-void Owners_tel::del_tel()
-{
-    querry.prepare("DELETE FROM \"owners_tel\""
-    "WHERE \"owners_tel\".\"Telephone_id\" = (:tel_id)");
-    querry.bindValue(":tel_id",tel_id);
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-}
-
-void Owners_tel::add_telephones()
-{
-    querry.prepare("SELECT \"owners_tel\".\"Telephone_id\""
-                  "FROM \"owners_tel\""
-                  "WHERE \"owners_tel\".\"FK_Telephone_Zk\" IS NULL");
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    qDebug() << querry.executedQuery();
-    while(querry.next())
-    {
-        temp.prepare("UPDATE \"owners_tel\""
-                     "SET \"FK_Telephone_Zk\" = (:id)"
-                     "WHERE \"owners_tel\".\"Telephone_id\" = (:tel_id)");
-        temp.bindValue(":id", zk_id);
-        temp.bindValue(":tel_id", querry.value(0).toInt());
-        if (!temp.exec())
-            qDebug() << temp.lastError();
-    qDebug() << temp.executedQuery();
-    }
-}
-
-void Owners_tel::get_filter_for_add()
-{
-
-    //Беру все новые поля
-    querry.prepare("SELECT \"owners_tel\".\"Telephone_id\""
-                  "FROM \"owners_tel\""
-                  "WHERE \"owners_tel\".\"FK_Telephone_Zk\" IS NULL");
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    qDebug() << querry.executedQuery();
-    while(querry.next())
-    {
-        //Добавляю к новым полям ФК новой зк
-        temp.prepare("UPDATE \"owners_tel\""
-                     "SET \"FK_Telephone_Zk\" = (:id)"
-                     "WHERE \"owners_tel\".\"Telephone_id\" = (:tel_id)");
-        temp.bindValue(":id", new_zk_id);
-        temp.bindValue(":tel_id", querry.value(0).toInt());
-        if (!temp.exec())
-            qDebug() << temp.lastError();
-    qDebug() << temp.executedQuery();
-    }
-}
-
-void Owners_tel::get_new_zk_id() //для фильтра
-{
-    //Определяю Ид новой записной книги
-    querry.prepare("SELECT MAX(\"zk\".\"Zk_id\")"
-                   "FROM \"zk\"");
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    while(querry.next())
-    {
-        new_zk_id = querry.value(0).toInt();
-    }
-
-    querry.clear();
-
-}
-
-void Owners_tel::del_where_fk_null()
-{
-    querry.prepare("DELETE FROM \"owners_tel\""
-    "WHERE \"owners_tel\".\"FK_Telephone_Zk\" IS NULL");
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-}
-
-void Owners_tel::check_for_null()
-{
-//    querry.prepare("SELECT \"owners_tel\".\"Telephone_id\""
-//                   "FROM \"owners_tel\""
-//                   "WHERE \"Telephone_num\" = (:tel)");
-//    querry.bindValue(":tel",);
-//    if (!querry.exec())
-//        qDebug() << querry.lastError();
-//    while(querry.next())
-//    {
-//        null_counter = querry.value(0).toInt();
-//    }
-//    querry.clear();
-}
 
 void Owners_tel::zk_search()
 {
@@ -500,12 +359,27 @@ void Owners_tel::zk_search()
         qry += " AND \"zk\".\"Reg_flat\" = ('"+reg_flat+"')";
     }
 
-    if(!date_add.isEmpty() && date_add != "--")
+    if(date_add.count()>2)
     {
-        qry += " AND \"zk\".\"Date_add\" = ('"+date_add+"')";
+        if (date_add.at(0)=="-" && date_add.at(1) == "-")
+        {
+            date_add.remove(0,2); /// Убираю точки
+            qry += "AND regexp_replace(\"zk\".\"Date_add\", '\\s+$', '') LIKE ('______"+date_add+"%')" ;
+        }
+        else
+        {
+            if (date_add.at(0) == "-")
+            {
+                qry += "AND regexp_replace(\"zk\".\"Date_add\", '\\s+$', '') LIKE ('__"+date_add+"%')" ;
+            }
+            else {
+                date_add.chop(1); ///убираю одну точку
+                qry += "AND regexp_replace(\"zk\".\"Date_add\", '\\s+$', '') LIKE ('"+date_add+"%')" ;
+            }
+        }
     }
 
-    if(!period_from.isEmpty() && !period_to.isEmpty() && Date_From < Date_To)
+    if( Date_From.isValid() || Date_To.isValid() )
     {
         QString tempp;
         querry.prepare("SELECT \"zk\".\"Date_add\", \"zk\".\"Zk_id\""
@@ -520,7 +394,9 @@ void Owners_tel::zk_search()
             QDate date;
             auto list =  querry.value(0).toString().split('-');
             date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
-            if(date <= Date_To && date >= Date_From)
+
+            if( (Date_From.isValid() && Date_To.isValid() && Date_From < Date_To) &&
+                  (  date <= Date_To && date >= Date_From )) /// Если две даты
             {
                 if(tempp.isEmpty())
                 {
@@ -531,11 +407,51 @@ void Owners_tel::zk_search()
                   tempp+=" OR  \"zk\".\"Zk_id\" = "+querry.value(1).toString();
                 }
             }
+            else
+            { /// Если есть дата С
+                if( (Date_From.isValid() && !Date_To.isValid()) && date >= Date_From)
+                {
+                    if(tempp.isEmpty())
+                    {
+                        tempp+=" \"zk\".\"Zk_id\" = "+querry.value(1).toString();
+                    }
+                    else
+                    {
+                      tempp+=" OR  \"zk\".\"Zk_id\" = "+querry.value(1).toString();
+                    }
+                }
+                else
+                {
+                    if( ( Date_To.isValid() && !Date_From.isValid() ) && date <= Date_To )
+                    {/// Если есть дата ПО
+                        if(tempp.isEmpty())
+                        {
+                            tempp+=" \"zk\".\"Zk_id\" = "+querry.value(1).toString();
+                        }
+                        else
+                        {
+                          tempp+=" OR  \"zk\".\"Zk_id\" = "+querry.value(1).toString();
+                        }
+                    }
+//                    else /// Если мы вошли в это условие и не прошли ни по одному параметру
+//                    {///месседжбокс с ошибкой
+//                        msgbx.setText("<font size = '8'>Дата введена некорректно!</font>");
+//                        msgbx.setStandardButtons(QMessageBox::Cancel);
+//                        msgbx.setButtonText(QMessageBox::Cancel,"Закрыть");
+//                        int ret = msgbx.exec();
+//                        switch (ret) {
+//                        case QMessageBox::Cancel:
+//                            return;
+//                       }
+//                    }
+                }
+            }
         }
         if (!tempp.isEmpty())
         {
             qry+="AND ("+tempp+" ) ";
         }
+
     }
 
 if (!qry.isEmpty())
@@ -561,6 +477,11 @@ if (!qry.isEmpty())
          msgbx.setText("<font size = '8'>Совпадений не найдено</font>");
          msgbx.setStandardButtons(QMessageBox::Cancel);
          msgbx.setButtonText(QMessageBox::Cancel,"Закрыть");
+         int ret = msgbx.exec();
+         switch (ret) {
+         case QMessageBox::Cancel:
+             break;
+                 }
     }
     else {
         msgbx.setText("<font size = '8'> Найдено " + search_result + " совпадений </font>");

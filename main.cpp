@@ -1,8 +1,8 @@
-#include "mainwindow.h"
+#include "mainwindow_Form.h"
 
 #include <QTextCodec>
 #include <QApplication>
-#include   <analysis.h>
+#include   <analysis_Form.h>
 
 int main(int argc, char *argv[])
 {

@@ -1,6 +1,6 @@
 #include "db_connection.h"
 
-db_connection *db_connection::_instance = 0;
+db_connection *db_connection::_instance = nullptr;
 
 db_connection::db_connection()
 {
@@ -16,7 +16,7 @@ db_connection::~db_connection()
 
 db_connection *db_connection::instance()
 {
-    if( _instance == 0)
+    if( _instance == nullptr)
         _instance = new db_connection();
 
     return _instance;

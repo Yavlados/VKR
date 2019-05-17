@@ -38,6 +38,8 @@ public:
     bool update(bool setState=true);
     bool remove();
 
+    void check() const;
 };
+
 
 #endif // CONTACTS_H

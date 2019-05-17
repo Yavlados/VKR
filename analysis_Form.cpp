@@ -1,8 +1,8 @@
-#include "analysis.h"
+#include "analysis_Form.h"
 #include "ui_analysis.h"
 #include "for_analysis.h"
 #include <QDebug>
-#include "an_result.h"
+#include "an_result_Form.h"
 #include <QValidator>
 #include  "_Crud.h"
 
@@ -383,4 +383,9 @@ void Analysis::uniq_array()
 {
         std::sort(vector.begin(), vector.end());
         vector.erase(std::unique(vector.begin(), vector.end()), vector.end());
+}
+
+void Analysis::on_pushButton_2_clicked()
+{
+    delete  this;
 }

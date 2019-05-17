@@ -1,6 +1,7 @@
 #ifndef ADD_FORM_H
 #define ADD_FORM_H
 #include "MyTableModel.h"
+#include "update_Form.h"
 
 #include <QWidget>
 #include <QIntValidator>
@@ -34,10 +35,6 @@ public:
 
 private slots:
 
-    void radio_button1_checked();
-
-    void radio_button2_checked();
-
     void on_pb_back_to_main_clicked();
 
     void on_pb_remove_line_telephone_clicked();
@@ -61,7 +58,15 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_radioButton_clicked();
+
+    void on_radioButton_2_clicked();
+
+    void on_checkBox_clicked();
+
 signals:
+
+    void open_update_tab(int);
 
     void Add_contact_row(int);
 

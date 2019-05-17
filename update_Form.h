@@ -34,6 +34,9 @@ public:
     explicit Update(QWidget *parent = nullptr);
 
     ~Update();
+public slots:
+
+    void Recieve_data(int);
 
 private:
     Ui::Update *ui;
@@ -45,12 +48,10 @@ signals:
 
 private slots:
 
-
     void clear_ALL();
 
     void set_validators();
 
-    void Recieve_data(int);
     void on_pb_Update_clicked();
     void on_pb_Back_to_Main_clicked();
     void on_tableView_clicked(const QModelIndex &index);
@@ -58,10 +59,10 @@ private slots:
     void on_rb_adres_reg_clicked();
     void on_rb_adres_liv_clicked();
 
-
     void on_pb_del_line_telephone_clicked();
     void on_pb_del_contact_line_clicked();
     void on_pb_add_contact_line_clicked();
+    void on_tableView_2_clicked(const QModelIndex &index);
 };
 
 #endif // UPDATE_H

@@ -5,7 +5,7 @@
 
 #include <QWidget>
 #include <QSqlQueryModel>
-#include "an_result.h"
+#include "an_result_Form.h"
 
 namespace Ui {
 class Search;

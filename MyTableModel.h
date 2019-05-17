@@ -51,10 +51,12 @@ public:
     /// Заполнение модели данными из списка
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-    void reset_model();
+    void reset_OTModel();
+    void reset_ContactModel();
 
     /// Переопределяем заголовки таблицам
-
+    virtual QVariant headerData(int section, Qt::Orientation orientation,
+                                    int role = Qt::DisplayRole) const;
 
     virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
 
@@ -71,6 +73,7 @@ private:
 public slots:
     void addRow_contact(int);
     void delRow_contact(const QModelIndex &index);
+    void delBindedContacts(int);
     void addRow_owner_tel();
     void delRow_owner_tel(const QModelIndex &index);
 

@@ -27,32 +27,32 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    analysis.cpp \
-    update.cpp \
-    search.cpp \
-    add_form.cpp \
     for_analysis.cpp \
-    an_result.cpp \
     db_connection.cpp \
     _Contacts.cpp \
     _Crud.cpp \
     _Owners_tel.cpp \
-    MyTableModel.cpp
+    MyTableModel.cpp \
+    add_Form.cpp \
+    an_result_Form.cpp \
+    analysis_Form.cpp \
+    mainwindow_Form.cpp \
+    search_Form.cpp \
+    update_Form.cpp
 
 HEADERS += \
-        mainwindow.h \
     db_connection.h \
-    analysis.h \
-    update.h \
-    search.h \
-    add_form.h \
     for_analysis.h \
-    an_result.h \
     _Contacts.h \
     _Owners_tel.h \
     _Crud.h \
-    MyTableModel.h
+    MyTableModel.h \
+    add_Form.h \
+    an_result_Form.h \
+    analysis_Form.h \
+    mainwindow_Form.h \
+    search_Form.h \
+    update_Form.h
 
 FORMS += \
         mainwindow.ui \

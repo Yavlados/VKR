@@ -28,7 +28,7 @@ Owners_tel(int t_d);
 Owners_tel(int, int, DbState);
 Owners_tel(int id,QString l,QString n,QString m_n, QString b_d,
                QString r_c, QString r_s, QString r_h, QString r_cor,
-               QString r_f, QString d_a, QString t_n, QString p_f, QString p_t);
+               QString r_f, QString d_a, QString t_n);
 Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
 ~Owners_tel();
     int tel_id;
@@ -46,39 +46,11 @@ Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
      bool remove();
 
 ///////////////////////////////////////////////////
-    QString period_from, period_to;
-    QDate Date_From, Date_To;
+    //Новые методы и экземпляры для ПОИСКА
+     QDate Date_From, Date_To;
 
-    int null_counter;
-
-    int new_zk_id;
-
-    bool stop = false;
-    bool drop = false;
-
-    void append_telephones(QString);
-
-    void return_values() const;
-
-    void add_numbers(int);
-
-    void recieve_contacts(int);
-
-    void recieve_tel_id(QString);
-
-    void del_tel();
-
-    void add_telephones();
-
-    //Новые методы к новой модели
-
-    void get_filter_for_add();
-
-    void get_new_zk_id();
-
-    void del_where_fk_null();
-
-    void check_for_null(); //проверяю на нулл перед выходом из формы
+     bool stop = false;
+     bool drop = false;
 
     void zk_search();
     void zk_search_model(QString);
@@ -86,10 +58,11 @@ Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
 
     void check_tel_num(QString);
 
-
     QSqlQuery querry;
     QSqlQuery temp;
 
+signals:
+    void insert_error();
 };
 
 #endif // OWNERS_TEL_H

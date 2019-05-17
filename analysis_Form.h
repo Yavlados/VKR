@@ -48,6 +48,8 @@ private slots:
 
     void uniq_array();
 
+    void on_pushButton_2_clicked();
+
 signals:
 
     void Send_short_face_analysis_all_db(int);

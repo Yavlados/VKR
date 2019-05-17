@@ -1,8 +1,10 @@
 #include "_Crud.h"
-#include "mainwindow.h"
+#include "mainwindow_Form.h"
 #include "ui_mainwindow.h"
-
 #include "db_connection.h"
+
+#include <QGraphicsLinearLayout>
+#include <QGraphicsGridLayout>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,17 +20,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     showMaximized();
 
-    // reopen();
-//    contacts_model->type = ContactMod;
-//    ot_model->type = OTMod;
-    //ui->tableView_3->setModel(contacts_model);
-
     Crud *cr = new Crud();
     cr->select_all();
     ui->tableView->setModel(cr->model);
     ui->tableView->resizeColumnsToContents();
     delete cr;
-    emit start_radio_button();
 }
 
 MainWindow::~MainWindow()
@@ -42,30 +38,19 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index) //Обрабат
     (void)index;
     ui->action_delete->setEnabled(true);
     ui->action_update->setEnabled(true); //включаю кнопку редактировать
-    QLayout *layout = ui->vl_cancel_button->layout();
-    while (layout->count() != 0)
-        {
-            QLayoutItem *item = layout->takeAt(0);
-            delete item->widget();
-            if (p_b_counter > 0)
-            {
-                p_b_counter--;
-            }
-        }
 
     QModelIndexList *indexes = new QModelIndexList;
     *indexes = ui->tableView->selectionModel()->selection().indexes();
     Crud *cr = new Crud(indexes->value(0).data().toInt());
-    temp_id = indexes->value(0).data().toInt();
+
     if(Owners_tel::selectZkTel(otList,cr->zk_id))
         ot_model->setOTList(otList);
+
     ui->tableView_2->setModel(ot_model);
-    contacts_model->reset_model();
+    contacts_model->reset_ContactModel();
     delete indexes;
     delete cr;
-
 }
-
 
 void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Номерами владельцев
 {
@@ -77,13 +62,10 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
     ui->tableView_3->setModel(contacts_model);
 }
 
-void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
-{
-    (void)index;
-}
 
 void MainWindow::ShowThisTab() //Открытие main окна и рефреш таблиц
 {
+    set_validators();
     ui->tabWidget->removeTab(1);
     ui->tabWidget->removeTab(2);
     ui->tabWidget->setCurrentIndex(0);
@@ -91,8 +73,8 @@ void MainWindow::ShowThisTab() //Открытие main окна и рефреш 
     Crud *cr = new Crud();
     cr->select_all();
     ui->tableView->setModel(cr->model);
-    ot_model->reset_model();
-    contacts_model->reset_model();
+    ot_model->reset_OTModel();
+    contacts_model->reset_ContactModel();
 
     QLayout *layout = ui->vl_cancel_button->layout();
     while (layout->count() != 0)
@@ -130,8 +112,11 @@ void MainWindow::on_action_delete_triggered()
         emit Refresh_tab();
         break;
     case QMessageBox::Ok:
-        Crud *cr = new Crud(temp_id);
-        cr->del_zk();
+        Crud *cr = new Crud;
+        QModelIndexList *indexes = new QModelIndexList;
+        *indexes = ui->tableView->selectionModel()->selection().indexes();
+        cr->del_zk(indexes->value(0).data().toInt());
+        delete indexes;
         delete cr;
         emit Refresh_tab();
         break;
@@ -140,7 +125,10 @@ void MainWindow::on_action_delete_triggered()
 
 void MainWindow::on_action_update_triggered()
 {
-   MainWindow::open_upd_tab(temp_id);
+     QModelIndexList *indexes = new QModelIndexList;
+     *indexes = ui->tableView->selectionModel()->selection().indexes();
+     open_upd_tab(indexes->value(0).data().toInt());
+      delete indexes;
 }
 
 void MainWindow::on_action_analysis_triggered()
@@ -149,13 +137,11 @@ void MainWindow::on_action_analysis_triggered()
        an->show();
        connect(this, SIGNAL(Set_validators_an()), an, SLOT(set_validators()));
        emit Set_validators_an();
-
 }
 
 void MainWindow::on_action_search_triggered()
 {
       sr->show();
-
 }
 
 void MainWindow::Search_result(QSqlQueryModel *model)
@@ -173,7 +159,6 @@ void MainWindow::on_pushButton_clicked()
     if (ui->lineEdit->text() == QString(""))
     {
         emit Refresh_tab();
-
     }
     else {
      Crud *cr = new Crud(ui->lineEdit->text().toInt());
@@ -183,7 +168,6 @@ void MainWindow::on_pushButton_clicked()
         MainWindow::add_cancel_button();
 
      delete cr;
-
     }
 }
 
@@ -203,26 +187,46 @@ void MainWindow::add_cancel_button()
 
 void MainWindow::open_upd_tab(int temp_id)
 {
+    QModelIndexList *indexes = new QModelIndexList;
+    *indexes = ui->tableView->selectionModel()->selection().indexes();
+    temp_id =  indexes->value(0).data().toInt();
     emit Send_data(temp_id);
      ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,upd,"Редактировать");
      ui->tabWidget->autoFillBackground();
      ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+     delete indexes;
 }
 
 void MainWindow::set_connections()
 {
-    connect(this, SIGNAL(start_radio_button()), add, SLOT(radio_button1_checked()));
-    //connect(this, SIGNAL(start_radio_button()), upd, SLOT(radio_button1_checked()));
 
     connect (add, SIGNAL (toMainForm()), this, SLOT(ShowThisTab()));
-    connect(this,SIGNAL(Send_data(int)), upd, SLOT(Recieve_data(int)));
+    connect (add, SIGNAL (open_update_tab(int)), this, SLOT(open_upd_tab(int)));
+
     connect(upd, SIGNAL(Ready_for_update()), this, SLOT(ShowThisTab()));
+
+    connect(this,SIGNAL(Send_data(int)), upd, SLOT(Recieve_data(int)));
     connect (this, SIGNAL(Refresh_tab()), this, SLOT(ShowThisTab()));
     connect(this, SIGNAL(Fill_table_add()),add, SLOT(Fill_table_in_add()));
 
     connect(sr, SIGNAL(Send_Model(QSqlQueryModel*)),this, SLOT(Search_result(QSqlQueryModel*)));
     connect(sr,SIGNAL(Cancel_search()),this, SLOT(ShowThisTab()));
+
+    /// Заодно и валидатор для поля поиска
+    set_validators();
 }
+
+void MainWindow::set_validators()
+{
+    int min, max;
+    Crud *cr = new Crud();
+    cr->get_min_zk();   min = cr->zk_id;
+    cr->get_max_zk();   max = cr->zk_id;
+    ui->lineEdit->setValidator(new QIntValidator(min,max));
+    delete cr;
+
+}
+
 
 void MainWindow::reopen()
 {
@@ -231,4 +235,14 @@ void MainWindow::reopen()
 
     if(Owners_tel::selectAll(otList))
         ot_model->setOTList(otList);
+}
+
+void MainWindow::on_tabWidget_tabCloseRequested(int index)
+{
+    ui->tabWidget->removeTab(index);
+}
+
+void MainWindow::on_action_official_tel_triggered()
+{
+
 }

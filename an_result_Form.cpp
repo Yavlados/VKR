@@ -1,4 +1,4 @@
-#include "an_result.h"
+#include "an_result_Form.h"
 #include "ui_an_result.h"
 #include <QFileDialog>
 

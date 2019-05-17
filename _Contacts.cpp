@@ -22,7 +22,7 @@ Contacts::~Contacts()
 
 bool Contacts::selectAll(QList<Contacts*> *list)
 {
-    if(list==0)
+    if(list==nullptr)
         return false;
 
     qDeleteAll(*list);
@@ -70,7 +70,10 @@ bool Contacts::saveAll(QList<Contacts*> *list)
         switch(list->at(i)->cont_state)
         {
         case IsNewing:
-            isOk = list->at(i)->insert(false);
+            if (!list->at(i)->contact_tel_num.isEmpty())
+                isOk = list->at(i)->insert(false);
+            else
+                isOk = list->at(i)->remove();
             break;
         case IsChanged:
             isOk = list->at(i)->update(false);
@@ -231,4 +234,9 @@ bool Contacts::remove()
     qDebug() << "delete" + QString::number(contact_id);
     state = IsRemoved;
     return true;
+}
+
+void Contacts::check() const
+{
+    qDebug() << QString::number(contact_id)+" " +contact_tel_num+ " " +mark +" " +QString::number(parent_OT_id);
 }

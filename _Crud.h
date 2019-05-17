@@ -15,8 +15,7 @@
 enum DbState { IsReaded = 1,        ///< считан из БД
                IsNewing = 0,        ///< новый, еще не записан в БД
                IsRemoved = -1 ,     ///< удален в ПО, еще не удален в БД
-               IsChanged = 2,       ///< считан из БД и изменен в ПО
-               IsAdded = 3  };      ///< добавлен в БД, но готов к удалению
+               IsChanged = 2};       ///< считан из БД и изменен в ПО
 
 class Crud{
 
@@ -47,29 +46,34 @@ public:
 
     // ТАБЛИЦА 1
     int zk_id;
+    int new_zk_id;
     QString lastname;
     QString name;
     QString mid_name;
     QString birth_date;
     QString check_for;
     QString dop_info;
-    //Адрес регистрации
 
     QString adres_reg;
     QString adres_liv;
 
+    //Адрес регистрации
     QString reg_city;
     QString reg_street;
     QString reg_home;
     QString reg_corp;
     QString reg_flat;
+
     //Адрес проживания
+    QString liv_city;
+    QString liv_street;
+    QString liv_home;
+    QString liv_corp;
+    QString liv_flat;
 
     //Дата и время сейчас
     QString date_add = QDate::currentDate().toString(Qt::ISODate);
     QString time_add = QTime::currentTime().toString();
-
-
 
     void select_all();
     void check() const;
@@ -77,13 +81,14 @@ public:
     void refresh_table();
     void recieve_tel_list();
     void call_update_list();
-    void update_zk();
-    void add_zk();
-    void del_zk();
+    bool update_zk();
+    bool add_zk();
+    void del_zk(int);
     void recieve_new_zk_id();
     void id_zk_search();
     void get_max_zk();
     void get_min_zk();
+    int get_id_from_tel(QString);
 
     QSqlQueryModel *model = new QSqlQueryModel();
     QSqlQueryModel *model_2 = new QSqlQueryModel();

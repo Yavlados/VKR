@@ -1,10 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "add_form.h"
-#include "analysis.h"
-#include "update.h"
-#include "search.h"
+#include "add_Form.h"
+#include "analysis_Form.h"
+#include "update_Form.h"
+#include "search_Form.h"
 #include "db_connection.h"
 #include "MyTableModel.h"
 
@@ -40,7 +40,7 @@ public:
     QList<Owners_tel*> *otList = new QList<Owners_tel*>;
 
     int p_b_counter = 0;
-    int temp_id = 0;
+
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -55,8 +55,6 @@ private slots:
     void on_tableView_clicked(const QModelIndex &index);
 
     void on_tableView_2_clicked(const QModelIndex &index);
-
-    void on_tableView_3_clicked(const QModelIndex &index);
 
     void ShowThisTab();
 
@@ -79,17 +77,21 @@ private slots:
     void open_upd_tab(int);
 
     void set_connections();
+
+    void set_validators();
+
+    void on_tabWidget_tabCloseRequested(int index);
+
+    void on_action_official_tel_triggered();
+
 signals:
     void Send_data(int);
 
     void Refresh_tab();
 
-    void start_radio_button();
-
     void Fill_table_add();
 
     void Set_validators_an();
-
 };
 
 
