@@ -83,9 +83,8 @@ void Update::on_pb_Update_clicked()
                         adres_reg, adres_liv,
                         ui->le_reg_city->text(),ui->le_reg_street->text(),ui->le_reg_house->text(),
                         ui->le_reg_corp ->text(),ui->le_reg_flat->text());
-    cr->birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
-    if (cr->birth_date == "..")
-        cr->birth_date.clear();
+    if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
+        cr->birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
 
     cr->liv_city = ui->le_liv_city->text();
     cr->liv_street = ui->le_liv_street->text();

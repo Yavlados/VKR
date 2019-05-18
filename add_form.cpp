@@ -107,13 +107,16 @@ void Add_form::on_pb_add_zk_final_clicked()
     case QMessageBox::Cancel:
         break;
     case QMessageBox::Ok:
-        QString birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
+        if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
+            QString birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
 
         Crud *cr = new Crud(ui->le_last_name->text(),ui->le_name->text(),
-                            ui->le_mid_name->text(), birth_date, ui->le_check_for->text(),ui->le_dop_info->toPlainText(),
+                            ui->le_mid_name->text(), ui->le_check_for->text(),ui->le_dop_info->toPlainText(),
                             adres_reg, adres_liv,
                             ui->le_reg_city->text(),ui->le_reg_street->text(),ui->le_reg_house->text(),
                             ui->le_reg_corp ->text(),ui->le_reg_flat->text());
+        if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
+            cr->birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
 
         if (ui->checkBox->checkState() == Qt::Checked)
         {

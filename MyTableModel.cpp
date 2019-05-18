@@ -19,32 +19,42 @@ MyTableModel::MyTableModel(QList<Contacts*> *contactList, QObject *parent):
 MyTableModel::MyTableModel(QList<Owners_tel*> *OTList, QObject *parent)
 {
     state = Show;
-  setOTList(OTList);
+    setOTList(OTList);
+}
+
+MyTableModel::MyTableModel(QList<Official_tel *> *ofTList, QObject *parent)
+{
+    state = Show;
+    setofTList(ofTList);
 }
 
 /// Определение методов
 int MyTableModel::columnCount(const QModelIndex & parent) const
 {
-    if( clist==nullptr && otlist==nullptr)
+    if( clist==nullptr && otlist==nullptr && oflist == nullptr)
         return 0;
     else {
-        if(type == OTMod)              /// Если лсит контактов пустой
-          return 1;  /// То размер - размер списка телефонов
-        if(type == ContactMod)             /// Если лист телефонов пустой
+        if(type == OTMod)             /// Owners_tel
+          return 1;
+        if(type == ContactMod)        /// Contacts
+          return 2;
+        if(type == OffTelMod)         /// Official_tel
           return 2;    /// То размер - размер списка контактов
     }
 }
 
 int MyTableModel::rowCount(const QModelIndex &parent) const
 {
-    if ( otlist == nullptr && clist==nullptr)
+    if ( otlist == nullptr && clist==nullptr && oflist == nullptr)
         return 0;
     else
     {
-        if(type == OTMod)              /// Если лсит контактов пустой
-          return actotlist.size();  /// То размер - размер списка телефонов
-        if(type == ContactMod)             /// Если лист телефонов пустой
-          return actlist.size();    /// То размер - размер списка контактов
+        if(type == OTMod)              /// Owners_tel
+          return actotlist.size();
+        if(type == ContactMod)         /// Contacts
+          return actlist.size();
+        if(type == OffTelMod)
+            return actoflist.size();    /// Official_tel
     }
 }
 
@@ -104,10 +114,26 @@ void MyTableModel::setOTList(QList<Owners_tel *> *OTList)
     endResetModel();
 }
 
+void MyTableModel::setofTList(QList<Official_tel *> *OfList)
+{
+    type = OffTelMod;
+    beginResetModel();
+
+    oflist = OfList;
+    actoflist.clear();
+
+    if(oflist!=nullptr)
+    {
+        for(int i=0 ;i < oflist->size() ;i++)
+            if( oflist->at(i)->state!=IsRemoved )
+                actoflist.append(oflist->at(i));
+    }
+    endResetModel();
+}
 
 QVariant MyTableModel::data(const QModelIndex &index, int role) const
 {
-    if( !index.isValid() || (clist==nullptr && otlist==nullptr))
+    if( !index.isValid() || (clist==nullptr && otlist==nullptr && oflist == nullptr))
         return QVariant();
 
     int row = index.row();      ///целочисленные указатели на строку
@@ -147,6 +173,26 @@ QVariant MyTableModel::data(const QModelIndex &index, int role) const
             }
             return QVariant();
         }
+        else
+        {
+            if (type == OffTelMod)
+            {
+                if( row>actoflist.size() || row<0 )
+                    return QVariant();
+
+                if (role == Qt::DisplayRole)
+                {
+                    switch(col)
+                    {
+                    case 0:            /// 1 колонка - Номер телефона
+                        return actoflist.at(row)->tel_num;
+                    case 1:
+                        return actoflist.at(row)->service_name;
+                    }
+                }
+                return QVariant();
+            }
+        }
     }
 }
 
@@ -164,28 +210,65 @@ void MyTableModel::reset_ContactModel()
     endResetModel();
 }
 
+void MyTableModel::reset_OffTModel()
+{
+    beginResetModel();
+    actoflist.clear();
+    endResetModel();
+}
+
 QVariant MyTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole)
              return QVariant();
-
-    if (orientation == Qt::Horizontal)
-        switch (section)
-      {
-         case 0:
-            return QString("Номер телефона");
-        case 1:
-            return QString("Пометка");
-      }
-    else {
-        return QString("%1").arg(section+1);
+    int temp = type;
+    switch (temp)
+    {
+    case ContactMod:  ///Контакты
+        if (orientation == Qt::Horizontal)
+            switch (section)
+          {
+            case 0:
+                return QString("Номер телефона");
+            case 1:
+                return QString("Пометка");
+          }
+        else {
+            return QString("%1").arg(section+1);
+        }
+        break;
+    case OTMod:     ///ТЕЛЕФОНЫ
+        if (orientation == Qt::Horizontal)
+            switch (section)
+          {
+             case 0:
+                return QString("Номер телефона");
+//            case 1:
+//                return QString("Пометка");
+          }
+        else {
+            return QString("%1").arg(section+1);
+        }
+        break;
+    case OffTelMod:  /// СЛУЖЕБНЫЕ ТЕЛЕФОНЫ
+        if (orientation == Qt::Horizontal)
+            switch (section)
+          {
+             case 0:
+                return QString("Номер телефона");
+            case 1:
+                return QString("Наименование службы");
+          }
+        else {
+            return QString("%1").arg(section+1);
+        }
+        break;
     }
-
 }
 
 Qt::ItemFlags MyTableModel::flags ( const QModelIndex & index ) const
 {
-    if( !index.isValid() || (clist==nullptr && otlist==nullptr) )
+    if( !index.isValid() || (clist==nullptr && otlist==nullptr && oflist == nullptr) )
         return Qt::NoItemFlags;
 
     if( state == Show )

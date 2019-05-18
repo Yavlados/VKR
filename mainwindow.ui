@@ -303,6 +303,12 @@
      <pointsize>12</pointsize>
     </font>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>40</width>
+     <height>35</height>
+    </size>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -319,6 +325,10 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_add">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/png/002-add-button-inside-black-circle.png</normaloff>:/new/prefix1/png/002-add-button-inside-black-circle.png</iconset>
+   </property>
    <property name="text">
     <string>Добавить пользователя</string>
    </property>
@@ -329,6 +339,10 @@
   <action name="action_delete">
    <property name="enabled">
     <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/png/004-rubbish-bin.png</normaloff>:/new/prefix1/png/004-rubbish-bin.png</iconset>
    </property>
    <property name="text">
     <string>Удалить</string>
@@ -341,6 +355,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/png/005-screwdriver-and-wrench-crossed.png</normaloff>:/new/prefix1/png/005-screwdriver-and-wrench-crossed.png</iconset>
+   </property>
    <property name="text">
     <string>Редактировать</string>
    </property>
@@ -349,22 +367,42 @@
    </property>
   </action>
   <action name="action_analysis">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/png/003-phone-symbol-of-an-auricular-inside-a-circle.png</normaloff>:/new/prefix1/png/003-phone-symbol-of-an-auricular-inside-a-circle.png</iconset>
+   </property>
    <property name="text">
     <string>Анализ</string>
    </property>
+   <property name="toolTip">
+    <string>Открыть окно анализа</string>
+   </property>
   </action>
   <action name="action_search">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/png/001-magnifier.png</normaloff>:/new/prefix1/png/001-magnifier.png</iconset>
+   </property>
    <property name="text">
     <string>Расширенный поиск</string>
    </property>
   </action>
   <action name="action_official_tel">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/new/prefix1/png/006-info.png</normaloff>:/new/prefix1/png/006-info.png</iconset>
+   </property>
    <property name="text">
     <string>Служебные телефоны</string>
+   </property>
+   <property name="toolTip">
+    <string>Просмотреть служебные телефоны</string>
    </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

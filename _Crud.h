@@ -31,7 +31,7 @@ public:
          QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f);
 
     ///Временный конструктор добавления
-    Crud(QString l,QString n,QString m, QString b_d, QString c_f, QString d_i,
+    Crud(QString l,QString n,QString m, QString c_f, QString d_i,
          QString a_r, QString a_l,
          QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f);
 

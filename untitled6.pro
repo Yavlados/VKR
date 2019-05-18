@@ -38,7 +38,9 @@ SOURCES += \
     analysis_Form.cpp \
     mainwindow_Form.cpp \
     search_Form.cpp \
-    update_Form.cpp
+    update_Form.cpp \
+    officialtelephones_Form.cpp \
+    _Official_tel.cpp
 
 HEADERS += \
     db_connection.h \
@@ -52,7 +54,9 @@ HEADERS += \
     analysis_Form.h \
     mainwindow_Form.h \
     search_Form.h \
-    update_Form.h
+    update_Form.h \
+    officialtelephones_Form.h \
+    _Official_tel.h
 
 FORMS += \
         mainwindow.ui \
@@ -60,9 +64,13 @@ FORMS += \
     update.ui \
     search.ui \
     add_form.ui \
-    an_result.ui
+    an_result.ui \
+    officialtelephones.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resource.qrc

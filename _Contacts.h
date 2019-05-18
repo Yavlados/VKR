@@ -1,14 +1,14 @@
 #ifndef CONTACTS_H
 #define CONTACTS_H
 
+#include "_Owners_tel.h"
+
 #include <QList>
 #include <QString>
 #include <QDebug>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 #include <QSqlError>
-#include <QVector>
-#include "_Owners_tel.h"
 
 class Contacts: public Owners_tel
 {

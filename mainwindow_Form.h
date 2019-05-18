@@ -1,13 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "add_Form.h"
+#include "add_form.h"
 #include "analysis_Form.h"
 #include "update_Form.h"
 #include "search_Form.h"
 #include "db_connection.h"
 #include "MyTableModel.h"
-
+#include "officialtelephones_Form.h"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -30,6 +30,8 @@ public:
      Update *upd = new Update();
 
      Search *sr = new Search;
+
+    OfficialTelephones *of = new OfficialTelephones();
 
     bool search;
 
@@ -92,6 +94,8 @@ signals:
     void Fill_table_add();
 
     void Set_validators_an();
+
+    void Fill_table_of();
 };
 
 

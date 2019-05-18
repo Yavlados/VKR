@@ -153,7 +153,6 @@ void MainWindow::Search_result(QSqlQueryModel *model)
     }
 }
 
-
 void MainWindow::on_pushButton_clicked()
 {
     if (ui->lineEdit->text() == QString(""))
@@ -192,7 +191,6 @@ void MainWindow::open_upd_tab(int temp_id)
     temp_id =  indexes->value(0).data().toInt();
     emit Send_data(temp_id);
      ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,upd,"Редактировать");
-     ui->tabWidget->autoFillBackground();
      ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
      delete indexes;
 }
@@ -211,6 +209,8 @@ void MainWindow::set_connections()
 
     connect(sr, SIGNAL(Send_Model(QSqlQueryModel*)),this, SLOT(Search_result(QSqlQueryModel*)));
     connect(sr,SIGNAL(Cancel_search()),this, SLOT(ShowThisTab()));
+
+    connect(this,SIGNAL(Fill_table_of()), of, SLOT(Fill_table()));
 
     /// Заодно и валидатор для поля поиска
     set_validators();
@@ -244,5 +244,7 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
 
 void MainWindow::on_action_official_tel_triggered()
 {
-
+    ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,of,"Cлужебные телефоны");
+    ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+    emit Fill_table_of();
 }

@@ -27,8 +27,8 @@ Crud::Crud(int id, QString l, QString n, QString m, QString c_f, QString d_i, QS
 { // Временный конструктор редактирования
 }
 
-Crud::Crud(QString l, QString n, QString m, QString b_d, QString c_f, QString d_i, QString a_r, QString a_l, QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f):
-    lastname(l), name(n), mid_name(m), birth_date(b_d), check_for(c_f), dop_info(d_i),
+Crud::Crud(QString l, QString n, QString m, QString c_f, QString d_i, QString a_r, QString a_l, QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f):
+    lastname(l), name(n), mid_name(m), check_for(c_f), dop_info(d_i),
     adres_reg(a_r), adres_liv(a_l),
     reg_city(r_c),reg_street(r_s),reg_home(r_h),reg_corp(r_cor),reg_flat(r_f)
 {   //Временный конструктор добавления
