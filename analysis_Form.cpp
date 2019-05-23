@@ -266,21 +266,14 @@ void Analysis::on_pushButton_clicked()
     //////////////////     9     //////////////////
  if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
  {
- QDate dateFROM, dateTO;
- dateFROM.setDate(ui->le_year_from->text().toInt(),ui->le_month_from->text().toInt(),ui->le_day_from->text().toInt());
- dateTO.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),ui->le_day_to->text().toInt());
-
- qDebug() << "FROM "+dateFROM.toString(Qt::ISODate);
- qDebug() << "TO "+dateTO.toString(Qt::ISODate);
- bool check = dateTO < dateFROM;
-    if(check == false)
+    if(get_date_from() < get_date_to())
     {
         An_result *ar = new An_result();
         ar->show();
 
         connect(this, SIGNAL(Send_short_face_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_short_face_analysis_all_db(QDate, QDate, int)));
 
-        emit Send_short_face_analysis_all_db(dateFROM, dateTO, ui->le_an_zk->text().toInt());
+        emit Send_short_face_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
 
     }
     else {
@@ -291,21 +284,14 @@ void Analysis::on_pushButton_clicked()
     //////////////////     10     //////////////////
 if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
 {
-QDate dateFROM, dateTO;
-dateFROM.setDate(ui->le_year_from->text().toInt(),ui->le_month_from->text().toInt(),ui->le_day_from->text().toInt());
-dateTO.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),ui->le_day_to->text().toInt());
-
-qDebug() << "FROM "+dateFROM.toString(Qt::ISODate);
-qDebug() << "TO "+dateTO.toString(Qt::ISODate);
-bool check = dateTO < dateFROM;
-   if(check == false)
-   {
+    if(get_date_from() < get_date_to())
+    {
        An_result *ar = new An_result();
        ar->show();
 
        connect(this, SIGNAL(Send_short_tel_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_short_tel_analysis_all_db(QDate, QDate, int)));
 
-       emit Send_short_tel_analysis_all_db(dateFROM, dateTO, ui->le_an_zk->text().toInt());
+       emit Send_short_tel_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
    }
    else {
        qDebug() << "DATE TO < DATE FOR";
@@ -315,21 +301,14 @@ bool check = dateTO < dateFROM;
     //////////////////     11     //////////////////
 if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
 {
-    QDate dateFROM, dateTO;
-    dateFROM.setDate(ui->le_year_from->text().toInt(),ui->le_month_from->text().toInt(),ui->le_day_from->text().toInt());
-    dateTO.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),ui->le_day_to->text().toInt());
-
-    qDebug() << "FROM "+dateFROM.toString(Qt::ISODate);
-    qDebug() << "TO "+dateTO.toString(Qt::ISODate);
-    bool check = dateTO < dateFROM;
-    if(check == false)
+  if(get_date_from() < get_date_to())
     {
        An_result *ar = new An_result();
        ar->show();
 
        connect(this, SIGNAL(Send_long_face_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_long_face_analysis_all_db(QDate, QDate, int)));
 
-       emit Send_long_face_analysis_all_db(dateFROM, dateTO, ui->le_an_zk->text().toInt());
+       emit Send_long_face_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
     }
     else {
        qDebug() << "DATE TO < DATE FOR";
@@ -338,22 +317,15 @@ if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChe
 
     //////////////////     12      //////////////////
 if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
-    {
-        QDate dateFROM, dateTO;
-        dateFROM.setDate(ui->le_year_from->text().toInt(),ui->le_month_from->text().toInt(),ui->le_day_from->text().toInt());
-        dateTO.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),ui->le_day_to->text().toInt());
-
-        qDebug() << "FROM "+dateFROM.toString(Qt::ISODate);
-        qDebug() << "TO "+dateTO.toString(Qt::ISODate);
-        bool check = dateTO < dateFROM;
-        if(check == false)
-            {
+{
+    if(get_date_from() < get_date_to())
+      {
                An_result *ar = new An_result();
                ar->show();
 
                connect(this, SIGNAL(Send_long_tel_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_long_tel_analysis_all_db(QDate, QDate, int)));
 
-               emit Send_long_tel_analysis_all_db(dateFROM, dateTO, ui->le_an_zk->text().toInt());
+               emit Send_long_tel_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
             }
             else {
                qDebug() << "DATE TO < DATE FOR";
@@ -388,4 +360,61 @@ void Analysis::uniq_array()
 void Analysis::on_pushButton_2_clicked()
 {
     delete  this;
+}
+
+
+QDate Analysis::get_date_from()
+{    ///
+    ///Сначала собираю DateFrom
+    ///
+///Если указан день, месяц, год
+if (!ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
+{
+ Date_From.setDate(ui->le_year_from->text().toInt(),ui->le_month_from->text().toInt(),ui->le_day_from->text().toInt());
+ return Date_From;
+}
+
+/// Если не указан день, но есть месяц и год
+if (ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
+{///За день тогда берем первое число
+Date_From.setDate(ui->le_year_from->text().toInt(),ui->le_month_from->text().toInt(),1);
+ return Date_From;
+}
+
+/// Если только год
+if (ui->le_day_from->text().isEmpty() && ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
+{/// Беру начало года (1 января)
+Date_From.setDate(ui->le_year_from->text().toInt(),1,1);
+ return Date_From;
+}
+}
+
+QDate Analysis::get_date_to()
+{
+    ///
+ ///Теперь собираю DateTo
+ ///
+///Если указан день, месяц, год
+if (!ui->le_day_to->text().isEmpty() && !ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
+{
+Date_To.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),ui->le_day_to->text().toInt());
+ return Date_To;
+}
+
+/// Если не указан день, но есть месяц и год
+if (ui->le_day_to->text().isEmpty() && !ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
+{
+int day; /// локальная переменная для определения кол-ва дней в месяце
+Date_To.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),1);
+day = Date_To.daysInMonth();
+Date_To.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),day);
+ return Date_To;
+}
+
+/// Если только год
+if (ui->le_day_to->text().isEmpty() && ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
+{/// Беру конец года (31 декабря)
+Date_To.setDate(ui->le_year_to->text().toInt(),12,31);
+ return Date_To;
+}
 }

@@ -1,6 +1,7 @@
 #ifndef UPDATE_H
 #define UPDATE_H
-#include "MyTableModel.h"
+#include "_MTM_Contacts.h"
+#include "_MTM_OwTel.h"
 
 #include <QWidget>
 #include <QDebug>
@@ -19,14 +20,13 @@ class Update : public QWidget
 
 public:
     int zk_id;
-    QString adres_reg;
-    QString adres_liv;
+
     QString tel_num;
 
     QMessageBox msgbx;
 
-    MyTableModel *contacts_model = new MyTableModel;
-    MyTableModel *ot_model = new MyTableModel;
+    MTM_Contacts *contacts_model = new MTM_Contacts;
+    MTM_OwTel *ot_model = new MTM_OwTel;
 
     QList<Contacts*> *contactList = new QList<Contacts*>;
     QList<Owners_tel*> *otList = new QList<Owners_tel*>;

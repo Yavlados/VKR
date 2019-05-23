@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2019-04-19T13:11:32
+# Project created by QtCreator 2019-05-20T18:04:24
 #
 #-------------------------------------------------
 
@@ -9,7 +9,7 @@ QT       += core gui \
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = untitled3
+TARGET = untitled7
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -32,7 +32,6 @@ SOURCES += \
     _Contacts.cpp \
     _Crud.cpp \
     _Owners_tel.cpp \
-    MyTableModel.cpp \
     add_Form.cpp \
     an_result_Form.cpp \
     analysis_Form.cpp \
@@ -40,7 +39,11 @@ SOURCES += \
     search_Form.cpp \
     update_Form.cpp \
     officialtelephones_Form.cpp \
-    _Official_tel.cpp
+    _MTM_Contacts.cpp \
+    _MTM_Crud.cpp \
+    _MTM_OwTel.cpp \
+    master_export_Form.cpp \
+    for_export.cpp
 
 HEADERS += \
     db_connection.h \
@@ -48,7 +51,6 @@ HEADERS += \
     _Contacts.h \
     _Owners_tel.h \
     _Crud.h \
-    MyTableModel.h \
     add_Form.h \
     an_result_Form.h \
     analysis_Form.h \
@@ -56,7 +58,11 @@ HEADERS += \
     search_Form.h \
     update_Form.h \
     officialtelephones_Form.h \
-    _Official_tel.h
+    _MTM_Contacts.h \
+    _MTM_Crud.h \
+    _MTM_OwTel.h \
+    master_export_Form.h \
+    for_export.h
 
 FORMS += \
         mainwindow.ui \
@@ -65,7 +71,8 @@ FORMS += \
     search.ui \
     add_form.ui \
     an_result.ui \
-    officialtelephones.ui
+    officialtelephones.ui \
+    master_export_form.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

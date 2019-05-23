@@ -1,6 +1,8 @@
 #ifndef ADD_FORM_H
 #define ADD_FORM_H
-#include "MyTableModel.h"
+#include "_MTM_Contacts.h"
+#include "_MTM_OwTel.h"
+
 #include "update_Form.h"
 
 #include <QWidget>
@@ -20,12 +22,11 @@ class Add_form : public QWidget
     Q_OBJECT
 
 public:
-    QString adres_reg;
-    QString adres_liv;
+
     QMessageBox msgbx;
 
-    MyTableModel *contacts_model = new MyTableModel;
-    MyTableModel *ot_model = new MyTableModel;
+    MTM_Contacts *contacts_model = new MTM_Contacts;
+    MTM_OwTel *ot_model = new MTM_OwTel;
 
     QList<Contacts*> *contactList = new QList<Contacts*>;
     QList<Owners_tel*> *otList = new QList<Owners_tel*>;

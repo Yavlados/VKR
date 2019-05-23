@@ -23,9 +23,10 @@ Add_form::Add_form(QWidget *parent) :
 ///////////////////////////////////////////////
 void Add_form::on_pb_back_to_main_clicked()
 {
-    msgbx.setText("Подтверждение");
-    msgbx.setInformativeText("Вы действительно хотите отменить добавление Записной книги?");
+    msgbx.setText("<font size = '5'> Подтверждение<br>Вы действительно хотите отменить добавление записной книги?</font>");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgbx.setButtonText(QMessageBox::Ok,"Да");
+    msgbx.setButtonText(QMessageBox::Cancel,"Нет");
     int ret = msgbx.exec();
 
     switch (ret) {
@@ -40,7 +41,7 @@ void Add_form::on_pb_back_to_main_clicked()
 void Add_form::on_pb_remove_line_telephone_clicked()
 {
     QModelIndex ind = ui->tableView->currentIndex();
-    if( ind.isValid())
+    if( ind.isValid() && otList->count()>1)
     {
         contacts_model->delBindedContacts(otList->at(ind.row())->tel_id);
         ot_model->delRow_owner_tel(ind);
@@ -54,8 +55,10 @@ void Add_form::on_tableView_clicked(const QModelIndex &index)
 
     contacts_model->setContactList(contactList, otList->at(index.row())->tel_id);
 
-    contacts_model->state = Edit;
+    contacts_model->state = Edit_cont;
     ui->tableView_2->setModel(contacts_model);
+    ui->tableView_2->setColumnWidth(0,250);
+    ui->tableView_2->setColumnWidth(1,250);
         qDebug() << index;
 }
 
@@ -91,32 +94,71 @@ void Add_form::Fill_table_in_add()
     cr->get_max_zk();
     if(Owners_tel::selectZkTelForAdd(otList, cr->zk_id+1) && Contacts::selectAll(contactList))
            ot_model->setOTList(otList);
-       ot_model->state = Edit; ///меняю флаги для изменения
+       ot_model->state = Edit_Ot; ///меняю флаги для изменения
        ui->tableView->setModel(ot_model);
+       ui->tableView->setColumnWidth(0,250);
+
 }
 
 
 void Add_form::on_pb_add_zk_final_clicked()
 {
-    msgbx.setText("Подтверждение");
-    msgbx.setInformativeText("Вы готовы завершить добавление записной книги?");
+    /// СНАЧАЛА ПРОВЕРЯЕМ ВВЕДЕННЫЕ НОМЕРА
+
+
+    msgbx.setText("<font size = '5'><h1> Подтверждение </h1> <br>Вы готовы завершить добавление записной книги?</font>");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgbx.setButtonText(QMessageBox::Ok,"Подтвердить");
+    msgbx.setButtonText(QMessageBox::Cancel,"Отмена");
     int ret = msgbx.exec();
 
     switch (ret) {
     case QMessageBox::Cancel:
-        break;
+        return;
     case QMessageBox::Ok:
         if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
             QString birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
 
-        Crud *cr = new Crud(ui->le_last_name->text(),ui->le_name->text(),
-                            ui->le_mid_name->text(), ui->le_check_for->text(),ui->le_dop_info->toPlainText(),
-                            adres_reg, adres_liv,
-                            ui->le_reg_city->text(),ui->le_reg_street->text(),ui->le_reg_house->text(),
-                            ui->le_reg_corp ->text(),ui->le_reg_flat->text());
+        Crud *cr = new Crud();
+        cr->lastname = ui->le_last_name->text();
+        cr->name=ui->le_name->text();
+        cr->mid_name = ui->le_mid_name->text();
+        cr->check_for = ui->le_check_for->text();
+        cr->dop_info = ui->le_dop_info->toPlainText();
+        cr->reg_city = ui->le_reg_city->text();
+        cr->reg_street = ui->le_reg_street->text();
+        cr->reg_home = ui->le_reg_house->text();
+        cr->reg_corp = ui->le_reg_corp ->text();
+        cr->reg_flat = ui->le_reg_flat->text();
         if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
-            cr->birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
+        {
+            QString day,month,year;
+
+            day = ui->le_birth_date_day->text();
+            month = ui->le_birth_date_month->text();
+            year=ui->le_birth_date_year->text();
+
+            if (day.count() == 1)
+                  day.insert(0,"0");
+
+            if (month.count() == 1)
+                month.insert(0,"0");
+
+            if(year.toInt()  <  1900)
+            {
+                msgbx.setText("<font size = '5'> Вы ввели не корректную дату рождения </font>");
+                msgbx.setStandardButtons(QMessageBox::Ok);
+                msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+
+                int ret = msgbx.exec();
+
+                switch (ret) {
+                case QMessageBox::Ok:
+                    return;
+                }
+            }
+            cr->birth_date = day+"."+month+"."+year;
+        }
 
         if (ui->checkBox->checkState() == Qt::Checked)
         {
@@ -135,67 +177,56 @@ void Add_form::on_pb_add_zk_final_clicked()
             cr->liv_flat = ui->le_liv_flat->text();
         }
 
-        qDebug() << cr->reg_city;
-        qDebug() << cr->reg_street;
-        qDebug() << cr->reg_home;
-        qDebug() << cr->reg_corp;
-        qDebug() << cr->reg_flat;
+        cr->check();
+        /// Проверка на уникальность
+        Owners_tel *temp = new Owners_tel();
 
-        qDebug() << cr->liv_city;
-        qDebug() << cr->liv_street;
-        qDebug() << cr->liv_home;
-        qDebug() << cr->liv_corp;
-        qDebug() << cr->liv_flat;
-
-        if( cr->update_zk() )
+        for (int i=0; i < otList->size(); i++)
         {
-            if( Owners_tel::saveAll(otList)) /// Если сохранили телефоны
-            {
-                if( Contacts::saveAll(contactList) ) /// Сохраняем контакты
+            Owners_tel *ow = otList->at(i);
+                if(!temp->compare_with_base(ow->tel_num))
                 {
-                    QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные сохранены в БД!")); ///Хвалимся
-                    //reopen();
-                }
-                else
-                {   ///Иначе жалуемся на неудачное добавление КОНТАКТОВ
-                    QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить запрос: %1").arg(
-                                              db_connection::instance()->lastError));
-                    Clear();
-                    delete cr;
-                }
-            }
-            else
-            {        /// Если не удалось добавить телефоны
-                if(db_connection::instance()->error.number()==23505) //ошибка уникальности поля
-                {
-
-                    msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +db_connection::instance()->error_tel_num+" "
-                                       "обнаружен принадлежим владельцу записной книжки № "+QString::number(cr->get_id_from_tel(db_connection::instance()->error_tel_num))+"</font>");
+                    Crud *cr = new Crud(temp->parentZK_id);
+                    msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +ow->tel_num+" "
+                                       "обнаружен принадлежим владельцу записной книжки № "+QString::number(temp->parentZK_id)+"</font>");
                     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
-                    msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number(cr->zk_id));
+                    msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number(temp->parentZK_id));
                     msgbx.setButtonText(QMessageBox::Open,"Редактировать телефонный номер");
                     msgbx.setButtonText(QMessageBox::Cancel,"Закрыть карточку без сохранения");
-
                     int ret = msgbx.exec();
 
                     switch (ret) {
                     case QMessageBox::Ok:
                         emit open_update_tab(cr->zk_id);
                         delete cr;
-                        break;
+                        return; /// во всех случаях return - мы выходим из функции
 
                     case QMessageBox::Open:
-                        break;
+                        return;
 
                     case QMessageBox::Cancel:
                      Clear();
                      cr->del_zk(cr->new_zk_id);
                      delete cr;
-                        break;
+                        return;
                             }
                 }
-                else ///Или ошибка НЕ в нарушении уникальности
+        }
+        delete temp;
+
+
+        if( cr->add_zk() )
+        {
+            if( Owners_tel::saveAll(otList)) /// Если сохранили телефоны
+            {
+                if( Contacts::saveAll(contactList) ) /// Сохраняем контакты
                 {
+                    QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные сохранены в БД!")); ///Хвалимся
+                    Clear();
+                    delete cr;
+                }
+                else
+                {   ///Иначе жалуемся на неудачное добавление КОНТАКТОВ
                     QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить запрос: %1").arg(
                                               db_connection::instance()->lastError));
                     Clear();
@@ -234,13 +265,12 @@ Add_form::~Add_form()
 
 void Add_form::on_pushButton_clicked()
 {
-    QModelIndex index = ui->tableView->currentIndex();
-    //QModelIndex index2 = ui->tableView_2->currentIndex();
-    QString str = QString::number(otList->at(index.row())->tel_id);
-    QString str2 = QString::number(otList->at(index.row())->parentZK_id);
-    QString str5 = QString::number(otList->at(index.row())->state);
-    qDebug() << str + " "+ otList->at(index.row())->tel_num +" "+ str2 + " " + str5;
-
+//    QModelIndex index = ui->tableView->currentIndex();
+//    //QModelIndex index2 = ui->tableView_2->currentIndex();
+//    QString str = QString::number(otList->at(index.row())->tel_id);
+//    QString str2 = QString::number(otList->at(index.row())->parentZK_id);
+//    QString str5 = QString::number(otList->at(index.row())->state);
+//    qDebug() << str + " "+ otList->at(index.row())->tel_num +" "+ str2 + " " + str5;
 }
 
 void Add_form::on_radioButton_clicked()

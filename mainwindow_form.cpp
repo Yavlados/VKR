@@ -1,10 +1,9 @@
-#include "_Crud.h"
 #include "mainwindow_Form.h"
 #include "ui_mainwindow.h"
 #include "db_connection.h"
 
-#include <QGraphicsLinearLayout>
-#include <QGraphicsGridLayout>
+#include <QRect>
+#include <QSqlDatabase>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,12 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tabbar->setTabButton(0, QTabBar::RightSide, nullptr);
 
     showMaximized();
-
-    Crud *cr = new Crud();
-    cr->select_all();
-    ui->tableView->setModel(cr->model);
-    ui->tableView->resizeColumnsToContents();
-    delete cr;
+    ShowThisTab();
 }
 
 MainWindow::~MainWindow()
@@ -41,12 +35,13 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index) //Обрабат
 
     QModelIndexList *indexes = new QModelIndexList;
     *indexes = ui->tableView->selectionModel()->selection().indexes();
-    Crud *cr = new Crud(indexes->value(0).data().toInt());
+    Crud *cr = new Crud(indexes->value(1).data().toInt());
 
     if(Owners_tel::selectZkTel(otList,cr->zk_id))
         ot_model->setOTList(otList);
 
     ui->tableView_2->setModel(ot_model);
+    ui->tableView_2->setColumnWidth(0,250);
     contacts_model->reset_ContactModel();
     delete indexes;
     delete cr;
@@ -60,19 +55,25 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
         contacts_model->setContactList(contactList);
 
     ui->tableView_3->setModel(contacts_model);
+    ui->tableView_3->setColumnWidth(0,250);
+    ui->tableView_3->setColumnWidth(1,250);
 }
 
 
 void MainWindow::ShowThisTab() //Открытие main окна и рефреш таблиц
 {
+    Crud *cr =  new Crud();
+    if(cr->selectAll(crudlist))
+        crud_model->setCrudlist(crudlist);
+    ui->tableView->setModel(crud_model);
+    m_c_s = All_unchecked;
+    delete cr;
+
     set_validators();
     ui->tabWidget->removeTab(1);
     ui->tabWidget->removeTab(2);
     ui->tabWidget->setCurrentIndex(0);
 
-    Crud *cr = new Crud();
-    cr->select_all();
-    ui->tableView->setModel(cr->model);
     ot_model->reset_OTModel();
     contacts_model->reset_ContactModel();
 
@@ -87,7 +88,6 @@ void MainWindow::ShowThisTab() //Открытие main окна и рефреш 
             }
         }
     ui->lineEdit->clear();
-    delete cr;
 }
 
 
@@ -115,7 +115,7 @@ void MainWindow::on_action_delete_triggered()
         Crud *cr = new Crud;
         QModelIndexList *indexes = new QModelIndexList;
         *indexes = ui->tableView->selectionModel()->selection().indexes();
-        cr->del_zk(indexes->value(0).data().toInt());
+        cr->del_zk(indexes->value(1).data().toInt());
         delete indexes;
         delete cr;
         emit Refresh_tab();
@@ -127,7 +127,7 @@ void MainWindow::on_action_update_triggered()
 {
      QModelIndexList *indexes = new QModelIndexList;
      *indexes = ui->tableView->selectionModel()->selection().indexes();
-     open_upd_tab(indexes->value(0).data().toInt());
+     open_upd_tab(indexes->value(1).data().toInt());
       delete indexes;
 }
 
@@ -144,13 +144,16 @@ void MainWindow::on_action_search_triggered()
       sr->show();
 }
 
-void MainWindow::Search_result(QSqlQueryModel *model)
+void MainWindow::Search_result(QString Query)
 {
-    if(model->rowCount() > 0)
-    {
-        ui->tableView->setModel(model);
-        MainWindow::add_cancel_button();
-    }
+    ui->tabWidget->setCurrentIndex(0);
+    Crud *cr =  new Crud();
+    if(cr->select_search(crudlist, Query))
+       crud_model->setCrudlist(crudlist);
+    ui->tableView->setModel(crud_model);
+    MainWindow::add_cancel_button();
+    delete cr;
+
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -186,13 +189,9 @@ void MainWindow::add_cancel_button()
 
 void MainWindow::open_upd_tab(int temp_id)
 {
-    QModelIndexList *indexes = new QModelIndexList;
-    *indexes = ui->tableView->selectionModel()->selection().indexes();
-    temp_id =  indexes->value(0).data().toInt();
     emit Send_data(temp_id);
      ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,upd,"Редактировать");
      ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
-     delete indexes;
 }
 
 void MainWindow::set_connections()
@@ -207,13 +206,15 @@ void MainWindow::set_connections()
     connect (this, SIGNAL(Refresh_tab()), this, SLOT(ShowThisTab()));
     connect(this, SIGNAL(Fill_table_add()),add, SLOT(Fill_table_in_add()));
 
-    connect(sr, SIGNAL(Send_Model(QSqlQueryModel*)),this, SLOT(Search_result(QSqlQueryModel*)));
+    connect(sr, SIGNAL(Send_search_query(QString)),this, SLOT(Search_result(QString)));
     connect(sr,SIGNAL(Cancel_search()),this, SLOT(ShowThisTab()));
 
     connect(this,SIGNAL(Fill_table_of()), of, SLOT(Fill_table()));
 
-    /// Заодно и валидатор для поля поиска
-    set_validators();
+    connect(exprt,SIGNAL(rb_zk_clicked()),this, SLOT(on_action_search_triggered()));
+    connect(exprt,SIGNAL(rb_check_all()),this, SLOT(on_pb_check_model_clicked()));
+    connect(exprt, SIGNAL(TESTING_export(QString,QString)),this,SLOT(testing_export(QString, QString)));
+    connect(exprt, SIGNAL(TESTING_open(QString,QString)),this,SLOT(testing_opening(QString, QString)));
 }
 
 void MainWindow::set_validators()
@@ -227,19 +228,10 @@ void MainWindow::set_validators()
 
 }
 
-
-void MainWindow::reopen()
-{
-    if(Contacts::selectAll(contactList))
-         contacts_model->setContactList(contactList);
-
-    if(Owners_tel::selectAll(otList))
-        ot_model->setOTList(otList);
-}
-
 void MainWindow::on_tabWidget_tabCloseRequested(int index)
 {
     ui->tabWidget->removeTab(index);
+
 }
 
 void MainWindow::on_action_official_tel_triggered()
@@ -247,4 +239,138 @@ void MainWindow::on_action_official_tel_triggered()
     ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,of,"Cлужебные телефоны");
     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
     emit Fill_table_of();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QString filename = QFileDialog::getSaveFileName(
+                       this,
+                       tr("Save Document"),
+                       QDir::currentPath(),
+                       tr("Text File (*.csv)") );
+    if( !filename.isNull() )
+    {
+        QFile file(filename);
+        if(file.open(QIODevice::WriteOnly))
+        {
+            QTextStream in(&file);
+            for (int i=0; i < crudlist->size();i++)
+            {
+                Crud *cr = crudlist->at(i);
+                if(cr->checkState_ == Checked)
+                {
+                    in <<  QString::number(cr->zk_id) +","+
+                           cr->lastname+","+cr->name+","+
+                           cr->mid_name+","+cr->birth_date+"\r\n";
+
+                    cr->check();
+                }
+            }
+
+            file.close();
+           QMessageBox::information(this, "Information", "Текстовый файл сформирован и находится по следующему пути: \n"+filename); //выводим сообщение с числом
+        }
+    }
+
+    QSqlDatabase dbsql;
+    dbsql = QSqlDatabase::addDatabase("QSQLITE","conql");
+    dbsql.setDatabaseName("E:\\database.db3");
+    if (dbsql.open())
+        qDebug() << "ok";
+    QSqlQuery quer;
+    quer.prepare("Select * from \"test\"");
+    if(!quer.exec())
+        qDebug() << quer.lastError().text() ;
+    while (quer.next())
+        qDebug() << quer.value(0).toString()+" " + quer.value(1).toString();
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+//    Crud *cr = new Crud;
+//    if(cr->selectAllDb(crudlist,otList,contactList))
+//         qDebug() << "Aee";
+
+          QStringList list = QSqlDatabase::drivers();
+          for(int x = 0; x < list.length(); x++)
+                  qDebug() << list.at(x);
+
+//    db_connection *db = db_connection::instance();
+//    db->set_Sql_type(SQLliteType);
+//    qDebug() << db->db_connect()<<db->db().lastError();
+//    QSqlQuery query(db->db());
+//    //query.prepare();
+//    if(!query.exec("SELECT * FROM ttt"))
+//        qDebug() << query.lastError();
+//    while (query.next())
+//        qDebug() << query.value(0).toString()+" "+query.value(1).toString();
+
+//    db->set_Sql_type(PSQLtype);
+//    QSqlQuery query2(db->db());
+//    query2.prepare("SELECT * FROM zk");
+//    if(!query2.exec())
+//        qDebug() << query2.lastError();
+//    while (query2.next())
+//        qDebug() << query2.value(0).toString()+" "+query2.value(1).toString();
+}
+
+void MainWindow::on_actionexport_triggered()
+{
+//    Crud *cr = new Crud;
+//    if(cr->selectAllDb(crudlist,otList,contactList))/// Временный вариант с листами, нужно будет переделать
+//         qDebug() << "Aee"; ///Заполнил все три листа указателями на данные
+
+    exprt->show();
+}
+
+
+void MainWindow::testing_export(QString filename, QString password)
+{
+    QList<Crud*> *crud = new  QList<Crud*> ;
+    For_export exprt;
+    for (int i=0;i<crud_model->actcrudlist.size();i++) // пробегаюсь по отображаемому списку
+    {
+     if (crudlist->at(i)->checkState_ == Checked)
+        {   qDebug() << crudlist->at(i)->zk_id;
+             exprt.fill_crud_list(crud, crudlist->at(i)->zk_id);
+        }
+    }
+   if( exprt.Do_export(filename,crud, password))
+       qDebug() << "asd";
+
+    //QFile::remove("E:/test.db");
+//         db->set_Sql_type(SQLliteType);
+//         qDebug() << db->db_connect()<<db->db().lastError();
+//         QSqlQuery query(db->db());
+//         //query.prepare();
+//         if(!query.exec("SELECT * FROM ttt"))
+//             qDebug() << query.lastError();
+//         while (query.next())
+//             qDebug() << query.value(0).toString()+" "+query.value(1).toString();
+   delete crud;
+}
+
+void MainWindow::testing_opening(QString filename, QString password)
+{
+    For_export exprt;
+    if(exprt.Testing_open_db(filename,password))
+        qDebug()<< "Open is succesfull";
+}
+
+
+void MainWindow::on_pb_check_model_clicked()
+{
+    switch (m_c_s)
+    {
+    case All_unchecked:
+        crud_model->setCheckedCrudlist(crudlist);
+        ui->tableView->setModel(crud_model);
+        m_c_s = All_checked;
+    return;
+    case All_checked:
+        crud_model->setUnCheckedCrudlist(crudlist);
+        ui->tableView->setModel(crud_model);
+        m_c_s = All_unchecked;
+    return;
+    }
 }

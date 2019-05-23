@@ -1,7 +1,6 @@
 #ifndef CRUD_H
 #define CRUD_H
-
-#include "db_connection.h"
+#include "_Owners_tel.h"///->_Contacts.h->db_connrction
 
 #include <QString>
 #include <QSqlQuery>
@@ -12,33 +11,21 @@
 #include <QTime>
 #include <QMessageBox>
 
-enum DbState { IsReaded = 1,        ///< считан из БД
-               IsNewing = 0,        ///< новый, еще не записан в БД
-               IsRemoved = -1 ,     ///< удален в ПО, еще не удален в БД
-               IsChanged = 2};       ///< считан из БД и изменен в ПО
 
-class Crud{
+enum CheckState { Checked =1,
+                 Unchecked = 0};
+class Crud: public Owners_tel
+{
 
 public:
     Crud();
     Crud(int id);
     Crud(QString t_n);
-    Crud(int id, QString l,QString n,QString m,QString b_d,QString c_f,QString d_i,QString d_a, QString t_a);
 
-    /// Временный конструктор редактирования
-    Crud(int id, QString l,QString n,QString m, QString c_f, QString d_i,
-         QString a_r, QString a_l,
-         QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f);
+    QList<Owners_tel*> *owt = new QList<Owners_tel*>; ///У ЗК есть список телефонов
 
-    ///Временный конструктор добавления
-    Crud(QString l,QString n,QString m, QString c_f, QString d_i,
-         QString a_r, QString a_l,
-         QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f);
-
-    ///Временный конструктор для поиска
-    Crud(int id,QString l,QString n,QString m_n, QString b_d,QString r_c, QString r_s, QString r_h, QString r_cor, QString r_f,
-         QString d_a);
-
+    CheckState checkState_;
+    DbState state;
     QString search_res;
     bool search_is_ready, model_is_ready;
     QMessageBox msgbx;
@@ -54,8 +41,6 @@ public:
     QString check_for;
     QString dop_info;
 
-    QString adres_reg;
-    QString adres_liv;
 
     //Адрес регистрации
     QString reg_city;
@@ -75,11 +60,19 @@ public:
     QString date_add = QDate::currentDate().toString(Qt::ISODate);
     QString time_add = QTime::currentTime().toString();
 
-    void select_all();
-    void check() const;
+ /////////////////////////////////////////////////////////////
+    bool selectAll(QList<Crud*> *list);
+    bool select_search(QList<Crud*> *list, QString);
+ /////////////////////////////////////////////////////////////
 
-    void refresh_table();
-    void recieve_tel_list();
+    void select_all();
+    bool selectAllDb(QList<Crud*> *list, QList<Owners_tel*> *otlist, QList<Contacts*> *contlist);
+    void check() const;
+    ///Методы поиска
+    void zk_search();
+    void zk_search_model(QString qry);
+    void zk_search_report(QString qry);
+
     void call_update_list();
     bool update_zk();
     bool add_zk();
@@ -88,7 +81,8 @@ public:
     void id_zk_search();
     void get_max_zk();
     void get_min_zk();
-    int get_id_from_tel(QString);
+    int get_id_from_tel(QString t_n);
+
 
     QSqlQueryModel *model = new QSqlQueryModel();
     QSqlQueryModel *model_2 = new QSqlQueryModel();
@@ -98,11 +92,7 @@ private:
     //ТАБЛИЦА 2
     QString telephone_num;
 
-    //Переменны для запросов
-    QSqlQuery temp;
-    QSqlQuery querry;
-    QSqlQuery temp_2; // для метода даления
-
+    //Переменны для запросо
 signals:
     //void Send_search(QString);
 };

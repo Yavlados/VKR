@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
     //setlocale(LC_NUMERIC, "en_US.UTF-8");
 
     db_connection *con = db_connection::instance();
-    db_connection *r = db_connection::instance();
+    //db_connection *r = db_connection::instance();
     if( !con->db_connect() )
     {
-        qCritical()<<"Error"<<con->db.lastError();
+        qCritical()<<"Error"<<con->db().lastError();
         return -1;
     }
 

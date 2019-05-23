@@ -41,7 +41,7 @@ void Update::Recieve_data(int id)
      ui->le_birth_date_year->setText(year);
 
      ui->le_check_for->setText(cr->check_for);
-     ui->le_dop_info->setText(cr->dop_info);
+     ui->le_dop_info->setPlainText(cr->dop_info);
 
      ui->le_reg_city->setText(cr->reg_city);
      ui->le_reg_street->setText(cr->reg_street);
@@ -58,9 +58,10 @@ void Update::Recieve_data(int id)
      if(Owners_tel::selectZkTelForAdd(otList, id) && Contacts::selectAll(contactList))
             ot_model->setOTList(otList);
 
-     ot_model->state = Edit; ///меняю флаги для изменения
+     ot_model->state = Edit_Ot; ///меняю флаги для изменения
      ui->tableView->setModel(ot_model);
-
+     ui->tableView->setColumnWidth(0,250);
+     contacts_model->reset_ContactModel();
      zk_id = id;
 
      delete cr;
@@ -78,13 +79,47 @@ void Update::on_pb_Update_clicked()
         break;
     case QMessageBox::Ok:
 
-    Crud *cr = new Crud(zk_id,ui->le_last_name->text(),ui->le_name->text(),
-                        ui->le_mid_name->text(), ui->le_check_for->text(),ui->le_dop_info->text(),
-                        adres_reg, adres_liv,
-                        ui->le_reg_city->text(),ui->le_reg_street->text(),ui->le_reg_house->text(),
-                        ui->le_reg_corp ->text(),ui->le_reg_flat->text());
+    Crud *cr = new Crud();
+    cr->zk_id = zk_id;
+    cr->lastname = ui->le_last_name->text();
+    cr->name = ui->le_name->text();
+    cr->mid_name= ui->le_mid_name->text();
+    cr->check_for = ui->le_check_for->text();
+    cr->dop_info = ui->le_dop_info->toPlainText();
+    cr->reg_city = ui->le_reg_city->text();
+    cr->reg_street = ui->le_reg_street->text();
+    cr->reg_home = ui->le_reg_house->text();
+    cr->reg_corp = ui->le_reg_corp ->text();
+    cr->reg_flat = ui->le_reg_flat->text();
     if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
-        cr->birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
+    {
+        QString day,month,year;
+
+        day = ui->le_birth_date_day->text();
+        month = ui->le_birth_date_month->text();
+        year=ui->le_birth_date_year->text();
+
+        if (day.count() == 1)
+              day.insert(0,"0");
+
+        if (month.count() == 1)
+            month.insert(0,"0");
+
+        if(year.toInt()  <  1900)
+        {
+            msgbx.setText("<font size = '5'> Вы ввели не корректную дату рождения </font>");
+            msgbx.setStandardButtons(QMessageBox::Ok);
+            msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+
+            int ret = msgbx.exec();
+
+            switch (ret) {
+            case QMessageBox::Ok:
+                return;
+            }
+        }
+        cr->birth_date = day+"."+month+"."+year;
+    }
 
     cr->liv_city = ui->le_liv_city->text();
     cr->liv_street = ui->le_liv_street->text();
@@ -180,15 +215,16 @@ void Update::on_tableView_clicked(const QModelIndex &index)
 
     contacts_model->setContactList(contactList, otList->at(index.row())->tel_id);
 
-    contacts_model->state = Edit;
+    contacts_model->state = Edit_cont;
     ui->tableView_2->setModel(contacts_model);
-
+    ui->tableView_2->setColumnWidth(0,250);
+    ui->tableView_2->setColumnWidth(1,250);
 }
 
 void Update::on_pb_del_line_telephone_clicked()
 {
     QModelIndex ind = ui->tableView->currentIndex();
-    if( ind.isValid())
+    if( ind.isValid() && otList->count()>1)
     {
         contacts_model->delBindedContacts(otList->at(ind.row())->tel_id);
         ot_model->delRow_owner_tel(ind);
@@ -216,10 +252,10 @@ void Update::clear_ALL()
 {
   if (!otList->isEmpty())
       otList->clear();
-  ot_model->reset_ContactModel();
+  contacts_model->reset_ContactModel();
    if (!contactList->isEmpty())
        contactList->clear();
-   contacts_model->reset_OTModel();
+   ot_model->reset_OTModel();
 }
 
 void Update::set_validators()

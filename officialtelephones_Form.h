@@ -1,7 +1,7 @@
 #ifndef OFFICIALTELEPHONES_FORM_H
 #define OFFICIALTELEPHONES_FORM_H
 
-#include "MyTableModel.h"
+#include "_MTM_Contacts.h"
 
 #include <QWidget>
 
@@ -17,9 +17,9 @@ public:
     explicit OfficialTelephones(QWidget *parent = nullptr);
     ~OfficialTelephones();
 
-    MyTableModel *of_model = new MyTableModel;
+    MTM_Contacts *of_model = new MTM_Contacts;
 
-    QList<Official_tel*> *ofTlist = new QList<Official_tel*>;
+    QList<Contacts*> *ofTlist = new QList<Contacts*>;
 
 private:
     Ui::OfficialTelephones *ui;

@@ -25,7 +25,7 @@ signals:
 
     void Send_search_result(QString);
 
-    void Send_Model(QSqlQueryModel*);
+    void Send_search_query(QString);
 
     void Cancel_search();
 

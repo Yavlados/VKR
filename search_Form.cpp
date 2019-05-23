@@ -1,6 +1,6 @@
 #include "search_Form.h"
 #include "ui_search.h"
-#include "_Owners_tel.h"
+#include "_Crud.h"
 
 Search::Search(QWidget *parent) :
     QWidget(parent),
@@ -17,18 +17,19 @@ Search::~Search()
 
 void Search::on_pb_search_clicked()
 {
-    Owners_tel *o_t = new Owners_tel(ui->le_zk_id->text().toInt(),
-                        ui->le_last_name->text(),
-                        ui->le_name->text(),
-                        ui->le_mid_name->text(),
-ui->le_birth_day->text()+"."+ui->le_birth_month->text()+"."+ui->le_birth_year->text(),
-                        ui->le_reg_city->text(),
-                        ui->le_reg_street->text(),
-                        ui->le_reg_house->text(),
-                        ui->le_reg_corp->text(),
-                        ui->le_reg_flat->text(),
-ui->le_form_year->text()+"-"+ui->le_form_month->text()+"-"+ui->le_form_day->text(),
-                        ui->le_tel_num->text());
+    Crud *o_t = new Crud();
+    o_t->zk_id = ui->le_zk_id->text().toInt();
+    o_t->lastname = ui->le_last_name->text();
+    o_t->name = ui->le_name->text();
+    o_t->mid_name = ui->le_mid_name->text();
+    o_t->birth_date = ui->le_birth_day->text()+"."+ui->le_birth_month->text()+"."+ui->le_birth_year->text();
+    o_t->reg_city = ui->le_reg_city->text();
+    o_t->reg_street = ui->le_reg_street->text();
+    o_t->reg_home = ui->le_reg_house->text();
+    o_t->reg_corp = ui->le_reg_corp->text();
+    o_t->reg_flat = ui->le_reg_flat->text();
+    o_t->date_add = ui->le_form_year->text()+"-"+ui->le_form_month->text()+"-"+ui->le_form_day->text();
+    o_t->tel_num = ui->le_tel_num->text();
             ///
             ///Сначала собираю DateFrom
             ///
@@ -76,7 +77,7 @@ ui->le_form_year->text()+"-"+ui->le_form_month->text()+"-"+ui->le_form_day->text
     o_t->zk_search();
 
 if(o_t->model_is_ready == true)
-    emit Send_Model(o_t->model);
+    emit Send_search_query(o_t->Query);
 
 if(o_t->search_is_ready == true)
     emit Send_search_result(o_t->search_res);

@@ -9,10 +9,10 @@ void For_analysis::short_face_analysis_all_db(int id)
 {
     analysis_res.clear();
         ///////////////////////////////////////
-    querry.prepare("SELECT \"contacts\".\"FK_Cl_telephone\""
-                   "FROM \"contacts\", \"owners_tel\""
-                   "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                    "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\"");
+    querry.prepare("SELECT contacts.FK_Cl_telephone "
+                   " FROM contacts, owners_tel "
+                   " WHERE owners_tel.FK_Telephone_Zk = (:id) AND "
+                    " owners_tel.Telephone_num = contacts.cl_telephone");
     querry.bindValue(":id", id);
 
     if (!querry.exec())
@@ -22,10 +22,10 @@ void For_analysis::short_face_analysis_all_db(int id)
     while (querry.next())
     {
         ///////////////////////////////////////
-    temp.prepare("SELECT \"owners_tel\".\"FK_Telephone_Zk\""
-        "FROM \"owners_tel\""
+    temp.prepare("SELECT owners_tel.FK_Telephone_Zk "
+        " FROM owners_tel "
        " WHERE "
-       " \"owners_tel\".\"Telephone_id\" = (:fk_id)");
+       " owners_tel.Telephone_id = (:fk_id)");
         temp.bindValue(":fk_id",querry.value(0).toInt());
         if (!temp.exec())
             qDebug() << temp.lastError();
@@ -35,15 +35,15 @@ void For_analysis::short_face_analysis_all_db(int id)
             {
         ///////////////////////////////////////
         temp_2.prepare("SELECT "
-                       "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                       "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                       "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                      " FROM \"zk\" "
-                      " WHERE "
-                       "\"zk\".\"Zk_id\" = (:zk_id)");
+                       " zk.Lastname, "
+                       " zk.Name, "
+                       " zk.Mid_name, "
+                       " zk.Birth_date, "
+                       " zk.Date_add, "
+                       " zk.Check_for "
+                       " FROM zk "
+                       " WHERE "
+                       " zk.Zk_id = (:zk_id)");
         temp_2.bindValue(":zk_id",temp.value(0).toInt());
 
         match_counter.append(temp.value(0).toInt());
@@ -66,10 +66,10 @@ void For_analysis::short_face_analysis_all_db(int id)
  if(!analysis_res.isEmpty())
   {
      QString temp_for_add;
-     temp_3.prepare("SELECT COUNT( DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                    "FROM \"contacts\", \"owners_tel\""
-                    "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                     "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\"");
+     temp_3.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
+                    " FROM contacts, owners_tel "
+                    " WHERE owners_tel.FK_Telephone_Zk = (:id) AND "
+                     " owners_tel.Telephone_num = contacts.cl_telephone");
      temp_3.bindValue(":id", id);
      if (!temp_3.exec())
          qDebug() << temp_3.lastError();
@@ -98,11 +98,11 @@ void For_analysis::short_tel_analysis_all_db(int id)
    analysis_res.clear();
     For_analysis::get_L_N_M(id);
     ///////////////////ВЫТАЩИЛ НОМЕРА ТЕЛЕФОНА////////////////////
- querry.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                "FROM \"owners_tel\", \"contacts\""
-                "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-               " AND "
-               " \"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\"");
+ querry.prepare("SELECT DISTINCT owners_tel.Telephone_num "
+                " FROM owners_tel, contacts "
+                " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                " AND "
+                " owners_tel.Telephone_num = contacts.cl_telephone");
  querry.bindValue(":id",id);
  if (!querry.exec())
      qDebug() << querry.lastError();
@@ -119,11 +119,11 @@ void For_analysis::short_tel_analysis_all_db(int id)
       analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
 
       ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-      temp.prepare("SELECT COUNT( DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                   "FROM \"owners_tel\", \"contacts\" "
-                   "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-                  " AND "
-                   "\"contacts\".\"cl_telephone\" = (:tel_num) ");
+      temp.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
+                   " FROM owners_tel, contacts "
+                   " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                   " AND "
+                   " contacts.cl_telephone = (:tel_num) ");
       temp.bindValue(":id",id);
       temp.bindValue(":tel_num",Tel_num);
 
@@ -139,13 +139,13 @@ void For_analysis::short_tel_analysis_all_db(int id)
       }
       temp.clear();
       ///////////////////ДОСТАЮ ИЗ ЗК НУЖНЫЕ ПОЛЯ////////////////////
-      temp.prepare("SELECT \"contacts\".\"FK_Cl_telephone\", \"contacts\".\"cl_info\""
-                   "FROM \"owners_tel\", \"contacts\""
-                  " WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-                  " AND"
-                  " \"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\""
-                   "AND"
-                   "\"contacts\".\"cl_telephone\" = (:tel_num)");
+      temp.prepare("SELECT contacts.FK_Cl_telephone, contacts.cl_info "
+                   " FROM owners_tel, contacts "
+                   " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                   " AND"
+                   " owners_tel.Telephone_num = contacts.cl_telephone"
+                   " AND"
+                   " contacts.cl_telephone = (:tel_num)");
       temp.bindValue(":id",id);
       temp.bindValue(":tel_num",Tel_num);
       if (!temp.exec())
@@ -154,9 +154,9 @@ void For_analysis::short_tel_analysis_all_db(int id)
         ///////////////////TEMP - ////////////////////
       while (temp.next())
       {
-         temp_2.prepare("SELECT \"owners_tel\".\"FK_Telephone_Zk\""
-                        "FROM \"owners_tel\""
-                       " WHERE \"owners_tel\".\"Telephone_id\" = (:temp_val)");
+         temp_2.prepare("SELECT owners_tel.FK_Telephone_Zk"
+                        " FROM owners_tel"
+                        " WHERE owners_tel.Telephone_id = (:temp_val)");
          temp_2.bindValue(":temp_val",temp.value(0).toInt());
          if (!temp_2.exec())
              qDebug() << temp_2.lastError();
@@ -165,14 +165,14 @@ void For_analysis::short_tel_analysis_all_db(int id)
          while (temp_2.next())
             {
                 temp_3.prepare("SELECT "
-                               "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Name\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                               "FROM \"zk\""
-                              " WHERE \"zk\".\"Zk_id\" = (:temp_2_val)");
+                               " zk.Date_add,"
+                               " zk.Lastname,"
+                               " zk.Name,"
+                               " zk.Mid_name,"
+                               " zk.Birth_date,"
+                               " zk.Check_for"
+                               " FROM zk "
+                               " WHERE zk.Zk_id = (:temp_2_val)");
                 temp_3.bindValue(":temp_2_val",temp_2.value(0).toInt());
                 if (!temp_3.exec())
                     qDebug() << temp_3.lastError();
@@ -202,10 +202,10 @@ void For_analysis::long_face_analysis_all_db(int id)
     For_analysis::get_L_N_M(id);
     analysis_res.clear();
         ///////////////////////////////////////
-    querry.prepare("SELECT \"contacts\".\"FK_Cl_telephone\", \"contacts\".\"cl_info\""
-                   "FROM \"contacts\", \"owners_tel\""
-                   "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                    "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\"");
+    querry.prepare("SELECT contacts.FK_Cl_telephone, contacts.cl_info"
+                   " FROM contacts, owners_tel"
+                   " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
+                    " owners_tel.Telephone_num = contacts.cl_telephone");
     querry.bindValue(":id", id);
 
     if (!querry.exec())
@@ -215,10 +215,10 @@ void For_analysis::long_face_analysis_all_db(int id)
     while (querry.next())
     {
         ///////////////////////////////////////
-    temp.prepare("SELECT \"owners_tel\".\"FK_Telephone_Zk\",\"owners_tel\".\"Telephone_num\" "
-        "FROM \"owners_tel\""
+    temp.prepare("SELECT owners_tel.FK_Telephone_Zk,owners_tel.Telephone_num "
+        " FROM owners_tel"
        " WHERE "
-       " \"owners_tel\".\"Telephone_id\" = (:fk_id)");
+       " owners_tel.Telephone_id = (:fk_id)");
         temp.bindValue(":fk_id",querry.value(0).toInt());
         if (!temp.exec())
             qDebug() << temp.lastError();
@@ -228,23 +228,23 @@ void For_analysis::long_face_analysis_all_db(int id)
             {
         ///////////////////////////////////////
         temp_2.prepare("SELECT "
-        /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                       "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                       "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
+        /*0*/          " zk.Lastname, "
+                       " zk.Name, "
+                       " zk.Mid_name, "
+                       " zk.Birth_date, "
                        ""
-        /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
+        /*4*/          "zk.reg_city, "
+                       "zk.reg_street, "
+                       "zk.reg_home, "
+                       "zk.reg_corp, "
+                       "zk.reg_flat, "
                        ""
-        /*9*/          "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                       "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                      " FROM \"zk\" "
-                      " WHERE "
-                       "\"zk\".\"Zk_id\" = (:zk_id)");
+        /*9*/          "zk.dop_info, "
+                       "zk.date_add, "
+                       "zk.check_for"
+                       " FROM zk "
+                       " WHERE "
+                       " zk.Zk_id = (:zk_id)");
         temp_2.bindValue(":zk_id",temp.value(0).toInt());
         if (!temp_2.exec())
             qDebug() << temp_2.lastError();
@@ -263,13 +263,13 @@ void For_analysis::long_face_analysis_all_db(int id)
                     temp_2.value(10).toString()+" в интересах: "+
                     temp_2.value(11).toString()+"  \r\n \t Вывод о знакомстве сделан на основании того, что: \r\n";
 
-            temp_3.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                                            "FROM \"owners_tel\", \"contacts\""
-                                            "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-                                           "AND "
-                                           "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\""
-                                            "AND"
-                                            "\"contacts\".\"FK_Cl_telephone\" = (:fk)");
+            temp_3.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                                            " FROM owners_tel, contacts"
+                                            " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                                            " AND "
+                                            " owners_tel.Telephone_num = contacts.cl_telephone"
+                                            " AND "
+                                            " contacts.FK_Cl_telephone = (:fk)");
                              temp_3.bindValue(":id",id);
                              temp_3.bindValue(":fk",querry.value(0));
                              if (!temp_3.exec())
@@ -298,11 +298,11 @@ void For_analysis::long_face_analysis_all_db(int id)
     temp_2.clear();
     querry.clear();
     querry.prepare("SELECT"
-                   "\"owners_tel\".\"Telephone_id\" "
-                  " FROM"
-                  " \"owners_tel\" "
-                  " WHERE"
-                  " \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+                   " owners_tel.Telephone_id "
+                   " FROM"
+                   " owners_tel "
+                   " WHERE"
+                   " owners_tel.FK_Telephone_Zk = (:id)");
     querry.bindValue(":id", id);
 
     if (!querry.exec())
@@ -310,38 +310,38 @@ void For_analysis::long_face_analysis_all_db(int id)
     while (querry.next())
     {
         temp.prepare("SELECT"
-                     "\"owners_tel\".\"FK_Telephone_Zk\", "
-                     "\"owners_tel\".\"Telephone_num\", "
-                     "regexp_replace(\"contacts\".\"cl_info\", '\\s+$', '')"
-                    " FROM"
-                   " \"contacts\",\"owners_tel\""
-                   "  WHERE "
-                   "  \"contacts\".\"cl_telephone\" = \"owners_tel\".\"Telephone_num\" "
-                   "  AND "
-                   "  \"contacts\".\"FK_Cl_telephone\" = (:fk)");
+                     " owners_tel.FK_Telephone_Zk, "
+                     " owners_tel.Telephone_num, "
+                     " contacts.cl_info"
+                     " FROM"
+                     " contacts, owners_tel "
+                     " WHERE "
+                     " contacts.cl_telephone = owners_tel.Telephone_num "
+                     " AND "
+                     " contacts.FK_Cl_telephone = (:fk)");
         temp.bindValue(":fk", querry.value(0));
         if (!temp.exec())
             qDebug() << temp.lastError();
         while (temp.next())
         {
             temp_2.prepare("SELECT "
-            /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                           "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                           "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                           "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
+            /*0*/          "zk.lastname,"
+                           "zk.name,"
+                           "zk.mid_name,"
+                           "zk.birth_date,"
                            ""
-            /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                           "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                           "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                           "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                           "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
+            /*4*/          "zk.reg_city,"
+                           "zk.reg_street,"
+                           "zk.reg_home,"
+                           "zk.reg_corp,"
+                           "zk.reg_flat,"
                            ""
-            /*9*/          "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                           "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                           "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                          " FROM \"zk\" "
-                          " WHERE "
-                           "\"zk\".\"Zk_id\" = (:zk_id)");
+            /*9*/          "zk.dop_info,"
+                           "zk.date_add,"
+                           "zk.check_for"
+                           " FROM zk "
+                           " WHERE "
+                           "zk.Zk_id = (:zk_id)");
             temp_2.bindValue(":zk_id",temp.value(0).toInt());
             if (!temp_2.exec())
                 qDebug() << temp_2.lastError();
@@ -383,10 +383,10 @@ void For_analysis::long_face_analysis_all_db(int id)
                             " возможно знаком со ";
             For_analysis::get_L_N_M(id);
             ///////////////////////////////////////
-            temp_3.prepare("SELECT COUNT(DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                           "FROM \"contacts\", \"owners_tel\""
-                           "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                            "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\"");
+            temp_3.prepare("SELECT COUNT(DISTINCT contacts.FK_Cl_telephone)"
+                           " FROM contacts, owners_tel"
+                           " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
+                           " owners_tel.Telephone_num = contacts.cl_telephone");
             temp_3.bindValue(":id", id);
             if (!temp_3.exec())
                 qDebug() << temp_3.lastError();
@@ -402,17 +402,17 @@ void For_analysis::long_face_analysis_all_db(int id)
             analysis_res.insert(0,temp_for_add);
     }
 }
-
+/////////////////////////////////////////////////////////////
 void For_analysis::long_tel_analysis_all_db(int id)
 {
     For_analysis::get_L_N_M(id);
     analysis_res.clear();
     QSqlQuery new_temp;
 
-    querry.prepare("SELECT DISTINCT \"contacts\".\"FK_Cl_telephone\", \"contacts\".\"cl_info\""
-                   "FROM \"contacts\", \"owners_tel\""
-                   "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                    "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\"");
+    querry.prepare("SELECT DISTINCT contacts.FK_Cl_telephone, contacts.cl_info"
+                   " FROM contacts, owners_tel "
+                   " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
+                   " owners_tel.Telephone_num =  contacts.cl_telephone");
     querry.bindValue(":id", id);
     if (!querry.exec())
         qDebug() << querry.lastError();
@@ -420,13 +420,13 @@ void For_analysis::long_tel_analysis_all_db(int id)
     while (querry.next())
     {
         qDebug() << querry.value(0).toString();
-        new_temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                                        "FROM \"owners_tel\", \"contacts\""
-                                        "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-                                       "AND "
-                                       "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\""
-                                        "AND"
-                                        "\"contacts\".\"FK_Cl_telephone\" = (:fk)");
+        new_temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                                        " FROM owners_tel, contacts"
+                                        " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                                       " AND "
+                                       " owners_tel.Telephone_num = contacts.cl_telephone"
+                                        " AND"
+                                        " contacts.FK_Cl_telephone = (:fk)");
                          new_temp.bindValue(":id",id);
                          new_temp.bindValue(":fk",querry.value(0));
                          if (!new_temp.exec())
@@ -441,10 +441,10 @@ void For_analysis::long_tel_analysis_all_db(int id)
 
                          analysis_res+="Номер телефона "+Tel_num+", принадлежащий владельцу записной книжки: "+
                                  Lastname+" "+Name+" "+Midname+" обнаружен в ";
-                         temp_3.prepare("SELECT COUNT(DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                                        "FROM \"contacts\", \"owners_tel\""
-                                        "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                                         "\"contacts\".\"cl_telephone\" = (:tel_num)");
+                         temp_3.prepare("SELECT COUNT(DISTINCT contacts.FK_Cl_telephone)"
+                                        "FROM contacts, owners_tel"
+                                        "WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
+                                         "contacts.cl_telephone = (:tel_num)");
                          temp_3.bindValue(":id", id);
                          temp_3.bindValue(":tel_num",Tel_num);
                          if (!temp_3.exec())
@@ -458,10 +458,10 @@ void For_analysis::long_tel_analysis_all_db(int id)
                                  }
                          temp_3.clear();
                           ///////////////////////////////////////
-                         temp.prepare("SELECT DISTINCT \"contacts\".\"FK_Cl_telephone\", \"contacts\".\"cl_info\""
-                                        "FROM \"contacts\", \"owners_tel\""
-                                        "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                                         " \"contacts\".\"cl_telephone\" = (:tel_num)");
+                         temp.prepare("SELECT DISTINCT contacts.FK_Cl_telephone, contacts.cl_info"
+                                        " FROM contacts, owners_tel"
+                                        " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
+                                        " contacts.cl_telephone = (:tel_num)");
                          temp.bindValue(":id", id);
                          temp.bindValue(":tel_num",Tel_num);
                          if (!temp.exec())
@@ -470,10 +470,10 @@ void For_analysis::long_tel_analysis_all_db(int id)
 
                          while (temp.next())
                          {
-                         temp_3.prepare("SELECT \"owners_tel\".\"FK_Telephone_Zk\",\"owners_tel\".\"Telephone_num\" "
-                             "FROM \"owners_tel\""
-                            " WHERE "
-                            " \"owners_tel\".\"Telephone_id\" = (:fk_id)");
+                         temp_3.prepare(" SELECT owners_tel.FK_Telephone_Zk,owners_tel.Telephone_num "
+                                        " FROM owners_tel"
+                                        " WHERE "
+                                        " owners_tel.Telephone_id = (:fk_id)");
                              temp_3.bindValue(":fk_id",temp.value(0).toInt());
                              if (!temp_3.exec())
                                  qDebug() << temp_3.lastError();
@@ -481,23 +481,23 @@ void For_analysis::long_tel_analysis_all_db(int id)
                             while (temp_3.next())
                                  {
                              temp_2.prepare("SELECT "
-                             /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                                            "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                                            "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                                            "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
+                             /*0*/          "zk.Lastname, "
+                                            "zk.Name, "
+                                            "zk.Mid_name,"
+                                            "zk.Birth_date,"
                                             ""
-                             /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                                            "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                                            "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                                            "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                                            "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
+                             /*4*/          "zk.Reg_city,"
+                                            "zk.Reg_street,"
+                                            "zk.Reg_home,"
+                                            "zk.Reg_corp,"
+                                            "zk.Reg_flat,"
                                             ""
-                             /*9*/          "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                                            "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                                            "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                                           " FROM \"zk\" "
-                                           " WHERE "
-                                            "\"zk\".\"Zk_id\" = (:zk_id)");
+                             /*9*/          "zk.Dop_info,"
+                                            "zk.Date_add,"
+                                            "zk.Check_for"
+                                            " FROM zk "
+                                            " WHERE "
+                                            "zk.Zk_id = (:zk_id)");
                              temp_2.bindValue(":zk_id",temp_3.value(0).toInt());
                              if (!temp_2.exec())
                                  qDebug() << temp_2.lastError();
@@ -535,9 +535,9 @@ void For_analysis::short_face_analysis_all_db(QVector<int> vector, int id)
 {
     analysis_res.clear();
     int counter = 0;
-   querry.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                  "FROM  \"owners_tel\""
-                  "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+   querry.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                  " FROM  owners_tel"
+                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
    querry.bindValue(":id",id);
    if (!querry.exec())
        qDebug() << querry.lastError();
@@ -549,9 +549,9 @@ void For_analysis::short_face_analysis_all_db(QVector<int> vector, int id)
        {
          qDebug() << vector.at(a);
 
-           temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_id\""
-                          "FROM  \"owners_tel\""
-                          "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+           temp.prepare("SELECT DISTINCT owners_tel.Telephone_id"
+                          " FROM  owners_tel"
+                          " WHERE owners_tel.FK_Telephone_Zk = (:id)");
            temp.bindValue(":id", vector.at(a));
            if (!temp.exec())
                qDebug() << temp.lastError();
@@ -560,10 +560,10 @@ void For_analysis::short_face_analysis_all_db(QVector<int> vector, int id)
            {
                qDebug() << "temp  " + temp.value(0).toString();
 
-    /**/           temp_2.prepare("SELECT DISTINCT \"contacts\".\"cl_info\", \"contacts\".\"cl_telephone\" "
-                           "FROM \"contacts\", \"owners_tel\""
-                           "WHERE \"contacts\".\"cl_telephone\" = (:an_tel)"
-                           "AND \"contacts\".\"FK_Cl_telephone\" = (:id)");
+    /**/           temp_2.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
+                           " FROM contacts, owners_tel"
+                           " WHERE contacts.cl_telephone = (:an_tel)"
+                           " AND contacts.FK_Cl_telephone = (:id)");
 
                temp_2.bindValue(":an_tel",querry.value(0).toString());
                qDebug() <<querry.value(0).toString();
@@ -578,15 +578,15 @@ void For_analysis::short_face_analysis_all_db(QVector<int> vector, int id)
                {
                   counter++;
                         temp_3.prepare("SELECT "
-                                      "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                                      "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                                      "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                                      "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                                      "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                                      "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                                     " FROM \"zk\" "
-                                     " WHERE "
-                                      "\"zk\".\"Zk_id\" = (:zk_id)");
+                                       " zk.Lastname, "
+                                       " zk.Name, "
+                                       " zk.Mid_name, "
+                                       " zk.Birth_date, "
+                                       " zk.Date_add, "
+                                       " zk.Check_for "
+                                       " FROM zk "
+                                       " WHERE "
+                                       " zk.Zk_id = (:zk_id)");
                        temp_3.bindValue(":zk_id",vector.at(a));
 
                        if (!temp_3.exec())
@@ -628,9 +628,9 @@ void For_analysis::short_tel_analysis_all_db(QVector<int> vector, int id)
     analysis_res.clear();
     For_analysis::get_L_N_M(id);
 
-   querry.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                  "FROM  \"owners_tel\""
-                  "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+   querry.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                  " FROM  owners_tel"
+                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
    querry.bindValue(":id",id);
    if (!querry.exec())
        qDebug() << querry.lastError();
@@ -641,19 +641,19 @@ void For_analysis::short_tel_analysis_all_db(QVector<int> vector, int id)
        {
          qDebug() << vector.at(a);
 
-           temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_id\""
-                          "FROM  \"owners_tel\""
-                          "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+           temp.prepare("SELECT DISTINCT owners_tel.Telephone_id"
+                          " FROM  owners_tel"
+                          " WHERE owners_tel.FK_Telephone_Zk = (:id)");
            temp.bindValue(":id", vector.at(a));
            if (!temp.exec())
                qDebug() << temp.lastError();
 
            while (temp.next())
            {
-    /**/      temp_2.prepare("SELECT DISTINCT \"contacts\".\"cl_info\", \"contacts\".\"cl_telephone\" "
-                           "FROM \"contacts\", \"owners_tel\""
-                           "WHERE \"contacts\".\"cl_telephone\" = (:an_tel)"
-                           "AND \"contacts\".\"FK_Cl_telephone\" = (:id)");
+    /**/      temp_2.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
+                           " FROM contacts, owners_tel"
+                           " WHERE contacts.cl_telephone = (:an_tel)"
+                           " AND contacts.FK_Cl_telephone = (:id)");
 
                temp_2.bindValue(":an_tel",querry.value(0).toString());
 
@@ -673,11 +673,11 @@ void For_analysis::short_tel_analysis_all_db(QVector<int> vector, int id)
 
                    analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
                    ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-                   temp_3.prepare("SELECT COUNT( DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                                "FROM \"owners_tel\", \"contacts\" "
-                                "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-                               " AND "
-                                "\"contacts\".\"cl_telephone\" = (:tel_num) ");
+                   temp_3.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
+                                " FROM owners_tel, contacts "
+                                " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                                " AND "
+                                " contacts.cl_telephone = (:tel_num) ");
                    temp_3.bindValue(":id",id);
                    temp_3.bindValue(":tel_num",Tel_num);
 
@@ -694,14 +694,14 @@ void For_analysis::short_tel_analysis_all_db(QVector<int> vector, int id)
                    temp_3.clear();
                  }
                    temp_3.prepare("SELECT "
-                                  "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                                  "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''),"
-                                  "regexp_replace(\"zk\".\"Name\", '\\s+$', ''),"
-                                  "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                                  "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                                  "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                                  "FROM \"zk\""
-                                 " WHERE \"zk\".\"Zk_id\" = (:temp_2_val)");
+                                  "zk.Date_add,"
+                                  "zk.Lastname,"
+                                  "zk.Name,"
+                                  " zk.Mid_name, "
+                                  " zk.Birth_date, "
+                                  " zk.Check_for "
+                                  "FROM zk"
+                                  " WHERE zk.Zk_id = (:temp_2_val)");
                    temp_3.bindValue(":temp_2_val",vector.at(a));
                    if (!temp_3.exec())
                        qDebug() << temp_3.lastError();
@@ -735,9 +735,9 @@ void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
     For_analysis::get_L_N_M(id);
     analysis_res.clear();
     int counter = 0;
-   querry.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                  "FROM  \"owners_tel\""
-                  "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+   querry.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                  " FROM  owners_tel"
+                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
    querry.bindValue(":id",id);
    if (!querry.exec())
        qDebug() << querry.lastError();
@@ -749,19 +749,19 @@ void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
        {
          qDebug() << vector.at(a);
 
-           temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_id\",\"owners_tel\".\"Telephone_num\""
-                          "FROM  \"owners_tel\""
-                          "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+           temp.prepare("SELECT DISTINCT owners_tel.Telephone_id,owners_tel.Telephone_num"
+                          " FROM owners_tel"
+                          " WHERE owners_tel.FK_Telephone_Zk = (:id)");
            temp.bindValue(":id", vector.at(a));
            if (!temp.exec())
                qDebug() << temp.lastError();
 
            while (temp.next())
            {
-               temp_2.prepare("SELECT DISTINCT \"contacts\".\"cl_info\", \"contacts\".\"cl_telephone\" "
-                                         "FROM \"contacts\", \"owners_tel\""
-                                         "WHERE \"contacts\".\"cl_telephone\" = (:an_tel)"
-                                         "AND \"contacts\".\"FK_Cl_telephone\" = (:id)");
+               temp_2.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
+                                         " FROM contacts, owners_tel"
+                                         " WHERE contacts.cl_telephone = (:an_tel)"
+                                         " AND contacts.FK_Cl_telephone = (:id)");
 
                              temp_2.bindValue(":an_tel",querry.value(0).toString());
                              qDebug() <<querry.value(0).toString();
@@ -776,23 +776,23 @@ void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
                              {
                                  counter++;
                                        temp_3.prepare("SELECT "
-          /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                         "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                         "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                         "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
+          /*0*/                        " zk.Lastname, "
+                                       " zk.Name, "
+                                       " zk.Mid_name, "
+                                       " zk.Birth_date, "
                          ""
-          /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                         "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                         "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                         "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                         "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
+          /*4*/                         "zk.Reg_city,"
+                                       "zk.Reg_street,"
+                                       "zk.Reg_home,"
+                                       "zk.Reg_corp,"
+                                       "zk.Reg_flat,"
                           ""
-          /*9*/          "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                         "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                         "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                         " FROM \"zk\" "
+          /*9*/                        "zk.Dop_info,"
+                                       "zk.Date_add,"
+                                       "zk.Check_for"
+                         " FROM zk "
                          " WHERE "
-                         "\"zk\".\"Zk_id\" = (:zk_id)");
+                         "zk.Zk_id = (:zk_id)");
                                       temp_3.bindValue(":zk_id",vector.at(a));
                                     QString str = QString::number(vector.at(a));
                                       if (!temp_3.exec())
@@ -830,11 +830,11 @@ void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
    temp_2.clear();
    querry.clear();
    querry.prepare("SELECT"
-                  "\"owners_tel\".\"Telephone_id\" "
+                 " owners_tel.Telephone_id "
                  " FROM"
-                 " \"owners_tel\" "
+                 " owners_tel "
                  " WHERE"
-                 " \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+                 " owners_tel.FK_Telephone_Zk = (:id)");
    querry.bindValue(":id", id);
 
    if (!querry.exec())
@@ -842,15 +842,15 @@ void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
    while (querry.next())
    {
        temp.prepare("SELECT"
-                    "\"owners_tel\".\"FK_Telephone_Zk\", "
-                    "\"owners_tel\".\"Telephone_num\", "
-                    "regexp_replace(\"contacts\".\"cl_info\", '\\s+$', '')"
-                   " FROM"
-                  " \"contacts\",\"owners_tel\""
-                  "  WHERE "
-                  "  \"contacts\".\"cl_telephone\" = \"owners_tel\".\"Telephone_num\" "
-                  "  AND "
-                  "  \"contacts\".\"FK_Cl_telephone\" = (:fk)");
+                    " owners_tel.FK_Telephone_Zk, "
+                    " owners_tel.Telephone_num, "
+                    "contacts.cl_info"
+                    " FROM"
+                   " contacts,owners_tel"
+                   "  WHERE "
+                   "  contacts.cl_telephone = owners_tel.Telephone_num "
+                   "  AND "
+                   "  contacts.FK_Cl_telephone = (:fk)");
        temp.bindValue(":fk", querry.value(0));
        if (!temp.exec())
            qDebug() << temp.lastError();
@@ -861,23 +861,23 @@ void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
             if(vector.at(a) == temp.value(0).toInt())
             {
                 temp_2.prepare("SELECT "
-                /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                               "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                               "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
+                /*0*/          "zk.Lastname, "
+                               "zk.Name, "
+                               "zk.Mid_name,"
+                               "zk.Birth_date,"
                                ""
-                /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
+                /*4*/          "zk.Reg_city,"
+                               "zk.Reg_street,"
+                               "zk.Reg_home,"
+                               "zk.Reg_corp,"
+                               "zk.Reg_flat,"
                                ""
-                /*9*/          "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                               "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                              " FROM \"zk\" "
+                /*9*/          "zk.Dop_info,"
+                               "zk.Date_add,"
+                               "zk.Check_for"
+                              " FROM zk "
                               " WHERE "
-                               "\"zk\".\"Zk_id\" = (:zk_id)");
+                               "zk.Zk_id = (:zk_id)");
                 temp_2.bindValue(":zk_id",temp.value(0).toInt());
                 if (!temp_2.exec())
                     qDebug() << temp_2.lastError();
@@ -920,10 +920,10 @@ void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
                            " возможно знаком со ";
            For_analysis::get_L_N_M(id);
            ///////////////////////////////////////
-           temp_3.prepare("SELECT COUNT(DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                          "FROM \"contacts\", \"owners_tel\""
-                          "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                           "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\"");
+           temp_3.prepare("SELECT COUNT(DISTINCT contacts.FK_Cl_telephone)"
+                          " FROM contacts, owners_tel"
+                          " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
+                           "owners_tel.Telephone_num = contacts.cl_telephone");
            temp_3.bindValue(":id", id);
            if (!temp_3.exec())
                qDebug() << temp_3.lastError();
@@ -945,9 +945,9 @@ void For_analysis::long_tel_analysis_all_db(QVector<int> vector, int id)
     analysis_res.clear();
     For_analysis::get_L_N_M(id);
 
-   querry.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                  "FROM  \"owners_tel\""
-                  "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+   querry.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                  " FROM  owners_tel"
+                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
    querry.bindValue(":id",id);
    if (!querry.exec())
        qDebug() << querry.lastError();
@@ -958,19 +958,19 @@ void For_analysis::long_tel_analysis_all_db(QVector<int> vector, int id)
        {
          qDebug() << vector.at(a);
 
-           temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_id\""
-                          "FROM  \"owners_tel\""
-                          "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+           temp.prepare("SELECT DISTINCT owners_tel.Telephone_id"
+                          " FROM  owners_tel"
+                          " WHERE owners_tel.FK_Telephone_Zk = (:id)");
            temp.bindValue(":id", vector.at(a));
            if (!temp.exec())
                qDebug() << temp.lastError();
 
            while (temp.next())
            {
-    /**/      temp_2.prepare("SELECT DISTINCT \"contacts\".\"cl_info\", \"contacts\".\"cl_telephone\" "
-                           "FROM \"contacts\", \"owners_tel\""
-                           "WHERE \"contacts\".\"cl_telephone\" = (:an_tel)"
-                           "AND \"contacts\".\"FK_Cl_telephone\" = (:id)");
+    /**/      temp_2.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
+                           " FROM contacts, owners_tel"
+                           " WHERE contacts.cl_telephone = (:an_tel)"
+                           " AND contacts.FK_Cl_telephone = (:id)");
 
                temp_2.bindValue(":an_tel",querry.value(0).toString());
 
@@ -990,11 +990,11 @@ void For_analysis::long_tel_analysis_all_db(QVector<int> vector, int id)
 
                    analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
                    ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-                   temp_3.prepare("SELECT COUNT( DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                                "FROM \"owners_tel\", \"contacts\" "
-                                "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-                               " AND "
-                                "\"contacts\".\"cl_telephone\" = (:tel_num) ");
+                   temp_3.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
+                                " FROM owners_tel, contacts "
+                                " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                                " AND "
+                                "contacts.cl_telephone = (:tel_num) ");
                    temp_3.bindValue(":id",id);
                    temp_3.bindValue(":tel_num",Tel_num);
 
@@ -1011,23 +1011,23 @@ void For_analysis::long_tel_analysis_all_db(QVector<int> vector, int id)
                    temp_3.clear();
                  }
                    temp_3.prepare("SELECT "
- /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                ""
- /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
-                ""
-/*9*/           "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                " FROM \"zk\" "
+ /*0*/             "zk.Lastname, "
+                   "zk.Name, "
+                   "zk.Mid_name,"
+                   "zk.Birth_date,"
+                   ""
+    /*4*/          "zk.Reg_city,"
+                   "zk.Reg_street,"
+                   "zk.Reg_home,"
+                   "zk.Reg_corp,"
+                   "zk.Reg_flat,"
+                   ""
+    /*9*/          "zk.Dop_info,"
+                   "zk.Date_add,"
+                   "zk.Check_for"
+                " FROM zk "
                 " WHERE "
-                "\"zk\".\"Zk_id\" = (:zk_id)");
+                "zk.Zk_id = (:zk_id)");
                    temp_3.bindValue(":zk_id",vector.at(a));
                    if (!temp_3.exec())
                        qDebug() << temp_3.lastError();
@@ -1064,9 +1064,9 @@ void For_analysis::short_face_analysis_all_db(QDate dateFROM, QDate dateTO, int 
 {
     analysis_res.clear();
     int counter = 0;
-    querry.prepare("SELECT \"zk\".\"Date_add\", \"zk\".\"Zk_id\""
-                   "From \"zk\""
-                   "WHERE \"zk\".\"Date_add\" IS NOT NULL");
+    querry.prepare("SELECT zk.Date_add, zk.Zk_id"
+                   " From zk"
+                   " WHERE zk.Date_add IS NOT NULL");
 
     if (!querry.exec())
         qDebug() << querry.lastError();
@@ -1078,28 +1078,28 @@ void For_analysis::short_face_analysis_all_db(QDate dateFROM, QDate dateTO, int 
 
         if(date <= dateTO && date >= dateFROM)
         {
-            temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                           "FROM  \"owners_tel\""
-                           "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+            temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                           " FROM  owners_tel"
+                           " WHERE owners_tel.FK_Telephone_Zk = (:id)");
             temp.bindValue(":id",id);
             if (!temp.exec())
                 qDebug() << temp.lastError();
 
             while (temp.next())
             {
-                temp_2.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_id\""
-                               "FROM  \"owners_tel\""
-                               "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+                temp_2.prepare("SELECT DISTINCT owners_tel.Telephone_id"
+                               " FROM  owners_tel"
+                               " WHERE owners_tel.FK_Telephone_Zk = (:id)");
                 temp_2.bindValue(":id", querry.value(1));
                 if (!temp_2.exec())
                     qDebug() << temp_2.lastError();
 
                 while (temp_2.next())
                 {
-                    temp_3.prepare("SELECT DISTINCT \"contacts\".\"cl_info\", \"contacts\".\"cl_telephone\" "
-                                              "FROM \"contacts\", \"owners_tel\""
-                                              "WHERE \"contacts\".\"cl_telephone\" = (:an_tel)"
-                                              "AND \"contacts\".\"FK_Cl_telephone\" = (:id)");
+                    temp_3.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
+                                              " FROM contacts, owners_tel"
+                                              " WHERE contacts.cl_telephone = (:an_tel)"
+                                              " AND contacts.FK_Cl_telephone = (:id)");
 
                                   temp_3.bindValue(":an_tel",temp.value(0).toString());
 
@@ -1113,15 +1113,15 @@ void For_analysis::short_face_analysis_all_db(QDate dateFROM, QDate dateTO, int 
                                      QSqlQuery temp_4;
                                      counter++;
                                      temp_4.prepare("SELECT "
-                                                   "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                                                   "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                                                   "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                                                   "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                                                   "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                                                   "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                                                  " FROM \"zk\" "
-                                                  " WHERE "
-                                                   "\"zk\".\"Zk_id\" = (:zk_id)");
+                                                    "zk.Lastname, "
+                                                    "zk.Name, "
+                                                    "zk.Mid_name,"
+                                                    "zk.Birth_date,"
+                                                    "zk.Date_add,"
+                                                    "zk.Check_for"
+                                                    " FROM zk "
+                                                    " WHERE "
+                                                    "zk.Zk_id = (:zk_id)");
                                     temp_4.bindValue(":zk_id",querry.value(1));
 
                                     if (!temp_4.exec())
@@ -1162,9 +1162,9 @@ void For_analysis::short_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int i
     analysis_res.clear();
     For_analysis::get_L_N_M(id);
 
-    querry.prepare("SELECT \"zk\".\"Date_add\", \"zk\".\"Zk_id\""
-                   "From \"zk\""
-                   "WHERE \"zk\".\"Date_add\" IS NOT NULL");
+    querry.prepare("SELECT zk.Date_add, zk.Zk_id"
+                   " From zk"
+                   " WHERE zk.Date_add IS NOT NULL");
 
     if (!querry.exec())
         qDebug() << querry.lastError();
@@ -1176,28 +1176,28 @@ void For_analysis::short_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int i
 
         if(date <= dateTO && date >= dateFROM)
         {
-            temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                           "FROM  \"owners_tel\""
-                           "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+            temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                           " FROM  owners_tel"
+                           " WHERE owners_tel.FK_Telephone_Zk = (:id)");
             temp.bindValue(":id",id);
             if (!temp.exec())
                 qDebug() << temp.lastError();
 
             while (temp.next())
             {
-                temp_2.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_id\""
-                               "FROM  \"owners_tel\""
-                               "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+                temp_2.prepare("SELECT DISTINCT owners_tel.Telephone_id"
+                               " FROM  owners_tel"
+                               " WHERE owners_tel.FK_Telephone_Zk = (:id)");
                 temp_2.bindValue(":id", querry.value(1));
                 if (!temp_2.exec())
                     qDebug() << temp_2.lastError();
 
                 while (temp_2.next())
                 {
-                    temp_3.prepare("SELECT DISTINCT \"contacts\".\"cl_info\", \"contacts\".\"cl_telephone\" "
-                                               "FROM \"contacts\", \"owners_tel\""
-                                               "WHERE \"contacts\".\"cl_telephone\" = (:an_tel)"
-                                               "AND \"contacts\".\"FK_Cl_telephone\" = (:id)");
+                    temp_3.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
+                                               " FROM contacts, owners_tel"
+                                               " WHERE contacts.cl_telephone = (:an_tel)"
+                                               " AND contacts.FK_Cl_telephone = (:id)");
 
                                    temp_3.bindValue(":an_tel",temp.value(0).toString());
 
@@ -1218,11 +1218,11 @@ void For_analysis::short_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int i
 
                                        analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
                                        ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-                                       temp_4.prepare("SELECT COUNT( DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                                                    "FROM \"owners_tel\", \"contacts\" "
-                                                    "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-                                                   " AND "
-                                                    "\"contacts\".\"cl_telephone\" = (:tel_num) ");
+                                       temp_4.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
+                                                      " FROM owners_tel, contacts "
+                                                      " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                                                      " AND "
+                                                    "contacts.cl_telephone = (:tel_num) ");
                                        temp_4.bindValue(":id",id);
                                        temp_4.bindValue(":tel_num",Tel_num);
 
@@ -1239,14 +1239,14 @@ void For_analysis::short_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int i
                                        temp_4.clear();
                                      }
                                        temp_4.prepare("SELECT "
-                                                      "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                                                      "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''),"
-                                                      "regexp_replace(\"zk\".\"Name\", '\\s+$', ''),"
-                                                      "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                                                      "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                                                      "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                                                      "FROM \"zk\""
-                                                     " WHERE \"zk\".\"Zk_id\" = (:temp_2_val)");
+                                                      "zk.Date_add,"
+                                                      "zk.Lastname, "
+                                                      "zk.Name, "
+                                                      "zk.Mid_name,"
+                                                      "zk.Birth_date,"
+                                                      "zk.Check_for"
+                                                      " FROM zk"
+                                                      " WHERE zk.Zk_id = (:temp_2_val)");
                                        temp_4.bindValue(":temp_2_val",querry.value(1));
                                        if (!temp_4.exec())
                                            qDebug() << temp_4.lastError();
@@ -1276,9 +1276,9 @@ void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int i
     analysis_res.clear();
     For_analysis::get_L_N_M(id);
 
-    querry.prepare("SELECT \"zk\".\"Date_add\", \"zk\".\"Zk_id\""
-                   "From \"zk\""
-                   "WHERE \"zk\".\"Date_add\" IS NOT NULL");
+    querry.prepare("SELECT zk.Date_add, zk.Zk_id"
+                   " From zk"
+                   " WHERE zk.Date_add IS NOT NULL");
 
     if (!querry.exec())
         qDebug() << querry.lastError();
@@ -1290,28 +1290,28 @@ void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int i
 
         if(date <= dateTO && date >= dateFROM)
         {
-            temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                           "FROM  \"owners_tel\""
-                           "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+            temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                           " FROM  owners_tel"
+                           " WHERE owners_tel.FK_Telephone_Zk = (:id)");
             temp.bindValue(":id",id);
             if (!temp.exec())
                 qDebug() << temp.lastError();
 
             while (temp.next())
             {
-                temp_2.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_id\",\"owners_tel\".\"Telephone_num\""
-                               "FROM  \"owners_tel\""
-                               "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+                temp_2.prepare("SELECT DISTINCT owners_tel.Telephone_id,owners_tel.Telephone_num"
+                               " FROM  owners_tel"
+                               " WHERE owners_tel.FK_Telephone_Zk = (:id)");
                 temp_2.bindValue(":id", querry.value(1));
                 if (!temp_2.exec())
                     qDebug() << temp_2.lastError();
 
                 while (temp_2.next())
                 {
-                    temp_3.prepare("SELECT DISTINCT \"contacts\".\"cl_info\", \"contacts\".\"cl_telephone\" "
-                                              "FROM \"contacts\", \"owners_tel\""
-                                              "WHERE \"contacts\".\"cl_telephone\" = (:an_tel)"
-                                              "AND \"contacts\".\"FK_Cl_telephone\" = (:id)");
+                    temp_3.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
+                                              " FROM contacts, owners_tel"
+                                              " WHERE contacts.cl_telephone = (:an_tel)"
+                                              " AND contacts.FK_Cl_telephone = (:id)");
 
                                   temp_3.bindValue(":an_tel",temp.value(0).toString());
 
@@ -1325,23 +1325,23 @@ void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int i
                                       QSqlQuery temp_4;
                                       counter++;
                                             temp_4.prepare("SELECT "
-               /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                              "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                              "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                              "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                              ""
-               /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                              "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                              "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                              "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                              "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
-                               ""
-               /*9*/          "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                              "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                              "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                              " FROM \"zk\" "
+               /*0*/                        "zk.Lastname, "
+                                            "zk.Name, "
+                                            "zk.Mid_name,"
+                                            "zk.Birth_date,"
+                                            ""
+                             /*4*/          "zk.Reg_city,"
+                                            "zk.Reg_street,"
+                                            "zk.Reg_home,"
+                                            "zk.Reg_corp,"
+                                            "zk.Reg_flat,"
+                                            ""
+                             /*9*/          "zk.Dop_info,"
+                                            "zk.Date_add,"
+                                            "zk.Check_for"
+                              " FROM zk "
                               " WHERE "
-                              "\"zk\".\"Zk_id\" = (:zk_id)");
+                              "zk.Zk_id = (:zk_id)");
                                            temp_4.bindValue(":zk_id",querry.value(1));
                                          QString str = QString::number(querry.value(1).toInt());
                                            if (!temp_4.exec())
@@ -1380,20 +1380,20 @@ void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int i
         temp_2.clear();
         temp_3.clear();
 
-        querry.prepare("SELECT \"zk\".\"Date_add\", \"zk\".\"Zk_id\""
-                       "From \"zk\""
-                       "WHERE \"zk\".\"Date_add\" IS NOT NULL");
+        querry.prepare("SELECT zk.Date_add, zk.Zk_id"
+                       " From zk"
+                       " WHERE zk.Date_add IS NOT NULL");
 
         if (!querry.exec())
             qDebug() << querry.lastError();
         while (querry.next())
         {
             temp.prepare("SELECT"
-                           "\"owners_tel\".\"Telephone_id\" "
+                           " owners_tel.Telephone_id "
                           " FROM"
-                          " \"owners_tel\" "
+                          " owners_tel "
                           " WHERE"
-                          " \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+                          " owners_tel.FK_Telephone_Zk = (:id)");
             temp.bindValue(":id", id);
 
             if (!temp.exec())
@@ -1401,15 +1401,15 @@ void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int i
             while (temp.next())
             {
                 temp_2.prepare("SELECT"
-                             "\"owners_tel\".\"FK_Telephone_Zk\", "
-                             "\"owners_tel\".\"Telephone_num\", "
-                             "regexp_replace(\"contacts\".\"cl_info\", '\\s+$', '')"
-                            " FROM"
-                           " \"contacts\",\"owners_tel\""
+                             " owners_tel.FK_Telephone_Zk, "
+                             " owners_tel.Telephone_num, "
+                             "coregexp_replacentacts.cl_info"
+                             " FROM"
+                           " contacts,owners_tel"
                            "  WHERE "
-                           "  \"contacts\".\"cl_telephone\" = \"owners_tel\".\"Telephone_num\" "
+                           "  contacts.cl_telephone = owners_tel.Telephone_num "
                            "  AND "
-                           "  \"contacts\".\"FK_Cl_telephone\" = (:fk)");
+                           "  contacts.FK_Cl_telephone = (:fk)");
                 temp_2.bindValue(":fk", temp.value(0));
                 if (!temp_2.exec())
                     qDebug() << temp_2.lastError();
@@ -1418,23 +1418,23 @@ void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int i
                     if(querry.value(1) == temp_2.value(0).toInt())
                     {
                         temp_3.prepare("SELECT "
-                        /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                                       "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                                       "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                                       "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
+                        /*0*/          "zk.Lastname, "
+                                       "zk.Name, "
+                                       "zk.Mid_name,"
+                                       "zk.Birth_date,"
                                        ""
-                        /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                                       "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                                       "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                                       "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                                       "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
+                        /*4*/          "zk.Reg_city,"
+                                       "zk.Reg_street,"
+                                       "zk.Reg_home,"
+                                       "zk.Reg_corp,"
+                                       "zk.Reg_flat,"
                                        ""
-                        /*9*/          "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                                       "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                                       "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                                      " FROM \"zk\" "
+                        /*9*/          "zk.Dop_info,"
+                                       "zk.Date_add,"
+                                       "zk.Check_for"
+                                      " FROM zk "
                                       " WHERE "
-                                       "\"zk\".\"Zk_id\" = (:zk_id)");
+                                       "zk.Zk_id = (:zk_id)");
                         temp_3.bindValue(":zk_id",temp_2.value(0).toInt());
                         if (!temp_3.exec())
                             qDebug() << temp_3.lastError();
@@ -1477,10 +1477,10 @@ void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int i
                             " возможно знаком со ";
             For_analysis::get_L_N_M(id);
             ///////////////////////////////////////
-            temp_3.prepare("SELECT COUNT(DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                           "FROM \"contacts\", \"owners_tel\""
-                           "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id) AND"
-                            "\"owners_tel\".\"Telephone_num\" = \"contacts\".\"cl_telephone\"");
+            temp_3.prepare("SELECT COUNT(DISTINCT contacts.FK_Cl_telephone)"
+                           " FROM contacts, owners_tel"
+                           " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
+                           "owners_tel.Telephone_num = contacts.cl_telephone");
             temp_3.bindValue(":id", id);
             if (!temp_3.exec())
                 qDebug() << temp_3.lastError();
@@ -1502,9 +1502,9 @@ void For_analysis::long_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id
     analysis_res.clear();
     For_analysis::get_L_N_M(id);
 
-    querry.prepare("SELECT \"zk\".\"Date_add\", \"zk\".\"Zk_id\""
-                   "From \"zk\""
-                   "WHERE \"zk\".\"Date_add\" IS NOT NULL");
+    querry.prepare("SELECT zk.Date_add, zk.Zk_id"
+                   " From zk"
+                   " WHERE zk.Date_add IS NOT NULL");
 
     if (!querry.exec())
         qDebug() << querry.lastError();
@@ -1516,28 +1516,28 @@ void For_analysis::long_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id
 
         if(date <= dateTO && date >= dateFROM)
         {
-            temp.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_num\""
-                           "FROM  \"owners_tel\""
-                           "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+            temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
+                           " FROM  owners_tel"
+                           " WHERE owners_tel.FK_Telephone_Zk = (:id)");
             temp.bindValue(":id",id);
             if (!temp.exec())
                 qDebug() << temp.lastError();
 
             while (temp.next())
             {
-                temp_2.prepare("SELECT DISTINCT \"owners_tel\".\"Telephone_id\", \"owners_tel\".\"Telephone_num\""
-                               "FROM  \"owners_tel\""
-                               "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)");
+                temp_2.prepare("SELECT DISTINCT owners_tel.Telephone_id, owners_tel.Telephone_num"
+                               " FROM  owners_tel"
+                               " WHERE owners_tel.FK_Telephone_Zk = (:id)");
                 temp_2.bindValue(":id", querry.value(1));
                 if (!temp_2.exec())
                     qDebug() << temp_2.lastError();
 
                 while (temp_2.next())
                 {
-                    temp_3.prepare("SELECT DISTINCT \"contacts\".\"cl_info\", \"contacts\".\"cl_telephone\" "
-                                              "FROM \"contacts\", \"owners_tel\""
-                                              "WHERE \"contacts\".\"cl_telephone\" = (:an_tel)"
-                                              "AND \"contacts\".\"FK_Cl_telephone\" = (:id)");
+                    temp_3.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
+                                              " FROM contacts, owners_tel"
+                                              " WHERE contacts.cl_telephone = (:an_tel)"
+                                              " AND contacts.FK_Cl_telephone = (:id)");
 
                                   temp_3.bindValue(":an_tel",temp.value(0).toString());
 
@@ -1558,11 +1558,11 @@ void For_analysis::long_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id
 
                                       analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
                                       ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-                                      temp_4.prepare("SELECT COUNT( DISTINCT \"contacts\".\"FK_Cl_telephone\")"
-                                                   "FROM \"owners_tel\", \"contacts\" "
-                                                   "WHERE \"owners_tel\".\"FK_Telephone_Zk\" = (:id)"
-                                                  " AND "
-                                                   "\"contacts\".\"cl_telephone\" = (:tel_num) ");
+                                      temp_4.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
+                                                   " FROM owners_tel, contacts "
+                                                   " WHERE owners_tel.FK_Telephone_Zk = (:id)"
+                                                   " AND "
+                                                   " contacts.cl_telephone = (:tel_num) ");
                                       temp_4.bindValue(":id",id);
                                       temp_4.bindValue(":tel_num",Tel_num);
 
@@ -1579,23 +1579,23 @@ void For_analysis::long_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id
                                       temp_4.clear();
                                     }
                                       temp_4.prepare("SELECT "
-                    /*0*/          "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                                   "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                                   "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                                   "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                                   ""
-                    /*4*/          "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                                   "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                                   "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                                   "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                                   "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
-                                   ""
-                   /*9*/           "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                                   "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                                   "regexp_replace(\"zk\".\"Check_for\", '\\s+$', '')"
-                                   " FROM \"zk\" "
+                    /*0*/          "zk.Lastname, "
+                                      "zk.Name, "
+                                      "zk.Mid_name,"
+                                      "zk.Birth_date,"
+                                      ""
+                       /*4*/          "zk.Reg_city,"
+                                      "zk.Reg_street,"
+                                      "zk.Reg_home,"
+                                      "zk.Reg_corp,"
+                                      "zk.Reg_flat,"
+                                      ""
+                       /*9*/          "zk.Dop_info,"
+                                      "zk.Date_add,"
+                                      "zk.Check_for"
+                                   " FROM zk "
                                    " WHERE "
-                                   "\"zk\".\"Zk_id\" = (:zk_id)");
+                                   "zk.Zk_id = (:zk_id)");
                                       temp_4.bindValue(":zk_id",querry.value(1));
                                       if (!temp_4.exec())
                                           qDebug() << temp_4.lastError();
@@ -1631,11 +1631,11 @@ void For_analysis::long_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id
 void For_analysis::get_L_N_M(int id)
 {
     querry.prepare("SELECT "
-                   "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''), "
-                   "regexp_replace(\"zk\".\"Name\", '\\s+$', ''), "
-                   "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', '')"
-                   "FROM \"zk\""
-                   "WHERE \"zk\".\"Zk_id\"= (:id)");
+                   "zk.Lastname, "
+                   "zk.Name, "
+                   "zk.Mid_name"
+                   " FROM zk"
+                   " WHERE zk.Zk_id= (:id)");
     querry.bindValue(":id", id);
 
     if (!querry.exec())

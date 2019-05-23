@@ -31,13 +31,13 @@ bool Contacts::selectAll(QList<Contacts*> *list)
     if( !db_connection::instance()->db_connect() )
         return false;
 
-    QSqlQuery temp(db_connection::instance()->db);
+    QSqlQuery temp(db_connection::instance()->db());
     temp.prepare("SELECT "
-                 "\"contacts\".\"Contact_list_id\","
-                 "regexp_replace(\"contacts\".\"cl_telephone\", '\\s+$', ''),"
-                 "regexp_replace(\"contacts\".\"cl_info\", '\\s+$', ''), "
-                 "\"contacts\".\"FK_Cl_telephone\""
-                    "FROM \"contacts\"");
+                 "contacts.contact_list_id,"
+                 "contacts.cl_telephone,"
+                 "contacts.cl_info, "
+                 "contacts.FK_Cl_telephone"
+                    " FROM contacts");
     if (!temp.exec())
     {
         qDebug() << temp.lastError();
@@ -58,22 +58,20 @@ bool Contacts::saveAll(QList<Contacts*> *list)
     if(list==0 || !db_connection::instance()->db_connect())
         return false;
 
-    QString cname = db_connection::instance()->db.connectionName();
+    QString cname = db_connection::instance()->db().connectionName();
 
-    bool isOk = db_connection::instance()->db.database(cname).transaction();
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
 
     for(int i=0;i<list->size();i++)
     {
         if ( !isOk )
             break;
 
+     if (!list->at(i)->contact_tel_num.isEmpty())
         switch(list->at(i)->cont_state)
         {
         case IsNewing:
-            if (!list->at(i)->contact_tel_num.isEmpty())
                 isOk = list->at(i)->insert(false);
-            else
-                isOk = list->at(i)->remove();
             break;
         case IsChanged:
             isOk = list->at(i)->update(false);
@@ -86,11 +84,11 @@ bool Contacts::saveAll(QList<Contacts*> *list)
 
     if(!isOk)
     {
-        db_connection::instance()->db.database(cname).rollback();
+        db_connection::instance()->db().database(cname).rollback();
         qDebug() << "отсюда";
         return false;
     }
-    db_connection::instance()->db.database(cname).commit();
+    db_connection::instance()->db().database(cname).commit();
 
     for(int i=list->size()-1;i>=0;i--)
     {
@@ -117,15 +115,15 @@ bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
     if( !db_connection::instance()->db_connect() )
         return false;
 
-    QSqlQuery temp(db_connection::instance()->db);
+    QSqlQuery temp(db_connection::instance()->db());
 
     temp.prepare("SELECT "
-                 "\"contacts\".\"Contact_list_id\","
-                 "regexp_replace(\"contacts\".\"cl_telephone\", '\\s+$', ''),"
-                 "regexp_replace(\"contacts\".\"cl_info\", '\\s+$', ''),"
-                 "\"contacts\".\"FK_Cl_telephone\""
-                    "FROM \"contacts\"");
-                 //"WHERE \"contacts\".\"FK_Cl_telephone\" = (:id) ");
+                 "contacts.contact_list_id,"
+                 "contacts.cl_telephone,"
+                 "contacts.cl_info,"
+                 "contacts.FK_Cl_telephone "
+                  " FROM contacts");
+    //"WHERE \"contacts\".\"FK_Cl_telephone\" = (:id) ");
     //temp.bindValue(":id",tel_id);
     if (!temp.exec())
     {
@@ -159,13 +157,47 @@ bool Contacts::selectContactsforEdit(QList<Contacts *> *list, int)
     }
 }
 
+bool Contacts::selectOffTel(QList<Contacts *> *list)
+{
+    if(list==nullptr)
+        return false;
+
+    qDeleteAll(*list);
+    list->clear();
+
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("SELECT "
+                 "contacts.contact_list_id,"
+                 "contacts.cl_telephone,"
+                 "contacts.cl_info,"
+                 "contacts.FK_Cl_telephone"
+                  " FROM contacts"
+                 " WHERE contacts.FK_Cl_telephone = 142");
+    if (!temp.exec())
+    {
+        qDebug() << temp.lastError();
+        return false;
+    }
+
+    while (temp.next())
+    {
+        Contacts *cnt = new Contacts(temp.value(0).toInt(), temp.value(1).toString(), temp.value(2).toString(),temp.value(3).toInt(), IsReaded);
+        list->append(cnt);
+    }
+
+    return true;
+}
+
 bool Contacts::insert(bool setState)
 {
     if( !db_connection::instance()->db_connect() )
         return false;
 
-    QSqlQuery temp(db_connection::instance()->db);
-    temp.prepare("INSERT INTO \"contacts\"( \"cl_telephone\", \"cl_info\", \"FK_Cl_telephone\") VALUES ( (:tel_num), (:mark), (:fk_id)) RETURNING \"Contact_list_id\"");
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("INSERT INTO contacts( cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id)) RETURNING Contact_list_id");
     temp.bindValue(":tel_num",contact_tel_num);
     temp.bindValue(":mark",mark);
     temp.bindValue(":fk_id",parent_OT_id);
@@ -194,11 +226,11 @@ bool Contacts::update(bool setState)
     if( !db_connection::instance()->db_connect() )
         return false;
 
-    QSqlQuery temp(db_connection::instance()->db);
-    temp.prepare("UPDATE \"contacts\" SET \"cl_telephone\" = (:cl_tel), "
-                            "\"cl_info\" = (:cl_info) "
-                            "WHERE "
-                            "\"Contact_list_id\" = (:id)");
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("UPDATE contacts SET cl_telephone = (:cl_tel), "
+                            "cl_info = (:cl_info) "
+                            " WHERE "
+                            " Contact_list_id = (:id)");
       temp.bindValue(":cl_tel", contact_tel_num);
       temp.bindValue(":cl_info", mark);
       temp.bindValue(":id", contact_id);
@@ -220,8 +252,8 @@ bool Contacts::remove()
     if( !db_connection::instance()->db_connect() )
         return false;
 
-    QSqlQuery temp(db_connection::instance()->db);
-   temp.prepare("DELETE FROM \"contacts\" WHERE \"Contact_list_id\" = (:id)");
+    QSqlQuery temp(db_connection::instance()->db());
+   temp.prepare("DELETE FROM contacts WHERE Contact_list_id = (:id)");
    temp.bindValue(":id",contact_id);
 
     if (!temp.exec())
@@ -232,7 +264,7 @@ bool Contacts::remove()
     }
 
     qDebug() << "delete" + QString::number(contact_id);
-    state = IsRemoved;
+    cont_state = IsRemoved;
     return true;
 }
 

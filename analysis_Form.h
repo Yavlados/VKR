@@ -22,6 +22,7 @@ public:
     int p_b_counter = 0;
 
     QVector<int> vector;
+    QDate Date_From, Date_To;
 
 private slots:
 
@@ -49,6 +50,10 @@ private slots:
     void uniq_array();
 
     void on_pushButton_2_clicked();
+
+    QDate get_date_from();
+
+    QDate get_date_to();
 
 signals:
 
