@@ -1,7 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "add_form.h"
 #include "analysis_Form.h"
 #include "update_Form.h"
 #include "search_Form.h"
@@ -36,9 +35,9 @@ public:
 
     Model_check_state m_c_s;
 
-     Add_form *add = new Add_form(); //указатель на форму добавления
+     Update *add; //указатель на форму добавления
 
-     Update *upd = new Update();
+     Update *upd; //указатель на форму добавления
 
      Search *sr = new Search;
 
@@ -102,24 +101,20 @@ private slots:
 
     void on_action_official_tel_triggered();
 
-    void on_pushButton_2_clicked();
-
-    void on_pushButton_3_clicked();
-
     void on_actionexport_triggered();
 
-    void testing_export(QString, QString);
+    void testing_export(QString, QString, bool, bool);
 
     void testing_opening(QString, QString);
 
     void on_pb_check_model_clicked();
 
 signals:
-    void Send_data(int);
+    void Send_data(Crud *cr);
 
     void Refresh_tab();
 
-    void Fill_table_add();
+    void Fill_table_add(int);
 
     void Set_validators_an();
 

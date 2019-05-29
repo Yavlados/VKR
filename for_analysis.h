@@ -6,12 +6,12 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDate>
+#include "db_connection.h"
 
 class For_analysis
 {
 public:
     For_analysis();
-
     QSqlQuery temp;
     QSqlQuery querry;
     QSqlQuery temp_2; // для метода даления

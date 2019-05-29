@@ -2,14 +2,17 @@
 
 Owners_tel::Owners_tel()
 {
+    _cont = nullptr;
 }
 
 Owners_tel::Owners_tel(int t_d): tel_id(t_d)
 {
+    _cont = nullptr;
 }
 
 Owners_tel::Owners_tel(int zk, int id, DbState st)
 {//////// Конструктор для формы добавления////////
+    _cont = nullptr;
     tel_id = id;
     parentZK_id = zk;
     state = st;
@@ -18,12 +21,24 @@ Owners_tel::Owners_tel(int zk, int id, DbState st)
 Owners_tel::Owners_tel(QString t_n, int t_id, int zk, DbState st):
     tel_id (t_id), tel_num(t_n), parentZK_id(zk)
 {
+    _cont = nullptr;
     state = st;
 }
 
 Owners_tel::~Owners_tel()
 {
-  qDebug()<<"delete telephone"<<tel_id;
+    qDebug()<<"delete telephone"<<tel_id;
+}
+
+QList<Contacts *> *Owners_tel::cont()
+{
+    state = IsNewing;
+    if (_cont == nullptr)
+    {
+        _cont = new QList<Contacts*>;
+        Contacts::selectTelContacts(_cont, tel_id);
+    }
+    return _cont;
 }
 
 bool Owners_tel::selectAll(QList<Owners_tel *> *list)

@@ -2,6 +2,7 @@
 #define UPDATE_H
 #include "_MTM_Contacts.h"
 #include "_MTM_OwTel.h"
+#include "_Crud.h"
 
 #include <QWidget>
 #include <QDebug>
@@ -19,6 +20,7 @@ class Update : public QWidget
     Q_OBJECT
 
 public:
+
     int zk_id;
 
     QString tel_num;
@@ -36,15 +38,18 @@ public:
     ~Update();
 public slots:
 
-    void Recieve_data(int);
+    void Recieve_data(Crud*);
 
 private:
     Ui::Update *ui;
 
 signals:
+
     void Ready_for_update();
     void Update_old_tel(int);
     void Add_contact_row(int);
+    void open_update_tab(int);
+    void toMainForm();
 
 private slots:
 
@@ -56,13 +61,15 @@ private slots:
     void on_pb_Back_to_Main_clicked();
     void on_tableView_clicked(const QModelIndex &index);
 
-    void on_rb_adres_reg_clicked();
-    void on_rb_adres_liv_clicked();
-
     void on_pb_del_line_telephone_clicked();
     void on_pb_del_contact_line_clicked();
     void on_pb_add_contact_line_clicked();
     void on_tableView_2_clicked(const QModelIndex &index);
+
+    ///Методы добавления
+     void Fill_table_in_add(int max_id);
+     void Add_zk();
+     void cb_clicked();
 };
 
 #endif // UPDATE_H

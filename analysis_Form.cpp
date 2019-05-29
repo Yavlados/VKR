@@ -337,8 +337,8 @@ void Analysis::set_validators()
 {
     int min, max;
     Crud *cr = new Crud();
-    cr->get_min_zk();   min = cr->zk_id;
-    cr->get_max_zk();   max = cr->zk_id;
+//    cr->get_min_zk();   min = cr->zk_id;
+//    cr->get_max_zk();   max = cr->zk_id;
     ui->le_an_zk->setValidator(new QIntValidator(min,max));
     delete cr;
     ui->le_day_to->setValidator(new QIntValidator(1,31));

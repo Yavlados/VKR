@@ -7,6 +7,12 @@ For_analysis::For_analysis()
 
 void For_analysis::short_face_analysis_all_db(int id)
 {
+
+    db_connection *db = db_connection::instance();
+    QSqlQuery temp(db->db());
+    QSqlQuery querry(db->db());
+    QSqlQuery temp_2(db->db()); // для метода даления
+    QSqlQuery temp_3(db->db());
     analysis_res.clear();
         ///////////////////////////////////////
     querry.prepare("SELECT contacts.FK_Cl_telephone "

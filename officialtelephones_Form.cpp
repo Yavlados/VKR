@@ -17,7 +17,7 @@ OfficialTelephones::~OfficialTelephones()
 
 void OfficialTelephones::Fill_table()
 {
-    if(Contacts::selectOffTel(ofTlist))
+    if(Off_tels::selectOffTel(ofTlist))
            of_model->setOffTList(ofTlist);
 
        ui->tableView->setModel(of_model);

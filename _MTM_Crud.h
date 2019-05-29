@@ -26,6 +26,9 @@ public:
     /// Получение списка ЗК моделью
     virtual void setCrudlist(QList<Crud*> *crudl);
 
+    /// Получение одной ЗК моделью (Быстрый поиск)
+    virtual void setOneCrud(Crud* crud_res);
+
     /// Получение списка ЗК моделью
     virtual void setCheckedCrudlist(QList<Crud*> *crudl);
 

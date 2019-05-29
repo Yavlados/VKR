@@ -157,40 +157,6 @@ bool Contacts::selectContactsforEdit(QList<Contacts *> *list, int)
     }
 }
 
-bool Contacts::selectOffTel(QList<Contacts *> *list)
-{
-    if(list==nullptr)
-        return false;
-
-    qDeleteAll(*list);
-    list->clear();
-
-    if( !db_connection::instance()->db_connect() )
-        return false;
-
-    QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("SELECT "
-                 "contacts.contact_list_id,"
-                 "contacts.cl_telephone,"
-                 "contacts.cl_info,"
-                 "contacts.FK_Cl_telephone"
-                  " FROM contacts"
-                 " WHERE contacts.FK_Cl_telephone = 142");
-    if (!temp.exec())
-    {
-        qDebug() << temp.lastError();
-        return false;
-    }
-
-    while (temp.next())
-    {
-        Contacts *cnt = new Contacts(temp.value(0).toInt(), temp.value(1).toString(), temp.value(2).toString(),temp.value(3).toInt(), IsReaded);
-        list->append(cnt);
-    }
-
-    return true;
-}
-
 bool Contacts::insert(bool setState)
 {
     if( !db_connection::instance()->db_connect() )

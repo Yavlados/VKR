@@ -18,6 +18,7 @@ class master_export_Form : public QWidget
 public:
     Search *sr = new Search;
     int p_b_counter = 0;
+
     explicit master_export_Form(QWidget *parent = nullptr);
     ~master_export_Form();
 
@@ -34,13 +35,25 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pb_to_export_clicked();
+
+    void on_pb_to_import_clicked();
+
+    void on_pb_back_1_clicked();
+
+    void on_pb_back_2_clicked();
+
+    void on_pb_directory_2_clicked();
+
+    void on_cb_set_password_clicked();
+
 private:
     Ui::master_export_Form *ui;
 signals:
 
     void rb_zk_clicked();
     void rb_check_all();
-    void TESTING_export(QString filename, QString password);
+    void TESTING_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password);
     void TESTING_open(QString filename, QString password);
 };
 

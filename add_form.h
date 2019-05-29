@@ -57,12 +57,6 @@ private slots:
 
     //Слот Проверки добавления телефона
 
-    void on_pushButton_clicked();
-
-    void on_radioButton_clicked();
-
-    void on_radioButton_2_clicked();
-
     void on_checkBox_clicked();
 
 signals:

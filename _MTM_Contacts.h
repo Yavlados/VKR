@@ -7,7 +7,6 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlError>
-#include <QCheckBox>
 
 enum Calling_state_Model {Show_cont = 1,  /// Модель для просмотра
                         Edit_cont = 0}; /// Модель для изменения (формы update и add_form)

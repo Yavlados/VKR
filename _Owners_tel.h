@@ -17,7 +17,6 @@
 
 class Owners_tel:public Contacts
 {
-private:
 
 public:
 
@@ -32,7 +31,7 @@ Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
     int parentZK_id;
     DbState state;
 
-    QList<Contacts*> *cont = new QList<Contacts*>; /// У телефона - список контактов
+    QList<Contacts*> *cont();
 
     static bool selectAll(QList<Owners_tel*> *list);
     static bool saveAll(QList<Owners_tel*> *list);
@@ -52,6 +51,11 @@ Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
      bool drop = false;
 
      QString Query; ///Строковый запрос для формы поиска
+
+private:
+
+    QList<Contacts*> *_cont; /// У телефона - список контактов
+
 };
 
 #endif // OWNERS_TEL_H

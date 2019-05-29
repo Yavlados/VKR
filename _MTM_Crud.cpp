@@ -39,6 +39,22 @@ void MTM_Crud::setCrudlist(QList<Crud *> *crudl)
     endResetModel();
 }
 
+void MTM_Crud::setOneCrud(Crud* crud_res)
+{
+
+    if(crud_res != nullptr)
+    {
+        beginResetModel();
+        actcrudlist.clear();
+
+        actcrudlist.append(crud_res);
+    ///Почистил список и засунул только один указатель - рез. поиска
+    endResetModel();
+    }
+    else
+        return;
+}
+
 void MTM_Crud::setCheckedCrudlist(QList<Crud *> *crudl)
 {
     beginResetModel();

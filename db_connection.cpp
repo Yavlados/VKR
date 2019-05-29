@@ -7,8 +7,8 @@ db_connection::db_connection()
     type =PSQLtype;
     _dbpg = QSqlDatabase::addDatabase("QPSQL","conPQ");
     ok = _dbpg.isValid();
-    _dbsql = QSqlDatabase::addDatabase("SQLITECIPHER","conql");
-
+    _dbsql = QSqlDatabase::addDatabase("QSQLITE","conql");
+    _dbsqlchipher = QSqlDatabase::addDatabase("SQLITECIPHER","conqlchipher");
 }
 
 db_connection::~db_connection()
@@ -36,14 +36,14 @@ bool db_connection::db_connect()
     switch (type)
     {
         case (PSQLtype):
+        //db().setDatabaseName("zk");
+        //db().setPassword("ipqo");
+        //db().setPort(5433);
         _dbpg.setHostName("localhost");
         _dbpg.setDatabaseName("postgres");
-        //db().setDatabaseName("zk");
        _dbpg.setUserName("postgres");
         _dbpg.setPassword("23Xeromant23");
-        //db().setPassword("ipqo");
         _dbpg.setPort(5432);
-        //db().setPort(5433);
         ok = _dbpg.open();
         if (ok == true)
             qDebug() <<"ok";
@@ -51,13 +51,18 @@ bool db_connection::db_connect()
             qDebug() << _dbpg.lastError().text();
         break;
     case (SQLliteType):
-        //_dbsql.addDatabase("QSQLITE","conql");
-        //_dbsql.setDatabaseName("E:\\t1.db");
         ok = _dbsql.open();
         if (ok == true)
             qDebug() <<"ok";
         else
             qDebug() << _dbsql.lastError().text();
+        break;
+      case (SQLlitechipher):
+        ok = _dbsqlchipher.open();
+        if (ok == true)
+            qDebug() <<"ok";
+        else
+            qDebug() << _dbsqlchipher.lastError().text();
         break;
     }
 
@@ -68,10 +73,12 @@ QSqlDatabase &db_connection::db()
 {
     switch (type)
     {
-        case (PSQLtype):
+    case (PSQLtype):
          return _dbpg;
     case (SQLliteType):
         return _dbsql;
+    case (SQLlitechipher):
+        return _dbsqlchipher;
     }
 }
 

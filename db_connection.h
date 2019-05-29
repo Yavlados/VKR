@@ -6,8 +6,11 @@
 #include <QSqlError>
 /* в перспективе сделать класс подключения, если появится необходимость
         в диалоговом окне подключения. Пока реализована функция*/
-enum SqlType {PSQLtype = 1,
+
+enum SqlType {SQLlitechipher = 0,
+              PSQLtype = 1,
               SQLliteType = 2};
+
 class db_connection
 {
 public:
@@ -33,6 +36,7 @@ private:
     static db_connection *_instance;
     QSqlDatabase _dbpg;
     QSqlDatabase _dbsql;
+    QSqlDatabase _dbsqlchipher;
     SqlType type;
 };
 

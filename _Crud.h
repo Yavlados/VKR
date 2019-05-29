@@ -20,9 +20,8 @@ class Crud: public Owners_tel
 public:
     Crud();
     Crud(int id);
-    Crud(QString t_n);
 
-    QList<Owners_tel*> *owt = new QList<Owners_tel*>; ///У ЗК есть список телефонов
+     QList<Owners_tel*> *owt();
 
     CheckState checkState_;
     DbState state;
@@ -61,38 +60,26 @@ public:
     QString time_add = QTime::currentTime().toString();
 
  /////////////////////////////////////////////////////////////
-    bool selectAll(QList<Crud*> *list);
-    bool select_search(QList<Crud*> *list, QString);
+    static bool selectAll(QList<Crud*> *list);
+    static bool select_search(QList<Crud*> *list, QString);
  /////////////////////////////////////////////////////////////
 
-    void select_all();
     bool selectAllDb(QList<Crud*> *list, QList<Owners_tel*> *otlist, QList<Contacts*> *contlist);
     void check() const;
     ///Методы поиска
     void zk_search();
     void zk_search_model(QString qry);
     void zk_search_report(QString qry);
-
-    void call_update_list();
     bool update_zk();
     bool add_zk();
-    void del_zk(int);
+    static void del_zk(int);
     void recieve_new_zk_id();
-    void id_zk_search();
-    void get_max_zk();
-    void get_min_zk();
+    static Crud* id_zk_search(int zk_id);
     int get_id_from_tel(QString t_n);
 
-
-    QSqlQueryModel *model = new QSqlQueryModel();
-    QSqlQueryModel *model_2 = new QSqlQueryModel();
-
 private:
+    QList<Owners_tel*> *_owt; ///У ЗК есть список телефонов
 
-    //ТАБЛИЦА 2
-    QString telephone_num;
-
-    //Переменны для запросо
 signals:
     //void Send_search(QString);
 };

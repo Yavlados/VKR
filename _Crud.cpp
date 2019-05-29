@@ -4,22 +4,30 @@
 
 #include <QMetaObject>
 
-Crud::Crud(QString t_n): telephone_num(t_n)
+QList<Owners_tel *> *Crud::owt()
 {
-   checkState_ = Unchecked;
+    state = IsNewing;
+    if (_owt == nullptr)
+    {
+        _owt = new QList<Owners_tel*>;
+        Owners_tel::selectZkTel(_owt,zk_id);
+    }
+    return _owt;
 }
 
 Crud::Crud(int id): zk_id(id)
 {
+    _owt = nullptr;
    checkState_ = Unchecked;
 }
 
 Crud::Crud()
 {
+        _owt = nullptr;
     checkState_ = Unchecked;
 }
 
-bool Crud::selectAll(QList<Crud *> *list)
+bool Crud:: selectAll(QList<Crud *> *list)
 {
     if(list==nullptr)
         return false;
@@ -56,7 +64,6 @@ bool Crud::selectAll(QList<Crud *> *list)
                  "zk.time_add "
                  " FROM "
                  " zk "
-                 " WHERE zk.zk_id != 102" /// 102 - номер записи для служебных телефонов
                  " ORDER BY zk.zk_id");
     if (!temp.exec())
     {
@@ -150,62 +157,6 @@ bool Crud::select_search(QList<Crud*> *list, QString Query)
     return true;
 }
 
-void Crud::select_all()
-{   ///Под снос
-    QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("SELECT "
-                   "\"zk\".\"Zk_id\","
-                   "regexp_replace(\"zk\".\"Lastname\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Name\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Mid_name\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Birth_date\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Reg_city\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Reg_street\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Reg_home\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Reg_corp\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Reg_flat\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Liv_city\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Liv_street\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Liv_home\", '\\s+$', ''),"
-     /*12*/        "regexp_replace(\"zk\".\"Liv_corp\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Liv_flat\", '\\s+$', ''),"
-                   ""
-                   "regexp_replace(\"zk\".\"Check_for\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Dop_info\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Date_add\", '\\s+$', ''),"
-                   "regexp_replace(\"zk\".\"Time_add\", '\\s+$', '')"
-                   "FROM "
-                   "\"zk\""
-                   "WHERE \"zk\".\"Zk_id\" != 102" /// 102 - номер записи для служебных телефонов
-                   " ORDER BY \"zk\".\"Zk_id\"");
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    model->setQuery(querry);
-    model->setHeaderData(0,Qt::Horizontal, QObject::tr("Номер ЗК"));
-    model->setHeaderData(1,Qt::Horizontal, QObject::tr("Фамилия"));
-    model->setHeaderData(2,Qt::Horizontal, QObject::tr("Имя"));
-    model->setHeaderData(3,Qt::Horizontal, QObject::tr("Отчество"));
-    model->setHeaderData(4,Qt::Horizontal, QObject::tr("Дата рождения"));
-
-    model->setHeaderData(5,Qt::Horizontal, QObject::tr("Город регистрации"));
-    model->setHeaderData(6,Qt::Horizontal, QObject::tr("Улица регистрации"));
-    model->setHeaderData(7,Qt::Horizontal, QObject::tr("Дом регистрации"));
-    model->setHeaderData(8,Qt::Horizontal, QObject::tr("Корпус регистрации"));
-    model->setHeaderData(9,Qt::Horizontal, QObject::tr("Квартира регистрации"));
-
-    model->setHeaderData(10,Qt::Horizontal, QObject::tr("Город проживания"));
-    model->setHeaderData(11,Qt::Horizontal, QObject::tr("Улица проживания"));
-    model->setHeaderData(12,Qt::Horizontal, QObject::tr("Дом проживания"));
-    model->setHeaderData(13,Qt::Horizontal, QObject::tr("Корпус проживания"));
-    model->setHeaderData(14,Qt::Horizontal, QObject::tr("Квартира проживания"));
-
-    model->setHeaderData(15,Qt::Horizontal, QObject::tr("Проверяется в интересах"));
-    model->setHeaderData(16,Qt::Horizontal, QObject::tr("Дополнительная информация"));
-    model->setHeaderData(17,Qt::Horizontal, QObject::tr("День добавления"));
-    model->setHeaderData(18,Qt::Horizontal, QObject::tr("Время добавления"));
-
-    querry.clear();
-}
 
 bool Crud::selectAllDb(QList<Crud *> *list, QList<Owners_tel *> *otlist, QList<Contacts *> *contlist)
 {
@@ -250,7 +201,7 @@ bool Crud::selectAllDb(QList<Crud *> *list, QList<Owners_tel *> *otlist, QList<C
                 con->contact_tel_num = temp2.value(1).toString();
                 con->mark  = temp2.value(2).toString();
 
-                ow->cont->append(con);
+                ow->cont()->append(con);
             }
             otlist->append(ow);
         }
@@ -612,64 +563,7 @@ void Crud::zk_search_report(QString qry)
       }
 }
 
-/////////////////////////////////////////////////////
-void Crud::call_update_list()
-{
-    if( !db_connection::instance()->db_connect() )
-        return;
-        QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("SELECT "
-                   "zk.Lastname,"
-                   "zk.Name,"
-                   "zk.Mid_name,"
-                   "zk.Birth_date,"
-                   ""
-                   "zk.Reg_city,"
-                   "zk.Reg_street,"
-                   "zk.Reg_home,"
-                   "zk.Reg_corp,"
-                   "zk.Reg_flat,"
-                   ""
-                   "zk.Liv_city,"
-                   "zk.Liv_street,"
-                   "zk.Liv_home,"
-     /*12*/        "zk.Liv_corp,"
-                   "zk.Liv_flat,"
-                   ""
-                   "zk.Check_for,"
-                   "zk.Dop_info "
-                   "FROM "
-                   " zk "
-                   " WHERE zk.Zk_id = (:id)");
-    querry.bindValue(":id", zk_id);
-   if (!querry.exec())
-      qDebug() << querry.lastError();
-    while (querry.next())
-    {
-        lastname = querry.value(0).toString();
-        name = querry.value(1).toString();
-        mid_name = querry.value(2).toString();
-        birth_date = querry.value(3).toString();
-
-        reg_city = querry.value(4).toString();
-        reg_street = querry.value(5).toString();
-        reg_home = querry.value(6).toString();
-        reg_corp = querry.value(7).toString();
-        reg_flat = querry.value(8).toString();
-
-        liv_city = querry.value(9).toString();
-        liv_street = querry.value(10).toString();
-        liv_home = querry.value(11).toString();
-        liv_corp = querry.value(12).toString();
-        liv_flat = querry.value(13).toString();
-
-        check_for = querry.value(14).toString();
-        dop_info = querry.value(15).toString();
-    }
-         qDebug() << querry.executedQuery();
-    querry.clear();
-}
-
+////////////////////МЕНЯТЬ /////////////////////////////////
 bool Crud::update_zk()
 {
         QSqlQuery querry(db_connection::instance()->db());
@@ -795,67 +689,76 @@ void Crud::del_zk(int del_id)
     querry.clear();
 }
 
-void Crud::id_zk_search()
+Crud* Crud::id_zk_search(int zk_id)
 {/// Под снос
         QSqlQuery querry(db_connection::instance()->db());
     querry.prepare("SELECT "
-                   "zk.\"Zk_id\","
-                   "\"zk\".\"Lastname\", "
-                   "\"zk\".\"Name\", "
-                   "\"zk\".\"Mid_name\", "
-                   "\"zk\".\"Birth_date\","
-                   "\"zk\".\"Reg_city\","
-                   "\"zk\".\"Reg_street\","
-                   "\"zk\".\"Reg_home\","
-                   "\"zk\".\"Reg_corp\","
-                   "\"zk\".\"Reg_flat\","
-                   "\"zk\".\"Check_for\", "
-                   "\"zk\".\"Dop_info\","
-                   "\"zk\".\"Date_add\", "
-                   "\"zk\".\"Time_add\""
-                   "FROM "
-                   "\"zk\""
-                   "WHERE "
-                   "\"zk\".\"Zk_id\" = (:id)"
-                   " ORDER BY \"zk\".\"Zk_id\"");
+                   "zk.zk_id,"
+                   "zk.lastname,"
+                   "zk.name,"
+                   "zk.mid_name,"
+                   "zk.birth_date,"
+                   ""
+                   "zk.reg_city,"
+                   "zk.reg_street,"
+                   "zk.reg_home,"
+                   "zk.reg_corp,"
+                   "zk.reg_flat,"
+                   ""
+                   "zk.liv_city,"
+                   "zk.liv_street,"
+                   "zk.liv_home,"
+     /*12*/        "zk.liv_corp,"
+                   "zk.liv_flat,"
+                   ""
+                   "zk.check_for,"
+                   "zk.dop_info,"
+                   "zk.date_add,"
+                   "zk.time_add "
+                   " FROM "
+                   " zk "
+                   " WHERE zk.zk_id = (:id)");
     querry.bindValue(":id", zk_id);
     if (!querry.exec())
         qDebug() << querry.lastError();
     qDebug() << querry.executedQuery();
-    model->setQuery(querry);
 
-    querry.clear();
-}
-
-void Crud::get_max_zk()
-{
-    QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("SELECT MAX(zk.Zk_id)"
-                   " FROM zk");
-    if (!querry.exec())
-       qDebug() << querry.lastError();
-    while (querry.next())
+    if (querry.next())
     {
-        zk_id = querry.value(0).toInt();
+        Crud *cr = new Crud();
+        cr->checkState_ = Checked;
+        cr->zk_id = querry.value(0).toInt();
+        cr->lastname = querry.value(1).toString();
+        cr->name = querry.value(2).toString();
+        cr->mid_name= querry.value(3).toString();
+        cr->birth_date = querry.value(4).toString();
+
+        cr->reg_city = querry.value(5).toString();;
+        cr->reg_street = querry.value(6).toString();
+        cr->reg_home = querry.value(7).toString();
+        cr->reg_corp = querry.value(8).toString();
+        cr->reg_flat = querry.value(9).toString();
+
+        cr->liv_city = querry.value(10).toString();;
+        cr->liv_street = querry.value(11).toString();
+        cr->liv_home = querry.value(12).toString();
+        cr->liv_corp = querry.value(13).toString();
+        cr->liv_flat = querry.value(14).toString();
+
+        cr->check_for = querry.value(15).toString();
+        cr->dop_info = querry.value(16).toString();
+        cr->date_add = querry.value(17).toString();
+        cr->time_add = querry.value(18).toString();
+        cr->state = IsReaded;
+        return cr;
     }
-    qDebug() << querry.executedQuery();
-    querry.clear();
+    else {
+        return nullptr;
+    }
 }
 
-void Crud::get_min_zk()
-{
-    QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("SELECT MIN(zk.Zk_id)"
-                   " FROM zk");
-    if (!querry.exec())
-       qDebug() << querry.lastError();
-    while (querry.next())
-    {
-        zk_id = querry.value(0).toInt();
-    }
-    qDebug() << querry.executedQuery();
-    querry.clear();
-}
+
+
 
 int Crud::get_id_from_tel(QString t_n)
 {

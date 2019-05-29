@@ -32,7 +32,6 @@ SOURCES += \
     _Contacts.cpp \
     _Crud.cpp \
     _Owners_tel.cpp \
-    add_Form.cpp \
     an_result_Form.cpp \
     analysis_Form.cpp \
     mainwindow_Form.cpp \
@@ -43,7 +42,10 @@ SOURCES += \
     _MTM_Crud.cpp \
     _MTM_OwTel.cpp \
     master_export_Form.cpp \
-    for_export.cpp
+    for_export.cpp \
+    _Off_tels.cpp \
+    _MTM_Off_tels.cpp \
+    Import_Form.cpp
 
 HEADERS += \
     db_connection.h \
@@ -51,7 +53,6 @@ HEADERS += \
     _Contacts.h \
     _Owners_tel.h \
     _Crud.h \
-    add_Form.h \
     an_result_Form.h \
     analysis_Form.h \
     mainwindow_Form.h \
@@ -62,17 +63,19 @@ HEADERS += \
     _MTM_Crud.h \
     _MTM_OwTel.h \
     master_export_Form.h \
-    for_export.h
+    for_export.h \
+    _MTM_Off_tels.h \
+    Import_Form.h
 
 FORMS += \
         mainwindow.ui \
     analysis.ui \
     update.ui \
     search.ui \
-    add_form.ui \
     an_result.ui \
     officialtelephones.ui \
-    master_export_form.ui
+    master_export_form.ui \
+    import_form.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
