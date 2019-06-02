@@ -1,13 +1,15 @@
 #ifndef FOR_ANALYSIS_H
 #define FOR_ANALYSIS_H
+
+#include "db_connection.h"
+#include "list_master.h"
+
 #include <QSqlQueryModel>
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDate>
-#include "db_connection.h"
-
 class For_analysis
 {
 public:
@@ -28,31 +30,30 @@ public:
 
     QVector<int> match_counter;
 
+    List_master *list;
+
+    QList<Crud*> * get_crud(Crud *cr);
+
+    ///Основные методы анализа
+    void short_face_analysis(Crud *cr, QList<Crud*> *crudlist);
+    void short_tel_analysis(Crud *cr, QList<Crud*> *crudlist);
+    void long_face_analysis(Crud *cr, QList<Crud*> *crudlist);
+    void long_tel_analysis(Crud *cr, QList<Crud*> *crudlist);
+
+    ///Методы для корректировки входящих списков
     void short_face_analysis_all_db(int);
-
     void short_tel_analysis_all_db(int);
-
     void long_face_analysis_all_db(int);
-
     void long_tel_analysis_all_db(int);
-
     void short_face_analysis_all_db(QVector<int>,int);
-
     void short_tel_analysis_all_db(QVector<int>,int);
-
     void long_face_analysis_all_db(QVector<int> vector, int id);
-
     void long_tel_analysis_all_db(QVector<int> vector, int id);
-
     void short_face_analysis_all_db(QDate, QDate, int);
-
     void short_tel_analysis_all_db(QDate, QDate, int);
-
     void long_face_analysis_all_db(QDate, QDate, int);
-
     void long_tel_analysis_all_db(QDate, QDate, int);
 
-    void get_L_N_M(int);
     QSqlQueryModel *model = new QSqlQueryModel();
 };
 

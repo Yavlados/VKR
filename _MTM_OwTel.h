@@ -10,15 +10,14 @@
 #include <QCheckBox>
 
 enum Calling_state_Ot{Show_Ot = 1,  /// Модель для просмотра
-                    Edit_Ot = 0}; /// Модель для изменения (формы update и add_form)
+                      Edit_Ot = 0}; /// Модель для изменения (формы update и add_form)
 
 class MTM_OwTel: public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    Calling_state_Ot state;
+     Calling_state_Ot state;
     MTM_OwTel(QObject *parent = nullptr);
-
     /// Получение списка ТЕЛЕФОНОВ моделью
     virtual void setOTList(QList<Owners_tel*> *OTList);
 
@@ -40,9 +39,12 @@ public:
 
     virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 
-private:
+    ///TESTING
+    virtual QList<Owners_tel*> recall_list();
+
     QList<Owners_tel*> *otlist;    ///< исходный список
     QList<Owners_tel*> actotlist;  ///<  отображаемый список
+private:
 
 public slots:
     void addRow_owner_tel();                       /// Удаление ячейки контакта

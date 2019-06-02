@@ -49,13 +49,12 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
 
       if( row>actotlist.size() || row<0 )
           return QVariant();
-
       if (role == Qt::DisplayRole)
       {
          switch(col)
         {
          case 0:            /// 1 колонка - Номер телефона
-          return actotlist.at(row)->tel_num;
+              return actotlist.at(row)->tel_num;
         }
       }
          return QVariant();
@@ -119,7 +118,12 @@ bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int rol
                 return true;
             }
         }
-            return false;
+   return false;
+}
+
+QList<Owners_tel *> MTM_OwTel::recall_list()
+{
+    return *otlist;
 }
 
 void MTM_OwTel::addRow_owner_tel()

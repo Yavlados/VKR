@@ -45,7 +45,8 @@ SOURCES += \
     for_export.cpp \
     _Off_tels.cpp \
     _MTM_Off_tels.cpp \
-    Import_Form.cpp
+    Import_Form.cpp \
+    list_master.cpp
 
 HEADERS += \
     db_connection.h \
@@ -53,6 +54,7 @@ HEADERS += \
     _Contacts.h \
     _Owners_tel.h \
     _Crud.h \
+    _Off_tels.h \
     an_result_Form.h \
     analysis_Form.h \
     mainwindow_Form.h \
@@ -65,7 +67,8 @@ HEADERS += \
     master_export_Form.h \
     for_export.h \
     _MTM_Off_tels.h \
-    Import_Form.h
+    Import_Form.h \
+    list_master.h
 
 FORMS += \
         mainwindow.ui \

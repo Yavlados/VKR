@@ -20,7 +20,7 @@ private:
 public:
 
     Contacts();                                 /// Пустой конструктор класса
-    Contacts(int i, QString tel, QString m, int ot_id, DbState st = IsReaded); /// Конструктор класса с тремя переменными
+    Contacts(int cont_id, QString tel, QString mark, int ot_id, DbState st = IsReaded); /// Конструктор класса с тремя переменными
     ~Contacts();
 
     int parent_OT_id;      ///
@@ -31,12 +31,12 @@ public:
     db_connection *db = db_connection::instance(); ///Подключение, используется у всех Query
 
     static bool selectAll(QList<Contacts*> *list);
-    static bool saveAll(QList<Contacts*> *list);
+    static bool saveAll_cont(QList<Contacts*> *list, int new_tel_id);
     static bool selectTelContacts(QList<Contacts*> *list, int);
     static bool selectContactsforEdit(QList<Contacts*> *list, int);
     static bool selectOffTel(QList<Contacts*> *list);
 
-    bool insert(bool setState=true);
+    bool insert(bool setState=true, int new_tel_id = 0 );
     bool update(bool setState=true);
     bool remove();
 

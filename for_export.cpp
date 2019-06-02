@@ -1,169 +1,7 @@
 #include "for_export.h"
-
 For_export::For_export()
 {
-     counter_crud = 0; ///будем передавать в качестве id
-     counter_tel = 0;
-}
-
-void For_export::fill_crud_list(QList<Crud*> *crud, int crud_id, SqlType sqlt)
-{
-    db_connection *db = db_connection::instance();
-    db->set_Sql_type(sqlt);
-    QSqlQuery query(db->db());
-    query.prepare("SELECT "
-                   "zk.zk_id,"
-                   "zk.lastname,"
-                   "zk.name,"
-                   "zk.mid_name,"
-                   "zk.birth_date,"
-                   ""
-                   "zk.reg_city,"
-                   "zk.reg_street,"
-                   "zk.reg_home,"
-                   "zk.reg_corp,"
-                   "zk.reg_flat,"
-                   ""
-                   "zk.liv_city,"
-                   "zk.liv_street,"
-                   "zk.liv_home,"
-     /*12*/        "zk.liv_corp,"
-                   "zk.liv_flat,"
-                   ""
-                   "zk.check_for,"
-                   "zk.dop_info,"
-                   "zk.date_add,"
-                   "zk.time_add "
-                   " FROM "
-                   " zk "
-                   " AND zk . Zk_id =(:id)"
-                   " ORDER BY zk.zk_id");
-    query.bindValue(":id", crud_id);
-    if(!query.exec())
-        qDebug() << query.lastError();
-    while (query.next())
-    {
-        Crud *cr = new Crud();
-        cr->zk_id = counter_crud;
-        cr->lastname = query.value(1).toString();
-        cr->name = query.value(2).toString();
-        cr->mid_name= query.value(3).toString();
-        cr->birth_date = query.value(4).toString();
-
-        cr->reg_city = query.value(5).toString();;
-        cr->reg_street = query.value(6).toString();
-        cr->reg_home = query.value(7).toString();
-        cr->reg_corp = query.value(8).toString();
-        cr->reg_flat = query.value(9).toString();
-
-        cr->liv_city = query.value(10).toString();;
-        cr->liv_street = query.value(11).toString();
-        cr->liv_home = query.value(12).toString();
-        cr->liv_corp = query.value(13).toString();
-        cr->liv_flat = query.value(14).toString();
-
-        cr->check_for = query.value(15).toString();
-        cr->dop_info = query.value(16).toString();
-        cr->date_add = query.value(17).toString();
-        cr->time_add = query.value(18).toString();
-        cr->state = IsReaded;
-        switch (sqlt)
-        {
-            case PSQLtype:
-                fill_owners_tel_list(cr->owt(), crud_id, counter_crud, counter_tel, PSQLtype);
-                break;
-            case SQLliteType:
-                fill_owners_tel_list(cr->owt(), crud_id, counter_crud, counter_tel, SQLliteType);
-                break;
-        }
-        crud->append(cr);
-        counter_crud++;
-    }
-}
-
-void For_export::fill_owners_tel_list(QList<Owners_tel *> *owner_telLIST, int zk_id,int new_zk, int new_tel,  SqlType sqlt)
-{
-    db_connection *db = db_connection::instance();
-    db->set_Sql_type(sqlt);
-    QSqlQuery query(db->db());
-    query.prepare(" SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk "
-                 " FROM  owners_tel "
-                 " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-    query.bindValue(":id", zk_id);
-    if (!query.exec())
-    {
-        qDebug() <<  "   "+ query.executedQuery();
-        qDebug() <<"selectZkTel";
-    }
-
-    while (query.next())
-    {
-        Owners_tel *ot = new Owners_tel(query.value(0).toString(), new_tel, new_zk, IsReaded);///Номер, новый айди, новый парентАйди
-        switch (sqlt)
-        {
-            case PSQLtype:
-                fill_contacts_list(ot->cont(), query.value(1).toInt(), new_tel, PSQLtype);
-                break;
-            case SQLliteType:
-                fill_contacts_list(ot->cont(), query.value(1).toInt(), new_tel, SQLliteType);
-                break;
-        }
-        owner_telLIST->append(ot);
-        new_zk++;
-    }
-}
-
-void For_export::fill_contacts_list(QList<Contacts *> *contactLIST, int tel_id, int new_tel_id, SqlType sqlt)
-{
-    db_connection *db = db_connection::instance();
-    db->set_Sql_type(sqlt);
-    QSqlQuery query(db->db());
-
-    query.prepare("SELECT "
-                 "contacts.contact_list_id,"
-                 "contacts.cl_telephone,"
-                 "contacts.cl_info, "
-                 "contacts.FK_Cl_telephone"
-                 " FROM contacts"
-                " WHERE contacts.FK_Cl_telephone = (:id) ");
-    query.bindValue(":id",tel_id);
-    if (!query.exec())
-    {
-        qDebug() << query.lastError();
-        return;
-    }
-
-    while (query.next())
-    {
-        Contacts *cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(),new_tel_id, IsReaded);
-        contactLIST->append(cnt);
-    }
-}
-
-void For_export::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt)
-{
-   if (offtel != nullptr)
-        offtel->clear();
-
-    db_connection *db = db_connection::instance();
-    db->set_Sql_type(sqlt);
-    QSqlQuery query(db->db());
-
-    query.prepare("SELECT official_tel.of_t_id,"
-                  "official_tel.tel_num,"
-                  "official_tel.service_name"
-                  " FROM official_tel");
-    if (!query.exec())
-    {
-        qDebug() << query.lastError();
-        return;
-    }
-    while (query.next())
-    {
-        Off_tels *cnt = new Off_tels(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString());
-        offtel->append(cnt);
-    }
-
+    list = new List_master(Export);
 }
 
 bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString password,
@@ -245,7 +83,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
          for(int i = 0; i < crud->size(); i++)
          {
             query.prepare("INSERT INTO zk "
-                           "(Lastname, Name,Mid_name, Birth_date,"
+                           "(Lastname, Name, Mid_name, Birth_date,"
                            "Reg_city,Reg_street,Reg_home,Reg_corp,"
                            "Reg_flat,"
                                 "Liv_city,Liv_street,Liv_home,Liv_corp,"
@@ -256,7 +94,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                                 "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                                 "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                                 "(:c_f),(:d_i),"
-                                "(:d_a), (:t_a)) RETURNING zk_id");
+                                "(:d_a), (:t_a))");
             query.bindValue(":lastname",crud->at(i)->lastname);
             query.bindValue(":name",crud->at(i)->name);
             query.bindValue(":mid_name",crud->at(i)->mid_name);
@@ -284,33 +122,35 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
              {
              qDebug() << query.lastError();
              }
-        if(query.next())
+        else
         {
-           QSqlQuery query2(db->db());
+          query.clear();
+          qDebug() << crud->at(i)->owt()->size();
             for (int a = 0; a < crud->at(i)->owt()->size(); a++)
             {
-                query2.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk) "
-                              " VALUES ((:tel_num), (:fk_id)) RETURNING telephone_id");
-                query2.bindValue(":tel_num",crud->at(i)->owt()->at(a)->tel_num);
-                query2.bindValue(":fk_id",query.value(0).toInt());
+                query.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk) "
+                              " VALUES ((:tel_num), (:fk_id))");
+                query.bindValue(":tel_num",crud->at(i)->owt()->at(a)->tel_num);
+                query.bindValue(":fk_id",crud->at(i)->owt()->at(a)->parentZK_id);
 
-                if (!query2.exec())
+                if (!query.exec())
                 {
-                    qDebug() << query2.lastError();
+                    qDebug() << query.lastError();
                 }
-                if (query2.next())
+                else
                 {
-                    QSqlQuery query3(db->db());
+                    query.clear();
+                    qDebug()<< crud->at(i)->owt()->at(a)->cont()->size();
                     for (int b=0; b<crud->at(i)->owt()->at(a)->cont()->size();b++)
                     {
-                        query3.prepare("INSERT INTO contacts (cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id))");
-                        query3.bindValue(":tel_num",crud->at(i)->owt()->at(a)->cont()->at(b)->contact_tel_num);
-                        query3.bindValue(":mark",crud->at(i)->owt()->at(a)->cont()->at(b)->mark);
-                        query3.bindValue(":fk_id", query2.value(0).toInt());
+                        query.prepare("INSERT INTO contacts (cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id))");
+                        query.bindValue(":tel_num",crud->at(i)->owt()->at(a)->cont()->at(b)->contact_tel_num);
+                        query.bindValue(":mark",crud->at(i)->owt()->at(a)->cont()->at(b)->mark);
+                        query.bindValue(":fk_id",crud->at(i)->owt()->at(a)->cont()->at(b)->parent_OT_id);
 
-                        if (!query3.exec())
+                        if (!query.exec())
                         {
-                            qDebug() << query3.lastError();
+                            qDebug() << query.lastError();
                         }
 
                     }
@@ -324,14 +164,14 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
          {
            if (!query.exec("CREATE TABLE official_tel"
                        "("
+                        " of_t_id integer NOT NULL,"
                         " tel_num character(20),"
                        "  service_name character(25),"
-                        " of_t_id integer NOT NULL,"
                        "  CONSTRAINT PK_of_t_id PRIMARY KEY (of_t_id)"
                        ")"))
                qDebug()<< query.lastError();
            query.clear();
-            fill_off_tels(offtel, SQLliteType); //Заполнил список служебными телефонами
+            //fill_off_tels(offtel, SQLliteType); //Заполнил список служебными телефонами
             for (int y = 0;y < offtel->size(); y++)
             {
                 query.prepare("INSERT INTO official_tel (tel_num,"
@@ -344,116 +184,8 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
          }
      }
      db_file.close();
+     db->db().close();
      db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
      qDebug() << db->db_connect()<<db->db().lastError();
      return true;
 }
-
-Import_state For_export::Testing_open_db(QString filename, QString password)
-{
-  // QList <Crud*> *crudlist = new QList <Crud*>;
-//    QList <Owners_tel*> *OTlist = new QList <Owners_tel*>;
-//    QList <Contacts*> *contlist = new QList <Contacts*>;
-   // QList<Off_tels*>  *offtel = new  QList<Off_tels*>;
-
-       db_file.setFileName(filename);
-       db_connection *db = db_connection::instance();
-       db->set_Sql_type(SQLliteType);
-       db->db().setDatabaseName(db_file.fileName());
-
-    if (!password.isNull() && !db->db().open("user",password))
-        return Password_incorrect;
-    else
-   {
-       qDebug() << db->db_connect()<<db->db().lastError();
-       QSqlQuery query(db->db());
-
-       fill_all_crud_list(crud, SQLliteType);
-
-       import->recieve_all(crud);
-
-       db_file.close();
-       db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
-       qDebug() << db->db_connect()<<db->db().lastError();
-       import->show();
-       return Import_succesful;
-    }
-}
-
-/// В отличии от fill_crud_list собирает список всех ЗК и соответствующих
-/// телефонов из лайтбд
-bool For_export::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
-{
-    if(crud != nullptr   )
-      crud->clear();
-
-      db_connection *db = db_connection::instance();
-      db->set_Sql_type(sqlt);
-      QSqlQuery query(db->db());
-      query.prepare("SELECT "
-                     "zk.zk_id,"
-                     "zk.lastname,"
-                     "zk.name,"
-                     "zk.mid_name,"
-                     "zk.birth_date,"
-                     ""
-                     "zk.reg_city,"
-                     "zk.reg_street,"
-                     "zk.reg_home,"
-                     "zk.reg_corp,"
-                     "zk.reg_flat,"
-                     ""
-                     "zk.liv_city,"
-                     "zk.liv_street,"
-                     "zk.liv_home,"
-       /*12*/        "zk.liv_corp,"
-                     "zk.liv_flat,"
-                     ""
-                     "zk.check_for,"
-                     "zk.dop_info,"
-                     "zk.date_add,"
-                     "zk.time_add "
-                     " FROM "
-                     " zk "
-                     " ORDER BY zk.zk_id");
-      if(!query.exec())
-          qDebug() << query.lastError();
-      while (query.next())
-      {
-          Crud *cr = new Crud();
-          cr->zk_id = query.value(0).toInt();
-          cr->lastname = query.value(1).toString();
-          cr->name = query.value(2).toString();
-          cr->mid_name= query.value(3).toString();
-          cr->birth_date = query.value(4).toString();
-
-          cr->reg_city = query.value(5).toString();;
-          cr->reg_street = query.value(6).toString();
-          cr->reg_home = query.value(7).toString();
-          cr->reg_corp = query.value(8).toString();
-          cr->reg_flat = query.value(9).toString();
-
-          cr->liv_city = query.value(10).toString();;
-          cr->liv_street = query.value(11).toString();
-          cr->liv_home = query.value(12).toString();
-          cr->liv_corp = query.value(13).toString();
-          cr->liv_flat = query.value(14).toString();
-
-          cr->check_for = query.value(15).toString();
-          cr->dop_info = query.value(16).toString();
-          cr->date_add = query.value(17).toString();
-          cr->time_add = query.value(18).toString();
-          cr->state = IsReaded;
-//          switch (sqlt)
-//          {
-//              case PSQLtype:
-//                  fill_owners_tel_list(cr->owt(), cr->zk_id, PSQLtype);
-//                  break;
-//              case SQLliteType:
-//                  fill_owners_tel_list(cr->owt(), cr->zk_id, SQLliteType);
-//                  break;
-//          }
-          crud->append(cr);
-      }
-}
-

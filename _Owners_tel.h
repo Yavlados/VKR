@@ -35,14 +35,19 @@ Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
 
     static bool selectAll(QList<Owners_tel*> *list);
     static bool saveAll(QList<Owners_tel*> *list);
-    static bool selectZkTel(QList<Owners_tel*> *list, int);
     static bool selectZkTelForAdd(QList<Owners_tel*> *list, int);
 
-     bool insert(bool setState=true);
-     bool update(bool setState=true);
-     bool remove();
+    ////////////////////////////////////////////////
+
+    static QList<Owners_tel*> *get_ow_list(int zk_id);
+
+    /////////////////////////////////////////////
+
+     int insert_tel(bool setState=true, int zk_id = 0);
+     bool update_tel(bool setState=true);
+     bool remove_tel();
 ///////////////////////////////////////////////////
-    bool compare_with_base(QString tel_num);
+     bool compare_with_base(QString tel_num);
 ///////////////////////////////////////////////////
     //Новые методы и экземпляры для ПОИСКА
      QDate Date_From, Date_To;

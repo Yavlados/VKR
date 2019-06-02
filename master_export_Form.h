@@ -53,7 +53,7 @@ signals:
 
     void rb_zk_clicked();
     void rb_check_all();
-    void TESTING_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password);
+    void TESTING_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk_tels);
     void TESTING_open(QString filename, QString password);
 };
 

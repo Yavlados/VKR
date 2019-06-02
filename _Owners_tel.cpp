@@ -32,11 +32,10 @@ Owners_tel::~Owners_tel()
 
 QList<Contacts *> *Owners_tel::cont()
 {
-    state = IsNewing;
     if (_cont == nullptr)
     {
         _cont = new QList<Contacts*>;
-        Contacts::selectTelContacts(_cont, tel_id);
+        //Contacts::selectTelContacts(_cont, tel_id);
     }
     return _cont;
 }
@@ -78,7 +77,7 @@ bool Owners_tel::selectAll(QList<Owners_tel *> *list)
 
 bool Owners_tel::saveAll(QList<Owners_tel *> *list)
 {
-    if(list==0 || !db_connection::instance()->db_connect())
+    if(list == nullptr || !db_connection::instance()->db_connect())
         return false;
 
     QString cname = db_connection::instance()->db().connectionName();
@@ -128,37 +127,6 @@ bool Owners_tel::saveAll(QList<Owners_tel *> *list)
     return true;
 }
 
-bool Owners_tel::selectZkTel(QList<Owners_tel *> *list, int zk)
-{
-    if(list==nullptr)
-        return false;
-
-    qDeleteAll(*list);
-    list->clear();
-
-    if( !db_connection::instance()->db_connect() )
-        return false;
-
-    QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare(" SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk "
-                 " FROM  owners_tel "
-                 " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-    temp.bindValue(":id", zk);
-    if (!temp.exec())
-    {
-        qDebug() <<  "   "+ temp.executedQuery();
-        qDebug() <<"selectZkTel";
-        return false;
-    }
-
-    while (temp.next())
-    {
-        Owners_tel *ot = new Owners_tel(temp.value(0).toString(), temp.value(1).toInt(), temp.value(2).toInt(),IsReaded);
-        list->append(ot);
-    }
-    return true;
-}
-
 //////// Вместо вызова списка, создаю пустой для формы добавления ///////////
 bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
 {
@@ -202,14 +170,41 @@ bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
         while (temp.next())
         {
         //////создаю модель с двумя - id и FK///////
-        Owners_tel *ot = new Owners_tel(zk,temp.value(0).toInt() +1 ,IsNewing);
+        Owners_tel *ot = new Owners_tel(zk, temp.value(0).toInt() +1 ,IsNewing);
         list->append(ot);
        return true;
         }
     }
 }
 
-bool Owners_tel::insert(bool setState)
+QList<Owners_tel *> *Owners_tel::get_ow_list(int zk_id)
+{
+    QList<Owners_tel *> *list = new QList<Owners_tel*>;
+
+    if( !db_connection::instance()->db_connect() )
+        return list;
+
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk "
+                 " FROM  owners_tel"
+                 " WHERE owners_tel.FK_Telephone_Zk = (:id)");
+    temp.bindValue(":id", zk_id);
+    if (!temp.exec())
+    {
+        qDebug() << temp.lastError();
+        qDebug() <<"selectZkTelForAdd";
+        return list;
+    }
+
+    while (temp.next())
+    {
+        Owners_tel *ot = new Owners_tel(temp.value(0).toString(), temp.value(1).toInt(), temp.value(2).toInt(),IsReaded);
+        list->append(ot);
+    }
+    return list;
+}
+
+int Owners_tel::insert_tel(bool setState, int zk_id)
 {
     if( !db_connection::instance()->db_connect() && tel_num.isEmpty())
         return false;
@@ -218,31 +213,28 @@ bool Owners_tel::insert(bool setState)
     temp.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk) "
                  " VALUES ( (:tel_num),(:fk_id)) RETURNING Telephone_id");
     temp.bindValue(":tel_num",tel_num);
-    temp.bindValue(":fk_id",parentZK_id);
+    temp.bindValue(":fk_id",zk_id);
 
     if (!temp.exec())
     {
-        db_connection::instance()->lastError = temp.lastError().text();
-        db_connection::instance()->error = temp.lastError();
-        db_connection::instance()->error_tel_num = tel_num;
         qDebug() << temp.lastError();
-        return false;
+        return -1;
     }
     if (temp.next())
     {
         qDebug()<<temp.executedQuery();
         tel_id = temp.value(0).toInt();
-        qDebug() << "add" + QString::number(tel_id);
+        qDebug() << "OT add" + QString::number(tel_id) << tel_num;
             if( setState )
                 state = IsReaded;
-            return true;
+            return tel_id;
     }
         db_connection::instance()->lastError = temp.lastError().text();
         db_connection::instance()->error = temp.lastError();
-        return false;
+        return -1;
 }
 
-bool Owners_tel::update(bool setState)
+bool Owners_tel::update_tel(bool setState)
 {
     if( !db_connection::instance()->db_connect() )
         return false;
@@ -267,7 +259,7 @@ bool Owners_tel::update(bool setState)
 }
 
 //////////////////////////////////////////////////////////////////////
-bool Owners_tel::remove()
+bool Owners_tel::remove_tel()
 {
     if( !db_connection::instance()->db_connect() )
         return false;

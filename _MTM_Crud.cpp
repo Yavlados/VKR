@@ -39,19 +39,14 @@ void MTM_Crud::setCrudlist(QList<Crud *> *crudl)
     endResetModel();
 }
 
-void MTM_Crud::setOneCrud(Crud* crud_res)
+void MTM_Crud::setOneCrud(Crud *crud_res)
 {
-
-    if(crud_res != nullptr)
-    {
-        beginResetModel();
+     beginResetModel();
         actcrudlist.clear();
 
         actcrudlist.append(crud_res);
-    ///Почистил список и засунул только один указатель - рез. поиска
+    /// Почистил список и засунул только один указатель - рез. поиска
     endResetModel();
-    }
-    else
         return;
 }
 
@@ -147,6 +142,7 @@ QVariant MTM_Crud::data(const QModelIndex &index, int role) const
               return actcrudlist.at(row)->time_add;
 
           }
+
         }
         if (role == Qt::CheckStateRole && col == 0)  // this shows the checkbox
                 {
@@ -156,9 +152,25 @@ QVariant MTM_Crud::data(const QModelIndex &index, int role) const
                     else
                             return Qt::Unchecked;
                 }
-              return QVariant();
+        if (role == Qt::BackgroundRole)
+        {
+            switch(row)
+           {///// dobav 1 column checkbox
+            case 1:
+               return QVariant(QBrush(QColor(Qt::yellow)));
+            case 2:
+               return QVariant(QBrush(QColor(Qt::yellow)));
+            }
+        }
+        return QVariant();
 }
 
+void MTM_Crud::reset_CrudModel()
+{
+    beginResetModel();
+        actcrudlist.clear();
+     endResetModel();
+}
 
 QVariant MTM_Crud::headerData(int section, Qt::Orientation orientation, int role) const
 {

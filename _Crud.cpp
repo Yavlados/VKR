@@ -6,11 +6,11 @@
 
 QList<Owners_tel *> *Crud::owt()
 {
-    state = IsNewing;
+///идея хорошая, но мне так не нужно
     if (_owt == nullptr)
     {
+        state = IsNewing;
         _owt = new QList<Owners_tel*>;
-        Owners_tel::selectZkTel(_owt,zk_id);
     }
     return _owt;
 }
@@ -155,59 +155,6 @@ bool Crud::select_search(QList<Crud*> *list, QString Query)
     }
 
     return true;
-}
-
-
-bool Crud::selectAllDb(QList<Crud *> *list, QList<Owners_tel *> *otlist, QList<Contacts *> *contlist)
-{
-    list->clear();
-
-    QSqlQuery query(db_connection::instance()->db());
-    query.prepare("SELECT zk.zk_id, zk.lastname"
-                  " From zk");
-    if (!query.exec())
-        qDebug() << "oops";
-    while(query.next())
-    {
-        Crud *cr = new Crud;
-        cr->zk_id = query.value(0).toInt();
-        cr->lastname = query.value(1).toString();
-
-        QSqlQuery temp1(db_connection::instance()->db());
-        temp1.prepare("SELECT owners_tel.telephone_id, owners_tel.telephone_num "
-                      " From owners_tel"
-                       " WHERE owners_tel.fk_telephone_zk = (:id)");
-        temp1.bindValue(":id", cr->zk_id);
-        if(!temp1.exec())
-            qDebug() << "temp1";
-        while(temp1.next())
-        {
-            Owners_tel *ow = new Owners_tel;
-            ow->tel_id = temp1.value(0).toInt();
-            ow->tel_num = temp1.value(1).toString();
-            QSqlQuery temp2(db_connection::instance()->db());
-
-            temp2.prepare("SELECT contacts.contact_list_id, contacts.cl_telephone, contacts.cl_info"
-                          " From contacts"
-                          " WHERE contacts.fk_cl_telephone = (:id)");
-            temp2.bindValue(":id", ow->tel_id);
-            if(!temp2.exec())
-                qDebug() << "temp2";
-
-            while (temp2.next())
-            {
-                Contacts *con = new Contacts;
-                con->contact_id = temp2.value(0).toInt();
-                con->contact_tel_num = temp2.value(1).toString();
-                con->mark  = temp2.value(2).toString();
-
-                ow->cont()->append(con);
-            }
-            otlist->append(ow);
-        }
-        list->append(cr);
-    }
-        return true;
 }
 
 void Crud::check() const
@@ -563,7 +510,6 @@ void Crud::zk_search_report(QString qry)
       }
 }
 
-////////////////////МЕНЯТЬ /////////////////////////////////
 bool Crud::update_zk()
 {
         QSqlQuery querry(db_connection::instance()->db());
@@ -621,7 +567,6 @@ bool Crud::update_zk()
     return true;
 }
 
-//ДОДЕЛАЙ
 bool Crud::add_zk()
 {
         QSqlQuery querry(db_connection::instance()->db());
@@ -671,7 +616,7 @@ bool Crud::add_zk()
 
     while (querry.next())
     {
-        new_zk_id = querry.value(0).toInt();
+        zk_id = querry.value(0).toInt();
     }
 
     qDebug() << querry.executedQuery();
@@ -690,7 +635,7 @@ void Crud::del_zk(int del_id)
 }
 
 Crud* Crud::id_zk_search(int zk_id)
-{/// Под снос
+{
         QSqlQuery querry(db_connection::instance()->db());
     querry.prepare("SELECT "
                    "zk.zk_id,"
@@ -757,9 +702,6 @@ Crud* Crud::id_zk_search(int zk_id)
     }
 }
 
-
-
-
 int Crud::get_id_from_tel(QString t_n)
 {
     QSqlQuery querry(db_connection::instance()->db());
@@ -774,4 +716,62 @@ int Crud::get_id_from_tel(QString t_n)
       zk_id = querry.value(0).toInt();
       return zk_id;
     }
+}
+
+bool Crud::save_all_crud(Crud *cr)
+{
+    if (cr->owt()->isEmpty())
+        return true;
+    if(!db_connection::instance()->db_connect())
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+
+
+    for (int i = 0; i< cr->owt()->size(); i++)
+    {
+        if ( !isOk )
+            break;
+
+        if(!cr->owt()->at(i)->tel_num.isEmpty())
+        {
+            switch (cr->owt()->at(i)->state)
+            {
+            case IsNewing:
+                int a; //локальная переменная
+                a = cr->owt()->at(i)->insert_tel(false, cr->zk_id);
+                if (a != -1) //усли успешно добавил телефон
+                   isOk = Contacts::saveAll_cont(cr->owt()->at(i)->cont(), a); //сохраняю контакты с новым айди
+                break;
+            case IsChanged:
+                if  (cr->owt()->at(i)->update_tel(false))
+                {
+                    int a = cr->owt()->at(i)->tel_id;
+                    isOk = Contacts::saveAll_cont(cr->owt()->at(i)->cont(),a);
+                } else
+                    isOk = false;
+                break;
+            case IsRemoved:
+                cr->owt()->at(i)->remove_tel();
+                break;
+            case IsReaded: //Не трогал телефоны, но вдруг менял контакты
+                if (cr->owt()->at(i)->state == IsReaded)
+                {//Повторное условие для того чтоб сделать переменную локальной
+                    int a = cr->owt()->at(i)->tel_id;
+                    isOk = Contacts::saveAll_cont(cr->owt()->at(i)->cont(),a);
+                }
+                    break;
+            }
+        }
+    }
+    if(!isOk)
+    {
+        db_connection::instance()->db().database(cname).rollback();
+        qDebug() << "отсюда";
+        return false;
+    }
+    db_connection::instance()->db().database(cname).commit();
+    return true;
 }

@@ -7,8 +7,8 @@ Contacts::Contacts()
 }
 
 /// Конструктор класса с тремя переменными
-Contacts::Contacts(int i, QString tel, QString m,int ot_id, DbState st)
-    :contact_id(i), contact_tel_num(tel), mark(m)
+Contacts::Contacts(int cont_id, QString tel, QString mark, int ot_id, DbState st)
+    :contact_id(cont_id), contact_tel_num(tel), mark(mark)
 {
     parent_OT_id = ot_id;
     cont_state = st;
@@ -53,9 +53,9 @@ bool Contacts::selectAll(QList<Contacts*> *list)
     return true;
 }
 
-bool Contacts::saveAll(QList<Contacts*> *list)
+bool Contacts::saveAll_cont(QList<Contacts*> *list, int new_tel_id)
 {
-    if(list==0 || !db_connection::instance()->db_connect())
+    if(list==nullptr || !db_connection::instance()->db_connect())
         return false;
 
     QString cname = db_connection::instance()->db().connectionName();
@@ -71,7 +71,7 @@ bool Contacts::saveAll(QList<Contacts*> *list)
         switch(list->at(i)->cont_state)
         {
         case IsNewing:
-                isOk = list->at(i)->insert(false);
+                isOk = list->at(i)->insert(false, new_tel_id);
             break;
         case IsChanged:
             isOk = list->at(i)->update(false);
@@ -122,9 +122,9 @@ bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
                  "contacts.cl_telephone,"
                  "contacts.cl_info,"
                  "contacts.FK_Cl_telephone "
-                  " FROM contacts");
-    //"WHERE \"contacts\".\"FK_Cl_telephone\" = (:id) ");
-    //temp.bindValue(":id",tel_id);
+                  " FROM contacts "
+                  "WHERE contacts.FK_Cl_telephone = (:id) ");
+    temp.bindValue(":id",tel_id);
     if (!temp.exec())
     {
         qDebug() << temp.lastError();
@@ -133,19 +133,9 @@ bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
 
     while (temp.next())
     {
-        if (temp.value(3).toInt() == tel_id)
-        {
             Contacts *cnt = new Contacts(temp.value(0).toInt(), temp.value(1).toString(), temp.value(2).toString(), temp.value(3).toInt(), IsReaded);
             list->append(cnt);
-        }
     }
-
-    for (int i = 0; i<list->size(); i++)
-    {
-        //QString str = QString::number(list->at(i)->contact_id);
-        qDebug() << list->at(i)->contact_tel_num + " " + list->at(i)->mark;
-    }
-
 }
 
 bool Contacts::selectContactsforEdit(QList<Contacts *> *list, int)
@@ -157,7 +147,7 @@ bool Contacts::selectContactsforEdit(QList<Contacts *> *list, int)
     }
 }
 
-bool Contacts::insert(bool setState)
+bool Contacts::insert(bool setState, int new_tel_id)
 {
     if( !db_connection::instance()->db_connect() )
         return false;
@@ -166,7 +156,7 @@ bool Contacts::insert(bool setState)
     temp.prepare("INSERT INTO contacts( cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id)) RETURNING Contact_list_id");
     temp.bindValue(":tel_num",contact_tel_num);
     temp.bindValue(":mark",mark);
-    temp.bindValue(":fk_id",parent_OT_id);
+    temp.bindValue(":fk_id", new_tel_id);
 
     if (!temp.exec())
     {
@@ -178,7 +168,7 @@ bool Contacts::insert(bool setState)
     {
         qDebug()<<temp.executedQuery();
         contact_id = temp.value(0).toInt();
-        qDebug() << "add" + QString::number(contact_id);
+        qDebug() << " contact add" + QString::number(contact_id) << mark;
             if( setState )
                 cont_state = IsReaded;
             return true;

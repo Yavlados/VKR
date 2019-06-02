@@ -33,6 +33,7 @@ public:
     QList<Contacts*> *contactList = new QList<Contacts*>;
     QList<Owners_tel*> *otList = new QList<Owners_tel*>;
 
+    Crud *new_cr; //Новая зк
     explicit Update(QWidget *parent = nullptr);
 
     ~Update();
@@ -48,12 +49,13 @@ signals:
     void Ready_for_update();
     void Update_old_tel(int);
     void Add_contact_row(int);
-    void open_update_tab(int);
+    void open_update_tab(Crud *);
     void toMainForm();
 
 private slots:
 
     void clear_ALL();
+    void clear_Vl();
 
     void set_validators();
 
@@ -67,7 +69,7 @@ private slots:
     void on_tableView_2_clicked(const QModelIndex &index);
 
     ///Методы добавления
-     void Fill_table_in_add(int max_id);
+     void Fill_table_in_add();
      void Add_zk();
      void cb_clicked();
 };

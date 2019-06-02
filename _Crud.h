@@ -21,7 +21,7 @@ public:
     Crud();
     Crud(int id);
 
-     QList<Owners_tel*> *owt();
+    QList<Owners_tel*> *owt(); ///Инициализация пустого списка
 
     CheckState checkState_;
     DbState state;
@@ -64,7 +64,6 @@ public:
     static bool select_search(QList<Crud*> *list, QString);
  /////////////////////////////////////////////////////////////
 
-    bool selectAllDb(QList<Crud*> *list, QList<Owners_tel*> *otlist, QList<Contacts*> *contlist);
     void check() const;
     ///Методы поиска
     void zk_search();
@@ -76,6 +75,9 @@ public:
     void recieve_new_zk_id();
     static Crud* id_zk_search(int zk_id);
     int get_id_from_tel(QString t_n);
+    /////////////////////////////////////////////////////////////
+    static bool save_all_crud(Crud *cr);
+    /////////////////////////////////////////////////////////////
 
 private:
     QList<Owners_tel*> *_owt; ///У ЗК есть список телефонов

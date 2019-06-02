@@ -13,6 +13,7 @@
 
 #include "officialtelephones_Form.h"
 #include "for_export.h"/// ->_Crud.h->_Owners_tel.h->_Contacts.h->db_connection
+#include "Import_Form.h"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -35,27 +36,33 @@ public:
 
     Model_check_state m_c_s;
 
-     Update *add; //указатель на форму добавления
+    class Update *add; //указатель на форму добавления
 
-     Update *upd; //указатель на форму добавления
+    class Update *upd; //указатель на форму добавления
 
-     Search *sr = new Search;
+    Search *sr = new Search;
 
-     master_export_Form *exprt = new master_export_Form;
+    master_export_Form *exprt = new master_export_Form;
 
     OfficialTelephones *of = new OfficialTelephones();
+
+    class Analysis *an;
 
     bool search;
 
     MTM_Contacts *contacts_model = new MTM_Contacts;
-    MTM_OwTel *ot_model = new MTM_OwTel;
+    MTM_OwTel *ot_model = new MTM_OwTel();
     MTM_Crud *crud_model = new MTM_Crud;
 
     QList<Contacts*> *contactList = new QList<Contacts*>;
     QList<Owners_tel*> *otList = new QList<Owners_tel*>;
     QList<Crud*> *crudlist = new QList<Crud*>;
 
-
+    ///////////////////////////////////
+    For_export *form_exprt = new For_export();
+    ///////////////////////////////////
+    QModelIndex index_tab1;
+    ///////////////////////////////////
     int p_b_counter = 0;
 
     explicit MainWindow(QWidget *parent = nullptr);
@@ -91,7 +98,7 @@ private slots:
 
     void add_cancel_button();
 
-    void open_upd_tab(int);
+    void open_upd_tab(Crud *cr);
 
     void set_connections();
 
@@ -103,7 +110,7 @@ private slots:
 
     void on_actionexport_triggered();
 
-    void testing_export(QString, QString, bool, bool);
+    void testing_export(QString, QString, bool, bool, bool);
 
     void testing_opening(QString, QString);
 
@@ -114,7 +121,7 @@ signals:
 
     void Refresh_tab();
 
-    void Fill_table_add(int);
+    void Fill_table_add();
 
     void Set_validators_an();
 

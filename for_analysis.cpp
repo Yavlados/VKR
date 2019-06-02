@@ -2,1658 +2,468 @@
 
 For_analysis::For_analysis()
 {
+    list = new List_master(Analysis);
+}
 
+QList<Crud *> *For_analysis::get_crud(Crud *cr)
+{
+    db_connection *db = db_connection::instance();
+    QSqlQuery temp(db->db());
+    QSqlQuery querry(db->db());
+    analysis_res.clear();
+
+    QList<Crud*> *crudlist = new QList <Crud*>; //Список для результатов анализа
+
+    ///Пробегаюсь по телефонным номерам
+    for (int a =0; a<cr->owt()->size(); a++)
+    {
+        querry.prepare("SELECT  DISTINCT owners_tel.fk_telephone_zk, contacts.cl_info, owners_tel.telephone_num "
+                       " FROM  contacts, owners_tel "
+                       " WHERE contacts.cl_telephone = (:tel_num) "
+                       " AND contacts.fk_cl_telephone = owners_tel.telephone_id");
+        querry.bindValue(":tel_num", cr->owt()->at(a)->tel_num);
+
+        if (!querry.exec())
+            qDebug() << querry.lastError();
+
+        ///Возвращаю id ЗК
+        while (querry.next())
+        {
+            Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
+ ///Беру его телефон с id = 1 (Значит телефон анализируемого обнаружен в контактах этого человека)
+            Owners_tel *temp_ot = new Owners_tel(querry.value(2).toString(),1,temp_crud->zk_id);
+            Contacts *temp_cont = new Contacts(1,cr->owt()->at(a)->tel_num,querry.value(1).toString(),temp_ot->tel_id);
+            ///Собираем воедино
+            temp_ot->cont()->append(temp_cont);
+            temp_crud->owt()->append(temp_ot);
+            crudlist->append(temp_crud);
+        }
+    ///Таким образом собрал людей, у которых в КОНТАКТАХ лежит номер анализируемого человека
+        for (int b =0; b<cr->owt()->at(a)->cont()->size(); b++)
+        {
+            querry.prepare(" SELECT  DISTINCT owners_tel.fk_telephone_zk "
+            " FROM   owners_tel "
+            " WHERE owners_tel.telephone_num = (:cont_num)");
+            querry.bindValue(":cont_num", cr->owt()->at(a)->cont()->at(b)->contact_tel_num);
+
+            if (!querry.exec())
+                qDebug() << querry.lastError();
+
+            ///Возвращаю id ЗК
+            while (querry.next())
+            {
+              Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
+ ///Беру его телефон с id = 2 (Значит что в контактах анализируемого обнаружен этот человек)
+            Owners_tel *temp_ot = new Owners_tel(cr->owt()->at(a)->cont()->at(b)->contact_tel_num,2,temp_crud->zk_id);
+            Contacts *temp_cont = new Contacts( 2,cr->owt()->at(a)->cont()->at(b)->contact_tel_num,cr->owt()->at(a)->cont()->at(b)->mark, temp_ot->tel_id);
+            ///Собираем воедино
+            temp_ot->cont()->append(temp_cont);
+            temp_crud->owt()->append(temp_ot);
+            crudlist->append(temp_crud);
+            }
+        }
+    }
+///Имею список crudlist - с людьми, телефонами и контактами. если номер с id 1 - первый вариант
+/// знакомства. Если номер с id 2 - второй вариант знакомства (в таком случае телефон
+/// при владельце = телефону в контактах, мб это не правильно). Возможно, придется удалять одинаковые
+/// записи в листе
+    return crudlist;
+}
+
+void For_analysis::short_face_analysis(Crud *cr, QList<Crud*> *crudlist)
+{
+ if(!crudlist->isEmpty())
+    {
+     analysis_res +="\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n";
+     analysis_res +=  "Владелец записной книжки " +
+     cr->lastname+" "+cr->name+" "+cr->mid_name+" возможно знаком ";
+        if(crudlist->size()>1)
+            analysis_res+="со следующими лицами: \r\n \r\n";
+        else
+            analysis_res += "со следующим лицом: \r\n \r\n";
+        for (int i=0; i<crudlist->size(); i++)
+        {
+            analysis_res += crudlist->at(i)->lastname +" "+crudlist->at(i)->name +" "+
+                    crudlist->at(i)->mid_name +", "+crudlist->at(i)->birth_date + ", окраска ???, записная книжка сформирована: "+
+                    crudlist->at(i)->date_add+"  в интересах: "+crudlist->at(i)->check_for+"; \r\n \r\n";
+        }
+    }
+}
+
+void For_analysis::short_tel_analysis(Crud *cr, QList<Crud*> *crudlist)
+{
+ if(!crudlist->isEmpty())
+    {
+      QList<Crud*> *temp_crudlist = new QList<Crud*>;
+      analysis_res +="\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ТЕЛЕФОНАМ \r\n \r\n";
+
+      int a =0; //Итератор
+
+metka:
+    if(crudlist->at(a)->owt()->at(0)->tel_id == 1)
+        temp_crudlist->append(crudlist->at(a));
+    else
+        return;
+
+    if(crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
+      crudlist->at(a)->owt()->at(0)->tel_id == 1 && a<crudlist->size()-1)
+      {
+          a++;
+          goto metka;
+      }
+   ///Сгруппировали массив
+
+if(!temp_crudlist->isEmpty())
+{
+    analysis_res +="Номер телефона ";
+    analysis_res += temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num + ", принадлежащий владельцу записной книжки: "+
+            cr->lastname+" "+cr->name+" "+cr->mid_name+" обнаружен в ";
+
+    if (temp_crudlist->count()>1)
+        analysis_res += "записных книжках \r\n \r\n";
+    else
+        analysis_res += "записной книжке: \r\n \r\n";
+    for (int i = 0; i< temp_crudlist->size(); i++ )
+    {
+        analysis_res += "Cформированной "+ temp_crudlist->at(i)->date_add+" в отношении: "+
+                temp_crudlist->at(i)->lastname +" "+temp_crudlist->at(i)->name +" " +temp_crudlist->at(i)->mid_name+
+                ", по ораске ???, в интересах "+temp_crudlist->at(i)->check_for;
+
+        if (!temp_crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+            analysis_res += " с пометкой "+temp_crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+        else
+            analysis_res +="\r\n \r\n";
+    }
+    if(a<crudlist->size()-1)
+    {
+        temp_crudlist->clear();
+        a++ ;
+        goto metka;
+    }
+}
+else
+    return;
+    }
+}
+
+void For_analysis::long_face_analysis(Crud *cr, QList<Crud*> *crudlist)
+{
+ if(!crudlist->isEmpty())
+    {
+     analysis_res +="\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n";
+     analysis_res +=  "Владелец записной книжки " +
+     cr->lastname+" "+cr->name+" "+cr->mid_name+" возможно знаком ";
+     if(crudlist->size()>1)
+         analysis_res+="со следующими лицами: \r\n \r\n";
+     else
+         analysis_res += "со следующим лицом: \r\n \r\n";
+     for (int i=0; i<crudlist->size(); i++)
+     {
+         analysis_res += crudlist->at(i)->lastname +" "+crudlist->at(i)->name +" "+
+                 crudlist->at(i)->mid_name +", "+crudlist->at(i)->birth_date + ", адрес регистрации:" +
+                 crudlist->at(i)->reg_city+", "+crudlist->at(i)->reg_street+", "+ crudlist->at(i)->reg_home +"/"+
+                 crudlist->at(i)->reg_corp+ ", " + crudlist->at(i)->reg_home + ", адрес проживания: " +
+                 crudlist->at(i)->liv_city+", "+crudlist->at(i)->liv_street+", "+ crudlist->at(i)->liv_home +"/"+
+                 crudlist->at(i)->liv_corp+ ", " + crudlist->at(i)->liv_home ;
+         QList<Owners_tel*> *list = Owners_tel::get_ow_list(crudlist->at(i)->zk_id);
+         if (!list->isEmpty())
+         {
+             analysis_res +=" телефон: ";
+             for(int a = 0 ; a < list->size(); a++)
+             {
+                 analysis_res += list->at(a)->tel_num+", ";
+             }
+         }
+         analysis_res +=", окраска ???, дополнительная информация: "+crudlist->at(i)->dop_info +
+         ", Дата формирования " + crudlist->at(i)->date_add + " в интересах: "+crudlist->at(i)->check_for+"\r\n";
+         analysis_res+="Вывод о знакомстве сделан на основании того, что:\r\n";
+        if(crudlist->at(i)->owt()->at(0)->tel_id == 1)
+        {
+            analysis_res+="Номер телефона "+crudlist->at(i)->owt()->at(0)->cont()->at(0)->contact_tel_num+", принадлежащий " +
+                    cr->lastname+" "+cr->name+" "+cr->mid_name+", обнаружен в записной книжке, владельцем которой является "+
+                    crudlist->at(i)->lastname +" "+crudlist->at(i)->name +" "+crudlist->at(i)->mid_name +" ";
+            if(!crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+                analysis_res +="с пометкой "+crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+            else
+                analysis_res+="\r\n \r\n";
+        }
+        if(crudlist->at(i)->owt()->at(0)->tel_id == 2)
+        {
+          analysis_res+="Номер телефона "+crudlist->at(i)->owt()->at(0)->cont()->at(0)->contact_tel_num;
+            if(!crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+                analysis_res +=" с пометкой "+crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark + " ";
+            else
+                analysis_res+=" ";
+            analysis_res+=" в записной книжке, владельцем которой является "+
+            cr->lastname+" "+cr->name+" "+cr->mid_name+", обнаружен, как принадлежащий владельцу записной книжки: "+
+            crudlist->at(i)->lastname +" "+crudlist->at(i)->name +" "+crudlist->at(i)->mid_name+"\r\n \r\n";
+        }
+     }
+    }
+}
+
+void For_analysis::long_tel_analysis(Crud *cr, QList<Crud*> *crudlist)
+{
+ if(!crudlist->isEmpty())
+    {
+      QList<Crud*> *temp_crudlist = new QList<Crud*>;
+      analysis_res +="\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К ТЕЛЕФОНАМ \r\n \r\n";
+
+      int a =0; //Итератор
+
+metka:
+    if(crudlist->at(a)->owt()->at(0)->tel_id == 1)
+        temp_crudlist->append(crudlist->at(a));
+    else
+        return;
+
+   if(crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
+              crudlist->at(a)->owt()->at(0)->tel_id == 1 && a<crudlist->size()-1)
+      {
+          a++;
+          goto metka;
+      }
+   ///Сгруппировали массив
+
+if(!temp_crudlist->isEmpty())
+{
+    analysis_res +="Номер телефона "+temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num;
+
+    analysis_res+=", принадлежащий владельцу записной книжки: ";
+    analysis_res += cr->lastname+" "+cr->name+" "+cr->mid_name;
+    analysis_res +=" обнаружен, в ";
+    if (temp_crudlist->count()>1)
+        analysis_res += " записных книжках: \r\n \r\n";
+    else
+        analysis_res += " записной книжке: \r\n \r\n";
+
+    for (int i = 0; i< temp_crudlist->size(); i++ )
+    {
+        analysis_res += temp_crudlist->at(i)->lastname +" "+temp_crudlist->at(i)->name +" " +temp_crudlist->at(i)->mid_name+", "+
+       temp_crudlist->at(i)->birth_date+", адрес регистрации "+
+       temp_crudlist->at(i)->reg_city+", "+temp_crudlist->at(i)->reg_street+", "+ temp_crudlist->at(i)->reg_home +"/"+
+       temp_crudlist->at(i)->reg_corp+ ", " + temp_crudlist->at(i)->reg_home + ", адрес проживания: " +
+       temp_crudlist->at(i)->liv_city+", "+temp_crudlist->at(i)->liv_street+", "+ temp_crudlist->at(i)->liv_home +"/"+
+       temp_crudlist->at(i)->liv_corp+ ", " + temp_crudlist->at(i)->liv_home;
+
+
+        analysis_res +=" телефон: "+temp_crudlist->at(i)->owt()->at(0)->tel_num;
+        analysis_res +=", окраска ???, дополнительная информация: "+temp_crudlist->at(i)->dop_info +
+        ", Дата формирования " + temp_crudlist->at(i)->date_add + " в интересах: "+temp_crudlist->at(i)->check_for;
+
+        if (!temp_crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+            analysis_res += " с пометкой "+temp_crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+        else
+            analysis_res +="\r\n \r\n";
+    }
+    if(a<crudlist->size()-1)
+    {
+        temp_crudlist->clear();
+        a++ ;
+        goto metka;
+    }
+}
+else
+    return;
+    }
 }
 
 void For_analysis::short_face_analysis_all_db(int id)
 {
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
 
-    db_connection *db = db_connection::instance();
-    QSqlQuery temp(db->db());
-    QSqlQuery querry(db->db());
-    QSqlQuery temp_2(db->db()); // для метода даления
-    QSqlQuery temp_3(db->db());
-    analysis_res.clear();
-        ///////////////////////////////////////
-    querry.prepare("SELECT contacts.FK_Cl_telephone "
-                   " FROM contacts, owners_tel "
-                   " WHERE owners_tel.FK_Telephone_Zk = (:id) AND "
-                    " owners_tel.Telephone_num = contacts.cl_telephone");
-    querry.bindValue(":id", id);
-
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-
-        ///////////////////////////////////////
-    while (querry.next())
-    {
-        ///////////////////////////////////////
-    temp.prepare("SELECT owners_tel.FK_Telephone_Zk "
-        " FROM owners_tel "
-       " WHERE "
-       " owners_tel.Telephone_id = (:fk_id)");
-        temp.bindValue(":fk_id",querry.value(0).toInt());
-        if (!temp.exec())
-            qDebug() << temp.lastError();
-
-        ///////////////////////////////////////
-       while (temp.next())
-            {
-        ///////////////////////////////////////
-        temp_2.prepare("SELECT "
-                       " zk.Lastname, "
-                       " zk.Name, "
-                       " zk.Mid_name, "
-                       " zk.Birth_date, "
-                       " zk.Date_add, "
-                       " zk.Check_for "
-                       " FROM zk "
-                       " WHERE "
-                       " zk.Zk_id = (:zk_id)");
-        temp_2.bindValue(":zk_id",temp.value(0).toInt());
-
-        match_counter.append(temp.value(0).toInt());
-
-        if (!temp_2.exec())
-            qDebug() << temp_2.lastError();
-
-        while (temp_2.next())
-                {
-            analysis_res += temp_2.value(0).toString()+" "+
-                    temp_2.value(1).toString()+" "+
-                    temp_2.value(2).toString()+", "+
-                    temp_2.value(3).toString()+", окраска: ???, записная книжка сформирована "+
-                    temp_2.value(4).toString()+" в интересах: "+
-                    temp_2.value(5).toString()+"  \r\n \r\n";
-                }
-
-            }
-    }
- if(!analysis_res.isEmpty())
-  {
-     QString temp_for_add;
-     temp_3.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
-                    " FROM contacts, owners_tel "
-                    " WHERE owners_tel.FK_Telephone_Zk = (:id) AND "
-                     " owners_tel.Telephone_num = contacts.cl_telephone");
-     temp_3.bindValue(":id", id);
-     if (!temp_3.exec())
-         qDebug() << temp_3.lastError();
-     while (temp_3.next())
-             {
-         For_analysis::get_L_N_M(id);
-
-         temp_for_add = "\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n"
-                        "Владелец записной книжки ";
-         temp_for_add += Lastname+" "+Name+" "+Midname+" "
-                         " возможно знаком со ";
-
-        if (temp_3.value(0).toInt() == 1)
-            temp_for_add += " следующим лицом: \r\n \r\n";
-        else
-            temp_for_add += "следующими лицами: \r\n \r\n";
-           }
-     temp_3.clear();
-
-     analysis_res.insert(0,temp_for_add);
-  }
+   short_face_analysis(cr, crudlist);
 }
 
 void For_analysis::short_tel_analysis_all_db(int id)
 {
-   analysis_res.clear();
-    For_analysis::get_L_N_M(id);
-    ///////////////////ВЫТАЩИЛ НОМЕРА ТЕЛЕФОНА////////////////////
- querry.prepare("SELECT DISTINCT owners_tel.Telephone_num "
-                " FROM owners_tel, contacts "
-                " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                " AND "
-                " owners_tel.Telephone_num = contacts.cl_telephone");
- querry.bindValue(":id",id);
- if (!querry.exec())
-     qDebug() << querry.lastError();
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
 
-///////////////////QUERRY - НОМЕР АНАЛИЗИРУЕМОГО ТЕЛЕФОНА////////////////////
- while (querry.next())
-         {
-
-     Tel_num = querry.value(0).toString();
-      analysis_res +="Номер телефона "+ Tel_num+", принадлежащий владельцу запиной книжки: ";
-     ///////////////////ЗАПИСАЛ ФИО ВЛАДЕЛЬЦА////////////////////
-
-
-      analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
-
-      ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-      temp.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
-                   " FROM owners_tel, contacts "
-                   " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                   " AND "
-                   " contacts.cl_telephone = (:tel_num) ");
-      temp.bindValue(":id",id);
-      temp.bindValue(":tel_num",Tel_num);
-
-      if (!temp.exec())
-          qDebug() << temp.lastError();
-
-      while (temp.next())
-      {
-          if(temp.value(0).toInt() == 1)
-              analysis_res+="записной книжке: \r\n \r\n";
-          else
-              analysis_res+="записных книжках: \r\n \r\n";
-      }
-      temp.clear();
-      ///////////////////ДОСТАЮ ИЗ ЗК НУЖНЫЕ ПОЛЯ////////////////////
-      temp.prepare("SELECT contacts.FK_Cl_telephone, contacts.cl_info "
-                   " FROM owners_tel, contacts "
-                   " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                   " AND"
-                   " owners_tel.Telephone_num = contacts.cl_telephone"
-                   " AND"
-                   " contacts.cl_telephone = (:tel_num)");
-      temp.bindValue(":id",id);
-      temp.bindValue(":tel_num",Tel_num);
-      if (!temp.exec())
-          qDebug() << temp.lastError();
-
-        ///////////////////TEMP - ////////////////////
-      while (temp.next())
-      {
-         temp_2.prepare("SELECT owners_tel.FK_Telephone_Zk"
-                        " FROM owners_tel"
-                        " WHERE owners_tel.Telephone_id = (:temp_val)");
-         temp_2.bindValue(":temp_val",temp.value(0).toInt());
-         if (!temp_2.exec())
-             qDebug() << temp_2.lastError();
-
-       ///////////////////TEMP_2 - НОМЕР ЗК С НОМЕРОМ ТЕЛЕФОНА////////////////////
-         while (temp_2.next())
-            {
-                temp_3.prepare("SELECT "
-                               " zk.Date_add,"
-                               " zk.Lastname,"
-                               " zk.Name,"
-                               " zk.Mid_name,"
-                               " zk.Birth_date,"
-                               " zk.Check_for"
-                               " FROM zk "
-                               " WHERE zk.Zk_id = (:temp_2_val)");
-                temp_3.bindValue(":temp_2_val",temp_2.value(0).toInt());
-                if (!temp_3.exec())
-                    qDebug() << temp_3.lastError();
-                while (temp_3.next())
-                {
-                    analysis_res+="сформированной "+temp_3.value(0).toString()+
-                            " в отношении: "+temp_3.value(1).toString()+" "+
-                            temp_3.value(2).toString()+" "+
-                            temp_3.value(3).toString()+", "+temp_3.value(4).toString()+" по окраске: ???, в интересах "+
-                            temp_3.value(5).toString()+ " ";
-                    if (!temp.value(1).toString().isEmpty())
-                        analysis_res += "с пометкой "+temp.value(1).toString()+"\r\n \r\n";
-                    else
-                        analysis_res +="\r\n \r\n";
-                }
-                temp_3.clear();
-            }
-         }
- }
-
- if(!analysis_res.isEmpty())
-   analysis_res.insert(0,"\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ТЕЛЕФОННЫМ НОМЕРАМ \r\n \r\n");
+    short_tel_analysis(cr, crudlist);
 }
 
 void For_analysis::long_face_analysis_all_db(int id)
 {
-    For_analysis::get_L_N_M(id);
-    analysis_res.clear();
-        ///////////////////////////////////////
-    querry.prepare("SELECT contacts.FK_Cl_telephone, contacts.cl_info"
-                   " FROM contacts, owners_tel"
-                   " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
-                    " owners_tel.Telephone_num = contacts.cl_telephone");
-    querry.bindValue(":id", id);
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
 
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-
-        ///////////////////////////////////////
-    while (querry.next())
-    {
-        ///////////////////////////////////////
-    temp.prepare("SELECT owners_tel.FK_Telephone_Zk,owners_tel.Telephone_num "
-        " FROM owners_tel"
-       " WHERE "
-       " owners_tel.Telephone_id = (:fk_id)");
-        temp.bindValue(":fk_id",querry.value(0).toInt());
-        if (!temp.exec())
-            qDebug() << temp.lastError();
-
-        ///////////////////////////////////////
-       while (temp.next())
-            {
-        ///////////////////////////////////////
-        temp_2.prepare("SELECT "
-        /*0*/          " zk.Lastname, "
-                       " zk.Name, "
-                       " zk.Mid_name, "
-                       " zk.Birth_date, "
-                       ""
-        /*4*/          "zk.reg_city, "
-                       "zk.reg_street, "
-                       "zk.reg_home, "
-                       "zk.reg_corp, "
-                       "zk.reg_flat, "
-                       ""
-        /*9*/          "zk.dop_info, "
-                       "zk.date_add, "
-                       "zk.check_for"
-                       " FROM zk "
-                       " WHERE "
-                       " zk.Zk_id = (:zk_id)");
-        temp_2.bindValue(":zk_id",temp.value(0).toInt());
-        if (!temp_2.exec())
-            qDebug() << temp_2.lastError();
-
-        while (temp_2.next())
-                {
-            analysis_res += temp_2.value(0).toString()+" "+
-                    temp_2.value(1).toString()+" "+
-                    temp_2.value(2).toString()+", "+
-                    temp_2.value(3).toString()+", адрес регистрации: "+
-                    temp_2.value(4).toString()+" "+temp_2.value(5).toString()+" "+
-                    temp_2.value(6).toString()+" "+temp_2.value(7).toString()+" "+
-                    temp_2.value(8).toString()+", "+" телефон: "+
-                    temp.value(1).toString()+ ", окраска: ???, дополнительная информация: "+
-                    temp_2.value(9).toString()+", записная книжка сформирована "+
-                    temp_2.value(10).toString()+" в интересах: "+
-                    temp_2.value(11).toString()+"  \r\n \t Вывод о знакомстве сделан на основании того, что: \r\n";
-
-            temp_3.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                                            " FROM owners_tel, contacts"
-                                            " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                                            " AND "
-                                            " owners_tel.Telephone_num = contacts.cl_telephone"
-                                            " AND "
-                                            " contacts.FK_Cl_telephone = (:fk)");
-                             temp_3.bindValue(":id",id);
-                             temp_3.bindValue(":fk",querry.value(0));
-                             if (!temp_3.exec())
-                                 qDebug() << temp_3.lastError();
-
-                            ///////////////////temp_3 - НОМЕР АНАЛИЗИРУЕМОГО ТЕЛЕФОНА////////////////////
-                             while (temp_3.next())
-                                     {
-                                 Tel_num = temp_3.value(0).toString();
-                                     }
-                             temp_3.clear();
-
-                             analysis_res+="Номер телефона "+Tel_num+", принадлежащий "+Lastname+" "+Name+" "+Midname+" "+
-                                     ", обнаружен в записной книжке, владельцем которой является "+
-                    temp_2.value(0).toString()+" "+temp_2.value(1).toString()+" "+ temp_2.value(2).toString()+" ";
-                             if (!querry.value(1).toString().isEmpty())
-                                 analysis_res += "с пометкой "+querry.value(1).toString()+"\r\n \r\n";
-                             else
-                                 analysis_res +="\r\n \r\n";
-                }
-
-            }
-    }
-    //////////////-------ВТОРОЙ ВАРИАНТ ЗНАКОМСТВА-------/////////////////
-    temp.clear();
-    temp_2.clear();
-    querry.clear();
-    querry.prepare("SELECT"
-                   " owners_tel.Telephone_id "
-                   " FROM"
-                   " owners_tel "
-                   " WHERE"
-                   " owners_tel.FK_Telephone_Zk = (:id)");
-    querry.bindValue(":id", id);
-
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    while (querry.next())
-    {
-        temp.prepare("SELECT"
-                     " owners_tel.FK_Telephone_Zk, "
-                     " owners_tel.Telephone_num, "
-                     " contacts.cl_info"
-                     " FROM"
-                     " contacts, owners_tel "
-                     " WHERE "
-                     " contacts.cl_telephone = owners_tel.Telephone_num "
-                     " AND "
-                     " contacts.FK_Cl_telephone = (:fk)");
-        temp.bindValue(":fk", querry.value(0));
-        if (!temp.exec())
-            qDebug() << temp.lastError();
-        while (temp.next())
-        {
-            temp_2.prepare("SELECT "
-            /*0*/          "zk.lastname,"
-                           "zk.name,"
-                           "zk.mid_name,"
-                           "zk.birth_date,"
-                           ""
-            /*4*/          "zk.reg_city,"
-                           "zk.reg_street,"
-                           "zk.reg_home,"
-                           "zk.reg_corp,"
-                           "zk.reg_flat,"
-                           ""
-            /*9*/          "zk.dop_info,"
-                           "zk.date_add,"
-                           "zk.check_for"
-                           " FROM zk "
-                           " WHERE "
-                           "zk.Zk_id = (:zk_id)");
-            temp_2.bindValue(":zk_id",temp.value(0).toInt());
-            if (!temp_2.exec())
-                qDebug() << temp_2.lastError();
-
-            while (temp_2.next())
-                    {
-                analysis_res += temp_2.value(0).toString()+" "+
-                        temp_2.value(1).toString()+" "+
-                        temp_2.value(2).toString()+", "+
-                        temp_2.value(3).toString()+", адрес регистрации: "+
-                        temp_2.value(4).toString()+" "+temp_2.value(5).toString()+" "+
-                        temp_2.value(6).toString()+" "+temp_2.value(7).toString()+" "+
-                        temp_2.value(8).toString()+", "+" телефон: "+
-                        temp.value(1).toString()+ ", окраска: ???, дополнительная информация: "+
-                        temp_2.value(9).toString()+", записная книжка сформирована "+
-                        temp_2.value(10).toString()+" в интересах: "+
-                        temp_2.value(11).toString()+"  \r\n \t Вывод о знакомстве сделан на основании того, что: \r\n"+
-                    "Номер телефона "+temp.value(1).toString()+", ";
-
-                if(!temp.value(2).toString().isEmpty())
-                    analysis_res+=" с пометкой "+temp.value(2).toString() + " ";
-                analysis_res+=" в записной книжке, владельцем которой является "
-                        +Lastname+" "+Name+" "+Midname+" обнаружен, как принадлежащий владельцу записной книжки: "+
-                        temp_2.value(0).toString()+" "+
-                        temp_2.value(1).toString()+" "+
-                        temp_2.value(2).toString()+" \r\n";
-                    }
-        }
-    }
-    if(!analysis_res.isEmpty())
-    {
-        For_analysis::get_L_N_M(id);
-        QString temp_for_add;
-        temp_for_add = "\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n"
-                       "Владелец записной книжки ";
-            ///////////////////////////////////////
-
-            temp_for_add += Lastname+" "+Name+" "+Midname+" "
-                            " возможно знаком со ";
-            For_analysis::get_L_N_M(id);
-            ///////////////////////////////////////
-            temp_3.prepare("SELECT COUNT(DISTINCT contacts.FK_Cl_telephone)"
-                           " FROM contacts, owners_tel"
-                           " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
-                           " owners_tel.Telephone_num = contacts.cl_telephone");
-            temp_3.bindValue(":id", id);
-            if (!temp_3.exec())
-                qDebug() << temp_3.lastError();
-            while (temp_3.next())
-                    {
-               if (temp_3.value(0).toInt() == 1)
-                   temp_for_add += " следующим лицом: \r\n \r\n";
-               else
-                   temp_for_add += "следующими лицами: \r\n \r\n";
-                    }
-            temp_3.clear();
-
-            analysis_res.insert(0,temp_for_add);
-    }
+    long_face_analysis(cr, crudlist);
 }
-/////////////////////////////////////////////////////////////
+
 void For_analysis::long_tel_analysis_all_db(int id)
 {
-    For_analysis::get_L_N_M(id);
-    analysis_res.clear();
-    QSqlQuery new_temp;
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
 
-    querry.prepare("SELECT DISTINCT contacts.FK_Cl_telephone, contacts.cl_info"
-                   " FROM contacts, owners_tel "
-                   " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
-                   " owners_tel.Telephone_num =  contacts.cl_telephone");
-    querry.bindValue(":id", id);
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-
-    while (querry.next())
-    {
-        qDebug() << querry.value(0).toString();
-        new_temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                                        " FROM owners_tel, contacts"
-                                        " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                                       " AND "
-                                       " owners_tel.Telephone_num = contacts.cl_telephone"
-                                        " AND"
-                                        " contacts.FK_Cl_telephone = (:fk)");
-                         new_temp.bindValue(":id",id);
-                         new_temp.bindValue(":fk",querry.value(0));
-                         if (!new_temp.exec())
-                             qDebug() << new_temp.lastError();
-
-                        ///////////////////new_temp - НОМЕР АНАЛИЗИРУЕМОГО ТЕЛЕФОНА////////////////////
-                         while (new_temp.next())
-                         {
-                             if (Tel_num != new_temp.value(0).toString())
-                                {
-                                    Tel_num =  new_temp.value(0).toString();
-
-                         analysis_res+="Номер телефона "+Tel_num+", принадлежащий владельцу записной книжки: "+
-                                 Lastname+" "+Name+" "+Midname+" обнаружен в ";
-                         temp_3.prepare("SELECT COUNT(DISTINCT contacts.FK_Cl_telephone)"
-                                        "FROM contacts, owners_tel"
-                                        "WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
-                                         "contacts.cl_telephone = (:tel_num)");
-                         temp_3.bindValue(":id", id);
-                         temp_3.bindValue(":tel_num",Tel_num);
-                         if (!temp_3.exec())
-                             qDebug() << temp_3.lastError();
-                         while (temp_3.next())
-                                 {
-                            if (temp_3.value(0).toInt() == 1)
-                                analysis_res += " записной книжке: \r\n \r\n";
-                            else
-                                analysis_res += "записных книжках: \r\n \r\n";
-                                 }
-                         temp_3.clear();
-                          ///////////////////////////////////////
-                         temp.prepare("SELECT DISTINCT contacts.FK_Cl_telephone, contacts.cl_info"
-                                        " FROM contacts, owners_tel"
-                                        " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
-                                        " contacts.cl_telephone = (:tel_num)");
-                         temp.bindValue(":id", id);
-                         temp.bindValue(":tel_num",Tel_num);
-                         if (!temp.exec())
-                             qDebug() << temp.lastError();
-
-
-                         while (temp.next())
-                         {
-                         temp_3.prepare(" SELECT owners_tel.FK_Telephone_Zk,owners_tel.Telephone_num "
-                                        " FROM owners_tel"
-                                        " WHERE "
-                                        " owners_tel.Telephone_id = (:fk_id)");
-                             temp_3.bindValue(":fk_id",temp.value(0).toInt());
-                             if (!temp_3.exec())
-                                 qDebug() << temp_3.lastError();
-
-                            while (temp_3.next())
-                                 {
-                             temp_2.prepare("SELECT "
-                             /*0*/          "zk.Lastname, "
-                                            "zk.Name, "
-                                            "zk.Mid_name,"
-                                            "zk.Birth_date,"
-                                            ""
-                             /*4*/          "zk.Reg_city,"
-                                            "zk.Reg_street,"
-                                            "zk.Reg_home,"
-                                            "zk.Reg_corp,"
-                                            "zk.Reg_flat,"
-                                            ""
-                             /*9*/          "zk.Dop_info,"
-                                            "zk.Date_add,"
-                                            "zk.Check_for"
-                                            " FROM zk "
-                                            " WHERE "
-                                            "zk.Zk_id = (:zk_id)");
-                             temp_2.bindValue(":zk_id",temp_3.value(0).toInt());
-                             if (!temp_2.exec())
-                                 qDebug() << temp_2.lastError();
-
-                             while (temp_2.next())
-                                        {
-                                 analysis_res += temp_2.value(0).toString()+" "+
-                                         temp_2.value(1).toString()+" "+
-                                         temp_2.value(2).toString()+", "+
-                                         temp_2.value(3).toString()+", адрес регистрации: "+
-                                         temp_2.value(4).toString()+" "+temp_2.value(5).toString()+" "+
-                                         temp_2.value(6).toString()+" "+temp_2.value(7).toString()+" "+
-                                         temp_2.value(8).toString()+", "+" телефон: "+
-                                         temp_3.value(1).toString()+ ", окраска: ???, дополнительная информация: "+
-                                         temp_2.value(9).toString()+", записная книжка сформирована "+
-                                         temp_2.value(10).toString()+" в интересах: "+
-                                         temp_2.value(11).toString();
-                                 if(!temp.value(1).toString().isEmpty())
-                                     analysis_res+=" c пометкой "+ temp.value(1).toString();
-                                 analysis_res+="\r\n \r\n";
-                                        }
-                                }
-                             }
-                             }
-                         }
-    }
-
-    if (!analysis_res.isEmpty())
-    {
-         analysis_res.insert(0,"\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К НОМЕРАМ \r\n \r\n");
-    }
+    long_tel_analysis(cr, crudlist);
 }
 
 void For_analysis::short_face_analysis_all_db(QVector<int> vector, int id)
 {
-    analysis_res.clear();
-    int counter = 0;
-   querry.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                  " FROM  owners_tel"
-                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-   querry.bindValue(":id",id);
-   if (!querry.exec())
-       qDebug() << querry.lastError();
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
+    QList<Crud*> *temp = new QList<Crud*>;
 
-   while (querry.next())
-   {
-       qDebug() <<"querry   "+ querry.value(0).toString();
-     for (int a =0; a<vector.size(); a++)
-       {
-         qDebug() << vector.at(a);
-
-           temp.prepare("SELECT DISTINCT owners_tel.Telephone_id"
-                          " FROM  owners_tel"
-                          " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-           temp.bindValue(":id", vector.at(a));
-           if (!temp.exec())
-               qDebug() << temp.lastError();
-
-           while (temp.next())
-           {
-               qDebug() << "temp  " + temp.value(0).toString();
-
-    /**/           temp_2.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
-                           " FROM contacts, owners_tel"
-                           " WHERE contacts.cl_telephone = (:an_tel)"
-                           " AND contacts.FK_Cl_telephone = (:id)");
-
-               temp_2.bindValue(":an_tel",querry.value(0).toString());
-               qDebug() <<querry.value(0).toString();
-
-               temp_2.bindValue(":id",temp.value(0).toInt());
-               qDebug() <<temp.value(0).toInt();
-
-               if (!temp_2.exec())
-                   qDebug() << temp_2.lastError();
-
-               while (temp_2.next())
-               {
-                  counter++;
-                        temp_3.prepare("SELECT "
-                                       " zk.Lastname, "
-                                       " zk.Name, "
-                                       " zk.Mid_name, "
-                                       " zk.Birth_date, "
-                                       " zk.Date_add, "
-                                       " zk.Check_for "
-                                       " FROM zk "
-                                       " WHERE "
-                                       " zk.Zk_id = (:zk_id)");
-                       temp_3.bindValue(":zk_id",vector.at(a));
-
-                       if (!temp_3.exec())
-                           qDebug() << temp_3.lastError();
-                       while (temp_3.next())
-                               {
-                           analysis_res += temp_3.value(0).toString()+" "+
-                                   temp_3.value(1).toString()+" "+
-                                   temp_3.value(2).toString()+", "+
-                                   temp_3.value(3).toString()+", окраска: ???, записная книжка сформирована "+
-                                   temp_3.value(4).toString()+" в интересах: "+
-                                   temp_3.value(5).toString()+"  \r\n \r\n";
-                               }
-                       temp_3.clear();
-               }
-
-           }
-       }
-   }
-   if(counter > 0)
-   {
-       QString for_insert;
-       For_analysis::get_L_N_M(id);
-
-                              for_insert = "\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n"
-                                             "Владелец записной книжки ";
-                              for_insert += Lastname+" "+Name+" "+Midname+" "
-                                              " возможно знаком со ";
-                              if(counter==1)
-                                  for_insert += " следующим лицом: \r\n \r\n";
-                              else
-                                  for_insert += "следующими лицами: \r\n \r\n";
-     analysis_res.insert(0,for_insert);
-   }
+    for(int a=0; a<crudlist->size(); a++)
+    {
+        for(int i =0; i<vector.size(); i++)
+        {
+            if(crudlist->at(a)->zk_id == vector.at(i))
+            {
+                temp->append(crudlist->at(a));
+                break;
+            }
+        }
+    }
+    delete crudlist;
+    short_face_analysis(cr, temp);
 }
 
 void For_analysis::short_tel_analysis_all_db(QVector<int> vector, int id)
 {
-    analysis_res.clear();
-    For_analysis::get_L_N_M(id);
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
+    QList<Crud*> *temp = new QList<Crud*>;
 
-   querry.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                  " FROM  owners_tel"
-                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-   querry.bindValue(":id",id);
-   if (!querry.exec())
-       qDebug() << querry.lastError();
-
-   while (querry.next())
-   {
-       for (int a =0; a<vector.size(); a++)
-       {
-         qDebug() << vector.at(a);
-
-           temp.prepare("SELECT DISTINCT owners_tel.Telephone_id"
-                          " FROM  owners_tel"
-                          " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-           temp.bindValue(":id", vector.at(a));
-           if (!temp.exec())
-               qDebug() << temp.lastError();
-
-           while (temp.next())
-           {
-    /**/      temp_2.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
-                           " FROM contacts, owners_tel"
-                           " WHERE contacts.cl_telephone = (:an_tel)"
-                           " AND contacts.FK_Cl_telephone = (:id)");
-
-               temp_2.bindValue(":an_tel",querry.value(0).toString());
-
-               temp_2.bindValue(":id",temp.value(0).toInt());
-
-               if (!temp_2.exec())
-                   qDebug() << temp_2.lastError();
-
-
-               while (temp_2.next())
-               {
-                   if (Tel_num != querry.value(0).toString())
-                {
-                    Tel_num =  querry.value(0).toString();
-
-                   analysis_res +="Номер телефона "+ Tel_num+", принадлежащий владельцу запиной книжки: ";
-
-                   analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
-                   ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-                   temp_3.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
-                                " FROM owners_tel, contacts "
-                                " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                                " AND "
-                                " contacts.cl_telephone = (:tel_num) ");
-                   temp_3.bindValue(":id",id);
-                   temp_3.bindValue(":tel_num",Tel_num);
-
-                   if (!temp_3.exec())
-                       qDebug() << temp_3.lastError();
-
-                   while (temp_3.next())
-                   {
-                       if(temp_3.value(0).toInt() == 1)
-                           analysis_res+="записной книжке: \r\n \r\n";
-                       else
-                           analysis_res+="записных книжках: \r\n \r\n";
-                   }
-                   temp_3.clear();
-                 }
-                   temp_3.prepare("SELECT "
-                                  "zk.Date_add,"
-                                  "zk.Lastname,"
-                                  "zk.Name,"
-                                  " zk.Mid_name, "
-                                  " zk.Birth_date, "
-                                  " zk.Check_for "
-                                  "FROM zk"
-                                  " WHERE zk.Zk_id = (:temp_2_val)");
-                   temp_3.bindValue(":temp_2_val",vector.at(a));
-                   if (!temp_3.exec())
-                       qDebug() << temp_3.lastError();
-                   while (temp_3.next())
-                   {
-                       analysis_res+="сформированной "+temp_3.value(0).toString()+
-                               " в отношении: "+temp_3.value(1).toString()+" "+
-                               temp_3.value(2).toString()+" "+
-                               temp_3.value(3).toString()+", "+temp_3.value(4).toString()+" по окраске: ???, в интересах "+
-                               temp_3.value(5).toString()+ " ";
-                       if (!temp_2.value(0).toString().isEmpty())
-                           analysis_res += "с пометкой "+temp_2.value(0).toString()+"\r\n \r\n";
-                       else
-                           analysis_res +="\r\n \r\n";
-                   }
-                   temp_3.clear();
-               }
-
-           }
-       }
-
-   }
-   if(!analysis_res.isEmpty())
-   {
-       analysis_res.insert(0,"\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К НОМЕРАМ \r\n \r\n");
-   }
+    for(int a=0; a<crudlist->size(); a++)
+    {
+        for(int i =0; i<vector.size(); i++)
+        {
+            if(crudlist->at(a)->zk_id == vector.at(i))
+            {
+                temp->append(crudlist->at(a));
+                break;
+            }
+        }
+    }
+    delete crudlist;
+    short_tel_analysis(cr, temp);
 }
 
 void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
 {
-    For_analysis::get_L_N_M(id);
-    analysis_res.clear();
-    int counter = 0;
-   querry.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                  " FROM  owners_tel"
-                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-   querry.bindValue(":id",id);
-   if (!querry.exec())
-       qDebug() << querry.lastError();
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
+    QList<Crud*> *temp = new QList<Crud*>;
 
-   while (querry.next())
-   {
-       qDebug() <<"querry   "+ querry.value(0).toString();
-     for (int a =0; a<vector.size(); a++)
-       {
-         qDebug() << vector.at(a);
-
-           temp.prepare("SELECT DISTINCT owners_tel.Telephone_id,owners_tel.Telephone_num"
-                          " FROM owners_tel"
-                          " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-           temp.bindValue(":id", vector.at(a));
-           if (!temp.exec())
-               qDebug() << temp.lastError();
-
-           while (temp.next())
-           {
-               temp_2.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
-                                         " FROM contacts, owners_tel"
-                                         " WHERE contacts.cl_telephone = (:an_tel)"
-                                         " AND contacts.FK_Cl_telephone = (:id)");
-
-                             temp_2.bindValue(":an_tel",querry.value(0).toString());
-                             qDebug() <<querry.value(0).toString();
-
-                             temp_2.bindValue(":id",temp.value(0).toInt());
-                             qDebug() <<temp.value(0).toInt();
-
-                             if (!temp_2.exec())
-                                 qDebug() << temp_2.lastError();
-
-                             while (temp_2.next())
-                             {
-                                 counter++;
-                                       temp_3.prepare("SELECT "
-          /*0*/                        " zk.Lastname, "
-                                       " zk.Name, "
-                                       " zk.Mid_name, "
-                                       " zk.Birth_date, "
-                         ""
-          /*4*/                         "zk.Reg_city,"
-                                       "zk.Reg_street,"
-                                       "zk.Reg_home,"
-                                       "zk.Reg_corp,"
-                                       "zk.Reg_flat,"
-                          ""
-          /*9*/                        "zk.Dop_info,"
-                                       "zk.Date_add,"
-                                       "zk.Check_for"
-                         " FROM zk "
-                         " WHERE "
-                         "zk.Zk_id = (:zk_id)");
-                                      temp_3.bindValue(":zk_id",vector.at(a));
-                                    QString str = QString::number(vector.at(a));
-                                      if (!temp_3.exec())
-                                          qDebug() << temp_3.lastError();
-                                      while (temp_3.next())
-                                              {
-                                          analysis_res += "Номер ЗК - "+str+" "+temp_3.value(0).toString()+" "+
-                                                  temp_3.value(1).toString()+" "+
-                                                  temp_3.value(2).toString()+", "+
-                                                  temp_3.value(3).toString()+", адрес регистрации: "+
-                                                  temp_3.value(4).toString()+" "+temp_3.value(5).toString()+" "+
-                                                  temp_3.value(6).toString()+" "+temp_3.value(7).toString()+" "+
-                                                  temp_3.value(8).toString()+", "+" телефон: "+
-                                                  temp.value(1).toString()+ ", окраска: ???, дополнительная информация: "+
-                                                  temp_3.value(9).toString()+", записная книжка сформирована "+
-                                                  temp_3.value(10).toString()+" в интересах: "+
-                                                  temp_3.value(11).toString()+"  \r\n \t Вывод о знакомстве сделан на основании того, что: \r\n";
-
-                                                  analysis_res+="Номер телефона "+querry.value(0).toString()+", принадлежащий "+Lastname+" "+Name+" "+Midname+" "+
-                                                    ", обнаружен в записной книжке, владельцем которой является "+
-                                                  temp_3.value(0).toString()+" "+temp_3.value(1).toString()+" "+ temp_3.value(2).toString()+" ";
-                                                           if (!temp_2.value(0).toString().isEmpty())
-                                                               analysis_res += "с пометкой "+temp_2.value(0).toString()+"\r\n \r\n";
-                                                           else
-                                                               analysis_res +="\r\n \r\n";
-                                               }
-                              temp_3.clear();
-                             }
-           }
-     }
-   }
-
-   //////////////-------ВТОРОЙ ВАРИАНТ ЗНАКОМСТВА-------/////////////////
-   temp.clear();
-   temp_2.clear();
-   querry.clear();
-   querry.prepare("SELECT"
-                 " owners_tel.Telephone_id "
-                 " FROM"
-                 " owners_tel "
-                 " WHERE"
-                 " owners_tel.FK_Telephone_Zk = (:id)");
-   querry.bindValue(":id", id);
-
-   if (!querry.exec())
-       qDebug() << querry.lastError();
-   while (querry.next())
-   {
-       temp.prepare("SELECT"
-                    " owners_tel.FK_Telephone_Zk, "
-                    " owners_tel.Telephone_num, "
-                    "contacts.cl_info"
-                    " FROM"
-                   " contacts,owners_tel"
-                   "  WHERE "
-                   "  contacts.cl_telephone = owners_tel.Telephone_num "
-                   "  AND "
-                   "  contacts.FK_Cl_telephone = (:fk)");
-       temp.bindValue(":fk", querry.value(0));
-       if (!temp.exec())
-           qDebug() << temp.lastError();
-       while (temp.next())
-       {
-           for (int a = 0; a < vector.size(); a++)
-           {
-            if(vector.at(a) == temp.value(0).toInt())
+    for(int a=0; a<crudlist->size(); a++)
+    {
+        for(int i =0; i<vector.size(); i++)
+        {
+            if(crudlist->at(a)->zk_id == vector.at(i))
             {
-                temp_2.prepare("SELECT "
-                /*0*/          "zk.Lastname, "
-                               "zk.Name, "
-                               "zk.Mid_name,"
-                               "zk.Birth_date,"
-                               ""
-                /*4*/          "zk.Reg_city,"
-                               "zk.Reg_street,"
-                               "zk.Reg_home,"
-                               "zk.Reg_corp,"
-                               "zk.Reg_flat,"
-                               ""
-                /*9*/          "zk.Dop_info,"
-                               "zk.Date_add,"
-                               "zk.Check_for"
-                              " FROM zk "
-                              " WHERE "
-                               "zk.Zk_id = (:zk_id)");
-                temp_2.bindValue(":zk_id",temp.value(0).toInt());
-                if (!temp_2.exec())
-                    qDebug() << temp_2.lastError();
-
-                while (temp_2.next())
-                        {
-                    analysis_res += temp_2.value(0).toString()+" "+
-                            temp_2.value(1).toString()+" "+
-                            temp_2.value(2).toString()+", "+
-                            temp_2.value(3).toString()+", адрес регистрации: "+
-                            temp_2.value(4).toString()+" "+temp_2.value(5).toString()+" "+
-                            temp_2.value(6).toString()+" "+temp_2.value(7).toString()+" "+
-                            temp_2.value(8).toString()+", "+" телефон: "+
-                            temp.value(1).toString()+ ", окраска: ???, дополнительная информация: "+
-                            temp_2.value(9).toString()+", записная книжка сформирована "+
-                            temp_2.value(10).toString()+" в интересах: "+
-                            temp_2.value(11).toString()+"  \r\n \t Вывод о знакомстве сделан на основании того, что: \r\n"+
-                        "Номер телефона "+temp.value(1).toString()+", ";
-
-                    if(!temp.value(2).toString().isEmpty())
-                        analysis_res+=" с пометкой "+temp.value(2).toString() + " ";
-                    analysis_res+=" в записной книжке, владельцем которой является "
-                            +Lastname+" "+Name+" "+Midname+" обнаружен, как принадлежащий владельцу записной книжки: "+
-                            temp_2.value(0).toString()+" "+
-                            temp_2.value(1).toString()+" "+
-                            temp_2.value(2).toString()+" \r\n";
-                        }
-           }
-         }
-      }
-   }
-   if(!analysis_res.isEmpty())
-   {
-       QString temp_for_add;
-       temp_for_add = "\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n"
-                      "Владелец записной книжки ";
-           ///////////////////////////////////////
-
-           temp_for_add += Lastname+" "+Name+" "+Midname+" "
-                           " возможно знаком со ";
-           For_analysis::get_L_N_M(id);
-           ///////////////////////////////////////
-           temp_3.prepare("SELECT COUNT(DISTINCT contacts.FK_Cl_telephone)"
-                          " FROM contacts, owners_tel"
-                          " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
-                           "owners_tel.Telephone_num = contacts.cl_telephone");
-           temp_3.bindValue(":id", id);
-           if (!temp_3.exec())
-               qDebug() << temp_3.lastError();
-           while (temp_3.next())
-                   {
-              if (temp_3.value(0).toInt() == 1)
-                  temp_for_add += " следующим лицом: \r\n \r\n";
-              else
-                  temp_for_add += "следующими лицами: \r\n \r\n";
-                   }
-           temp_3.clear();
-
-           analysis_res.insert(0,temp_for_add);
-   }
+                temp->append(crudlist->at(a));
+                break;
+            }
+        }
+    }
+    delete crudlist;
+    long_face_analysis(cr, temp);
 }
 
 void For_analysis::long_tel_analysis_all_db(QVector<int> vector, int id)
 {
-    analysis_res.clear();
-    For_analysis::get_L_N_M(id);
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
+    QList<Crud*> *temp = new QList<Crud*>;
 
-   querry.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                  " FROM  owners_tel"
-                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-   querry.bindValue(":id",id);
-   if (!querry.exec())
-       qDebug() << querry.lastError();
-
-   while (querry.next())
-   {
-       for (int a =0; a<vector.size(); a++)
-       {
-         qDebug() << vector.at(a);
-
-           temp.prepare("SELECT DISTINCT owners_tel.Telephone_id"
-                          " FROM  owners_tel"
-                          " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-           temp.bindValue(":id", vector.at(a));
-           if (!temp.exec())
-               qDebug() << temp.lastError();
-
-           while (temp.next())
-           {
-    /**/      temp_2.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
-                           " FROM contacts, owners_tel"
-                           " WHERE contacts.cl_telephone = (:an_tel)"
-                           " AND contacts.FK_Cl_telephone = (:id)");
-
-               temp_2.bindValue(":an_tel",querry.value(0).toString());
-
-               temp_2.bindValue(":id",temp.value(0).toInt());
-
-               if (!temp_2.exec())
-                   qDebug() << temp_2.lastError();
-
-
-               while (temp_2.next())
-               {
-                   if (Tel_num != querry.value(0).toString())
-                {
-                    Tel_num =  querry.value(0).toString();
-
-                   analysis_res +="Номер телефона "+ Tel_num+", принадлежащий владельцу запиной книжки: ";
-
-                   analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
-                   ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-                   temp_3.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
-                                " FROM owners_tel, contacts "
-                                " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                                " AND "
-                                "contacts.cl_telephone = (:tel_num) ");
-                   temp_3.bindValue(":id",id);
-                   temp_3.bindValue(":tel_num",Tel_num);
-
-                   if (!temp_3.exec())
-                       qDebug() << temp_3.lastError();
-
-                   while (temp_3.next())
-                   {
-                       if(temp_3.value(0).toInt() == 1)
-                           analysis_res+="записной книжке: \r\n \r\n";
-                       else
-                           analysis_res+="записных книжках: \r\n \r\n";
-                   }
-                   temp_3.clear();
-                 }
-                   temp_3.prepare("SELECT "
- /*0*/             "zk.Lastname, "
-                   "zk.Name, "
-                   "zk.Mid_name,"
-                   "zk.Birth_date,"
-                   ""
-    /*4*/          "zk.Reg_city,"
-                   "zk.Reg_street,"
-                   "zk.Reg_home,"
-                   "zk.Reg_corp,"
-                   "zk.Reg_flat,"
-                   ""
-    /*9*/          "zk.Dop_info,"
-                   "zk.Date_add,"
-                   "zk.Check_for"
-                " FROM zk "
-                " WHERE "
-                "zk.Zk_id = (:zk_id)");
-                   temp_3.bindValue(":zk_id",vector.at(a));
-                   if (!temp_3.exec())
-                       qDebug() << temp_3.lastError();
-                   while (temp_3.next())
-                   {
-            analysis_res += temp_3.value(0).toString()+" "+
-                    temp_3.value(1).toString()+" "+
-                    temp_3.value(2).toString()+", "+
-                    temp_3.value(3).toString()+", адрес регистрации: "+
-                    temp_3.value(4).toString()+" "+temp_3.value(5).toString()+" "+
-                    temp_3.value(6).toString()+" "+temp_3.value(7).toString()+" "+
-                    temp_3.value(8).toString()+", "+" телефон: "+
-                    querry.value(0).toString()+ ", окраска: ???, дополнительная информация: "+
-                    temp_3.value(9).toString()+", записная книжка сформирована "+
-                    temp_3.value(10).toString()+" в интересах: "+
-                    temp_3.value(11).toString();
-            if(!temp_2.value(0).toString().isEmpty())
-                analysis_res+=" c пометкой "+ temp_2.value(0).toString();
-            analysis_res+="\r\n \r\n";
-                   }
-                   temp_3.clear();
-               }
-
-           }
-       }
-   }
-   if(!analysis_res.isEmpty())
-   {
-       analysis_res.insert(0,"\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К НОМЕРАМ \r\n \r\n");
-   }
+    for(int a=0; a<crudlist->size(); a++)
+    {
+        for(int i =0; i<vector.size(); i++)
+        {
+            if(crudlist->at(a)->zk_id == vector.at(i))
+            {
+                temp->append(crudlist->at(a));
+                break;
+            }
+        }
+    }
+    delete crudlist;
+    long_tel_analysis(cr, temp);
 }
 
 void For_analysis::short_face_analysis_all_db(QDate dateFROM, QDate dateTO, int id)
 {
-    analysis_res.clear();
-    int counter = 0;
-    querry.prepare("SELECT zk.Date_add, zk.Zk_id"
-                   " From zk"
-                   " WHERE zk.Date_add IS NOT NULL");
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
+    QList<Crud*> *temp = new QList<Crud*>;
 
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    while (querry.next())
+    for(int a=0; a<crudlist->size(); a++)
     {
         QDate date;
-        auto list =  querry.value(0).toString().split('-');
+        auto list =  crudlist->at(a)->date_add.split('-');
         date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
 
         if(date <= dateTO && date >= dateFROM)
         {
-            temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                           " FROM  owners_tel"
-                           " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-            temp.bindValue(":id",id);
-            if (!temp.exec())
-                qDebug() << temp.lastError();
-
-            while (temp.next())
-            {
-                temp_2.prepare("SELECT DISTINCT owners_tel.Telephone_id"
-                               " FROM  owners_tel"
-                               " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-                temp_2.bindValue(":id", querry.value(1));
-                if (!temp_2.exec())
-                    qDebug() << temp_2.lastError();
-
-                while (temp_2.next())
-                {
-                    temp_3.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
-                                              " FROM contacts, owners_tel"
-                                              " WHERE contacts.cl_telephone = (:an_tel)"
-                                              " AND contacts.FK_Cl_telephone = (:id)");
-
-                                  temp_3.bindValue(":an_tel",temp.value(0).toString());
-
-                                  temp_3.bindValue(":id",temp_2.value(0).toInt());
-
-                                  if (!temp_3.exec())
-                                      qDebug() << temp_3.lastError();
-
-                                  while (temp_3.next())
-                                  {
-                                     QSqlQuery temp_4;
-                                     counter++;
-                                     temp_4.prepare("SELECT "
-                                                    "zk.Lastname, "
-                                                    "zk.Name, "
-                                                    "zk.Mid_name,"
-                                                    "zk.Birth_date,"
-                                                    "zk.Date_add,"
-                                                    "zk.Check_for"
-                                                    " FROM zk "
-                                                    " WHERE "
-                                                    "zk.Zk_id = (:zk_id)");
-                                    temp_4.bindValue(":zk_id",querry.value(1));
-
-                                    if (!temp_4.exec())
-                                        qDebug() << temp_4.lastError();
-                                    while (temp_4.next())
-                                            {
-                                        analysis_res += temp_4.value(0).toString()+" "+
-                                                temp_4.value(1).toString()+" "+
-                                                temp_4.value(2).toString()+", "+
-                                                temp_4.value(3).toString()+", окраска: ???, записная книжка сформирована "+
-                                                temp_4.value(4).toString()+" в интересах: "+
-                                                temp_4.value(5).toString()+"  \r\n \r\n";
-                                            }
-                                    temp_4.clear();
-                                  }
-                }
-            }
+            temp->append(crudlist->at(a));
         }
     }
-if(counter > 0)
- {
-   QString for_insert;
-   For_analysis::get_L_N_M(id);
-        for_insert = "\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n"
-                                              "Владелец записной книжки ";
-                               for_insert += Lastname+" "+Name+" "+Midname+" "
-                                               " возможно знаком со ";
-                               if(counter==1)
-                                   for_insert += " следующим лицом: \r\n \r\n";
-                               else
-                                   for_insert += "следующими лицами: \r\n \r\n";
-      analysis_res.insert(0,for_insert);
-}
+    delete crudlist;
+    short_face_analysis(cr, temp);
 }
 
 void For_analysis::short_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id)
 {
-    analysis_res.clear();
-    For_analysis::get_L_N_M(id);
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
+    QList<Crud*> *temp = new QList<Crud*>;
 
-    querry.prepare("SELECT zk.Date_add, zk.Zk_id"
-                   " From zk"
-                   " WHERE zk.Date_add IS NOT NULL");
-
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    while (querry.next())
+    for(int a=0; a<crudlist->size(); a++)
     {
         QDate date;
-        auto list =  querry.value(0).toString().split('-');
+        auto list =  crudlist->at(a)->date_add.split('-');
         date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
 
         if(date <= dateTO && date >= dateFROM)
         {
-            temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                           " FROM  owners_tel"
-                           " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-            temp.bindValue(":id",id);
-            if (!temp.exec())
-                qDebug() << temp.lastError();
-
-            while (temp.next())
-            {
-                temp_2.prepare("SELECT DISTINCT owners_tel.Telephone_id"
-                               " FROM  owners_tel"
-                               " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-                temp_2.bindValue(":id", querry.value(1));
-                if (!temp_2.exec())
-                    qDebug() << temp_2.lastError();
-
-                while (temp_2.next())
-                {
-                    temp_3.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
-                                               " FROM contacts, owners_tel"
-                                               " WHERE contacts.cl_telephone = (:an_tel)"
-                                               " AND contacts.FK_Cl_telephone = (:id)");
-
-                                   temp_3.bindValue(":an_tel",temp.value(0).toString());
-
-                                   temp_3.bindValue(":id",temp_2.value(0).toInt());
-
-                                   if (!temp_3.exec())
-                                       qDebug() << temp_3.lastError();
-
-
-                                   while (temp_3.next())
-                                   {
-                                       QSqlQuery temp_4;
-                                       if (Tel_num != temp.value(0).toString())
-                                    {
-                                        Tel_num =  temp.value(0).toString();
-
-                                       analysis_res +="Номер телефона "+ Tel_num+", принадлежащий владельцу запиной книжки: ";
-
-                                       analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
-                                       ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-                                       temp_4.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
-                                                      " FROM owners_tel, contacts "
-                                                      " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                                                      " AND "
-                                                    "contacts.cl_telephone = (:tel_num) ");
-                                       temp_4.bindValue(":id",id);
-                                       temp_4.bindValue(":tel_num",Tel_num);
-
-                                       if (!temp_4.exec())
-                                           qDebug() << temp_4.lastError();
-
-                                       while (temp_4.next())
-                                       {
-                                           if(temp_4.value(0).toInt() == 1)
-                                               analysis_res+="записной книжке: \r\n \r\n";
-                                           else
-                                               analysis_res+="записных книжках: \r\n \r\n";
-                                       }
-                                       temp_4.clear();
-                                     }
-                                       temp_4.prepare("SELECT "
-                                                      "zk.Date_add,"
-                                                      "zk.Lastname, "
-                                                      "zk.Name, "
-                                                      "zk.Mid_name,"
-                                                      "zk.Birth_date,"
-                                                      "zk.Check_for"
-                                                      " FROM zk"
-                                                      " WHERE zk.Zk_id = (:temp_2_val)");
-                                       temp_4.bindValue(":temp_2_val",querry.value(1));
-                                       if (!temp_4.exec())
-                                           qDebug() << temp_4.lastError();
-                                       while (temp_4.next())
-                                       {
-                                           analysis_res+="сформированной "+temp_4.value(0).toString()+
-                                                   " в отношении: "+temp_4.value(1).toString()+" "+
-                                                   temp_4.value(2).toString()+" "+
-                                                   temp_4.value(3).toString()+", "+temp_4.value(4).toString()+" по окраске: ???, в интересах "+
-                                                   temp_4.value(5).toString()+ " ";
-                                           if (!temp_3.value(0).toString().isEmpty())
-                                               analysis_res += "с пометкой "+temp_3.value(0).toString()+"\r\n \r\n";
-                                           else
-                                               analysis_res +="\r\n \r\n";
-                                       }
-                                       temp_4.clear();
-                }
-            }
+            temp->append(crudlist->at(a));
         }
     }
-    }
+    delete crudlist;
+    short_tel_analysis(cr, temp);
 }
 
 void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int id)
 {
-    int counter = 0;
-    analysis_res.clear();
-    For_analysis::get_L_N_M(id);
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
+    QList<Crud*> *temp = new QList<Crud*>;
 
-    querry.prepare("SELECT zk.Date_add, zk.Zk_id"
-                   " From zk"
-                   " WHERE zk.Date_add IS NOT NULL");
-
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    while (querry.next())
+    for(int a=0; a<crudlist->size(); a++)
     {
         QDate date;
-        auto list =  querry.value(0).toString().split('-');
+        auto list =  crudlist->at(a)->date_add.split('-');
         date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
 
         if(date <= dateTO && date >= dateFROM)
         {
-            temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                           " FROM  owners_tel"
-                           " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-            temp.bindValue(":id",id);
-            if (!temp.exec())
-                qDebug() << temp.lastError();
-
-            while (temp.next())
-            {
-                temp_2.prepare("SELECT DISTINCT owners_tel.Telephone_id,owners_tel.Telephone_num"
-                               " FROM  owners_tel"
-                               " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-                temp_2.bindValue(":id", querry.value(1));
-                if (!temp_2.exec())
-                    qDebug() << temp_2.lastError();
-
-                while (temp_2.next())
-                {
-                    temp_3.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
-                                              " FROM contacts, owners_tel"
-                                              " WHERE contacts.cl_telephone = (:an_tel)"
-                                              " AND contacts.FK_Cl_telephone = (:id)");
-
-                                  temp_3.bindValue(":an_tel",temp.value(0).toString());
-
-                                  temp_3.bindValue(":id",temp_2.value(0).toInt());
-
-                                  if (!temp_3.exec())
-                                      qDebug() << temp_3.lastError();
-
-                                  while (temp_3.next())
-                                  {
-                                      QSqlQuery temp_4;
-                                      counter++;
-                                            temp_4.prepare("SELECT "
-               /*0*/                        "zk.Lastname, "
-                                            "zk.Name, "
-                                            "zk.Mid_name,"
-                                            "zk.Birth_date,"
-                                            ""
-                             /*4*/          "zk.Reg_city,"
-                                            "zk.Reg_street,"
-                                            "zk.Reg_home,"
-                                            "zk.Reg_corp,"
-                                            "zk.Reg_flat,"
-                                            ""
-                             /*9*/          "zk.Dop_info,"
-                                            "zk.Date_add,"
-                                            "zk.Check_for"
-                              " FROM zk "
-                              " WHERE "
-                              "zk.Zk_id = (:zk_id)");
-                                           temp_4.bindValue(":zk_id",querry.value(1));
-                                         QString str = QString::number(querry.value(1).toInt());
-                                           if (!temp_4.exec())
-                                               qDebug() << temp_4.lastError();
-                                           while (temp_4.next())
-                                                   {
-                                               analysis_res += "Номер ЗК - "+str+" "+temp_4.value(0).toString()+" "+
-                                                       temp_4.value(1).toString()+" "+
-                                                       temp_4.value(2).toString()+", "+
-                                                       temp_4.value(3).toString()+", адрес регистрации: "+
-                                                       temp_4.value(4).toString()+" "+temp_4.value(5).toString()+" "+
-                                                       temp_4.value(6).toString()+" "+temp_4.value(7).toString()+" "+
-                                                       temp_4.value(8).toString()+", "+" телефон: "+
-                                                       temp_2.value(1).toString()+ ", окраска: ???, дополнительная информация: "+
-                                                       temp_4.value(9).toString()+", записная книжка сформирована "+
-                                                       temp_4.value(10).toString()+" в интересах: "+
-                                                       temp_4.value(11).toString()+"  \r\n \t Вывод о знакомстве сделан на основании того, что: \r\n";
-
-                                                       analysis_res+="Номер телефона "+temp.value(0).toString()+", принадлежащий "+Lastname+" "+Name+" "+Midname+" "+
-                                                         ", обнаружен в записной книжке, владельцем которой является "+
-                                                       temp_4.value(0).toString()+" "+temp_4.value(1).toString()+" "+ temp_4.value(2).toString()+" ";
-                                                                if (!temp_3.value(0).toString().isEmpty())
-                                                                    analysis_res += "с пометкой "+temp_3.value(0).toString()+"\r\n \r\n";
-                                                                else
-                                                                    analysis_res +="\r\n \r\n";
-                                                    }
-                                   temp_4.clear();
-                                  }
-                }
-            }
+            temp->append(crudlist->at(a));
         }
     }
-         //////////////-------ВТОРОЙ ВАРИАНТ ЗНАКОМСТВА-------/////////////////
-        querry.clear();
-        temp.clear();
-        temp_2.clear();
-        temp_3.clear();
-
-        querry.prepare("SELECT zk.Date_add, zk.Zk_id"
-                       " From zk"
-                       " WHERE zk.Date_add IS NOT NULL");
-
-        if (!querry.exec())
-            qDebug() << querry.lastError();
-        while (querry.next())
-        {
-            temp.prepare("SELECT"
-                           " owners_tel.Telephone_id "
-                          " FROM"
-                          " owners_tel "
-                          " WHERE"
-                          " owners_tel.FK_Telephone_Zk = (:id)");
-            temp.bindValue(":id", id);
-
-            if (!temp.exec())
-                qDebug() << temp.lastError();
-            while (temp.next())
-            {
-                temp_2.prepare("SELECT"
-                             " owners_tel.FK_Telephone_Zk, "
-                             " owners_tel.Telephone_num, "
-                             "coregexp_replacentacts.cl_info"
-                             " FROM"
-                           " contacts,owners_tel"
-                           "  WHERE "
-                           "  contacts.cl_telephone = owners_tel.Telephone_num "
-                           "  AND "
-                           "  contacts.FK_Cl_telephone = (:fk)");
-                temp_2.bindValue(":fk", temp.value(0));
-                if (!temp_2.exec())
-                    qDebug() << temp_2.lastError();
-                while (temp_2.next())
-                {
-                    if(querry.value(1) == temp_2.value(0).toInt())
-                    {
-                        temp_3.prepare("SELECT "
-                        /*0*/          "zk.Lastname, "
-                                       "zk.Name, "
-                                       "zk.Mid_name,"
-                                       "zk.Birth_date,"
-                                       ""
-                        /*4*/          "zk.Reg_city,"
-                                       "zk.Reg_street,"
-                                       "zk.Reg_home,"
-                                       "zk.Reg_corp,"
-                                       "zk.Reg_flat,"
-                                       ""
-                        /*9*/          "zk.Dop_info,"
-                                       "zk.Date_add,"
-                                       "zk.Check_for"
-                                      " FROM zk "
-                                      " WHERE "
-                                       "zk.Zk_id = (:zk_id)");
-                        temp_3.bindValue(":zk_id",temp_2.value(0).toInt());
-                        if (!temp_3.exec())
-                            qDebug() << temp_3.lastError();
-
-                        while (temp_3.next())
-                                {
-                            analysis_res += temp_3.value(0).toString()+" "+
-                                    temp_3.value(1).toString()+" "+
-                                    temp_3.value(2).toString()+", "+
-                                    temp_3.value(3).toString()+", адрес регистрации: "+
-                                    temp_3.value(4).toString()+" "+temp_3.value(5).toString()+" "+
-                                    temp_3.value(6).toString()+" "+temp_3.value(7).toString()+" "+
-                                    temp_3.value(8).toString()+", "+" телефон: "+
-                                    temp_2.value(1).toString()+ ", окраска: ???, дополнительная информация: "+
-                                    temp_3.value(9).toString()+", записная книжка сформирована "+
-                                    temp_3.value(10).toString()+" в интересах: "+
-                                    temp_3.value(11).toString()+"  \r\n \t Вывод о знакомстве сделан на основании того, что: \r\n"+
-                                "Номер телефона "+temp_2.value(1).toString()+", ";
-
-                            if(!temp_2.value(2).toString().isEmpty())
-                                analysis_res+=" с пометкой "+temp_2.value(2).toString() + " ";
-                            analysis_res+=" в записной книжке, владельцем которой является "
-                                    +Lastname+" "+Name+" "+Midname+" обнаружен, как принадлежащий владельцу записной книжки: "+
-                                    temp_3.value(0).toString()+" "+
-                                    temp_3.value(1).toString()+" "+
-                                    temp_3.value(2).toString()+" \r\n";
-                                }
-                   }
-                }
-            }
-        }
-    if(!analysis_res.isEmpty())
-    {
-        QString temp_for_add;
-        temp_for_add = "\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n"
-                       "Владелец записной книжки ";
-            ///////////////////////////////////////
-
-            temp_for_add += Lastname+" "+Name+" "+Midname+" "
-                            " возможно знаком со ";
-            For_analysis::get_L_N_M(id);
-            ///////////////////////////////////////
-            temp_3.prepare("SELECT COUNT(DISTINCT contacts.FK_Cl_telephone)"
-                           " FROM contacts, owners_tel"
-                           " WHERE owners_tel.FK_Telephone_Zk = (:id) AND"
-                           "owners_tel.Telephone_num = contacts.cl_telephone");
-            temp_3.bindValue(":id", id);
-            if (!temp_3.exec())
-                qDebug() << temp_3.lastError();
-            while (temp_3.next())
-                    {
-               if (temp_3.value(0).toInt() == 1)
-                   temp_for_add += " следующим лицом: \r\n \r\n";
-               else
-                   temp_for_add += "следующими лицами: \r\n \r\n";
-                    }
-            temp_3.clear();
-
-            analysis_res.insert(0,temp_for_add);
-    }
+    delete crudlist;
+    long_face_analysis(cr, temp);
 }
 
 void For_analysis::long_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id)
 {
-    analysis_res.clear();
-    For_analysis::get_L_N_M(id);
+    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
+    QList<Crud*> *temp = new QList<Crud*>;
 
-    querry.prepare("SELECT zk.Date_add, zk.Zk_id"
-                   " From zk"
-                   " WHERE zk.Date_add IS NOT NULL");
-
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    while (querry.next())
+    for(int a=0; a<crudlist->size(); a++)
     {
         QDate date;
-        auto list =  querry.value(0).toString().split('-');
+        auto list =  crudlist->at(a)->date_add.split('-');
         date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
 
         if(date <= dateTO && date >= dateFROM)
         {
-            temp.prepare("SELECT DISTINCT owners_tel.Telephone_num"
-                           " FROM  owners_tel"
-                           " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-            temp.bindValue(":id",id);
-            if (!temp.exec())
-                qDebug() << temp.lastError();
-
-            while (temp.next())
-            {
-                temp_2.prepare("SELECT DISTINCT owners_tel.Telephone_id, owners_tel.Telephone_num"
-                               " FROM  owners_tel"
-                               " WHERE owners_tel.FK_Telephone_Zk = (:id)");
-                temp_2.bindValue(":id", querry.value(1));
-                if (!temp_2.exec())
-                    qDebug() << temp_2.lastError();
-
-                while (temp_2.next())
-                {
-                    temp_3.prepare("SELECT DISTINCT contacts.cl_info, contacts.cl_telephone "
-                                              " FROM contacts, owners_tel"
-                                              " WHERE contacts.cl_telephone = (:an_tel)"
-                                              " AND contacts.FK_Cl_telephone = (:id)");
-
-                                  temp_3.bindValue(":an_tel",temp.value(0).toString());
-
-                                  temp_3.bindValue(":id",temp_2.value(0).toInt());
-
-                                  if (!temp_3.exec())
-                                      qDebug() << temp_3.lastError();
-
-
-                                  while (temp_3.next())
-                                  {
-                                      QSqlQuery temp_4;
-                                      if (Tel_num != temp.value(0).toString())
-                                   {
-                                       Tel_num =  temp.value(0).toString();
-
-                                      analysis_res +="Номер телефона "+ Tel_num+", принадлежащий владельцу запиной книжки: ";
-
-                                      analysis_res += Lastname+" "+Name+" "+Midname+" обнаружен в ";
-                                      ///////////////////ОПРЕДЕЛЯЮ КОЛ-ВО ЗАПИСЕЙ////////////////////
-                                      temp_4.prepare("SELECT COUNT( DISTINCT contacts.FK_Cl_telephone)"
-                                                   " FROM owners_tel, contacts "
-                                                   " WHERE owners_tel.FK_Telephone_Zk = (:id)"
-                                                   " AND "
-                                                   " contacts.cl_telephone = (:tel_num) ");
-                                      temp_4.bindValue(":id",id);
-                                      temp_4.bindValue(":tel_num",Tel_num);
-
-                                      if (!temp_4.exec())
-                                          qDebug() << temp_4.lastError();
-
-                                      while (temp_4.next())
-                                      {
-                                          if(temp_4.value(0).toInt() == 1)
-                                              analysis_res+="записной книжке: \r\n \r\n";
-                                          else
-                                              analysis_res+="записных книжках: \r\n \r\n";
-                                      }
-                                      temp_4.clear();
-                                    }
-                                      temp_4.prepare("SELECT "
-                    /*0*/          "zk.Lastname, "
-                                      "zk.Name, "
-                                      "zk.Mid_name,"
-                                      "zk.Birth_date,"
-                                      ""
-                       /*4*/          "zk.Reg_city,"
-                                      "zk.Reg_street,"
-                                      "zk.Reg_home,"
-                                      "zk.Reg_corp,"
-                                      "zk.Reg_flat,"
-                                      ""
-                       /*9*/          "zk.Dop_info,"
-                                      "zk.Date_add,"
-                                      "zk.Check_for"
-                                   " FROM zk "
-                                   " WHERE "
-                                   "zk.Zk_id = (:zk_id)");
-                                      temp_4.bindValue(":zk_id",querry.value(1));
-                                      if (!temp_4.exec())
-                                          qDebug() << temp_4.lastError();
-                                      while (temp_4.next())
-                                      {
-                               analysis_res += temp_4.value(0).toString()+" "+
-                                       temp_4.value(1).toString()+" "+
-                                       temp_4.value(2).toString()+", "+
-                                       temp_4.value(3).toString()+", адрес регистрации: "+
-                                       temp_4.value(4).toString()+" "+temp_4.value(5).toString()+" "+
-                                       temp_4.value(6).toString()+" "+temp_4.value(7).toString()+" "+
-                                       temp_4.value(8).toString()+", "+" телефон: "+
-                                       temp_2.value(1).toString()+ ", окраска: ???, дополнительная информация: "+
-                                       temp_4.value(9).toString()+", записная книжка сформирована "+
-                                       temp_4.value(10).toString()+" в интересах: "+
-                                       temp_4.value(11).toString();
-                               if(!temp_3.value(0).toString().isEmpty())
-                                   analysis_res+=" c пометкой "+ temp_3.value(0).toString();
-                               analysis_res+="\r\n \r\n";
-                                      }
-                                      temp_4.clear();
-                                  }
-                }
-            }
+            temp->append(crudlist->at(a));
         }
     }
-    if(!analysis_res.isEmpty())
-    {
-        analysis_res.insert(0,"\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К НОМЕРАМ \r\n \r\n");
-    }
-}
-
-void For_analysis::get_L_N_M(int id)
-{
-    querry.prepare("SELECT "
-                   "zk.Lastname, "
-                   "zk.Name, "
-                   "zk.Mid_name"
-                   " FROM zk"
-                   " WHERE zk.Zk_id= (:id)");
-    querry.bindValue(":id", id);
-
-    if (!querry.exec())
-        qDebug() << querry.lastError();
-    while (querry.next())
-    {
-        Lastname = querry.value(0).toString();
-        qDebug() <<Lastname ;
-        Name = querry.value(1).toString();
-        qDebug() <<Name ;
-        Midname = querry.value(2).toString();
-        qDebug() <<Midname ;
-    }
-    querry.clear();
+    delete crudlist;
+    long_tel_analysis(cr, temp);
 }

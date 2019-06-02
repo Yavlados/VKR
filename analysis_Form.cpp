@@ -353,8 +353,8 @@ void Analysis::set_validators()
 
 void Analysis::uniq_array()
 {
-        std::sort(vector.begin(), vector.end());
-        vector.erase(std::unique(vector.begin(), vector.end()), vector.end());
+   std::sort(vector.begin(), vector.end());
+   vector.erase(std::unique(vector.begin(), vector.end()), vector.end());
 }
 
 void Analysis::on_pushButton_2_clicked()

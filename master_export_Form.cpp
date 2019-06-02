@@ -60,7 +60,7 @@ void master_export_Form::on_pb_directory_clicked()
 void master_export_Form::on_pb_Export_clicked()
 {
     emit TESTING_export(ui->le_file_path->text(), ui->le_password->text(),
-                        ui->cb_off_tel->isChecked(), ui->cb_set_password->isChecked());
+                        ui->cb_off_tel->isChecked(), ui->cb_set_password->isChecked(), ui->cb_zk->isChecked());
 }
 
 void master_export_Form::on_pushButton_clicked()

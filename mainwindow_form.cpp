@@ -31,31 +31,43 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_tableView_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Владельцами номеров
 {
-    ui->action_delete->setEnabled(true);
-    ui->action_update->setEnabled(true); //включаю кнопку редактировать
+    (void)index;
+    index_tab1 = ui->tableView->currentIndex();
+    if(index_tab1.isValid())
+    {
+        ui->action_delete->setEnabled(true);
+        ui->action_update->setEnabled(true); //включаю кнопку редактировать
 
-    QModelIndexList *indexes = new QModelIndexList;
-    *indexes = ui->tableView->selectionModel()->selection().indexes();
-
-    if(Owners_tel::selectZkTel(otList, indexes->value(1).data().toInt()))
-        ot_model->setOTList(otList);
-
-    ui->tableView_2->setModel(ot_model);
-    ui->tableView_2->setColumnWidth(0,250);
-    contacts_model->reset_ContactModel();
-    delete indexes;
+        if(Owners_tel::selectZkTelForAdd(crud_model->actcrudlist.at(index_tab1.row())->owt(), crud_model->actcrudlist.at(index_tab1.row())->zk_id))
+        {
+           ot_model->setOTList(crud_model->actcrudlist.at(index_tab1.row())->owt());
+           if(ot_model->actotlist.at(0)->tel_num.isEmpty())
+           ot_model->actotlist.removeAt(0);//Костыль, тк не могу не отображать пустые номера
+        }
+        ui->tableView_2->setModel(ot_model);
+        ui->tableView_2->setColumnWidth(0,250);
+        contacts_model->reset_ContactModel();
+    }
+    else
+    {
+        ui->action_delete->setEnabled(false);
+        ui->action_update->setEnabled(false); //включаю кнопку редактировать
+    }
 }
 
 void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Номерами владельцев
 {
-    qDebug() << otList->at(index.row())->tel_id;
+    if (index_tab1.isValid())
+    {
+        if(Contacts::selectTelContacts(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
+                                       crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->tel_id))
 
-    if(Contacts::selectTelContacts(contactList,  otList->at(index.row())->tel_id))
-        contacts_model->setContactList(contactList);
+        contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
 
-    ui->tableView_3->setModel(contacts_model);
-    ui->tableView_3->setColumnWidth(0,250);
-    ui->tableView_3->setColumnWidth(1,250);
+        ui->tableView_3->setModel(contacts_model);
+        ui->tableView_3->setColumnWidth(0,250);
+        ui->tableView_3->setColumnWidth(1,250);
+    }
 }
 
 void MainWindow::ShowThisTab() //Открытие main окна и рефреш таблиц
@@ -64,7 +76,6 @@ void MainWindow::ShowThisTab() //Открытие main окна и рефреш 
         crud_model->setCrudlist(crudlist);
     ui->tableView->setModel(crud_model);
     m_c_s = All_unchecked;
-
 
     ui->tabWidget->removeTab(1);
     ui->tabWidget->removeTab(2);
@@ -91,7 +102,7 @@ void MainWindow::on_action_add_triggered()
 {
     qDebug() << ui->tabWidget->count();
     ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,add,"Добавление новой ЗК");
-    emit Fill_table_add(crudlist->last()->zk_id);
+    emit Fill_table_add();
     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
 }
 
@@ -107,26 +118,27 @@ void MainWindow::on_action_delete_triggered()
         emit Refresh_tab();
         break;
     case QMessageBox::Ok:
-        QModelIndexList *indexes = new QModelIndexList;
-        *indexes = ui->tableView->selectionModel()->selection().indexes();
-        Crud::del_zk(indexes->value(1).data().toInt());
-        delete indexes;
-        emit Refresh_tab();
+        if (index_tab1.isValid())
+        {
+            Crud::del_zk(crud_model->actcrudlist.at(index_tab1.row())->zk_id);
+            emit Refresh_tab();
+        }
         break;
     }
 }
 
 void MainWindow::on_action_update_triggered()
 {
-     QModelIndex *index = new QModelIndex;
-     *index = ui->tableView->currentIndex();
-     open_upd_tab(index->row());
-      //delete index;
+    if(index_tab1.isValid())
+    {
+        index_tab1 = ui->tableView->currentIndex();
+        open_upd_tab(crud_model->actcrudlist.at(index_tab1.row()));
+    }
 }
 
 void MainWindow::on_action_analysis_triggered()
 {
-       Analysis *an = new Analysis;
+       an = new class Analysis;
        an->show();
        connect(this, SIGNAL(Set_validators_an()), an, SLOT(set_validators()));
        emit Set_validators_an();
@@ -180,9 +192,9 @@ void MainWindow::add_cancel_button()
     }
 }
 
-void MainWindow::open_upd_tab(int index)
+void MainWindow::open_upd_tab(Crud *cr)
 {
-    emit Send_data(crudlist->at(index));
+    emit Send_data(cr);
      ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,upd,"Редактировать");
      ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
 }
@@ -190,14 +202,14 @@ void MainWindow::open_upd_tab(int index)
 void MainWindow::set_connections()
 {
     connect (add, SIGNAL (toMainForm()), this, SLOT(ShowThisTab()));
-    connect (add, SIGNAL (open_update_tab(int)), this, SLOT(open_upd_tab(int)));
+    connect (add, SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
 
     connect(upd, SIGNAL(Ready_for_update()), this, SLOT(ShowThisTab()));
     connect(add, SIGNAL(Ready_for_update()), this, SLOT(ShowThisTab()));
 
     connect(this,SIGNAL(Send_data(Crud*)), upd, SLOT(Recieve_data(Crud*)));
     connect (this, SIGNAL(Refresh_tab()), this, SLOT(ShowThisTab()));
-    connect(this, SIGNAL(Fill_table_add(int)),add, SLOT(Fill_table_in_add(int)));
+    connect(this, SIGNAL(Fill_table_add()),add, SLOT(Fill_table_in_add()));
 
     connect(sr, SIGNAL(Send_search_query(QString)),this, SLOT(Search_result(QString)));
     connect(sr,SIGNAL(Cancel_search()),this, SLOT(ShowThisTab()));
@@ -206,8 +218,8 @@ void MainWindow::set_connections()
 
     connect(exprt,SIGNAL(rb_zk_clicked()),this, SLOT(on_action_search_triggered()));
     connect(exprt,SIGNAL(rb_check_all()),this, SLOT(on_pb_check_model_clicked()));
-    connect(exprt, SIGNAL(TESTING_export(QString,QString, bool, bool)),this,SLOT(testing_export(QString, QString, bool, bool)));
-    connect(exprt, SIGNAL(TESTING_open(QString,QString)),this,SLOT(testing_opening(QString, QString)));
+    connect(exprt, SIGNAL(TESTING_export(QString,QString, bool, bool, bool)),this,SLOT(testing_export(QString, QString, bool, bool, bool)));
+    connect(exprt, SIGNAL(TESTING_open(QString,QString)), this, SLOT(testing_opening(QString, QString)));
 }
 
 void MainWindow::set_validators()
@@ -233,38 +245,64 @@ void MainWindow::on_actionexport_triggered()
     exprt->show();
 }
 
-void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password)
+void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk)
 {
+    if (filename.isEmpty())
+    {
+        QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Вы не указали путь!")); ///Хвалимся
+        return;
+    }
+
     QList<Crud*> *crud = new  QList<Crud*> ;
     QList<Off_tels*> *offtel = new QList<Off_tels*>;
 
-    For_export *exprt = new For_export;
+    form_exprt->list->set_counters();
+
+ if(cb_zk)
     for (int i=0;i<crud_model->actcrudlist.size();i++) // пробегаюсь по отображаемому списку
     {
      if (crud_model->actcrudlist.at(i)->checkState_ == Checked)
         {
             qDebug() << crud_model->actcrudlist.at(i)->zk_id;
-             exprt->fill_crud_list(crud, crud_model->actcrudlist.at(i)->zk_id, PSQLtype);
+             form_exprt->list->fill_crud_list(crud, crud_model->actcrudlist.at(i)->zk_id, PSQLtype);
         }
     }
-   if( exprt->Do_export(filename,crud, password, cb_off_tels, cb_set_password, offtel))
-       QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные сохранены в файл, расположенный по пути : %1").arg(filename)); ///Хвалимся
-   delete offtel;
-   delete exprt;
+
+if(cb_off_tels)
+     form_exprt->list->fill_off_tels(offtel,PSQLtype);
+
+if(!crud->isEmpty() || !offtel->isEmpty())
+{
+    if( form_exprt->Do_export(filename,crud, password, cb_off_tels, cb_set_password, offtel))
+        QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Данные сохранены в файл, расположенный по пути : %1").arg(filename)); ///Хвалимся
+    else
+        QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Во время экспорта данных что-то пошло не так!")); ///Хвалимся
+}
+else {
+    QMessageBox::warning(exprt,QObject::tr("Внимание"),QObject::tr("Экспорт не был выполнен, так как вы не выбрали данные!")); ///Хвалимся
+}
+    delete offtel;
    delete crud;
 }
 
 void MainWindow::testing_opening(QString filename, QString password)
 {
-    For_export *exprt = new For_export;
-    if(exprt->Testing_open_db(filename,password) == Import_succesful)
-    {
-        qDebug()<< "Open is succesfull";
-        return;
-    }
-    else {
-            QMessageBox::critical(this,QObject::tr("Ошибка!"),QObject::tr("Вы ввели не верный пароль")); ///Хвалимся
-    }
+//    Import_state temp_i_s = form_import->Testing_open_db( filename,password);
+//    switch (temp_i_s)
+//    {
+//    case Import_in_progress:
+//        form_import->import->show();
+//        break;
+//    case Import_succesful:
+//        qDebug()<< "Open is succesfull";
+//        break;
+//    case Password_incorrect:
+//        QMessageBox::critical(exprt,QObject::tr("Ошибка!"),QObject::tr("Вы ввели не верный пароль")); ///Хвалимся
+//        break;
+//    case Import_abort:
+//        QMessageBox::critical(exprt,QObject::tr("Ошибка!"),QObject::tr("Что-то пошло не так...<br> Бэкап базы либо пуст, либо для доступа к нему не требуется пароль")); ///Хвалимся
+//        break;
+//    }
 }
 
 void MainWindow::on_pb_check_model_clicked()
