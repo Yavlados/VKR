@@ -47,7 +47,7 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
     while (query.next())
     {
         Crud *cr = new Crud();
-        cr->zk_id = counter_crud;
+
         cr->lastname = query.value(1).toString();
         cr->name = query.value(2).toString();
         cr->mid_name= query.value(3).toString();
@@ -73,6 +73,7 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
         switch (sqlt)
         {
             case PSQLtype:
+            if(frm_st!=Main_window_for_Update)
                 fill_owners_tel_list(cr->owt(), crud_id, counter_crud, PSQLtype);
                 break;
             case SQLliteType:
@@ -81,6 +82,22 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
             case SQLlitechipher:
                 fill_owners_tel_list(cr->owt(), crud_id, counter_crud, SQLlitechipher);
                 break;
+        }
+        switch (frm_st)
+        {
+        case Export:
+                    cr->zk_id = counter_crud;
+            break;
+        case Import:
+                    cr->zk_id = counter_crud;
+            break;
+        case Analysis:
+                    cr->zk_id = counter_crud;
+            break;
+        case Main_window_for_Update:
+                    cr->zk_id = query.value(0).toInt();
+                    fill_owners_tel_list(cr->owt(), cr->zk_id, counter_crud, PSQLtype);
+            break;
         }
         crud->append(cr);
         counter_crud++;
@@ -121,6 +138,10 @@ void List_master::fill_owners_tel_list(QList<Owners_tel *> *owner_telLIST, int z
         case Analysis:
             ot =new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , IsReaded);
             ///Анализ: Достаю данные как в базе
+            break;
+        case Main_window_for_Update:
+            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , IsReaded);
+            ///Импорт: Достаю данные как в базе
             break;
         }
 
@@ -183,6 +204,10 @@ void List_master::fill_contacts_list(QList<Contacts *> *contactLIST, int tel_id,
         case Analysis:
             cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), IsReaded);
             ///Анализ: Достаю данные как в базе
+            break;
+        case Main_window_for_Update:
+           cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), IsReaded);
+            ///Импорт: Достаю данные как в базе
             break;
         }
         contactLIST->append(cnt);
@@ -373,4 +398,197 @@ void List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt)
         offtel->append(cnt);
     }
     db->db().close();
+}
+
+bool List_master::insert_crud_in_db(QList<Crud *> *crud)
+{
+    if(crud == nullptr || !db_connection::instance()->db_connect())
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+
+    QSqlQuery query(db_connection::instance()->db());
+    QSqlQuery query1(db_connection::instance()->db());
+    QSqlQuery query2(db_connection::instance()->db());
+    ///Заполнение созданных таблиц
+    for(int i = 0; i < crud->size(); i++)
+    {
+        if ( !isOk )
+            break;
+
+       query.prepare("INSERT INTO zk "
+                      "(Lastname, Name, Mid_name, Birth_date,"
+                      "Reg_city,Reg_street,Reg_home,Reg_corp,"
+                      "Reg_flat,"
+                           "Liv_city,Liv_street,Liv_home,Liv_corp,"
+                           "Liv_flat,"
+                           "Check_for, Dop_info,"
+                           "Date_add, Time_add) "
+                           " VALUES ((:lastname),(:name),(:mid_name), (:b_d),"
+                           "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
+                           "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
+                           "(:c_f),(:d_i),"
+                           "(:d_a), (:t_a)) RETURNING zk_id");
+       query.bindValue(":lastname",crud->at(i)->lastname);
+       query.bindValue(":name",crud->at(i)->name);
+       query.bindValue(":mid_name",crud->at(i)->mid_name);
+       query.bindValue(":b_d", crud->at(i)->birth_date);
+
+       query.bindValue(":r_c",crud->at(i)->reg_city);
+       query.bindValue(":r_s",crud->at(i)->reg_street);
+       query.bindValue(":r_h",crud->at(i)->reg_home);
+       query.bindValue(":r_corp",crud->at(i)->reg_corp);
+       query.bindValue(":r_f",crud->at(i)->reg_flat);
+
+       query.bindValue(":l_c",crud->at(i)->liv_city);
+       query.bindValue(":l_s",crud->at(i)->liv_street);
+       query.bindValue(":l_h",crud->at(i)->liv_home);
+       query.bindValue(":l_corp",crud->at(i)->liv_corp);
+       query.bindValue(":l_f",crud->at(i)->liv_flat);
+
+       query.bindValue(":c_f",crud->at(i)->check_for);
+       query.bindValue(":d_i",crud->at(i)->dop_info);
+
+       query.bindValue(":d_a",crud->at(i)->date_add);
+       query.bindValue(":t_a",crud->at(i)->time_add);
+
+       if(!query.exec())
+        {
+        qDebug() << query.lastError();
+            isOk = false;
+        }
+   while (query.next())
+   {
+       for (int a = 0; a < crud->at(i)->owt()->size(); a++)
+       {
+           if (!crud->at(i)->owt()->at(a)->tel_num.isEmpty())
+           {
+               query1.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk) "
+                              " VALUES ((:tel_num), (:fk_id)) RETURNING telephone_id");
+               query1.bindValue(":tel_num",crud->at(i)->owt()->at(a)->tel_num);
+               query1.bindValue(":fk_id",query.value(0).toInt());
+
+               if (!query1.exec())
+               {
+                   qDebug() << query1.lastError();
+                   isOk = false;
+               }
+               while (query1.next())
+               {
+                   qDebug()<< crud->at(i)->owt()->at(a)->cont()->size();
+                   for (int b=0; b<crud->at(i)->owt()->at(a)->cont()->size();b++)
+                   {
+                    if(!crud->at(i)->owt()->at(a)->cont()->at(b)->contact_tel_num.isEmpty())
+                       {
+                           query2.prepare("INSERT INTO contacts (cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id))");
+                           query2.bindValue(":tel_num",crud->at(i)->owt()->at(a)->cont()->at(b)->contact_tel_num);
+                           query2.bindValue(":mark",crud->at(i)->owt()->at(a)->cont()->at(b)->mark);
+                           query2.bindValue(":fk_id",query1.value(0).toInt());
+
+                           if (!query2.exec())
+                           {
+                               qDebug() << query2.lastError();
+                               isOk = false;
+                           }
+                       }
+
+                   }
+               }
+           }
+       }
+   }
+  }
+    if(!isOk)
+    {
+        db_connection::instance()->db().database(cname).rollback();
+        qDebug() << "отсюда";
+        return false;
+    }
+    db_connection::instance()->db().database(cname).commit();
+
+    return true;
+}
+
+bool List_master::del_zk_from_pg(QList<int> del_list)
+{
+    if(del_list.isEmpty() || !db_connection::instance()->db_connect())
+        return false;
+
+    for (int i =0; i < del_list.size(); i++)
+    {
+        Crud::del_zk(del_list.at(i));
+    }
+    return true;
+}
+
+QList<Crud *> *List_master::search(QString search_query)
+{
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("SELECT  DISTINCT "        //стринг для модели
+                 "zk.Zk_id,"
+                 "zk.Lastname,"
+                 "zk.Name,"
+                 "zk.Mid_name,"
+                 "zk.Birth_date,"
+                 ""
+                 "zk.Reg_city,"
+                 "zk.Reg_street,"
+                 "zk.Reg_home,"
+                 "zk.Reg_corp,"
+                 "zk.Reg_flat,"
+                 ""
+                 "zk.Liv_city,"
+                 "zk.Liv_street,"
+                 "zk.Liv_home,"
+                 "zk.Liv_corp,"
+                 "zk.Liv_flat,"
+                 ""
+                 "zk.Check_for,"
+                 "zk.Dop_info,"
+                 "zk.Date_add,"
+                 "zk.Time_add"
+                 " FROM "
+                 "zk,owners_tel"
+                 " WHERE"
+                 " zk.Zk_id>0 " + search_query + " ORDER BY zk.Zk_id");
+    if (!temp.exec())
+    {
+        qDebug() << temp.lastError();
+        qDebug() << "select_search";
+        qDebug() << temp.executedQuery();
+        return nullptr;
+    }
+    QList<Crud*> *crudlist = new QList<Crud*>;
+    while (temp.next())
+    {
+        Crud *cr = new Crud();
+        cr->checkState_ = Checked;
+        cr->zk_id = temp.value(0).toInt();
+        cr->lastname = temp.value(1).toString();
+        cr->name = temp.value(2).toString();
+        cr->mid_name= temp.value(3).toString();
+        cr->birth_date = temp.value(4).toString();
+
+        cr->reg_city = temp.value(5).toString();;
+        cr->reg_street = temp.value(6).toString();
+        cr->reg_home = temp.value(7).toString();
+        cr->reg_corp = temp.value(8).toString();
+        cr->reg_flat = temp.value(9).toString();
+
+        cr->liv_city = temp.value(10).toString();;
+        cr->liv_street = temp.value(11).toString();
+        cr->liv_home = temp.value(12).toString();
+        cr->liv_corp = temp.value(13).toString();
+        cr->liv_flat = temp.value(14).toString();
+
+        cr->check_for = temp.value(15).toString();
+        cr->dop_info = temp.value(16).toString();
+        cr->date_add = temp.value(17).toString();
+        cr->time_add = temp.value(18).toString();
+        cr->state = IsReaded;
+        crudlist->append(cr);
+    }
+    return crudlist;
 }

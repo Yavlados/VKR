@@ -29,46 +29,50 @@ SOURCES += \
         main.cpp \
     for_analysis.cpp \
     db_connection.cpp \
-    _Contacts.cpp \
-    _Crud.cpp \
-    _Owners_tel.cpp \
-    an_result_Form.cpp \
-    analysis_Form.cpp \
-    mainwindow_Form.cpp \
-    search_Form.cpp \
-    update_Form.cpp \
-    officialtelephones_Form.cpp \
-    _MTM_Contacts.cpp \
-    _MTM_Crud.cpp \
-    _MTM_OwTel.cpp \
-    master_export_Form.cpp \
+    Table_CPP/_Contacts.cpp \
+    Table_CPP/_Crud.cpp \
+    Table_CPP/_Owners_tel.cpp \
+    Form_CPP/an_result_Form.cpp \
+    Form_CPP/analysis_Form.cpp \
+    Form_CPP/mainwindow_Form.cpp \
+    Form_CPP/search_Form.cpp \
+    Form_CPP/update_Form.cpp \
+    Form_CPP/officialtelephones_Form.cpp \
+    Model_CPP/_MTM_Contacts.cpp \
+    Model_CPP/_MTM_Crud.cpp \
+    Model_CPP/_MTM_OwTel.cpp \
+    Form_CPP/master_export_Form.cpp \
     for_export.cpp \
-    _Off_tels.cpp \
-    _MTM_Off_tels.cpp \
-    Import_Form.cpp \
-    list_master.cpp
+    Table_CPP/_Off_tels.cpp \
+    Model_CPP/_MTM_Off_tels.cpp \
+    Form_CPP/Import_Form.cpp \
+    list_master.cpp \
+    Form_CPP/master_import_Form.cpp \
+    Form_CPP/settings_Form.cpp \
 
 HEADERS += \
     db_connection.h \
     for_analysis.h \
-    _Contacts.h \
-    _Owners_tel.h \
-    _Crud.h \
-    _Off_tels.h \
-    an_result_Form.h \
-    analysis_Form.h \
-    mainwindow_Form.h \
-    search_Form.h \
-    update_Form.h \
-    officialtelephones_Form.h \
-    _MTM_Contacts.h \
-    _MTM_Crud.h \
-    _MTM_OwTel.h \
-    master_export_Form.h \
+    Table_Headers/_Contacts.h \
+    Table_Headers/_Owners_tel.h \
+    Table_Headers/_Crud.h \
+    Table_Headers/_Off_tels.h \
+    Form_Headers/an_result_Form.h \
+    Form_Headers/analysis_Form.h \
+    Form_Headers/mainwindow_Form.h \
+    Form_Headers/search_Form.h \
+    Form_Headers/update_Form.h \
+    Form_Headers/officialtelephones_Form.h \
+    Model_Headers/_MTM_Contacts.h \
+    Model_Headers/_MTM_Crud.h \
+    Model_Headers/_MTM_OwTel.h \
+    Form_Headers/master_export_Form.h \
     for_export.h \
-    _MTM_Off_tels.h \
-    Import_Form.h \
-    list_master.h
+    Model_Headers/_MTM_Off_tels.h \
+    Form_Headers/Import_Form.h \
+    list_master.h \
+    Form_Headers/master_import_Form.h \
+    Form_Headers/settings_Form.h
 
 FORMS += \
         mainwindow.ui \
@@ -78,7 +82,9 @@ FORMS += \
     an_result.ui \
     officialtelephones.ui \
     master_export_form.ui \
-    import_form.ui
+    import_form.ui \
+    master_import_form.ui \
+    settings_form.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -87,3 +93,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resource.qrc
+
+INCLUDEPATH += $$PWD\
+               Table_CPP\
+               Form_CPP\
+               Model_CPP\
+               Table_Headers\
+               Form_Headers\
+               Model_Headers

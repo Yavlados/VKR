@@ -1,8 +1,7 @@
 #include "mainwindow_Form.h"
-
 #include <QTextCodec>
 #include <QApplication>
-#include   <analysis_Form.h>
+#include "analysis_Form.h"
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +22,7 @@ int main(int argc, char *argv[])
         qCritical()<<"Error"<<con->db().lastError();
         return -1;
     }
+
 
     MainWindow *w = new MainWindow();
     w->show();

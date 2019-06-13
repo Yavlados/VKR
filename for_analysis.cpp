@@ -5,7 +5,7 @@ For_analysis::For_analysis()
     list = new List_master(Analysis);
 }
 
-QList<Crud *> *For_analysis::get_crud(Crud *cr)
+QList<Crud *> *For_analysis::get_crud(Crud *cr, QString added_SQL)
 {
     db_connection *db = db_connection::instance();
     QSqlQuery temp(db->db());
@@ -17,10 +17,16 @@ QList<Crud *> *For_analysis::get_crud(Crud *cr)
     ///Пробегаюсь по телефонным номерам
     for (int a =0; a<cr->owt()->size(); a++)
     {
-        querry.prepare("SELECT  DISTINCT owners_tel.fk_telephone_zk, contacts.cl_info, owners_tel.telephone_num "
-                       " FROM  contacts, owners_tel "
-                       " WHERE contacts.cl_telephone = (:tel_num) "
-                       " AND contacts.fk_cl_telephone = owners_tel.telephone_id");
+        QString tempSQL = "SELECT  DISTINCT owners_tel.fk_telephone_zk, contacts.cl_info, owners_tel.telephone_num "
+                          " FROM  contacts, owners_tel, zk "
+                          " WHERE contacts.cl_telephone = (:tel_num) "
+                          " AND contacts.fk_cl_telephone = owners_tel.telephone_id"
+                          " AND owners_tel.fk_telephone_zk = zk.zk_id";
+
+        if(!added_SQL.isEmpty()) //Дополнительные условия запроса (ограничения по дате и ЗК)
+            tempSQL+=added_SQL;
+
+        querry.prepare(tempSQL);
         querry.bindValue(":tel_num", cr->owt()->at(a)->tel_num);
 
         if (!querry.exec())
@@ -39,12 +45,20 @@ QList<Crud *> *For_analysis::get_crud(Crud *cr)
             crudlist->append(temp_crud);
         }
     ///Таким образом собрал людей, у которых в КОНТАКТАХ лежит номер анализируемого человека
-        for (int b =0; b<cr->owt()->at(a)->cont()->size(); b++)
-        {
-            querry.prepare(" SELECT  DISTINCT owners_tel.fk_telephone_zk "
-            " FROM   owners_tel "
-            " WHERE owners_tel.telephone_num = (:cont_num)");
-            querry.bindValue(":cont_num", cr->owt()->at(a)->cont()->at(b)->contact_tel_num);
+
+        ////////ИЗМЕНИТЬ
+        tempSQL.clear();
+       tempSQL += " SELECT  DISTINCT  owners_tel.fk_telephone_zk, owners_tel.telephone_num, contacts.cl_info "
+                  " FROM  contacts, owners_tel"
+                  " WHERE contacts.fk_cl_telephone = (:tel_id)"
+                  " AND  contacts.cl_telephone = owners_tel.telephone_num";
+
+       if(!added_SQL.isEmpty()) //Дополнительные условия запроса (ограничения по дате и ЗК)
+           tempSQL+=added_SQL;
+
+
+            querry.prepare(tempSQL);
+            querry.bindValue(":tel_id", cr->owt()->at(a)->tel_id);
 
             if (!querry.exec())
                 qDebug() << querry.lastError();
@@ -54,14 +68,13 @@ QList<Crud *> *For_analysis::get_crud(Crud *cr)
             {
               Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
  ///Беру его телефон с id = 2 (Значит что в контактах анализируемого обнаружен этот человек)
-            Owners_tel *temp_ot = new Owners_tel(cr->owt()->at(a)->cont()->at(b)->contact_tel_num,2,temp_crud->zk_id);
-            Contacts *temp_cont = new Contacts( 2,cr->owt()->at(a)->cont()->at(b)->contact_tel_num,cr->owt()->at(a)->cont()->at(b)->mark, temp_ot->tel_id);
+            Owners_tel *temp_ot = new Owners_tel(cr->owt()->at(a)->tel_num, 2, temp_crud->zk_id);
+            Contacts *temp_cont = new Contacts( 2, querry.value(1).toString(), querry.value(2).toString(), temp_ot->tel_id);
             ///Собираем воедино
             temp_ot->cont()->append(temp_cont);
             temp_crud->owt()->append(temp_ot);
             crudlist->append(temp_crud);
             }
-        }
     }
 ///Имею список crudlist - с людьми, телефонами и контактами. если номер с id 1 - первый вариант
 /// знакомства. Если номер с id 2 - второй вариант знакомства (в таком случае телефон
@@ -303,167 +316,154 @@ void For_analysis::long_tel_analysis_all_db(int id)
 void For_analysis::short_face_analysis_all_db(QVector<int> vector, int id)
 {
     Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
-    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
-    QList<Crud*> *temp = new QList<Crud*>;
-
-    for(int a=0; a<crudlist->size(); a++)
+    if(!vector.isEmpty())
     {
+        QString tempSQL;
+        tempSQL = " AND (";
         for(int i =0; i<vector.size(); i++)
         {
-            if(crudlist->at(a)->zk_id == vector.at(i))
-            {
-                temp->append(crudlist->at(a));
-                break;
-            }
+            tempSQL += "zk.zk_id = "+QString::number(vector.at(i));
+            if (i < vector.size()-1)
+                tempSQL += " OR ";
+            else
+                tempSQL+=") ";
         }
+        QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
+        short_face_analysis(cr, crudlist);
     }
-    delete crudlist;
-    short_face_analysis(cr, temp);
 }
 
 void For_analysis::short_tel_analysis_all_db(QVector<int> vector, int id)
 {
     Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
-    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
-    QList<Crud*> *temp = new QList<Crud*>;
-
-    for(int a=0; a<crudlist->size(); a++)
+    if(!vector.isEmpty())
     {
+        QString tempSQL;
+        tempSQL = " AND (";
         for(int i =0; i<vector.size(); i++)
         {
-            if(crudlist->at(a)->zk_id == vector.at(i))
-            {
-                temp->append(crudlist->at(a));
-                break;
-            }
+            tempSQL += "zk.zk_id = "+QString::number(vector.at(i));
+            if (i < vector.size()-1)
+                tempSQL += " OR ";
+            else
+                tempSQL+=") ";
         }
+        QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
+    short_tel_analysis(cr, crudlist);
     }
-    delete crudlist;
-    short_tel_analysis(cr, temp);
 }
 
 void For_analysis::long_face_analysis_all_db(QVector<int> vector, int id)
-{
-    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
-    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
-    QList<Crud*> *temp = new QList<Crud*>;
-
-    for(int a=0; a<crudlist->size(); a++)
-    {
-        for(int i =0; i<vector.size(); i++)
-        {
-            if(crudlist->at(a)->zk_id == vector.at(i))
-            {
-                temp->append(crudlist->at(a));
-                break;
-            }
-        }
-    }
-    delete crudlist;
-    long_face_analysis(cr, temp);
+{    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+     if(!vector.isEmpty())
+     {
+         QString tempSQL;
+         tempSQL = " AND (";
+         for(int i =0; i<vector.size(); i++)
+         {
+             tempSQL += "zk.zk_id = "+QString::number(vector.at(i));
+             if (i < vector.size()-1)
+                 tempSQL += " OR ";
+             else
+                 tempSQL+=") ";
+         }
+         QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
+    long_face_analysis(cr, crudlist);
+     }
 }
 
 void For_analysis::long_tel_analysis_all_db(QVector<int> vector, int id)
-{
-    Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
-    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
-    QList<Crud*> *temp = new QList<Crud*>;
-
-    for(int a=0; a<crudlist->size(); a++)
+{   Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
+    if(!vector.isEmpty())
     {
+        QString tempSQL;
+        tempSQL = " AND (";
         for(int i =0; i<vector.size(); i++)
         {
-            if(crudlist->at(a)->zk_id == vector.at(i))
-            {
-                temp->append(crudlist->at(a));
-                break;
-            }
+            tempSQL += "zk.zk_id = "+QString::number(vector.at(i));
+            if (i < vector.size()-1)
+                tempSQL += " OR ";
+            else
+                tempSQL+=") ";
         }
+        QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
+    long_tel_analysis(cr, crudlist);
     }
-    delete crudlist;
-    long_tel_analysis(cr, temp);
+
 }
 
-void For_analysis::short_face_analysis_all_db(QDate dateFROM, QDate dateTO, int id)
+void For_analysis::short_face_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
     Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
-    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
-    QList<Crud*> *temp = new QList<Crud*>;
-
-    for(int a=0; a<crudlist->size(); a++)
+    if(!DateFrom.isEmpty() || !DateTo.isEmpty())
     {
-        QDate date;
-        auto list =  crudlist->at(a)->date_add.split('-');
-        date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
-
-        if(date <= dateTO && date >= dateFROM)
+        QString tempSQL;
+        if(!DateFrom.isEmpty())
         {
-            temp->append(crudlist->at(a));
+            tempSQL += " AND zk.date_add >= ('"+ DateFrom+"')";
         }
+        if(!DateTo.isEmpty())
+        {
+            tempSQL += " AND zk.date_add <= ('"+ DateTo+"')";
+        }
+        QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
+        short_face_analysis(cr, crudlist);
     }
-    delete crudlist;
-    short_face_analysis(cr, temp);
 }
 
-void For_analysis::short_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id)
+void For_analysis::short_tel_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
     Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
-    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
-    QList<Crud*> *temp = new QList<Crud*>;
-
-    for(int a=0; a<crudlist->size(); a++)
+    if(!DateFrom.isEmpty() || !DateTo.isEmpty())
     {
-        QDate date;
-        auto list =  crudlist->at(a)->date_add.split('-');
-        date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
-
-        if(date <= dateTO && date >= dateFROM)
+        QString tempSQL;
+        if(!DateFrom.isEmpty())
         {
-            temp->append(crudlist->at(a));
+            tempSQL += " AND zk.date_add >= ('"+ DateFrom+"')";
         }
+        if(!DateTo.isEmpty())
+        {
+            tempSQL += " AND zk.date_add <= ('"+ DateTo+"')";
+        }
+        QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
+    short_tel_analysis(cr, crudlist);
     }
-    delete crudlist;
-    short_tel_analysis(cr, temp);
 }
 
-void For_analysis::long_face_analysis_all_db(QDate dateFROM, QDate dateTO, int id)
+void For_analysis::long_face_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
     Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
-    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
-    QList<Crud*> *temp = new QList<Crud*>;
-
-    for(int a=0; a<crudlist->size(); a++)
+    if(!DateFrom.isEmpty() || !DateTo.isEmpty())
     {
-        QDate date;
-        auto list =  crudlist->at(a)->date_add.split('-');
-        date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
-
-        if(date <= dateTO && date >= dateFROM)
+        QString tempSQL;
+        if(!DateFrom.isEmpty())
         {
-            temp->append(crudlist->at(a));
+            tempSQL += " AND zk.date_add >= ('"+ DateFrom+"')";
         }
+        if(!DateTo.isEmpty())
+        {
+            tempSQL += " AND zk.date_add <= ('"+ DateTo+"')";
+        }
+        QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
+    long_face_analysis(cr, crudlist);
     }
-    delete crudlist;
-    long_face_analysis(cr, temp);
 }
 
-void For_analysis::long_tel_analysis_all_db(QDate dateFROM, QDate dateTO, int id)
+void For_analysis::long_tel_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
     Crud *cr = list->get_crud(id);       //Србираю всю информацию об анализируемом
-    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
-    QList<Crud*> *temp = new QList<Crud*>;
-
-    for(int a=0; a<crudlist->size(); a++)
+    if(!DateFrom.isEmpty() || !DateTo.isEmpty())
     {
-        QDate date;
-        auto list =  crudlist->at(a)->date_add.split('-');
-        date.setDate(list.at(0).toInt(),list.at(1).toInt(),list.at(2).toInt());
-
-        if(date <= dateTO && date >= dateFROM)
+        QString tempSQL;
+        if(!DateFrom.isEmpty())
         {
-            temp->append(crudlist->at(a));
+            tempSQL += " AND zk.date_add >= ('"+ DateFrom+"')";
         }
+        if(!DateTo.isEmpty())
+        {
+            tempSQL += " AND zk.date_add <= ('"+ DateTo+"')";
+        }
+        QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
+    long_tel_analysis(cr, crudlist);
     }
-    delete crudlist;
-    long_tel_analysis(cr, temp);
 }

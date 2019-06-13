@@ -32,7 +32,7 @@ public:
 
     List_master *list;
 
-    QList<Crud*> * get_crud(Crud *cr);
+    QList<Crud*> * get_crud(Crud *cr = nullptr, QString added_SQL = nullptr);
 
     ///Основные методы анализа
     void short_face_analysis(Crud *cr, QList<Crud*> *crudlist);
@@ -49,10 +49,10 @@ public:
     void short_tel_analysis_all_db(QVector<int>,int);
     void long_face_analysis_all_db(QVector<int> vector, int id);
     void long_tel_analysis_all_db(QVector<int> vector, int id);
-    void short_face_analysis_all_db(QDate, QDate, int);
-    void short_tel_analysis_all_db(QDate, QDate, int);
-    void long_face_analysis_all_db(QDate, QDate, int);
-    void long_tel_analysis_all_db(QDate, QDate, int);
+    void short_face_analysis_all_db(QString DateFrom, QString DateTo, int);
+    void short_tel_analysis_all_db(QString DateFrom, QString DateTo, int);
+    void long_face_analysis_all_db(QString DateFrom, QString DateTo, int);
+    void long_tel_analysis_all_db(QString DateFrom, QString DateTo, int);
 
     QSqlQueryModel *model = new QSqlQueryModel();
 };

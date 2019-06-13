@@ -6,5 +6,14 @@
         <file>png/004-rubbish-bin.png</file>
         <file>png/005-screwdriver-and-wrench-crossed.png</file>
         <file>png/006-info.png</file>
+        <file>png/import-export-arrows.png</file>
+        <file>png/002-settings-work-tool.png</file>
+        <file>png/003-eye-open.png</file>
+        <file>png/004-import.png</file>
+        <file>png/005-export.png</file>
+        <file>png/file.png</file>
+    </qresource>
+    <qresource prefix="/config">
+        <file>CONFIG/test.ini</file>
     </qresource>
 </RCC>
