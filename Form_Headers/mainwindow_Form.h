@@ -5,7 +5,7 @@
 #include "update_Form.h"
 #include "search_Form.h"
 
-#include"master_export_Form.h"
+#include "master_export_Form.h"
 #include "master_import_Form.h"
 #include "settings_Form.h"
 
@@ -17,7 +17,7 @@
 #include "_MTM_OwTel.h"
 
 #include "officialtelephones_Form.h"
-#include "for_export.h"/// ->_Crud.h->_Owners_tel.h->_Contacts.h->db_connection
+#include "for_export.h" // ->_Crud.h->_Owners_tel.h->_Contacts.h->db_connection
 #include "Import_Form.h"
 
 
@@ -26,7 +26,27 @@
 #include <QMessageBox>
 #include <QSqlQueryModel>
 #include <QFileDialog>
-
+/**
+ * \file Mainwindow_Form.h
+ * \brief Форма главного окна
+ * \par Использует классы форм:
+ *     @ref analysis_Form.h
+ *     @ref update_Form.h
+ *     @ref search_Form.h
+ *     @ref master_export_Form.h
+ *     @ref master_import_Form.h
+ *     @ref settings_Form.h
+ *     @ref Import_Form.h
+ *     @ref officialtelephones_Form.h
+ * \par Использует классы моделей:
+ *     @ref _MTM_Contacts.h
+ *     @ref _MTM_Crud.h
+ *     @ref _MTM_OwTel.h
+ * \par Использует вспомогательные классы:
+ *     @ref list_master.h
+ *     @ref db_connection.h
+ *     @ref for_export.h
+*/
 namespace Ui {
 class MainWindow;
 }
@@ -38,6 +58,12 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+    Search *sr = nullptr;                 //форма поиска
+    Master_export_Form *exprt = nullptr;  //форма экспорта
+    Master_import_form *imprt = nullptr;  //форма импорта
+    OfficialTelephones *of = nullptr;     //форма служебных телефонов
+    class Analysis *an = nullptr;         //форма анализа
+
     QMessageBox msgbx;
 
     Model_check_state m_c_s;
@@ -45,13 +71,6 @@ public:
     QList<Update*> *updlist = nullptr;
     QList<Update*> *addlist = nullptr;
 
-    Search *sr = nullptr;
-
-    Master_export_Form *exprt = nullptr;
-    Master_import_form *imprt = nullptr;
-    OfficialTelephones *of = nullptr;
-
-     class Analysis *an = nullptr;
 
      MTM_Contacts *contacts_model = new MTM_Contacts;
      MTM_OwTel *ot_model = new MTM_OwTel;

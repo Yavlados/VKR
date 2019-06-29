@@ -7,7 +7,10 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlError>
-
+/**
+ * \file _MTM_Off_tels.h
+ * \brief Модель отображения данных о служебных телефонах
+*/
 
 class MTM_Off_Tels: public QAbstractTableModel
 {
@@ -40,9 +43,10 @@ public:
 
     //virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 
-private:
     QList<Off_tels*> *offlist;    ///< исходный список
     QList<Off_tels*> actofflist;  ///<  отображаемый список
+
+private:
 
 };
 

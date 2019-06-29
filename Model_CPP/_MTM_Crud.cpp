@@ -5,20 +5,16 @@ MTM_Crud::MTM_Crud(QObject *parent):
     QAbstractTableModel(parent)
 {
     crudlist = nullptr  ;
-    iterator = 0;
-    QSettings settings( "C:/Users/Vladya/Documents/qt_projects/untitled9/CONFIG/TEST.ini", QSettings::IniFormat);
-    settings.beginGroup("ZK_COLUMNS");                    //Подключаюсь к настройкам
-    showing_count = settings.value("PAGE_COUNT").toInt();;//Кол-во отображаемых записей
+
+    showing_count = Settings_connection::instance()->showing_count;//Кол-во отображаемых записей
 }
 
 int MTM_Crud::columnCount(const QModelIndex &parent) const
 {
-    QSettings settings( "C:/Users/Vladya/Documents/qt_projects/untitled9/CONFIG/TEST.ini", QSettings::IniFormat);
-    settings.beginGroup("ZK_COLUMNS");
     (void)parent;
     if(crudlist==nullptr)
         return 0;
-    else return settings.value("COLUMNS_COUNT").toInt();
+    else return Settings_connection::instance()->columns_count;
 }
 
 int MTM_Crud::rowCount(const QModelIndex &parent) const
@@ -81,6 +77,8 @@ void MTM_Crud::setUnCheckedCrudlist(QList<Crud *> *crudl)
 {
     beginResetModel();
 
+    int iterator = 0;
+
     crudlist = crudl;
     actcrudlist.clear();
 
@@ -108,48 +106,48 @@ QVariant MTM_Crud::data(const QModelIndex &index, int role) const
     int row = index.row();      ///целочисленные указатели на строку
     int col = index.column();   /// и столбец
 
-        if (role == Qt::DisplayRole)
+    if (role == Qt::DisplayRole)
         {
            switch(col)
           {///// dobav 1 column checkbox
            case 1:
-               return Recieve_column(1,row);
+               return Recieve_column(0,row);
            case 2:
-               return Recieve_column(2,row);
+               return Recieve_column(1,row);
            case 3:
-               return Recieve_column(3,row);
+               return Recieve_column(2,row);
            case 4:
-               return Recieve_column(4,row);
+               return Recieve_column(3,row);
            case 5:
-               return Recieve_column(5,row);
+               return Recieve_column(4,row);
            case 6:
-               return Recieve_column(6,row);
+               return Recieve_column(5,row);
            case 7:
-               return Recieve_column(7,row);
+               return Recieve_column(6,row);
            case 8:
-               return Recieve_column(8,row);
+               return Recieve_column(7,row);
            case 9:
-               return Recieve_column(9,row);
+               return Recieve_column(8,row);
            case 10:
-               return Recieve_column(10,row);
+               return Recieve_column(9,row);
            case 11:
-               return Recieve_column(11,row);
+               return Recieve_column(10,row);
            case 12:
-               return Recieve_column(12,row);
+               return Recieve_column(11,row);
            case 13:
-               return Recieve_column(13,row);
+               return Recieve_column(12,row);
            case 14:
-               return Recieve_column(14,row);
+               return Recieve_column(13,row);
            case 15:
-               return Recieve_column(15,row);
+               return Recieve_column(14,row);
            case 16:
-               return Recieve_column(16,row);
+               return Recieve_column(15,row);
            case 17:
-               return Recieve_column(17,row);
+               return Recieve_column(16,row);
            case 18:
-               return Recieve_column(18,row);
+               return Recieve_column(17,row);
            case 19:
-               return Recieve_column(19,row);
+               return Recieve_column(18,row);
           }
 
         }
@@ -175,20 +173,21 @@ void MTM_Crud::reset_CrudModel()
 void MTM_Crud::next_page_crud()
 {
     beginResetModel();
-
+    int a;
+    a = crudlist->indexOf(actcrudlist.at(actcrudlist.size()-1)); //индекс последнего элемента
+    int b = a+1; //индекс добавления
+    qDebug() << a;
     actcrudlist.clear();
 
     if(crudlist!=nullptr)
     {
-        int local = iterator+showing_count;
-        while (iterator < local && iterator < crudlist->size())
+        while (b < a+showing_count+1 && b < crudlist->size())
         {
-            if( crudlist->at(iterator)->state!=IsRemoved )
+            if( crudlist->at(b)->state!=IsRemoved )
             {
-                crudlist->at(iterator)->checkState_ = Unchecked;
-                actcrudlist.append(crudlist->at(iterator));
+                actcrudlist.append(crudlist->at(b));
+                b++;
             }
-            iterator++;
         }
     }
 
@@ -198,21 +197,21 @@ void MTM_Crud::next_page_crud()
 void MTM_Crud::previous_page_crud()
 {
     beginResetModel();
+    int a;
+    a = crudlist->indexOf(actcrudlist.at(0)); //индекс последнего элемента
+    int b = a-showing_count; //индекс добавления
 
     actcrudlist.clear();
 
     if(crudlist!=nullptr)
     {
-        int local = iterator-showing_count;
-        iterator -= 2*showing_count;
-        while (iterator < local && iterator < crudlist->size())
+        while (b < a)
         {
-            if( crudlist->at(iterator)->state!=IsRemoved )
-            {
-                crudlist->at(iterator)->checkState_ = Unchecked;
-                actcrudlist.append(crudlist->at(iterator));
-            }
-            iterator++;
+          if( crudlist->at(b)->state!=IsRemoved )
+          {
+              actcrudlist.append(crudlist->at(b));
+              b++;
+          }
         }
     }
     endResetModel();
@@ -229,43 +228,43 @@ QVariant MTM_Crud::headerData(int section, Qt::Orientation orientation, int role
             switch (section)
           {
             case 1:
-                return QString("Номер ЗК");
+                return Recieve_column_name(0);
             case 2:
-                return QString("Фамилия");
+                return Recieve_column_name(1);
             case 3:
-                return QString("Имя");
+                return Recieve_column_name(2);
             case 4:
-                return QString("Отчество");
+                return Recieve_column_name(3);
             case 5:
-                return QString("Дата рождения");
+                return Recieve_column_name(4);
             case 6:
-                return QString("Город регистрации");
+                return Recieve_column_name(5);
             case 7:
-                return QString("Улица регистрации");
+                return Recieve_column_name(6);
             case 8:
-                return QString("Дом регистрации");
+                return Recieve_column_name(7);
             case 9:
-                return QString("Корпус регистрации");
+                return Recieve_column_name(8);
             case 10:
-                return QString("Квартира регистрации");
+                return Recieve_column_name(9);
             case 11:
-                return QString("Город проживания");
+                return Recieve_column_name(10);
             case 12:
-                return QString("Улица проживания");
+                return Recieve_column_name(11);
             case 13:
-                return QString("Дом проживания");
+                return Recieve_column_name(12);
             case 14:
-                return QString("Корпус проживания");
+                return Recieve_column_name(13);
             case 15:
-                return QString("Квартира проживания");
+                return Recieve_column_name(14);
             case 16:
-                return QString("Проверяется в интересах");
+                return Recieve_column_name(15);
             case 17:
-                return QString("Дополнительная информация");
+                return Recieve_column_name(16);
             case 18:
-                return QString("День добавления");
+                return Recieve_column_name(17);
             case 19:
-                return QString("Время добавления");
+                return Recieve_column_name(18);
           }
 
         return QVariant(); /// вот сюда внимание в случае краша
@@ -307,9 +306,7 @@ bool MTM_Crud::setData(const QModelIndex &index, const QVariant &value, int role
 
 QString MTM_Crud::Recieve_column(int column, int row) const
 {
-    QSettings settings( "C:/Users/Vladya/Documents/qt_projects/untitled9/CONFIG/TEST.ini", QSettings::IniFormat);
-    settings.beginGroup("ZK_COLUMNS");
-    QString settings_str = settings.value(QString::number(column)).toString();
+    QString settings_str = Settings_connection::instance()->showing_cols.at(column)->column_name;
 
     if (settings_str == "ZK_ID")
         return QString::number(actcrudlist.at(row)->zk_id);
@@ -367,4 +364,66 @@ QString MTM_Crud::Recieve_column(int column, int row) const
 
     if (settings_str == "ADD_TIME")
         return actcrudlist.at(row)->time_add;
+}
+
+QString MTM_Crud::Recieve_column_name(int column) const
+{
+    QString settings_str = Settings_connection::instance()->showing_cols.at(column)->column_name;
+
+    if (settings_str == "ZK_ID")
+        return QString("Номер ЗК");
+
+    if (settings_str == "LASTNAME")
+        return QString("Фамилия");
+
+    if (settings_str == "NAME")
+        return QString("Имя");
+
+    if (settings_str == "MID_NAME")
+       return QString("Отчество");
+
+    if (settings_str == "BIRTH_DATE")
+        return QString("Дата рождения");
+
+    if (settings_str == "CHECK_FOR")
+        return QString("Проверяется в интересах");
+
+    if (settings_str == "DOP_INFO")
+        return QString("Дополнительная информация");
+
+    if (settings_str == "LIV_CITY")
+        return QString("Город проживания");
+
+    if (settings_str == "LIV_STREET")
+        return QString("Улица проживания");
+
+    if (settings_str == "LIV_HOME")
+        return QString("Дом проживания");
+
+    if (settings_str == "LIV_CORP")
+        return QString("Корпус проживания");
+
+    if (settings_str == "LIV_FLAT")
+        return QString("Квартира проживания");
+
+    if (settings_str == "ADD_DATE")
+        return QString("День добавления");
+
+    if (settings_str == "REG_CITY")
+        return QString("Город регистрации");
+
+    if (settings_str == "REG_STREET")
+        return QString("Улица регистрации");
+
+    if (settings_str == "REG_HOME")
+        return QString("Дом регистрации");
+
+    if (settings_str == "REG_CORP")
+        return QString("Корпус регистрации");
+
+    if (settings_str == "REG_FLAT")
+        return QString("Квартира регистрации");
+
+    if (settings_str == "ADD_TIME")
+         return QString("Время добавления");
 }

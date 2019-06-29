@@ -49,6 +49,7 @@ SOURCES += \
     list_master.cpp \
     Form_CPP/master_import_Form.cpp \
     Form_CPP/settings_Form.cpp \
+    settings_connection.cpp
 
 HEADERS += \
     db_connection.h \
@@ -72,7 +73,8 @@ HEADERS += \
     Form_Headers/Import_Form.h \
     list_master.h \
     Form_Headers/master_import_Form.h \
-    Form_Headers/settings_Form.h
+    Form_Headers/settings_Form.h \
+    settings_connection.h
 
 FORMS += \
         mainwindow.ui \

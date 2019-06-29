@@ -1,0 +1,42 @@
+CREATE TABLE public.official_tel
+(
+  tel_num character(20),
+  service_name character(25),
+  of_t_id integer NOT NULL DEFAULT nextval('official_tel_of_t_id_seq'::regclass),
+  CONSTRAINT "PK_of_t_id" PRIMARY KEY (of_t_id)
+);
+
+CREATE TABLE public.owners_tel
+(
+  fk_telephone_zk integer,
+  telephone_num character varying(11) NOT NULL,
+  telephone_id integer NOT NULL DEFAULT nextval('owners_tel_telephone_id_seq'::regclass),
+  CONSTRAINT "PK_telephone_id" PRIMARY KEY (telephone_id),
+  CONSTRAINT "FK_fk_telephone_zk" FOREIGN KEY (fk_telephone_zk)
+      REFERENCES public.zk (zk_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+CREATE TABLE public.zk
+(
+  lastname character varying(20),
+  name character varying(10),
+  mid_name character varying(20),
+  birth_date date,
+  date_add date,
+  reg_city character varying(20),
+  reg_street character varying(20),
+  reg_home character varying(5),
+  reg_corp character varying(5),
+  reg_flat character varying(5),
+  liv_city character varying(20),
+  liv_street character varying(20),
+  liv_home character varying(5),
+  liv_corp character varying(5),
+  liv_flat character varying(5),
+  time_add character varying(10),
+  dop_info character varying(50),
+  check_for character varying(25),
+  zk_id integer NOT NULL DEFAULT nextval('zk_zk_id_seq'::regclass),
+  CONSTRAINT "PK_zk_id" PRIMARY KEY (zk_id)
+);

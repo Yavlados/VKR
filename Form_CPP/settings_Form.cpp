@@ -1,7 +1,7 @@
 #include "settings_Form.h"
 #include "ui_settings_form.h"
+
 #include <QtDebug>
-#include <QSettings>
 #include <QDrag>
 
 Settings_Form::Settings_Form(QWidget *parent) :
@@ -21,8 +21,6 @@ Settings_Form::~Settings_Form()
 
 void Settings_Form::dragEnterEvent(QDragEnterEvent *e)
 {
-    //ui->checkBox->acceptDrops();
-  // ->acceptProposedAction();
 }
 
 void Settings_Form::closeEvent(QCloseEvent *event)
@@ -33,35 +31,212 @@ void Settings_Form::closeEvent(QCloseEvent *event)
 
 void Settings_Form::on_pb_save_settings_clicked()
 {
-
-    QSettings settings( "C:/Users/Vladya/Documents/qt_projects/untitled9/CONFIG/TEST.ini", QSettings::IniFormat);
-
-   QFont *font = new QFont;
-   font->setPointSize(ui->lineEdit->text().toInt());
-       settings.beginGroup("FONTS");
-       if( !ui->lineEdit->text().isEmpty())
-        settings.setValue("SIZE", ui->lineEdit->text().toInt());
-       else
-        settings.setValue("SIZE", 10);
-
-       settings.endGroup();
-       settings.beginGroup("ZK_COLUMNS");
-       int i =1;
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>())
+    QSettings *settings = new QSettings("testing.ini",QSettings::IniFormat);;
+    int i = 0;
+    settings->beginWriteArray("COLUMNS_ARRAY");
+    settings->remove("");
+    settings->sync();
+    settings->endArray();
+    settings->beginWriteArray("COLUMNS_ARRAY");
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ZK_ID"))
     {
         if(cb->isChecked())
         {
-            settings.setValue(QString::number(i),cb->objectName());
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
             i++;
         }
     }
-    settings.setValue("COLUMNS_COUNT", i);
-    if( !ui->lineEdit_2->text().isEmpty())
-     settings.setValue("PAGE_COUNT", ui->lineEdit_2->text().toInt());
-    else
-     settings.setValue("PAGE_COUNT", 5);
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LASTNAME"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("NAME"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("MID_NAME"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("BIRTH_DATE"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ADD_DATE"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ADD_TIME"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("CHECK_FOR"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("DOP_INFO"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_CITY"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_STREET"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_HOME"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_CORP"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_FLAT"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_CITY"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_STREET"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_HOME"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_CORP"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_FLAT"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            i++;
+        }
+    }
 
-   settings.sync();
+   settings->endArray();
+   settings->beginGroup("PAGE_COUNT");
+   settings->setValue("PAGE_COUNT", ui->lineEdit_2->text().toInt());
+   settings->endGroup();
+   settings->sync();
+
+
+   Settings_connection::instance()->Set_settings();
    emit Update_main();
    delete this;
 }

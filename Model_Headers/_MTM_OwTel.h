@@ -8,7 +8,10 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QCheckBox>
-
+/**
+ * \file _MTM_OwTel.h
+ * \brief Модель отображения данных о номерах телефонов
+*/
 enum Calling_state_Ot{Show_Ot = 1,  /// Модель для просмотра
                       Edit_Ot = 0}; /// Модель для изменения (формы update и add_form)
 

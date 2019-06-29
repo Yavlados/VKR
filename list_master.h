@@ -10,6 +10,11 @@ enum Form_state { Export = 0,
                   Analysis = 2,
                   Main_window_for_Update = 3};
 
+/**
+* \file list_master.h
+* \brief Класс работы со списками
+*/
+
 class List_master
 {
 public:

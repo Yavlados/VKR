@@ -78,9 +78,9 @@ QVariant MTM_Off_Tels::headerData(int section, Qt::Orientation orientation, int 
             switch (section)
           {
              case 0:
-                return QString("Номер телефона");
-            case 1:
                 return QString("Наименование службы");
+            case 1:
+                return QString("Номер телефона");
           }
         else {
             return QString("%1").arg(section+1);

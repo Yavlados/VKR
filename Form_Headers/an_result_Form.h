@@ -1,24 +1,25 @@
 #ifndef AN_RESULT_H
 #define AN_RESULT_H
-
+#include <QFileDialog>
 #include <QWidget>
 #include <QDate>
 #include "for_analysis.h"
-//#include "search.h"
 
+/**
+ * \file an_result_Form.h
+ * \brief Форма вывода справок
+*/
 namespace Ui {
 class An_result;
 }
 
-class An_result : public QWidget, public For_analysis
+class An_result : public QWidget
 {
     Q_OBJECT
 
 public:
     explicit An_result(QWidget *parent = nullptr);
     ~An_result();
-
-        For_analysis *an = new For_analysis();
 
         //Search *sr = new Search();
 

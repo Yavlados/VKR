@@ -8,7 +8,10 @@
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 #include <QSqlError>
-
+/**
+ * \file _Contacts.h
+ * \brief Класс сущности "Контакты"
+*/
 enum DbState { IsReaded = 1,        ///< считан из БД
                IsNewing = 0,        ///< новый, еще не записан в БД
                IsRemoved = -1 ,     ///< удален в ПО, еще не удален в БД

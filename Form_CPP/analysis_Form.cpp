@@ -5,6 +5,7 @@
 #include "an_result_Form.h"
 #include <QValidator>
 #include  "_Crud.h"
+#include "search.h"
 
 Analysis::Analysis(QWidget *parent) :
     QWidget(parent),
@@ -365,9 +366,10 @@ void Analysis::on_pushButton_2_clicked()
 
 
 QString Analysis::get_date_from()
-{    ///
-    ///Сначала собираю DateFrom
-    ///
+{    //
+    //Сначала собираю DateFrom
+    //
+
 ///Если указан день, месяц, год
 if (!ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
 {
@@ -375,14 +377,14 @@ if (!ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() &
  return Date_From;
 }
 
-/// Если не указан день, но есть месяц и год
+// Если не указан день, но есть месяц и год
 if (ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
 {///За день тогда берем первое число
 Date_From = ui->le_year_from->text() +"-"+ui->le_month_from->text() +"-01";
  return Date_From;
 }
 
-/// Если только год
+// Если только год
 if (ui->le_day_from->text().isEmpty() && ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
 {/// Беру начало года (1 января)
 Date_From = ui->le_year_from->text() +"-01-01";
@@ -392,30 +394,29 @@ Date_From = ui->le_year_from->text() +"-01-01";
 
 QString Analysis::get_date_to()
 {
-    ///
- ///Теперь собираю DateTo
- ///
-///Если указан день, месяц, год
+    //
+ //Теперь собираю DateTo
+ //
+//Если указан день, месяц, год
 if (!ui->le_day_to->text().isEmpty() && !ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
 {
     Date_To = ui->le_year_to->text() +"-"+ ui->le_month_to->text() +"-"+ui->le_day_to->text();
  return Date_To;
 }
 
-/// Если не указан день, но есть месяц и год
+// Если не указан день, но есть месяц и год
 if (ui->le_day_to->text().isEmpty() && !ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
 {
     QDate date_to_local;
-    int day; /// локальная переменная для определения кол-ва дней в месяце
+    int day; // локальная переменная для определения кол-ва дней в месяце
     date_to_local.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),1);
     day = date_to_local.daysInMonth();
     Date_To = ui->le_year_to->text() +"-"+ui->le_month_to->text() +"-"+QString::number(day);
  return Date_To;
 }
-
-/// Если только год
+// Если только год
 if (ui->le_day_to->text().isEmpty() && ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
-{/// Беру конец года (31 декабря)
+{// Беру конец года (31 декабря)
 Date_To=ui->le_year_to->text()+"-12-31";
  return Date_To;
 }

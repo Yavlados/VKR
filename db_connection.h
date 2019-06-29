@@ -10,7 +10,10 @@
 enum SqlType {SQLlitechipher = 0,
               PSQLtype = 1,
               SQLliteType = 2};
-
+/**
+ * \file db_connection.h
+ * \brief Класс подключения к базе данных
+*/
 class db_connection
 {
 public:

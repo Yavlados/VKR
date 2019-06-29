@@ -6,7 +6,10 @@
 #include <QWidget>
 #include <QFileDialog>
 
-
+/**
+ * \file master_export_Form.h
+ * \brief Форма экспорта данных
+*/
 namespace Ui {
 class master_export_Form;
 }

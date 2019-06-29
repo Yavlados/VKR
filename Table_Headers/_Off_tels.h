@@ -1,7 +1,10 @@
 #ifndef _OFF_TELS_H
 #define _OFF_TELS_H
 #include "db_connection.h"
-
+/**
+* \file _Off_tels.h
+* \brief Класс сущности "Служебные телефоны"
+*/
 class Off_tels
 {
 public:
@@ -13,7 +16,8 @@ public:
     QString tel_num;
 
    static bool selectOffTel(QList<Off_tels*> *list);
-
+   static bool add_off_tel(Off_tels * of_t);
+   static bool del_off_tel (Off_tels * of_t);
 };
 
 #endif // _OFF_TELS_H

@@ -12,6 +12,7 @@ QList<Owners_tel *> *Crud::owt()
         state = IsNewing;
         _owt = new QList<Owners_tel*>;
     }
+    checkState_ = Unchecked;
     return _owt;
 }
 
@@ -247,7 +248,7 @@ bool Crud::update_zk()
 
 bool Crud::add_zk()
 {
-        QSqlQuery querry(db_connection::instance()->db());
+    QSqlQuery querry(db_connection::instance()->db());
     querry.prepare("INSERT INTO zk "
                    "(Lastname, Name,Mid_name, Birth_date,"
                    "Reg_city,Reg_street,Reg_home,Reg_corp,"

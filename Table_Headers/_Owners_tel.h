@@ -13,7 +13,10 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDate>
-
+/**
+ * \file _Owners_tel.h
+ * \brief Класс сущности "Телефон"
+*/
 
 class Owners_tel
 {

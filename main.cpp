@@ -1,8 +1,12 @@
 #include "mainwindow_Form.h"
 #include <QTextCodec>
 #include <QApplication>
-#include "analysis_Form.h"
-
+/**
+ * \file main.cpp
+ * \brief Исполнительный файл запуска программы
+ * \par Использует классы:
+ *     @ref mainwindow_Form.h
+*/
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

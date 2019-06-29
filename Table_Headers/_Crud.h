@@ -11,10 +11,13 @@
 #include <QTime>
 #include <QMessageBox>
 
-
+/**
+ * \file _Crud.h
+ * \brief Класс сущности "Записная книга"
+*/
 enum CheckState { Checked =1,
                  Unchecked = 0};
-class Crud: public Owners_tel
+class Crud
 {
 
 public:

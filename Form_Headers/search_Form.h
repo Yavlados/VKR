@@ -4,7 +4,10 @@
 #include <QWidget>
 #include <QSqlQueryModel>
 #include "an_result_Form.h"
-
+/**
+ * \file search_Form.h
+ * \brief Форма поиска
+*/
 namespace Ui {
 class Search;
 }
@@ -42,7 +45,7 @@ private slots:
 
     QString get_date_to();
 
-    QString get_date(QString year, QString month, QString day);
+    static QString get_date(QString year, QString month, QString day);
 
     QString get_date_query(QString date, int flag);
 

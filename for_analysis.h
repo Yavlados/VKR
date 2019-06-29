@@ -10,21 +10,18 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDate>
+
+/**
+ * \file for_analysis.h
+ * \brief Класс методов анализа
+*/
+
 class For_analysis
 {
 public:
     For_analysis();
-    QSqlQuery temp;
-    QSqlQuery querry;
-    QSqlQuery temp_2; // для метода даления
-    QSqlQuery temp_3;
 
     QString analysis_res;
-
-    QString Name;
-    QString Lastname;
-    QString Midname;
-    QString Tel_num;
 
     QMessageBox msgbx;
 
@@ -33,6 +30,11 @@ public:
     List_master *list;
 
     QList<Crud*> * get_crud(Crud *cr = nullptr, QString added_SQL = nullptr);
+
+    ///Методы сбора листа по 3 вариантам знакомства
+        QList<Crud*> * get_1_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);
+        QList<Crud*> * get_2_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);
+        QList<Crud*> * get_3_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);
 
     ///Основные методы анализа
     void short_face_analysis(Crud *cr, QList<Crud*> *crudlist);

@@ -13,11 +13,15 @@
 #include <QWidget>
 #include <QCloseEvent>
 
+/**
+ * @file Import_Form.h
+ * @brief Форма импорта
+*/
+
 enum Import_state { Password_incorrect = 0,
                     Import_succesful = 1,
                     Import_abort = 2,
                     Import_in_progress = 3};
-
 namespace Ui {
 class Import_Form;
 }

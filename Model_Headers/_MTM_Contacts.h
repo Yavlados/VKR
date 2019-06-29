@@ -7,7 +7,10 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlError>
-
+/**
+ * \file _MTM_Contacts.h
+ * \brief Модель отображения данных о контактах
+*/
 enum Calling_state_Model {Show_cont = 1,  /// Модель для просмотра
                         Edit_cont = 0}; /// Модель для изменения (формы update и add_form)
 

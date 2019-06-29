@@ -3,7 +3,10 @@
 
 #include <QWidget>
 #include <QFileDialog>
-
+/**
+ * \file master_import_Form.h
+ * \brief Форма импорта данных
+*/
 namespace Ui {
 class Master_import_form;
 }

@@ -1,5 +1,6 @@
 #include "officialtelephones_Form.h"
 #include "ui_officialtelephones.h"
+#include <QMessageBox>
 
 OfficialTelephones::OfficialTelephones(QWidget *parent) :
     QWidget(parent),
@@ -12,7 +13,6 @@ OfficialTelephones::OfficialTelephones(QWidget *parent) :
 OfficialTelephones::~OfficialTelephones()
 {
     delete ui;
-    delete this;
 }
 
 void OfficialTelephones::Fill_table()
@@ -28,7 +28,44 @@ void OfficialTelephones::Fill_table()
        ui->tableView->resizeColumnToContents(0);
 }
 
-void OfficialTelephones::on_pushButton_clicked()
+void OfficialTelephones::on_pb_add_clicked()
 {
+    Off_tels *of_t = new Off_tels;
+    of_t->tel_num = ui->le_set_num->text();
+    of_t->service_name = ui->le_set_name->text();
+    if (Off_tels::add_off_tel(of_t))
+    {//или просто добавлять указатель в список
+//        delete of_model;
+//        of_model = nullptr;
+//        delete ofTlist;
+//        ofTlist = nullptr;
 
+//        Fill_table();
+
+        ofTlist->append(of_t);
+         of_model->setOffTList(ofTlist);
+         ui->tableView->setModel(of_model);
+    }
+    else {
+        QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось добавить служебный телефон!")); ///Хвалимся
+    }
+}
+
+void OfficialTelephones::on_pb_del_clicked()
+{
+   QModelIndex index = ui->tableView->currentIndex();
+   if ( index.isValid())
+   {
+       Off_tels *oft = of_model->actofflist.at(index.row());
+      if (Off_tels::del_off_tel(oft))
+      {
+          ofTlist->removeAt(ofTlist->indexOf(oft));
+           of_model->setOffTList(ofTlist);
+           ui->tableView->setModel(of_model);
+      }
+      else
+          {
+          QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось удалить служебный телефон!")); ///Хвалимся
+          };
+   }
 }

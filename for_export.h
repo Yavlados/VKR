@@ -1,6 +1,5 @@
 #ifndef FOR_EXPORT_H
 #define FOR_EXPORT_H
-#include "_Crud.h"/// ->_Owners_tel.h->_Contacts.h->db_connrction
 #include "_Off_tels.h"
 #include "list_master.h"
 
@@ -9,7 +8,10 @@
 #include <QMessageBox>
 #include <QObject>
 
-
+/**
+ * \file for_export.h
+ * \brief Класс методов экспорта
+*/
 
 class For_export
 {

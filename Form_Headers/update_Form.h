@@ -11,7 +11,10 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QSqlTableModel>
-
+/**
+ * \file update_Form.h
+ * \brief Форма редактирования/добавления записных книг
+*/
 namespace Ui {
 class Update;
 }

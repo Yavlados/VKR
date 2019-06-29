@@ -6,6 +6,12 @@
 #include <QVector>
 #include <QDate>
 
+
+/**
+ * @file analysis_Form.h
+ * @brief Форма анализа
+*/
+
 namespace Ui {
 class Analysis;
 }

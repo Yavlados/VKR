@@ -2,6 +2,13 @@
 #define SETTINGS_FORM_H
 
 #include <QWidget>
+#include <QSettings>
+#include "settings_connection.h"
+
+/**
+ * \file settings_Form.h
+ * \brief Форма настроек
+*/
 
 namespace Ui {
 class Settings_Form;

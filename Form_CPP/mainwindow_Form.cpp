@@ -5,6 +5,7 @@
 #include <QRect>
 #include <QSqlDatabase>
 #include <QSettings>
+#include "settings_connection.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,8 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     RefreshTab();
     ui->tableView->selectRow(0);
     on_tableView_clicked(index_tab1);
-    set_fonts();
+    //set_fonts();
     add_splitter_lines();
+    Settings_connection::instance();
 }
 
 MainWindow::~MainWindow()
@@ -48,7 +50,7 @@ void MainWindow::Add_pagination_buttons()
 
      if(crud_model->actcrudlist.size() < crud_model->crudlist->size())
     {
-        if((crud_model->iterator - crud_model->showing_count) > 0)
+        if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(0)) != 0)
         {
             QPushButton *p_b_back = new QPushButton;
             p_b_back->setText("<<");
@@ -56,7 +58,7 @@ void MainWindow::Add_pagination_buttons()
             connect(p_b_back,SIGNAL(clicked()),this,SLOT(previous_page()));
         }
 
-        if(crud_model->iterator < crud_model->crudlist->size())
+        if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)) < crud_model->crudlist->size()-1)
         {
             QPushButton *p_b_forward = new QPushButton;
             p_b_forward->setText(">>");
@@ -205,6 +207,7 @@ void MainWindow::on_action_update_triggered()
     if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
     {
         //index_tab1 = ui->tableView->currentIndex();
+
         open_upd_tab(crud_model->actcrudlist.at(index_tab1.row()));
     }
     else {
@@ -351,7 +354,14 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
     {
         ui->tabWidget->widget(index)->deleteLater();
     }
-    qDebug() << "kuk";
+    if ( ui->tabWidget->widget(index)->objectName() == "OfficialTelephones")
+    {
+        ui->tabWidget->widget(index)->deleteLater();
+        delete of;
+        of = nullptr;
+        return;
+    }
+
 }
 
 void MainWindow::on_tabWidget_2_tabCloseRequested(int index)
@@ -360,6 +370,7 @@ void MainWindow::on_tabWidget_2_tabCloseRequested(int index)
     {
         qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
         ui->tabWidget_2->widget(index)->deleteLater();
+        delete sr;
         sr = nullptr;
         return;
     }
@@ -367,6 +378,7 @@ void MainWindow::on_tabWidget_2_tabCloseRequested(int index)
     {
         qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
         ui->tabWidget_2->widget(index)->deleteLater();
+        delete an;
         an = nullptr;
         return;
     }
@@ -374,30 +386,19 @@ void MainWindow::on_tabWidget_2_tabCloseRequested(int index)
     {
         qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
         ui->tabWidget_2->widget(index)->deleteLater();
+        delete exprt;
         exprt = nullptr;
-        return;
-    }
-    if ( ui->tabWidget_2->widget(index)->objectName() == "Search")
-    {
-        qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
-        ui->tabWidget_2->widget(index)->deleteLater();
-        sr = nullptr;
         return;
     }
     if ( ui->tabWidget_2->widget(index)->objectName() == "Master_import_form")
     {
         qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
         ui->tabWidget_2->widget(index)->deleteLater();
+        delete imprt;
         imprt = nullptr;
         return;
     }
-    if ( ui->tabWidget_2->widget(index)->objectName() == "OfficialTelephones")
-    {
-        qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
-        ui->tabWidget_2->widget(index)->deleteLater();
-        of = nullptr;
-        return;
-    }
+
 }
 
 void MainWindow::on_action_official_tel_triggered()
@@ -405,13 +406,13 @@ void MainWindow::on_action_official_tel_triggered()
     if(of == nullptr)
         {
         of = new OfficialTelephones;
-        ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,of,"Cлужебные телефоны");
-        ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
+        ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,of,"Cлужебные телефоны");
+        ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
         connect(this,SIGNAL(Fill_table_of()), of, SLOT(Fill_table()));
         emit Fill_table_of();
         }
     else
-        ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(of));
+        ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(of));
 
 }
 
@@ -550,22 +551,6 @@ void MainWindow::previous_page()
 
 void MainWindow::set_fonts()
 {
-    QSettings settings( "C:/Users/Vladya/Documents/qt_projects/untitled9/CONFIG/TEST.ini", QSettings::IniFormat);
-
-    QFont *font = new QFont;
-    settings.beginGroup("FONTS");
-    settings.group().count();
-    settings.value("SIZE");
-    settings.endGroup();
-    settings.beginGroup("ZK_COLUMNS");
-    qDebug() <<  settings.group().count();
-    settings.endGroup();
-    font->setPointSize(settings.value("SIZE").toInt());
-
-    QList<QWidget *> widgets = this->ui->tabWidget->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly);
-    if (!widgets.isEmpty())
-        for(int i = 0; i<widgets.size(); i++)
-           widgets.at(i)->setFont(*font);
 
 }
 

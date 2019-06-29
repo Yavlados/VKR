@@ -42,3 +42,42 @@ bool Off_tels::selectOffTel(QList<Off_tels *> *list)
 
     return true;
 }
+
+bool Off_tels::add_off_tel (Off_tels *of_t)
+{
+    QSqlQuery querry(db_connection::instance()->db());
+    querry.prepare("INSERT INTO official_tel "
+                   " (tel_num, service_name)"
+                   " VALUES"
+                   " ((:t_n), (:s_n))"
+                   " RETURNING official_tel.of_t_id");
+    querry.bindValue(":t_n",of_t->tel_num);
+    querry.bindValue(":s_n",of_t->service_name);
+    if (!querry.exec())
+    {
+        qDebug() << querry.lastError();
+        return false;
+    }
+    while (querry.next())
+    {
+        of_t->of_t_id = querry.value(0).toInt();
+    }
+    return true;
+}
+
+bool Off_tels::del_off_tel(Off_tels *of_t)
+{
+    QSqlQuery querry(db_connection::instance()->db());
+    querry.prepare("DELETE FROM official_tel "
+                   " WHERE official_tel.of_t_id = (:id)");
+
+    querry.bindValue(":id",of_t->of_t_id);
+
+    if (!querry.exec())
+    {
+        qDebug() << querry.lastError();
+        return false;
+    }
+
+    return true;
+}
