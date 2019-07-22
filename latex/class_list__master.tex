@@ -1,0 +1,93 @@
+\hypertarget{class_list__master}{}\section{List\+\_\+master Class Reference}
+\label{class_list__master}\index{List\_master@{List\_master}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_list__master_afdab019c75a0a1383328a280d4429445}\label{class_list__master_afdab019c75a0a1383328a280d4429445}} 
+{\bfseries List\+\_\+master} (\mbox{\hyperlink{list__master_8h_a548aac42619455ceeca53d1f4fcb446d}{Form\+\_\+state}} st)
+\item 
+void \mbox{\hyperlink{class_list__master_a548dab388e4d2c705242c316617b1271}{fill\+\_\+crud\+\_\+list}} (Q\+List$<$ \mbox{\hyperlink{class_crud}{Crud}} $\ast$ $>$ $\ast$crud, int crud\+\_\+id, Sql\+Type)
+\item 
+\mbox{\Hypertarget{class_list__master_aa51a8842fead3f521d339fb8534f4afc}\label{class_list__master_aa51a8842fead3f521d339fb8534f4afc}} 
+\mbox{\hyperlink{class_crud}{Crud}} $\ast$ {\bfseries get\+\_\+crud} (int id)
+\item 
+void \mbox{\hyperlink{class_list__master_a57d25edc739caf7fd551b857c5a9cb78}{fill\+\_\+owners\+\_\+tel\+\_\+list}} (Q\+List$<$ \mbox{\hyperlink{class_owners__tel}{Owners\+\_\+tel}} $\ast$ $>$ $\ast$owner\+\_\+tel\+L\+I\+ST, int zk\+\_\+id, int new\+\_\+zk, Sql\+Type)
+\item 
+void \mbox{\hyperlink{class_list__master_aa22bf9a416c88c5e3abb803a43392c1b}{fill\+\_\+contacts\+\_\+list}} (Q\+List$<$ \mbox{\hyperlink{class_contacts}{Contacts}} $\ast$ $>$ $\ast$contact\+L\+I\+ST, int tel\+\_\+id, int new\+\_\+tel\+\_\+id, Sql\+Type)
+\item 
+\mbox{\Hypertarget{class_list__master_aa95693474311b2c102563a9ef4e5e365}\label{class_list__master_aa95693474311b2c102563a9ef4e5e365}} 
+bool \mbox{\hyperlink{class_list__master_aa95693474311b2c102563a9ef4e5e365}{fill\+\_\+all\+\_\+crud\+\_\+list}} (Q\+List$<$ \mbox{\hyperlink{class_crud}{Crud}} $\ast$ $>$ $\ast$crud, Sql\+Type)
+\begin{DoxyCompactList}\small\item\em В отличии от fill\+\_\+crud\+\_\+list собирает список всех ЗК и соответствующих телефонов \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_list__master_af654639e0d014ff93c6dfd1f6a6d44c4}{set\+\_\+counters}} ()
+\item 
+\mbox{\Hypertarget{class_list__master_a0512c666c91ccd49f5c9e707cd3edbd3}\label{class_list__master_a0512c666c91ccd49f5c9e707cd3edbd3}} 
+void {\bfseries fill\+\_\+off\+\_\+tels} (Q\+List$<$ \mbox{\hyperlink{class_off__tels}{Off\+\_\+tels}} $\ast$ $>$ $\ast$offtel, Sql\+Type sqlt)
+\item 
+bool \mbox{\hyperlink{class_list__master_a86f1c83211c6f95e78662a17adf3696b}{insert\+\_\+crud\+\_\+in\+\_\+db}} (Q\+List$<$ \mbox{\hyperlink{class_crud}{Crud}} $\ast$ $>$ $\ast$crud)
+\item 
+\mbox{\Hypertarget{class_list__master_a963fa71a0662594de9aeaa0e0b6cbf7f}\label{class_list__master_a963fa71a0662594de9aeaa0e0b6cbf7f}} 
+bool {\bfseries del\+\_\+zk\+\_\+from\+\_\+pg} (Q\+List$<$ int $>$ del\+\_\+list)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_list__master_af87c232aba5187945dbc49ce5ac0f177}\label{class_list__master_af87c232aba5187945dbc49ce5ac0f177}} 
+static Q\+List$<$ \mbox{\hyperlink{class_crud}{Crud}} $\ast$ $>$ $\ast$ {\bfseries search} (Q\+String search\+\_\+query)
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_list__master_aa22bf9a416c88c5e3abb803a43392c1b}\label{class_list__master_aa22bf9a416c88c5e3abb803a43392c1b}} 
+\index{List\_master@{List\_master}!fill\_contacts\_list@{fill\_contacts\_list}}
+\index{fill\_contacts\_list@{fill\_contacts\_list}!List\_master@{List\_master}}
+\subsubsection{\texorpdfstring{fill\_contacts\_list()}{fill\_contacts\_list()}}
+{\footnotesize\ttfamily void List\+\_\+master\+::fill\+\_\+contacts\+\_\+list (\begin{DoxyParamCaption}\item[{Q\+List$<$ \mbox{\hyperlink{class_contacts}{Contacts}} $\ast$ $>$ $\ast$}]{contact\+L\+I\+ST,  }\item[{int}]{tel\+\_\+id,  }\item[{int}]{new\+\_\+tel\+\_\+id,  }\item[{Sql\+Type}]{sqlt }\end{DoxyParamCaption})}
+
+Экспорт\+: новый номер, новый айди, новый парентАйди
+
+Импорт\+: Достаю данные как в базе
+
+Анализ\+: Достаю данные как в базе
+
+Импорт\+: Достаю данные как в базе \mbox{\Hypertarget{class_list__master_a548dab388e4d2c705242c316617b1271}\label{class_list__master_a548dab388e4d2c705242c316617b1271}} 
+\index{List\_master@{List\_master}!fill\_crud\_list@{fill\_crud\_list}}
+\index{fill\_crud\_list@{fill\_crud\_list}!List\_master@{List\_master}}
+\subsubsection{\texorpdfstring{fill\_crud\_list()}{fill\_crud\_list()}}
+{\footnotesize\ttfamily void List\+\_\+master\+::fill\+\_\+crud\+\_\+list (\begin{DoxyParamCaption}\item[{Q\+List$<$ \mbox{\hyperlink{class_crud}{Crud}} $\ast$ $>$ $\ast$}]{crud,  }\item[{int}]{crud\+\_\+id,  }\item[{Sql\+Type}]{sqlt }\end{DoxyParamCaption})}
+
+Методы переехали из экспорта \mbox{\Hypertarget{class_list__master_a57d25edc739caf7fd551b857c5a9cb78}\label{class_list__master_a57d25edc739caf7fd551b857c5a9cb78}} 
+\index{List\_master@{List\_master}!fill\_owners\_tel\_list@{fill\_owners\_tel\_list}}
+\index{fill\_owners\_tel\_list@{fill\_owners\_tel\_list}!List\_master@{List\_master}}
+\subsubsection{\texorpdfstring{fill\_owners\_tel\_list()}{fill\_owners\_tel\_list()}}
+{\footnotesize\ttfamily void List\+\_\+master\+::fill\+\_\+owners\+\_\+tel\+\_\+list (\begin{DoxyParamCaption}\item[{Q\+List$<$ \mbox{\hyperlink{class_owners__tel}{Owners\+\_\+tel}} $\ast$ $>$ $\ast$}]{owner\+\_\+tel\+L\+I\+ST,  }\item[{int}]{zk\+\_\+id,  }\item[{int}]{new\+\_\+zk,  }\item[{Sql\+Type}]{sqlt }\end{DoxyParamCaption})}
+
+Экспорт\+: новый номер, новый айди, новый парентАйди
+
+Импорт\+: Достаю данные как в базе
+
+Анализ\+: Достаю данные как в базе
+
+Импорт\+: Достаю данные как в базе
+
+Импорт с постгреса делается в случае выявления повторов и корректировки списка импорта
+
+Нет необходимости собирать контакты для выявления повторов \mbox{\Hypertarget{class_list__master_a86f1c83211c6f95e78662a17adf3696b}\label{class_list__master_a86f1c83211c6f95e78662a17adf3696b}} 
+\index{List\_master@{List\_master}!insert\_crud\_in\_db@{insert\_crud\_in\_db}}
+\index{insert\_crud\_in\_db@{insert\_crud\_in\_db}!List\_master@{List\_master}}
+\subsubsection{\texorpdfstring{insert\_crud\_in\_db()}{insert\_crud\_in\_db()}}
+{\footnotesize\ttfamily bool List\+\_\+master\+::insert\+\_\+crud\+\_\+in\+\_\+db (\begin{DoxyParamCaption}\item[{Q\+List$<$ \mbox{\hyperlink{class_crud}{Crud}} $\ast$ $>$ $\ast$}]{crud }\end{DoxyParamCaption})}
+
+Заполнение созданных таблиц \mbox{\Hypertarget{class_list__master_af654639e0d014ff93c6dfd1f6a6d44c4}\label{class_list__master_af654639e0d014ff93c6dfd1f6a6d44c4}} 
+\index{List\_master@{List\_master}!set\_counters@{set\_counters}}
+\index{set\_counters@{set\_counters}!List\_master@{List\_master}}
+\subsubsection{\texorpdfstring{set\_counters()}{set\_counters()}}
+{\footnotesize\ttfamily void List\+\_\+master\+::set\+\_\+counters (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+будем передавать в качестве id
+
+в дампе первая зк начинается с 1 а не 0 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{list__master_8h}{list\+\_\+master.\+h}}\item 
+list\+\_\+master.\+cpp\end{DoxyCompactItemize}

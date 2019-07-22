@@ -511,11 +511,11 @@
     <property name="title">
      <string>Записные книги</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
-    <addaction name="action_3"/>
+    <addaction name="action_add_1"/>
+    <addaction name="action_2_upd"/>
+    <addaction name="action_3_del"/>
     <addaction name="separator"/>
-    <addaction name="action_5"/>
+    <addaction name="action_5_show"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="font">
@@ -526,6 +526,7 @@
     <property name="title">
      <string>Анализ</string>
     </property>
+    <addaction name="action_4_analysis"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="font">
@@ -676,7 +677,7 @@
     <string>Записные книги</string>
    </property>
   </action>
-  <action name="action">
+  <action name="action_add_1">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/new/prefix1/png/002-add-button-inside-black-circle.png</normaloff>:/new/prefix1/png/002-add-button-inside-black-circle.png</iconset>
@@ -690,7 +691,7 @@
     </font>
    </property>
   </action>
-  <action name="action_2">
+  <action name="action_2_upd">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/new/prefix1/png/005-screwdriver-and-wrench-crossed.png</normaloff>:/new/prefix1/png/005-screwdriver-and-wrench-crossed.png</iconset>
@@ -704,7 +705,7 @@
     </font>
    </property>
   </action>
-  <action name="action_3">
+  <action name="action_3_del">
    <property name="icon">
     <iconset resource="resource.qrc">
      <normaloff>:/new/prefix1/png/004-rubbish-bin.png</normaloff>:/new/prefix1/png/004-rubbish-bin.png</iconset>
@@ -718,10 +719,10 @@
     </font>
    </property>
   </action>
-  <action name="action_5">
+  <action name="action_5_show">
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/new/prefix1/png/001-magnifier.png</normaloff>:/new/prefix1/png/001-magnifier.png</iconset>
+     <normaloff>:/new/prefix1/png/003-eye-open.png</normaloff>:/new/prefix1/png/003-eye-open.png</iconset>
    </property>
    <property name="text">
     <string>Просмотр</string>
@@ -779,6 +780,11 @@
    </property>
    <property name="toolTip">
     <string>Настройки отображения</string>
+   </property>
+  </action>
+  <action name="action_4_analysis">
+   <property name="text">
+    <string>Открыть анализ</string>
    </property>
   </action>
  </widget>

@@ -1,5 +1,3 @@
-//ПРИБЕРИСЬ ТУТ, ТК ТЫ ПЕРЕДЕЛАЛ ТИП
-//ОТОБРАЖАЕМЫХ ДАННЫХ В ТЕЙБЕЛ
 
 #ifndef OWNERS_TEL_H
 #define OWNERS_TEL_H
@@ -25,13 +23,14 @@ public:
 
 Owners_tel();
 Owners_tel(int t_d);
-Owners_tel(int id, int zk, DbState);
-Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
+Owners_tel(int id, int zk, bool i_m, DbState);
+Owners_tel(QString t_n, int t_id, int zk, bool i_m = false,  DbState st = IsReaded);
 ~Owners_tel();
 
     int tel_id;
     QString tel_num;
     int parentZK_id;
+    bool internum;
     DbState state;
 
     QList<Contacts*> *cont();
@@ -50,7 +49,6 @@ Owners_tel(QString t_n, int t_id, int zk,DbState st = IsReaded);
      bool update_tel(bool setState=true);
      bool remove_tel();
 ///////////////////////////////////////////////////
-     bool compare_with_base(QString tel_num);
 ///////////////////////////////////////////////////
 
 private:

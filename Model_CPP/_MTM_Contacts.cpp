@@ -104,13 +104,34 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::DisplayRole)
+        {        
+        if(actlist.at(row)->contact_tel_num.size() == 11
+                && actlist.at(row)->contact_tel_num.at(0) != "+"
+                && actlist.at(row)->cont_state != IsNewing)
         {
-        switch(col)
-            {
-        case 0:            /// 1 колонка - номер телефона
-           return actlist.at(row)->contact_tel_num;
-        case 1:             /// 2 колонка - пометка к номеру
-            return actlist.at(row)->mark;
+            QString _temp =  actlist.at(row)->contact_tel_num;
+            _temp.insert(0,"+");
+            _temp.insert(2,"(");
+            _temp.insert(6,")");
+            _temp.insert(10,"-");
+            _temp.insert(13,"-");
+
+            switch(col)
+                {
+            case 0:            /// 1 колонка - номер телефона
+               return _temp;
+            case 1:             /// 2 колонка - пометка к номеру
+                return actlist.at(row)->mark;
+                }
+        }
+        else {
+            switch(col)
+                {
+            case 0:            /// 1 колонка - номер телефона
+               return actlist.at(row)->contact_tel_num;
+            case 1:             /// 2 колонка - пометка к номеру
+                return actlist.at(row)->mark;
+                }
             }
         }
       return QVariant();

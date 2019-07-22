@@ -74,7 +74,7 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index) //Обрабат
     index_tab1 = ui->tableView->currentIndex();
     if(index_tab1.isValid())
     {
-        ui->action_delete->setEnabled(true);
+       ui->action_delete->setEnabled(true);
        ui->action_update->setEnabled(true); //включаю кнопку редактировать
 
         if(Owners_tel::selectZkTelForAdd(crud_model->actcrudlist.at(index_tab1.row())->owt(), crud_model->actcrudlist.at(index_tab1.row())->zk_id))
@@ -109,17 +109,36 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
     }
 }
 
-void MainWindow::ShowThisTab(int index) //Открытие main окна и рефреш таблиц
+void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и рефреш таблиц
 {
     RefreshTab();
 
-    if(index !=-1)
-        updlist->removeAt(index);
-    else
-        addlist=nullptr;
-
-    if(updlist != nullptr && updlist->isEmpty())
-        updlist=nullptr;
+    if(zk_id == 0)//форма добавления
+    {
+        if(addlist != nullptr)
+        {
+            delete addlist->at(0);
+            delete addlist;
+            addlist = nullptr;
+            return;
+        }
+    }else  //форма редактирования
+    {
+        if(updlist != nullptr)
+        {
+            for (int i=0; i<updlist->size(); i++)
+            {
+                if(updlist->at(i)->new_cr->zk_id == zk_id)
+                {
+                    delete  updlist->at(i);
+                    updlist->removeAt(i);
+                    if (updlist->isEmpty())
+                        updlist = nullptr;
+                    return;
+                }
+            }
+        }
+    }
 }
 
 void MainWindow::RefreshTab()
@@ -189,7 +208,7 @@ void MainWindow::on_action_delete_triggered()
                 if (updlist != nullptr)
                     for (int i =0; i< updlist->size(); i++)
                         if(updlist->at(i)->new_cr->zk_id == crud_model->actcrudlist.at(index_tab1.row())->zk_id)
-                        {  updlist->at(i)->close(); break; }
+                        {  updlist->at(i)->close(); updlist->removeAt(i); break; }
                 Crud::del_zk(crud_model->actcrudlist.at(index_tab1.row())->zk_id);
 
                 RefreshTab();
@@ -291,23 +310,37 @@ void MainWindow::add_cancel_button()
 
 void MainWindow::open_upd_tab(Crud *cr)
 {
+
         if(updlist == nullptr)
         {
             updlist = new QList<Update*>;
         }
+
+        for (int i=0; i<updlist->size(); i++)
+        {
+            if(updlist->at(i)->new_cr->zk_id == cr->zk_id)
+            {
+                ui->tabWidget->setCurrentIndex(i+1);
+                return;
+            }
+        }
+
         Update *upd = new Update; //указатель на форму добавления
         upd->frm_t = Update_form;
         upd->imprt_t = Update_pg_data;
 
         //connect(this,SIGNAL(Send_data(Crud*, int)), updlist->at(updlist->size()-1), SLOT(Recieve_data(Crud*, int)));
+        ///создание списка обусловлено работой класса листмастер
+        /// он работает только со списками
         QList<Crud*> *crudlist = new QList<Crud*>;
         List_master *list = new List_master(Main_window_for_Update);
         list->set_counters();
+        //Загрузка ВСЕХ данных выбранной ЗК
         list->fill_crud_list(crudlist,cr->zk_id, PSQLtype);
         //emit Send_data(crudlist->at(0), updlist->size()-1);
 
         updlist->append(upd);
-        upd->Recieve_data(crudlist->at(0),updlist->size()-1);
+        upd->Recieve_data(crudlist->at(0));
         connect (updlist->at(updlist->size()-1), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
         connect(updlist->at(updlist->size()-1), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
         ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,updlist->at(updlist->size()-1),"Редактировать ЗК № "+QString::number(updlist->at(updlist->size()-1)->new_cr->zk_id));
@@ -322,37 +355,39 @@ void MainWindow::set_validators()
 
 void MainWindow::on_tabWidget_tabCloseRequested(int index)
 {
-    //Чищу лист
-   if(updlist != nullptr)
-   {
-       int a = 0;
-       while (a<updlist->size())
-       {
-           if(updlist->at(a)->new_cr == nullptr)
-           {
-               updlist->removeAt(a);
-           }
-           else
-               a++;
-       }
-   }
-   if(addlist != nullptr)
-   {
-       int a = 0;
-       while (a<addlist->size())
-       {
-           if(addlist->at(a)->new_cr == nullptr)
-           {
-               addlist->removeAt(a);
-           }
-           else
-               a++;
-       }
-   }
-
+    ///обработка редактирования/добавления
     if ( ui->tabWidget->widget(index)->objectName() == "Update")
     {
         ui->tabWidget->widget(index)->deleteLater();
+        Update *upd = dynamic_cast<Update*>(ui->tabWidget->widget(index)); //Приведение типа от виджета к классу
+        qDebug() << upd->new_cr->zk_id;
+    if (upd->frm_t == Add_form)
+    {//Работа с добавлением
+        if(addlist != nullptr)
+        {
+            addlist->clear();
+            delete addlist;
+            addlist = nullptr;
+            return;
+        }
+    }
+    if (upd->frm_t == Update_form)
+        {
+            if(updlist != nullptr)
+            {
+                for (int i=0; i<updlist->size(); i++)
+                {
+                    if(updlist->at(i)->new_cr->zk_id == upd->new_cr->zk_id)
+                    {
+                        delete  updlist->at(i);
+                        updlist->removeAt(i);
+                        if (updlist->isEmpty())
+                            updlist = nullptr;
+                        return;
+                    }
+                }
+            }
+        }
     }
     if ( ui->tabWidget->widget(index)->objectName() == "OfficialTelephones")
     {
@@ -495,7 +530,6 @@ void MainWindow::testing_opening(QString filename, QString password)
    }
    else
        delete import_form;
-   //ShowThisTab();
 }
 
 void MainWindow::on_pb_check_model_clicked()
@@ -583,3 +617,22 @@ void MainWindow::on_tabWidget_tabBarClicked(int index)
 }
 
 
+void MainWindow::on_action_add_1_triggered()
+{
+    on_action_add_triggered();
+}
+
+void MainWindow::on_action_2_upd_triggered()
+{
+    on_action_update_triggered();
+}
+
+void MainWindow::on_action_3_del_triggered()
+{
+    on_action_delete_triggered();
+}
+
+void MainWindow::on_action_5_show_triggered()
+{
+       ui->tabWidget->setCurrentIndex(0);
+}

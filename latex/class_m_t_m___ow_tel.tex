@@ -1,0 +1,82 @@
+\hypertarget{class_m_t_m___ow_tel}{}\section{M\+T\+M\+\_\+\+Ow\+Tel Class Reference}
+\label{class_m_t_m___ow_tel}\index{MTM\_OwTel@{MTM\_OwTel}}
+
+
+Модель для изменения (формы update и add\+\_\+form)  
+
+
+
+
+{\ttfamily \#include $<$\+\_\+\+M\+T\+M\+\_\+\+Ow\+Tel.\+h$>$}
+
+Inheritance diagram for M\+T\+M\+\_\+\+Ow\+Tel\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_m_t_m___ow_tel}
+\end{center}
+\end{figure}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a5de57d55e66180884724b24df2b44df5}\label{class_m_t_m___ow_tel_a5de57d55e66180884724b24df2b44df5}} 
+void {\bfseries add\+Row\+\_\+owner\+\_\+tel} ()
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a9bc091aeeaa3b36b9cb9067f8793b5b3}\label{class_m_t_m___ow_tel_a9bc091aeeaa3b36b9cb9067f8793b5b3}} 
+void \mbox{\hyperlink{class_m_t_m___ow_tel_a9bc091aeeaa3b36b9cb9067f8793b5b3}{del\+Row\+\_\+owner\+\_\+tel}} (const Q\+Model\+Index \&index)
+\begin{DoxyCompactList}\small\item\em Удаление ячейки контакта \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a3c450f42758a77f7d48d10682a92b87e}\label{class_m_t_m___ow_tel_a3c450f42758a77f7d48d10682a92b87e}} 
+{\bfseries M\+T\+M\+\_\+\+Ow\+Tel} (Q\+Object $\ast$parent=nullptr)
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a753d9de053d54d21f5b73cf34899c278}\label{class_m_t_m___ow_tel_a753d9de053d54d21f5b73cf34899c278}} 
+virtual void \mbox{\hyperlink{class_m_t_m___ow_tel_a753d9de053d54d21f5b73cf34899c278}{set\+O\+T\+List}} (Q\+List$<$ \mbox{\hyperlink{class_owners__tel}{Owners\+\_\+tel}} $\ast$ $>$ $\ast$O\+T\+List)
+\begin{DoxyCompactList}\small\item\em Получение списка ТЕЛЕФОНОВ моделью \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_ab00465e7d3e0f050cce2e886eb90091f}\label{class_m_t_m___ow_tel_ab00465e7d3e0f050cce2e886eb90091f}} 
+virtual int \mbox{\hyperlink{class_m_t_m___ow_tel_ab00465e7d3e0f050cce2e886eb90091f}{column\+Count}} (const Q\+Model\+Index \&parent=Q\+Model\+Index()) const
+\begin{DoxyCompactList}\small\item\em Переопределение кол-\/ва колонок модели \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a1e4a1836b6c9660f2a9c4c45beecf022}\label{class_m_t_m___ow_tel_a1e4a1836b6c9660f2a9c4c45beecf022}} 
+virtual int \mbox{\hyperlink{class_m_t_m___ow_tel_a1e4a1836b6c9660f2a9c4c45beecf022}{row\+Count}} (const Q\+Model\+Index \&parent=Q\+Model\+Index()) const
+\begin{DoxyCompactList}\small\item\em Переопределение кол-\/ва строк модели \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a032ef0c346e50ccf105d2747d2362fd3}\label{class_m_t_m___ow_tel_a032ef0c346e50ccf105d2747d2362fd3}} 
+virtual Q\+Variant \mbox{\hyperlink{class_m_t_m___ow_tel_a032ef0c346e50ccf105d2747d2362fd3}{data}} (const Q\+Model\+Index \&index, int role=Qt\+::\+Display\+Role) const
+\begin{DoxyCompactList}\small\item\em Заполнение модели данными из списка \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_aeb2f44d9fff39e0688d8ae8a531927d4}\label{class_m_t_m___ow_tel_aeb2f44d9fff39e0688d8ae8a531927d4}} 
+void {\bfseries reset\+\_\+\+O\+T\+Model} ()
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_aba95e3cb1840a9e27215ffaad154897c}\label{class_m_t_m___ow_tel_aba95e3cb1840a9e27215ffaad154897c}} 
+virtual Q\+Variant \mbox{\hyperlink{class_m_t_m___ow_tel_aba95e3cb1840a9e27215ffaad154897c}{header\+Data}} (int section, Qt\+::\+Orientation orientation, int role=Qt\+::\+Display\+Role) const
+\begin{DoxyCompactList}\small\item\em Переопределяем заголовки таблицам \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_ae1a1243ca4989005455889ff834e2f25}\label{class_m_t_m___ow_tel_ae1a1243ca4989005455889ff834e2f25}} 
+virtual Qt\+::\+Item\+Flags {\bfseries flags} (const Q\+Model\+Index \&index) const
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_aab4d35a7939b724c2d51ad7ee6a4f6ca}\label{class_m_t_m___ow_tel_aab4d35a7939b724c2d51ad7ee6a4f6ca}} 
+virtual bool {\bfseries set\+Data} (const Q\+Model\+Index \&index, const Q\+Variant \&value, int role=Qt\+::\+Edit\+Role)
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a7917948de8910176f08af17babc49f04}\label{class_m_t_m___ow_tel_a7917948de8910176f08af17babc49f04}} 
+virtual Q\+List$<$ \mbox{\hyperlink{class_owners__tel}{Owners\+\_\+tel}} $\ast$ $>$ \mbox{\hyperlink{class_m_t_m___ow_tel_a7917948de8910176f08af17babc49f04}{recall\+\_\+list}} ()
+\begin{DoxyCompactList}\small\item\em T\+E\+S\+T\+I\+NG. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a5fdd6386ae83b51a2ec134f275aec3b9}\label{class_m_t_m___ow_tel_a5fdd6386ae83b51a2ec134f275aec3b9}} 
+\mbox{\hyperlink{___m_t_m___ow_tel_8h_a8fbe4fe3844038a994df1513bb386a4f}{Calling\+\_\+state\+\_\+\+Ot}} {\bfseries state}
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a77357032dc7b48815f57292ad7e20335}\label{class_m_t_m___ow_tel_a77357032dc7b48815f57292ad7e20335}} 
+Q\+List$<$ int $>$ {\bfseries mark\+\_\+rows}
+\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a8086c028e6acf9089e10d85075cd5fc0}\label{class_m_t_m___ow_tel_a8086c028e6acf9089e10d85075cd5fc0}} 
+Q\+List$<$ \mbox{\hyperlink{class_owners__tel}{Owners\+\_\+tel}} $\ast$ $>$ $\ast$ \mbox{\hyperlink{class_m_t_m___ow_tel_a8086c028e6acf9089e10d85075cd5fc0}{otlist}}
+\begin{DoxyCompactList}\small\item\em исходный список \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_m_t_m___ow_tel_a1a9316769f08ee3a9eae8cf4cc092ca6}\label{class_m_t_m___ow_tel_a1a9316769f08ee3a9eae8cf4cc092ca6}} 
+Q\+List$<$ \mbox{\hyperlink{class_owners__tel}{Owners\+\_\+tel}} $\ast$ $>$ \mbox{\hyperlink{class_m_t_m___ow_tel_a1a9316769f08ee3a9eae8cf4cc092ca6}{actotlist}}
+\begin{DoxyCompactList}\small\item\em отображаемый список \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Модель для изменения (формы update и add\+\_\+form) 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Model\+\_\+\+Headers/\mbox{\hyperlink{___m_t_m___ow_tel_8h}{\+\_\+\+M\+T\+M\+\_\+\+Ow\+Tel.\+h}}\end{DoxyCompactItemize}

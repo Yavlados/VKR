@@ -3,6 +3,7 @@
 #include "_Crud.h"
 #include "_Owners_tel.h"
 #include "_Contacts.h"
+#include "table_delegate.h"
 
 #include <QSqlRecord>
 #include <QStringRef>
@@ -16,8 +17,11 @@ Update::Update(QWidget *parent) :
     connect(this, SIGNAL(Add_contact_row(int)),contacts_model,SLOT(addRow_contact(int)));
     set_validators();
     new_cr = nullptr;
-    main_array_index = -1;
     set_splitter_lines();
+    Table_delegate *delegate = new Table_delegate(this);
+    ui->tableView->setItemDelegateForColumn(0,delegate);
+    ui->tableView_2->setItemDelegateForColumn(0,delegate);
+
 }
 
 Update::~Update()
@@ -25,9 +29,8 @@ Update::~Update()
     delete ui;
 }
 
-void Update::Recieve_data(Crud *cr, int index)
+void Update::Recieve_data(Crud *cr)
 {
-    main_array_index = index;
     new_cr = cr;
     Fill_fields_update(new_cr);//заполнение полей
 
@@ -73,6 +76,14 @@ if(!new_cr->birth_date.isEmpty())
     ui->le_liv_corp->setText(new_cr->liv_corp);
     ui->le_liv_flat->setText(new_cr->liv_flat);
 
+    QLabel *lb = new QLabel("<font size = 5>  <div align=\"left\"> Дата добавления: "+new_cr->date_add+" "+new_cr->time_add+" </div>  </font>");
+    ui->vl_for_date_add->addWidget(lb);
+    if(!new_cr->date_upd.isEmpty())
+    {
+        QLabel *lb2 = new QLabel("<font size = 5> <div align=\"right\"> Дата редактирования: "+new_cr->date_upd+" </div> </font>");
+        ui->vl_for_date_upd->addWidget(lb2);
+    }
+
     ///Если список пустой (редактирование телефона из базы),
     /// то достаю телефоны из БАЗЫ ЗАПРОСОМ и заполняю список
     if(new_cr->owt()->isEmpty())
@@ -87,6 +98,13 @@ if(!new_cr->birth_date.isEmpty())
 
 void Update::on_pb_Update_clicked()
 {
+    ///Сначала собираю дату рождения, ФИО + телефоны собираются динамически для проверки на совпадения
+    new_cr->lastname = ui->le_last_name->text();
+    new_cr->name = ui->le_name->text();
+    new_cr->mid_name= ui->le_mid_name->text();
+
+    get_birthdate();
+
     msgbx.setGeometry(960,510, 180,210);
     msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -103,18 +121,16 @@ void Update::on_pb_Update_clicked()
         case Add_import_data:
             break;
 
-        case Update_pg_data:
-            if (!compare_tel_num())
+        case Update_pg_data:            //Проверку номеров с базой
+            if (!compare_tel_num())     //Делаем только в случае редактирования
                 return;
             else
                 break;
+
         case Update_pg_data_import:
             break;
              }
 
-    new_cr->lastname = ui->le_last_name->text();
-    new_cr->name = ui->le_name->text();
-    new_cr->mid_name= ui->le_mid_name->text();
     new_cr->check_for = ui->le_check_for->text();
     new_cr->dop_info = ui->le_dop_info->toPlainText();
     new_cr->reg_city = ui->le_reg_city->text();
@@ -122,35 +138,6 @@ void Update::on_pb_Update_clicked()
     new_cr->reg_home = ui->le_reg_house->text();
     new_cr->reg_corp = ui->le_reg_corp ->text();
     new_cr->reg_flat = ui->le_reg_flat->text();
-    if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
-    {
-        QString day,month,year;
-
-        day = ui->le_birth_date_day->text();
-        month = ui->le_birth_date_month->text();
-        year=ui->le_birth_date_year->text();
-
-        if (day.count() == 1)
-              day.insert(0,"0");
-
-        if (month.count() == 1)
-            month.insert(0,"0");
-
-        if(year.toInt()  <  1900)
-        {
-            msgbx.setText("<font size = '5'> Вы ввели не корректную дату рождения </font>");
-            msgbx.setStandardButtons(QMessageBox::Ok);
-            msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
-
-            int ret = msgbx.exec();
-
-            switch (ret) {
-            case QMessageBox::Ok:
-                return;
-            }
-        }
-        new_cr->birth_date = day+"."+month+"."+year;
-    }
 
     new_cr->liv_city = ui->le_liv_city->text();
     new_cr->liv_street = ui->le_liv_street->text();
@@ -259,8 +246,7 @@ void Update::on_pb_add_contact_line_clicked()
 
 void Update::clear_ALL()
 {
-   emit Ready_for_update(main_array_index);
-   delete this;
+   emit Ready_for_update(new_cr->zk_id);
 }
 
 void Update::clear_Vl()
@@ -325,41 +311,122 @@ void Update::set_splitter_lines()
 bool Update::compare_tel_num()
 {
     /// Проверка на уникальность
-    Owners_tel *temp = new Owners_tel();
-
+    QString query_for_nums, query_for_fio; //добавить иф на пустой список телефонов
     for (int i=0; i < new_cr->owt()->size(); i++)
     {
-        Owners_tel *ow = new_cr->owt()->at(i);
-            if( ow->state==IsNewing && !temp->compare_with_base(ow->tel_num))
-            {
-                Crud *cr;
-                cr = Crud::id_zk_search(temp->parentZK_id);
-                msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +ow->tel_num+" "
-                                   "обнаружен принадлежим владельцу записной книжки № "+QString::number(temp->parentZK_id)+"</font>");
-                msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
-                msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number(temp->parentZK_id));
-                msgbx.setButtonText(QMessageBox::Open,"Редактировать телефонный номер");
-                msgbx.setButtonText(QMessageBox::Cancel,"Закрыть карточку без сохранения");
-                int ret = msgbx.exec();
-
-                switch (ret)
-                {
-                case QMessageBox::Ok:
-                    emit open_update_tab(cr);
-                    //delete cr;
-                    return false; /// во всех случаях return - мы выходим из функции
-
-                case QMessageBox::Open:
-                    return false;
-
-                case QMessageBox::Cancel:
-                 clear_ALL();
-                    return false;
-                 }
-            }
+        if (!new_cr->owt()->at(i)->tel_num.isEmpty())
+        //Составление запроса для проверки телефонов
+        {
+            if (query_for_nums.isEmpty())
+                query_for_nums += " owners_tel.Telephone_num = ('"+new_cr->owt()->at(i)->tel_num+"') ";
+            else
+                query_for_nums += " OR owners_tel.Telephone_num = ('"+new_cr->owt()->at(i)->tel_num+"')";
+        }
     }
-    delete temp;
-   return true;
+    //Составление запроса для проверки фио и др
+        query_for_fio = " zk.lastname = ('"+new_cr->lastname+"') AND"
+        " zk.name = ('"+new_cr->name+"') AND"
+        " zk.mid_name = ('"+new_cr->mid_name+"') AND";
+
+        if(!new_cr->birth_date.isEmpty())
+            query_for_fio += " zk.birth_date = ('"+new_cr->birth_date+"') ";
+        else
+            query_for_fio += " zk.birth_date is NULL";
+
+    qDebug() << query_for_nums << query_for_fio;
+
+    Crud *cr = new Crud();
+     if (!cr->compare_with_base(query_for_nums,query_for_fio, new_cr->zk_id))
+     {
+         qDebug() << cr->zk_id << cr->owt()->at(0)->parentZK_id
+                  << cr->owt()->at(0)->tel_num;
+
+         if( cr->owt()->at(0)->parentZK_id != 0)//Если обнаружилось совпадение по номеру телефона
+         {
+             cr->zk_id = cr->owt()->at(0)->parentZK_id;//переписываю
+             msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->owt()->at(0)->tel_num+" "
+                                "обнаружен принадлежим владельцу записной книжки № "+QString::number(cr->zk_id)+"</font>");
+             msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
+             msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->zk_id));
+             msgbx.setButtonText(QMessageBox::Open,"Редактировать телефонный номер");
+             msgbx.setButtonText(QMessageBox::Cancel,"Закрыть карточку без сохранения");
+             int ret = msgbx.exec();
+
+             switch (ret)
+             {
+             case QMessageBox::Ok:
+                 emit open_update_tab(cr);
+                 //delete cr;
+                 return false; /// во всех случаях return - мы выходим из функции
+
+             case QMessageBox::Open:
+                 return false;
+
+             case QMessageBox::Cancel:
+              clear_ALL();
+                 return false;
+              }
+         }
+     if( cr->zk_id != 0)//Если обнаружилось совпадение по фио
+        {
+         msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенные фамилия, имя, отчество и дата рождения "
+                            "обнаружены принадлежащими владельцу записной книжки № "+QString::number(cr->zk_id)+"</font>");
+         msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
+         msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->zk_id));
+         msgbx.setButtonText(QMessageBox::Open,"Редактировать ФИО и дату рождения");
+         msgbx.setButtonText(QMessageBox::Cancel,"Закрыть карточку без сохранения");
+         int ret = msgbx.exec();
+
+         switch (ret)
+         {
+         case QMessageBox::Ok:
+             emit open_update_tab(cr);
+             return false; /// во всех случаях return - мы выходим из функции
+
+         case QMessageBox::Open:
+             return false;
+
+         case QMessageBox::Cancel:
+          clear_ALL();
+             return false;
+          }
+        }
+     }
+     return true;
+}
+
+QString Update::get_birthdate()
+{
+    if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
+    {
+        QString day,month,year;
+
+        day = ui->le_birth_date_day->text();
+        month = ui->le_birth_date_month->text();
+        year=ui->le_birth_date_year->text();
+
+        if (day.count() == 1)
+              day.insert(0,"0");
+
+        if (month.count() == 1)
+            month.insert(0,"0");
+
+        if(year.toInt()  <  1900)
+        {
+            msgbx.setText("<font size = '5'> Вы ввели не корректную дату рождения </font>");
+            msgbx.setStandardButtons(QMessageBox::Ok);
+            msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+
+            int ret = msgbx.exec();
+
+            switch (ret) {
+            case QMessageBox::Ok:
+                return nullptr;
+            }
+        }
+      return  new_cr->birth_date = year+"-"+month+"-"+day;
+    } else
+        return nullptr;
 }
 
 void Update::Fill_table_in_add()
@@ -393,7 +460,17 @@ void Update::Fill_table_in_add()
 
 void Update::Add_zk()
 {
-    /// СНАЧАЛА ПРОВЕРЯЕМ ВВЕДЕННЫЕ НОМЕРА    
+    /// СНАЧАЛА  СОБИРАЕМ НУЖНЫЕ ПОЛЯ, А ПОТОМ
+    /// ПРОВЕРЯЕМ ВВЕДЕННЫЕ НОМЕРА
+
+    get_birthdate();
+
+    new_cr->lastname = ui->le_last_name->text();
+    new_cr->name=ui->le_name->text();
+    new_cr->mid_name = ui->le_mid_name->text();
+
+    if (!compare_tel_num())
+        return;
 
     msgbx.setText("<font size = '5'><h1> Подтверждение </h1> <br>Вы готовы завершить добавление записной книги?</font>");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -405,15 +482,7 @@ void Update::Add_zk()
     case QMessageBox::Cancel:
         return;
     case QMessageBox::Ok:
-        if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
-            QString birth_date = ui->le_birth_date_day->text()+"."+ui->le_birth_date_month->text()+"."+ui->le_birth_date_year->text();
 
-        if (!compare_tel_num())
-            return;
-
-        new_cr->lastname = ui->le_last_name->text();
-        new_cr->name=ui->le_name->text();
-        new_cr->mid_name = ui->le_mid_name->text();
         new_cr->check_for = ui->le_check_for->text();
         new_cr->dop_info = ui->le_dop_info->toPlainText();
         new_cr->reg_city = ui->le_reg_city->text();
@@ -421,36 +490,8 @@ void Update::Add_zk()
         new_cr->reg_home = ui->le_reg_house->text();
         new_cr->reg_corp = ui->le_reg_corp ->text();
         new_cr->reg_flat = ui->le_reg_flat->text();
-        if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
-        {
-            QString day,month,year;
 
-            day = ui->le_birth_date_day->text();
-            month = ui->le_birth_date_month->text();
-            year=ui->le_birth_date_year->text();
-
-            if (day.count() == 1)
-                  day.insert(0,"0");
-
-            if (month.count() == 1)
-                month.insert(0,"0");
-
-            if(year.toInt()  <  1900)
-            {
-                msgbx.setText("<font size = '5'> Вы ввели не корректную дату рождения </font>");
-                msgbx.setStandardButtons(QMessageBox::Ok);
-                msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
-
-                int ret = msgbx.exec();
-
-                switch (ret) {
-                case QMessageBox::Ok:
-                    return;
-                }
-            }
-            new_cr->birth_date = year+"-"+month+"-"+day;
-        }
-foreach (QCheckBox *cb, this->findChildren<QCheckBox*>())
+    foreach (QCheckBox *cb, this->findChildren<QCheckBox*>())
 
         if (cb->checkState() == Qt::Checked)
         {
@@ -566,35 +607,8 @@ void Update::update_import_data()
     new_cr->reg_home = ui->le_reg_house->text();
     new_cr->reg_corp = ui->le_reg_corp ->text();
     new_cr->reg_flat = ui->le_reg_flat->text();
-    if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
-    {
-        QString day,month,year;
 
-        day = ui->le_birth_date_day->text();
-        month = ui->le_birth_date_month->text();
-        year=ui->le_birth_date_year->text();
-
-        if (day.count() == 1)
-              day.insert(0,"0");
-
-        if (month.count() == 1)
-            month.insert(0,"0");
-
-        if(year.toInt()  <  1900)
-        {
-            msgbx.setText("<font size = '5'> Вы ввели не корректную дату рождения </font>");
-            msgbx.setStandardButtons(QMessageBox::Ok);
-            msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
-
-            int ret = msgbx.exec();
-
-            switch (ret) {
-            case QMessageBox::Ok:
-                return;
-            }
-        }
-        new_cr->birth_date = day+"."+month+"."+year;
-    }
+    get_birthdate();
 
     new_cr->liv_city = ui->le_liv_city->text();
     new_cr->liv_street = ui->le_liv_street->text();

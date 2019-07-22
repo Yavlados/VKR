@@ -45,7 +45,7 @@ public:
     ~Update();
 public slots:
 
-    void Recieve_data(Crud*, int index);
+    void Recieve_data(Crud*);
     ///метод заполнения полей формы при редактирвании
     /// имеющейся записи в бд или при импорте
     void Fill_fields_update(Crud *new_cr);
@@ -56,7 +56,7 @@ private:
 
 signals:
 
-    void Ready_for_update(int index);
+    void Ready_for_update(int);
     void Add_contact_row(int);
     void open_update_tab(Crud *);
     void updated_import_crud(Crud*);
@@ -80,7 +80,8 @@ private slots:
     void on_tableView_2_clicked(const QModelIndex &index);
     void set_splitter_lines();
     bool compare_tel_num();
-
+    ///Метод сбора строки дня рождения
+    QString get_birthdate();
     ///Методы добавления
 
      void Add_zk();

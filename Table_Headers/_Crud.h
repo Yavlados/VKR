@@ -57,9 +57,10 @@ public:
     QString liv_flat;
 
     //Дата и время сейчас
-    QString date_add = QDate::currentDate().toString(Qt::ISODate);
-    QString time_add = QTime::currentTime().toString();
-
+    QString date_add = nullptr;
+    QString time_add = nullptr;
+    //Дата и время для редактирования
+    QString date_upd = nullptr;
  /////////////////////////////////////////////////////////////
     static bool selectAll(QList<Crud*> *list);
  /////////////////////////////////////////////////////////////
@@ -79,6 +80,7 @@ public:
     ///Оператор копирования указателя
     /// используется один раз при импорте
     Crud *operator+ (Crud *old_crud);
+    bool compare_with_base(QString query_tel_num = nullptr, QString query_fio = nullptr, int id = 0);
 private:
     QList<Owners_tel*> *_owt; ///У ЗК есть список телефонов
 

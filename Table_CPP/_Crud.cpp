@@ -62,7 +62,8 @@ bool Crud:: selectAll(QList<Crud *> *list)
                  "zk.check_for,"
                  "zk.dop_info,"
                  "zk.date_add,"
-                 "zk.time_add "
+                 "zk.time_add, "
+                 "zk.date_upd "
                  " FROM "
                  " zk "
                  " ORDER BY zk.zk_id");
@@ -97,6 +98,7 @@ bool Crud:: selectAll(QList<Crud *> *list)
         cr->dop_info = temp.value(16).toString();
         cr->date_add = temp.value(17).toString();
         cr->time_add = temp.value(18).toString();
+        cr->date_upd = temp.value(19).toString();
         cr->state = IsReaded;
         list->append(cr);
     }
@@ -150,7 +152,8 @@ void Crud::zk_search_report(QString qry)
                    "zk.Check_for,"
                    "zk.Dop_info,"
                    "zk.Date_add,"
-                   "zk.Time_add"
+                   "zk.Time_add,"
+                   ""
                    " FROM "
                    "zk ,owners_tel"
                    " WHERE"
@@ -191,6 +194,7 @@ void Crud::zk_search_report(QString qry)
 
 bool Crud::update_zk()
 {
+    date_upd = QDate::currentDate().toString(Qt::ISODate)+" "+QTime::currentTime().toString();
         QSqlQuery querry(db_connection::instance()->db());
     querry.prepare("UPDATE zk "
                    " SET Lastname = (:lastname),"
@@ -212,7 +216,8 @@ bool Crud::update_zk()
                    "Liv_flat = (:l_f),"
                    ""
                    "Check_for = (:c_f),"
-                   "Dop_info = (:d_i) "
+                   "Dop_info = (:d_i),"
+                   "Date_upd = (:d_u) "
                    " WHERE zk.Zk_id = (:id)");
 
     querry.bindValue(":lastname",lastname);
@@ -235,6 +240,7 @@ bool Crud::update_zk()
     querry.bindValue(":c_f",check_for);
     querry.bindValue(":d_i",dop_info);
 
+    querry.bindValue(":d_u",date_upd);
     querry.bindValue(":id", zk_id);
     if (!querry.exec())
     {
@@ -248,6 +254,8 @@ bool Crud::update_zk()
 
 bool Crud::add_zk()
 {
+     date_add = QDate::currentDate().toString(Qt::ISODate);
+     time_add = QTime::currentTime().toString();
     QSqlQuery querry(db_connection::instance()->db());
     querry.prepare("INSERT INTO zk "
                    "(Lastname, Name,Mid_name, Birth_date,"
@@ -338,7 +346,8 @@ Crud* Crud::id_zk_search(int zk_id)
                    "zk.check_for,"
                    "zk.dop_info,"
                    "zk.date_add,"
-                   "zk.time_add "
+                   "zk.time_add, "
+                   "zk.date_upd "
                    " FROM "
                    " zk "
                    " WHERE zk.zk_id = (:id)");
@@ -373,6 +382,7 @@ Crud* Crud::id_zk_search(int zk_id)
         cr->dop_info = querry.value(16).toString();
         cr->date_add = querry.value(17).toString();
         cr->time_add = querry.value(18).toString();
+        cr->date_upd = querry.value(19).toString();
         cr->state = IsReaded;
         return cr;
     }
@@ -479,4 +489,65 @@ Crud* Crud::operator+ (Crud *old_crud)
      liv_corp= old_crud->liv_corp;
      liv_flat= old_crud->liv_flat;
      return this;
+}
+
+bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id)
+{//id необходим для сортировки запроса
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QSqlQuery temp(db_connection::instance()->db());
+    QString Query;
+    ///Собираем строку для запроса
+    //Если не ищем номера, то ставим некорректное условие для запроса
+    if (query_tel_num.isEmpty())
+        query_tel_num = " owners_tel.FK_Telephone_Zk = 0 ";
+
+    Query = "SELECT DISTINCT B.id, C.id, B.t_n"
+            " FROM "
+            " (SELECT zk.zk_id as id, a.tel_num as t_n"
+            " FROM zk"
+            " INNER JOIN (SELECT owners_tel.FK_Telephone_Zk AS fk, owners_tel.telephone_num AS tel_num"
+            " FROM owners_tel "
+            " WHERE ("+query_tel_num+")";
+
+    if (id != 0) //в случае редактирования имеющейся записи
+    {            //исключаем редактируемую запись
+      Query +=  " AND owners_tel.FK_Telephone_Zk != "+QString::number(id);
+    }
+
+    Query +=") AS a"
+            " ON zk.zk_id = a.fk) AS B FULL OUTER JOIN"
+            " (SELECT zk.zk_id as id"
+            " FROM zk"
+            " WHERE "+query_fio;
+
+    if (id != 0) //в случае редактирования имеющейся записи
+    {            //исключаем редактируемую запись
+      Query +=  " AND zk.zk_id !=  "+QString::number(id);
+    }
+
+    Query +=") AS C on 1=1"
+            " ORDER BY B.id";
+
+    temp.prepare(Query);
+        if (!temp.exec())
+        {
+            db_connection::instance()->lastError = temp.lastError().text();
+            qDebug() << temp.lastError() << Query;
+            return false;
+        }else {
+    qDebug() << temp.executedQuery();
+}
+        while(temp.next())
+        {
+            zk_id = temp.value(1).toInt();
+            Owners_tel *ow = new Owners_tel();
+            owt()->append(ow);
+            owt()->at(0)->parentZK_id = temp.value(0).toInt();
+            owt()->at(0)->tel_num = temp.value(2).toString();
+            return false;
+        }
+
+    return true;
 }

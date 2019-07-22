@@ -152,6 +152,15 @@ bool Contacts::insert(bool setState, int new_tel_id)
     if( !db_connection::instance()->db_connect() )
         return false;
 
+    if (contact_tel_num.count() < 16) //номер введен неполностью
+        return false;
+    else {
+        QString temp = contact_tel_num.at(1)+contact_tel_num.mid(3,3)+
+                contact_tel_num.mid(7,3)+
+                contact_tel_num.mid(11,2)+contact_tel_num.mid(14,2);
+        contact_tel_num = temp;
+    }
+
     QSqlQuery temp(db_connection::instance()->db());
     temp.prepare("INSERT INTO contacts( cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id)) RETURNING Contact_list_id");
     temp.bindValue(":tel_num",contact_tel_num);
@@ -181,6 +190,15 @@ bool Contacts::update(bool setState)
 {
     if( !db_connection::instance()->db_connect() )
         return false;
+
+    if (contact_tel_num.count() < 16) //номер введен неполностью
+        return false;
+    else {
+        QString temp = contact_tel_num.at(1)+contact_tel_num.mid(3,3)+
+                contact_tel_num.mid(7,3)+
+                contact_tel_num.mid(11,2)+contact_tel_num.mid(14,2);
+        contact_tel_num = temp;
+    }
 
     QSqlQuery temp(db_connection::instance()->db());
     temp.prepare("UPDATE contacts SET cl_telephone = (:cl_tel), "

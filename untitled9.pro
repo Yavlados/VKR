@@ -1,4 +1,4 @@
-#-------------------------------------------------
+    #-------------------------------------------------
 #
 # Project created by QtCreator 2019-05-20T18:04:24
 #
@@ -49,7 +49,8 @@ SOURCES += \
     list_master.cpp \
     Form_CPP/master_import_Form.cpp \
     Form_CPP/settings_Form.cpp \
-    settings_connection.cpp
+    settings_connection.cpp \
+    table_delegate.cpp
 
 HEADERS += \
     db_connection.h \
@@ -74,7 +75,8 @@ HEADERS += \
     list_master.h \
     Form_Headers/master_import_Form.h \
     Form_Headers/settings_Form.h \
-    settings_connection.h
+    settings_connection.h \
+    table_delegate.h
 
 FORMS += \
         mainwindow.ui \

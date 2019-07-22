@@ -1,0 +1,56 @@
+\hypertarget{___contacts_8h}{}\section{Table\+\_\+\+Headers/\+\_\+\+Contacts.h File Reference}
+\label{___contacts_8h}\index{Table\_Headers/\_Contacts.h@{Table\_Headers/\_Contacts.h}}
+
+
+Класс сущности \char`\"{}Контакты\char`\"{}.  
+
+
+{\ttfamily \#include \char`\"{}db\+\_\+connection.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$Q\+List$>$}\newline
+{\ttfamily \#include $<$Q\+String$>$}\newline
+{\ttfamily \#include $<$Q\+Debug$>$}\newline
+{\ttfamily \#include $<$Q\+Sql\+Query$>$}\newline
+{\ttfamily \#include $<$Q\+Sql\+Query\+Model$>$}\newline
+{\ttfamily \#include $<$Q\+Sql\+Error$>$}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_contacts}{Contacts}}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{___contacts_8h_ad709f09dcd44386da4fec847f603fa4c}{Db\+State}} \{ \mbox{\hyperlink{___contacts_8h_ad709f09dcd44386da4fec847f603fa4ca7a5c75b2a8f2a851b0f1043a126a7cbf}{Is\+Readed}} = 1, 
+\mbox{\hyperlink{___contacts_8h_ad709f09dcd44386da4fec847f603fa4cab44999021ed45ae12c0068e79f505282}{Is\+Newing}} = 0, 
+\mbox{\hyperlink{___contacts_8h_ad709f09dcd44386da4fec847f603fa4cac210f6d566e684e77d8348ae9a58f6a0}{Is\+Removed}} = -\/1, 
+{\bfseries Is\+Changed} = 2
+ \}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Класс сущности \char`\"{}Контакты\char`\"{}. 
+
+
+
+\subsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{___contacts_8h_ad709f09dcd44386da4fec847f603fa4c}\label{___contacts_8h_ad709f09dcd44386da4fec847f603fa4c}} 
+\index{\_Contacts.h@{\_Contacts.h}!DbState@{DbState}}
+\index{DbState@{DbState}!\_Contacts.h@{\_Contacts.h}}
+\subsubsection{\texorpdfstring{DbState}{DbState}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{___contacts_8h_ad709f09dcd44386da4fec847f603fa4c}{Db\+State}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{IsReaded@{IsReaded}!\_Contacts.h@{\_Contacts.h}}\index{\_Contacts.h@{\_Contacts.h}!IsReaded@{IsReaded}}}\mbox{\Hypertarget{___contacts_8h_ad709f09dcd44386da4fec847f603fa4ca7a5c75b2a8f2a851b0f1043a126a7cbf}\label{___contacts_8h_ad709f09dcd44386da4fec847f603fa4ca7a5c75b2a8f2a851b0f1043a126a7cbf}} 
+Is\+Readed&считан из БД \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{IsNewing@{IsNewing}!\_Contacts.h@{\_Contacts.h}}\index{\_Contacts.h@{\_Contacts.h}!IsNewing@{IsNewing}}}\mbox{\Hypertarget{___contacts_8h_ad709f09dcd44386da4fec847f603fa4cab44999021ed45ae12c0068e79f505282}\label{___contacts_8h_ad709f09dcd44386da4fec847f603fa4cab44999021ed45ae12c0068e79f505282}} 
+Is\+Newing&новый, еще не записан в БД \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{IsRemoved@{IsRemoved}!\_Contacts.h@{\_Contacts.h}}\index{\_Contacts.h@{\_Contacts.h}!IsRemoved@{IsRemoved}}}\mbox{\Hypertarget{___contacts_8h_ad709f09dcd44386da4fec847f603fa4cac210f6d566e684e77d8348ae9a58f6a0}\label{___contacts_8h_ad709f09dcd44386da4fec847f603fa4cac210f6d566e684e77d8348ae9a58f6a0}} 
+Is\+Removed&удален в ПО, еще не удален в БД \\
+\hline
+
+\end{DoxyEnumFields}

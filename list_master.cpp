@@ -36,7 +36,8 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
                    "zk.check_for,"
                    "zk.dop_info,"
                    "zk.date_add,"
-                   "zk.time_add "
+                   "zk.time_add,"
+                   "zk.date_upd "
                    " FROM "
                    " zk "
                    " WHERE zk . Zk_id =(:id)"
@@ -69,6 +70,7 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
         cr->dop_info = query.value(16).toString();
         cr->date_add = query.value(17).toString();
         cr->time_add = query.value(18).toString();
+        cr->date_upd = query.value(19).toString();
         cr->state = IsReaded;
         switch (sqlt)
         {
@@ -111,7 +113,7 @@ void List_master::fill_owners_tel_list(QList<Owners_tel *> *owner_telLIST, int z
     db_connection *db = db_connection::instance();
     db->set_Sql_type(sqlt);
     QSqlQuery query(db->db());
-    query.prepare(" SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk "
+    query.prepare(" SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk, owners_tel.internum "
                  " FROM  owners_tel "
                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
     query.bindValue(":id", zk_id);
@@ -128,19 +130,19 @@ void List_master::fill_owners_tel_list(QList<Owners_tel *> *owner_telLIST, int z
         switch (frm_st)
         {
         case Export:
-            ot = new Owners_tel(query.value(0).toString(), counter_tel, new_zk, IsReaded);
+            ot = new Owners_tel(query.value(0).toString(), counter_tel, new_zk, query.value(3).toBool(), IsReaded);
             ///Экспорт: новый номер, новый айди, новый парентАйди
             break;
         case Import:
-            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , IsReaded);
+            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), IsReaded);
             ///Импорт: Достаю данные как в базе
             break;
         case Analysis:
-            ot =new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , IsReaded);
+            ot =new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), IsReaded);
             ///Анализ: Достаю данные как в базе
             break;
         case Main_window_for_Update:
-            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , IsReaded);
+            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), IsReaded);
             ///Импорт: Достаю данные как в базе
             break;
         }
@@ -243,7 +245,8 @@ bool List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
                    "zk.check_for,"
                    "zk.dop_info,"
                    "zk.date_add,"
-                   "zk.time_add "
+                   "zk.time_add,"
+                   "zk.date_upd "
                    " FROM "
                    " zk "
                    " ORDER BY zk.zk_id");
@@ -278,6 +281,7 @@ bool List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
         cr->dop_info = query.value(16).toString();
         cr->date_add = query.value(17).toString();
         cr->time_add = query.value(18).toString();
+        cr->date_upd = query.value(19).toString();
         cr->state = IsReaded;
         switch (sqlt)
         {
@@ -327,7 +331,8 @@ querry.prepare("SELECT "
                "zk.check_for,"
                "zk.dop_info,"
                "zk.date_add,"
-               "zk.time_add "
+               "zk.time_add,"
+               "zk.date_upd "
                " FROM "
                " zk "
                " WHERE zk.zk_id = (:id)");
@@ -362,6 +367,7 @@ if (querry.next())
     cr->dop_info = querry.value(16).toString();
     cr->date_add = querry.value(17).toString();
     cr->time_add = querry.value(18).toString();
+    cr->date_upd = querry.value(19).toString();
     cr->state = IsReaded;
 
     fill_owners_tel_list(cr->owt(), cr->zk_id, counter_tel, PSQLtype);
@@ -548,7 +554,8 @@ QList<Crud *> *List_master::search(QString search_query)
                  "zk.Check_for,"
                  "zk.Dop_info,"
                  "zk.Date_add,"
-                 "zk.Time_add"
+                 "zk.Time_add,"
+                 "zk.date_upd"
                  " FROM "
                  "zk,owners_tel"
                  " WHERE"
@@ -587,6 +594,7 @@ QList<Crud *> *List_master::search(QString search_query)
         cr->dop_info = temp.value(16).toString();
         cr->date_add = temp.value(17).toString();
         cr->time_add = temp.value(18).toString();
+        cr->date_upd = temp.value(19).toString();
         cr->state = IsReaded;
         crudlist->append(cr);
     }

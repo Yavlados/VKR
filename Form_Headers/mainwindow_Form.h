@@ -106,7 +106,7 @@ private slots:
 
     void on_tableView_2_clicked(const QModelIndex &index);
 
-    void ShowThisTab(int index =0);
+    void ShowThisTab(int);
 
     void RefreshTab();
 
@@ -153,9 +153,18 @@ private slots:
     void set_fonts();
 
     void add_splitter_lines();
+
     void on_tabWidget_tabBarClicked(int index);
 
     void on_tabWidget_2_tabCloseRequested(int index);
+
+    void on_action_add_1_triggered();
+
+    void on_action_2_upd_triggered();
+
+    void on_action_3_del_triggered();
+
+    void on_action_5_show_triggered();
 
 signals:
     void Send_data(Crud *cr, int index);
