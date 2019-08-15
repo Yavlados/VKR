@@ -28,7 +28,7 @@ int MTM_OwTel::columnCount(const QModelIndex &parent) const
 {
     if(otlist==nullptr)
         return 0;
-    else return 2;
+    else return 3;
 }
 
 int MTM_OwTel::rowCount(const QModelIndex &parent) const
@@ -52,7 +52,7 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
           return QVariant();
       if (role == Qt::DisplayRole)
       {
-          if(actotlist.at(row)->tel_num.size() == 11 && actotlist.at(row)->tel_num.at(0) != "+"&& actotlist.at(row)->state != IsNewing)
+          if(actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false && actotlist.at(row)->state != IsNewing)
           {
               QString _temp =  actotlist.at(row)->tel_num;
 
@@ -73,6 +73,7 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
               {
               case 0:            /// 1 колонка - Номер телефона
                   return actotlist.at(row)->tel_num;
+
               }
           }
 
@@ -80,6 +81,14 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
       if (role == Qt::CheckStateRole && col == 1)  // this shows the checkbox
               {
                   bool aBool = actotlist.at(row)->internum;
+                  if (aBool)
+                          return Qt::Checked;
+                  else
+                          return Qt::Unchecked;
+              }
+      if (role == Qt::CheckStateRole && col == 2)  // this shows the checkbox
+              {
+                  bool aBool = actotlist.at(row)->oldnum;
                   if (aBool)
                           return Qt::Checked;
                   else
@@ -115,7 +124,9 @@ QVariant MTM_OwTel::headerData(int section, Qt::Orientation orientation, int rol
              case 0:
                 return QString("Номер телефона");
             case 1:
-                return QString("Номер международный");
+                return QString("М-н");
+            case 2:
+                return QString("Старый");
           }
         else {
             return QString("%1").arg(section+1);
@@ -157,17 +168,49 @@ bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int rol
                 return true;
             }
         }
-   if (role == Qt::CheckStateRole)
+   if (role == Qt::CheckStateRole && col == 1)
     {
-     if (actotlist.at(row)->internum == false)
+     if (actotlist.at(row)->internum == false && actotlist.at(row)->oldnum == false)
           actotlist.at(row)->internum = true;
-      else
-       if (actotlist.at(row)->internum == true)
-             actotlist.at(row)->internum = false;
+     else
+         if(actotlist.at(row)->internum == true && actotlist.at(row)->oldnum == false)
+     {
+         actotlist.at(row)->internum = false;
+     }
+
+     if(actotlist.at(row)->internum == false && actotlist.at(row)->oldnum == true)
+     {
+         actotlist.at(row)->internum = true;
+         actotlist.at(row)->oldnum = false;
+     }
+
+     if( actotlist.at(row)->state!=IsNewing )
+         actotlist.at(row)->state = IsChanged;
 
        emit dataChanged(index,index);
          return true;
-   }
+    }
+   if (role == Qt::CheckStateRole && col == 2)
+    {
+     if (actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false)
+          actotlist.at(row)->oldnum = true;
+     else
+         if (actotlist.at(row)->oldnum == true && actotlist.at(row)->internum == false)
+         {
+             actotlist.at(row)->oldnum = false;
+         }
+     if (actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == true)
+     {
+         actotlist.at(row)->oldnum = true;
+         actotlist.at(row)->internum = false;
+
+     }
+
+     if( actotlist.at(row)->state!=IsNewing )
+         actotlist.at(row)->state = IsChanged;
+       emit dataChanged(index,index);
+         return true;
+    }
    return false;
 }
 

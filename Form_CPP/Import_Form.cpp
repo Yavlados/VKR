@@ -20,7 +20,6 @@ Import_Form::Import_Form(QWidget *parent) :
     off_model = new MTM_Off_Tels;
 
     a = 0; //Определение итераторов
-    b = 0;
     //Прячу первые колонки, тк там находится чекбокс
     ui->tableView_crud->setColumnHidden(1,true);
     ui->tableView_crud_pg->setColumnHidden(1,true);
@@ -57,7 +56,7 @@ void Import_Form::recieve_added_import_crud(Crud *new_cr)
     del_list.append(crud_from_pg->zk_id);
     if(a<crud->size()-1)
     {
-        a++; b=0; //Смещаю итератор на следующую ЗК
+        a++;//Смещаю итератор на следующую ЗК
         clear_models();
         clear_label();
         if (!begin_import()) //
@@ -140,67 +139,107 @@ bool Import_Form::compare_dump_db()
 
     while (a<crud->size())
     {
-        query_for_fio = " zk.lastname = ('"+crud->at(a)->lastname+"') AND"
-                        " zk.name = ('"+crud->at(a)->name+"') AND"
-                        " zk.mid_name = ('"+crud->at(a)->mid_name+"')";
+//        query_for_fio = " zk.lastname = ('"+crud->at(a)->lastname+"') AND"
+//                        " zk.name = ('"+crud->at(a)->name+"') AND"
+//                        " zk.mid_name = ('"+crud->at(a)->mid_name+"')";
 
-        while( b < crud->at(a)->owt()->size() )
+//        while( b < crud->at(a)->owt()->size() )
+//        {
+//            if (query_for_nums.isEmpty())
+//                query_for_nums += " owners_tel.Telephone_num = ('"+crud->at(a)->owt()->at(b)->tel_num+"') ";
+//            else
+//                query_for_nums += " OR owners_tel.Telephone_num = ('"+crud->at(a)->owt()->at(b)->tel_num+"')";
+//            b++;
+//        }
+
+        for (int i=0; i < crud->at(a)->owt()->size(); i++)
         {
-            if (query_for_nums.isEmpty())
-                query_for_nums += " owners_tel.Telephone_num = ('"+crud->at(a)->owt()->at(b)->tel_num+"') ";
-            else
-                query_for_nums += " OR owners_tel.Telephone_num = ('"+crud->at(a)->owt()->at(b)->tel_num+"')";
-
-
-//            Owners_tel *ow_at_crud = crud->at(a)->owt()->at(b);
-//              if(!temp_ow_for_compare->compare_with_base(ow_at_crud->tel_num))
-//              {
-//                  QLabel *lb = new QLabel("<font size = 6>  <div align=\"left\"> Телефонный номер <b>"+ow_at_crud->tel_num+"</b> "
-//                                                                 "принадлежащий владельцу импортируемой ЗК № <b>"+QString::number(crud->at(a)->zk_id)+"</b>"+
-//                                                                 " совпадает с телефонным номером владельца уже имеющейся ЗК № "
-//                                                                 "<b>"+QString::number(temp_ow_for_compare->parentZK_id)+"</b> </div>  </font>");
-//                  ui->vl_for_label->addWidget(lb);
-
-//                  QList<Crud*> *temp = new QList<Crud*>;
-//                  QList<Crud*> *temp2 = new QList<Crud*>;
-
-//                  crud_model =      new MTM_Crud;
-//                  temp->append(crud->at(a));
-//                  crud_model->setCrudlist(temp);
-//                  ui->tableView_crud->setModel(crud_model);
-
-//                  crud_model_pg =   new MTM_Crud;
-//                  crud_from_pg = new Crud;//Обнуляю этот круд
-//                  crud_from_pg = list->get_crud(temp_ow_for_compare->parentZK_id);
-//                  temp2->append(crud_from_pg);
-//                  crud_model_pg->setCrudlist(temp2);
-//                  ui->tableView_crud_pg->setModel(crud_model_pg);
-
-//                  tel_mod =         new MTM_OwTel;
-//                  tel_mod->mark_rows.append(b);     //помечаю телефон
-
-//                  tel_mod->setOTList(crud->at(a)->owt());
-//                  ui->tableView_owt->setModel(tel_mod);
-
-//                  tel_mod_pg =      new MTM_OwTel;
-//                  for (int c =0; c< crud_from_pg->owt()->size(); c++) //помечаю телефон
-//                  {
-//                      if (crud_from_pg->owt()->at(c)->tel_num == ow_at_crud->tel_num )
-//                          tel_mod_pg->mark_rows.append(c);
-//                  }
-
-//                  tel_mod_pg->setOTList(crud_from_pg->owt());
-
-
-//                  ui->tableView_owt_pg->setModel(tel_mod_pg);
-//                  delete temp; delete temp2;
-//                  return true;
-//              }
-            b++;
+            if (!crud->at(a)->owt()->at(i)->tel_num.isEmpty() && crud->at(a)->owt()->at(i)->state != IsRemoved)
+            //Составление запроса для проверки телефонов
+            {
+                if (query_for_nums.isEmpty())
+                    query_for_nums += " owners_tel.Telephone_num = ('"+crud->at(a)->owt()->at(i)->tel_num+"') ";
+                else
+                    query_for_nums += " OR owners_tel.Telephone_num = ('"+crud->at(a)->owt()->at(i)->tel_num+"')";
+             }
         }
+        //Составление запроса для проверки фио и др
+            query_for_fio = " zk.lastname = ('"+crud->at(a)->lastname+"') AND"
+            " zk.name = ('"+crud->at(a)->name+"') AND"
+            " zk.mid_name = ('"+crud->at(a)->mid_name+"') AND";
+
+            if(!crud->at(a)->birth_date.isEmpty())
+                query_for_fio += " zk.birth_date = ('"+crud->at(a)->birth_date+"') ";
+            else
+                query_for_fio += " zk.birth_date is NULL";
+
+        qDebug() << query_for_nums << query_for_fio;
+
         Crud *cr = new Crud();
+
         if (!cr->compare_with_base(query_for_nums,query_for_fio))
-            qDebug() << cr->zk_id << cr->owt()->at(0)->parentZK_id;
+        {
+                Owners_tel *ow_at_crud = cr->owt()->at(0);
+                QString _temp = ow_at_crud->tel_num;
+
+                _temp.insert(0,"+");
+                _temp.insert(2,"(");
+                _temp.insert(6,")");
+                _temp.insert(10,"-");
+                _temp.insert(13,"-");
+
+                QLabel *lb = new QLabel("<font size = 6>  <div align=\"left\"> Телефонный номер <b>"+_temp+"</b> "
+                                        "принадлежащий владельцу импортируемой ЗК № <b>"+QString::number(crud->at(a)->zk_id)+"</b>"+
+                                        " совпадает с телефонным номером владельца уже имеющейся ЗК № "
+                                        "<b>"+QString::number(cr->owt()->at(0)->parentZK_id)+"</b> </div>  </font>");
+                ui->vl_for_label->addWidget(lb);
+
+                QList<Crud*> *temp = new QList<Crud*>;
+                QList<Crud*> *temp2 = new QList<Crud*>;
+
+                crud_model =      new MTM_Crud;
+                temp->append(crud->at(a));
+                crud_model->setCrudlist(temp);
+                ui->tableView_crud->setModel(crud_model);
+
+                crud_model_pg =   new MTM_Crud;
+                crud_from_pg = new Crud;//Обнуляю этот круд
+                crud_from_pg = list->get_crud(cr->owt()->at(0)->parentZK_id);
+                temp2->append(crud_from_pg);
+                crud_model_pg->setCrudlist(temp2);
+                ui->tableView_crud_pg->setModel(crud_model_pg);
+
+                tel_mod =         new MTM_OwTel;
+                for (int b =0; b< crud->at(a)->owt()->size(); b++) //помечаю телефон
+                {
+                if (crud->at(a)->owt()->at(b)->tel_num == ow_at_crud->tel_num )
+                    {
+                        tel_mod->mark_rows.append(b);     //помечаю телефон
+                        break;
+                    }
+                }
+                tel_mod->setOTList(crud->at(a)->owt());
+                ui->tableView_owt->setModel(tel_mod);
+
+                tel_mod_pg =      new MTM_OwTel;
+                for (int c =0; c< crud_from_pg->owt()->size(); c++) //помечаю телефон
+                {
+                if (crud_from_pg->owt()->at(c)->tel_num == ow_at_crud->tel_num )
+                    {
+                        tel_mod_pg->mark_rows.append(c);
+                        break;
+                    }
+                }
+
+               tel_mod_pg->setOTList(crud_from_pg->owt());
+
+
+               ui->tableView_owt_pg->setModel(tel_mod_pg);
+               delete temp; delete temp2;
+
+            return true;
+        }
+            //qDebug() << cr->zk_id << cr->owt()->at(0)->parentZK_id;
     a++;
     }
 
@@ -239,7 +278,7 @@ void Import_Form::on_pb_save_import_clicked()
     del_list.append(crud_from_pg->zk_id);
     if(a<crud->size()-1)
     {
-        a++; b=0; //Смещаю итератор на следующую ЗК
+        a++;  //Смещаю итератор на следующую ЗК
         clear_models();
         clear_label();
         if (!begin_import()) //
@@ -260,7 +299,6 @@ void Import_Form::on_pb_save_main_clicked()
     crud->removeAt(crud->indexOf(crud_model->actcrudlist.at(0)));
     if(a<crud->size())
     {
-        b=0; //Оставляю основной итератор на месте
         clear_models();
         clear_label();
        if(!begin_import())//снова иду на импорт
@@ -290,7 +328,6 @@ void Import_Form::on_pb_skip_All_clicked()
     crud->removeAt(crud->indexOf(crud_model->actcrudlist.at(0)));
     if(a<crud->size())
     {
-        b=0; //Оставляю основной итератор на месте
         clear_models();
         clear_label();
         //Если нашлось совпадение, вызываем этот метод снова
@@ -319,7 +356,7 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
         offtel = new QList<Off_tels*>;
 
        db_connection *db = db_connection::instance();
-       db_file.setFileName(filename);
+        db_file.setFileName(filename);
 
        if (password.isEmpty())               ///Если пароля нет, то Склайт
        {

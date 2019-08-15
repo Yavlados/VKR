@@ -364,7 +364,6 @@ void Analysis::on_pushButton_2_clicked()
     delete  this;
 }
 
-
 QString Analysis::get_date_from()
 {    //
     //Сначала собираю DateFrom

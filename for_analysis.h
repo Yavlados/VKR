@@ -21,6 +21,10 @@ class For_analysis
 public:
     For_analysis();
 
+    QString temp_str_for_num;
+
+    QString temp_str_for_cont_num;
+
     QString analysis_res;
 
     QMessageBox msgbx;
@@ -33,7 +37,7 @@ public:
 
     ///Методы сбора листа по 3 вариантам знакомства
         QList<Crud*> * get_1_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);
-        QList<Crud*> * get_2_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);
+        QList<Crud*> * get_2_var(Crud *cr, QList<Crud*> *crudlist, QString   added_SQL);
         QList<Crud*> * get_3_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);
 
     ///Основные методы анализа

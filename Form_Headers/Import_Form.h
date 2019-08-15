@@ -107,7 +107,6 @@ signals:
 private:
     QCloseEvent *event ;
     int a;  ///Итераторы для сравнений
-    int b;
     QFile db_file;
     QList<Crud*>        *crud;      ///Локальные списки
     QList<Off_tels*>    *offtel;    ///С данными из SQLite

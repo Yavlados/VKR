@@ -5,6 +5,7 @@ Owners_tel::Owners_tel()
     parentZK_id = 0;
     tel_id = 0;
     internum = 0;
+    oldnum  = 0;
     _cont = nullptr;
 }
 
@@ -22,8 +23,8 @@ Owners_tel::Owners_tel(int id, int zk, bool i_m, DbState st)
     state = st;
 }
 
-Owners_tel::Owners_tel(QString t_n, int t_id, int zk,bool i_m, DbState st):
-    tel_id (t_id), tel_num(t_n), parentZK_id(zk), internum(i_m)
+Owners_tel::Owners_tel(QString t_n, int t_id, int zk, bool i_m, bool o_n, DbState st):
+    tel_id (t_id), tel_num(t_n), parentZK_id(zk), internum(i_m), oldnum(o_n)
 {
     _cont = nullptr;
     state = st;
@@ -41,41 +42,6 @@ QList<Contacts *> *Owners_tel::cont()
         _cont = new QList<Contacts*>;
     }
     return _cont;
-}
-
-bool Owners_tel::selectAll(QList<Owners_tel *> *list)
-{
-    if(list==nullptr)
-        return false;
-
-    qDeleteAll(*list);
-    list->clear();
-
-    if( !db_connection::instance()->db_connect() )
-        return false;
-
-    QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("SELECT owners_tel.Telephone_num "
-                           "FROM  owners_tel");
-    if (!temp.exec())
-    {
-        qDebug() << temp.lastError();
-        return false;
-    }
-
-    while (temp.next())
-    {
-        //Owners_tel *ot = new Owners_tel(temp.value(0).toString(),IsReaded);
-        //list->append(ot);
-    }
-
-    for (int i = 0; i<list->size(); i++)
-    {
-        //QString str = QString::number(list->at(i)->contact_id);
-        qDebug() << list->at(i)->tel_num;
-    }
-
-    return true;
 }
 
 bool Owners_tel::saveAll(QList<Owners_tel *> *list)
@@ -145,7 +111,8 @@ bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
             return false;
 
         QSqlQuery temp(db_connection::instance()->db());
-        temp.prepare("SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk, owners_tel.internum "
+        temp.prepare("SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk, "
+                     "owners_tel.internum, owners_tel.oldnum "
                      " FROM  owners_tel"
                      " WHERE owners_tel.FK_Telephone_Zk = (:id)");
         temp.bindValue(":id", zk);
@@ -158,7 +125,7 @@ bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
 
         while (temp.next())
         {
-            Owners_tel *ot = new Owners_tel(temp.value(0).toString(), temp.value(1).toInt(), temp.value(2).toInt(),temp.value(3).toBool(),IsReaded);
+            Owners_tel *ot = new Owners_tel(temp.value(0).toString(), temp.value(1).toInt(), temp.value(2).toInt(),temp.value(3).toBool(),temp.value(4).toBool(),IsReaded);
             list->append(ot);
         }
         /// Если у зк нет телефонов при редактировании
@@ -169,25 +136,13 @@ bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
            list->append(ot);
            return true;
     }
+    //Костыль для пустого списка(корректное отображение в главном меню)
     if(list->isEmpty())
     {
-        QSqlQuery temp(db_connection::instance()->db());
-
-        temp.prepare("SELECT MAX( owners_tel.Telephone_id) "
-                             " FROM owners_tel");
-                if (!temp.exec())
-                {
-                    qDebug() << temp.lastError();
-                    qDebug() << "selectZkTelForAdd";
-                    return false;
-                }
-                while (temp.next())
-                {
                 //////создаю модель с двумя - id и FK///////
-                Owners_tel *ot = new Owners_tel(temp.value(0).toInt() +1 , zk,false,IsNewing);
+                Owners_tel *ot = new Owners_tel(0 , zk,false,IsNewing);
                 list->append(ot);
                return true;
-                }
     }
     return true;
 }
@@ -200,7 +155,7 @@ QList<Owners_tel *> *Owners_tel::get_ow_list(int zk_id)
         return list;
 
     QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk, owners_tel.internum "
+    temp.prepare("SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk, owners_tel.internum, owners_tel.oldnum "
                  " FROM  owners_tel"
                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
     temp.bindValue(":id", zk_id);
@@ -213,7 +168,7 @@ QList<Owners_tel *> *Owners_tel::get_ow_list(int zk_id)
 
     while (temp.next())
     {
-        Owners_tel *ot = new Owners_tel(temp.value(0).toString(), temp.value(1).toInt(), temp.value(2).toInt(),temp.value(3).toBool(),IsReaded);
+        Owners_tel *ot = new Owners_tel(temp.value(0).toString(), temp.value(1).toInt(), temp.value(2).toInt(),temp.value(3).toBool(),temp.value(4).toBool(),IsReaded);
         list->append(ot);
     }
     return list;
@@ -224,22 +179,13 @@ int Owners_tel::insert_tel(bool setState, int zk_id)
     if( !db_connection::instance()->db_connect() && tel_num.isEmpty())
         return false;
 
-    if (tel_num.count() < 16) //номер введен неполностью
-        return -1;
-    else {
-        QString temp = tel_num.at(1)+tel_num.mid(3,3)+
-                tel_num.mid(7,3)+
-                tel_num.mid(11,2)+tel_num.mid(14,2);
-        tel_num = temp;
-    }
-
     QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk, internum) "
-                 " VALUES ( (:tel_num),(:fk_id), (:i_n)) RETURNING Telephone_id");
+    temp.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk, internum, oldnum) "
+                 " VALUES ( (:tel_num),(:fk_id), (:i_n), (:o_n)) RETURNING Telephone_id");
     temp.bindValue(":tel_num",tel_num);
     temp.bindValue(":fk_id",zk_id);
     temp.bindValue(":i_n",internum);
-
+    temp.bindValue("o_n", oldnum);
     if (!temp.exec())
     {
         qDebug() << temp.lastError();
@@ -264,22 +210,15 @@ bool Owners_tel::update_tel(bool setState)
     if( !db_connection::instance()->db_connect() )
         return false;
 
-    if (tel_num.count() < 16) //номер введен неполностью
-        return -1;
-    else {
-        QString temp = tel_num.at(1)+tel_num.mid(3,3)+
-                tel_num.mid(7,3)+
-                tel_num.mid(11,2)+tel_num.mid(14,2);
-        tel_num = temp;
-    }
-
     QSqlQuery temp(db_connection::instance()->db());
     temp.prepare("UPDATE owners_tel SET Telephone_num = (:tel_num),"
-                                    "internum = (:i_m)"
+                                    "internum = (:i_m),"
+                                   " oldnum = (:o_n)"
                             " WHERE Telephone_id = (:tel_id)");
     temp.bindValue(":tel_id", tel_id);
     temp.bindValue(":tel_num", tel_num);
     temp.bindValue(":i_m", internum);
+    temp.bindValue(":o_n", oldnum);
 
     if (!temp.exec())
     {

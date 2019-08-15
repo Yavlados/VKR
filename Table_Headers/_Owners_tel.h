@@ -24,18 +24,18 @@ public:
 Owners_tel();
 Owners_tel(int t_d);
 Owners_tel(int id, int zk, bool i_m, DbState);
-Owners_tel(QString t_n, int t_id, int zk, bool i_m = false,  DbState st = IsReaded);
+Owners_tel(QString t_n, int t_id, int zk, bool i_m = false, bool o_n = false, DbState st = IsReaded);
 ~Owners_tel();
 
     int tel_id;
     QString tel_num;
     int parentZK_id;
     bool internum;
+    bool oldnum;
     DbState state;
 
     QList<Contacts*> *cont();
 
-    static bool selectAll(QList<Owners_tel*> *list);
     static bool saveAll(QList<Owners_tel*> *list);
     static bool selectZkTelForAdd(QList<Owners_tel*> *list, int);
 

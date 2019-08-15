@@ -47,6 +47,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " time_add character varying(10),"
                         " dop_info character varying(50), "
                         " check_for character varying(25),"
+                        " date_upd character varying(20),"
                         " CONSTRAINT PK_Zk_id PRIMARY KEY (zk_id),"
                         " CONSTRAINT Zk_Zk_id_key UNIQUE (zk_id)"
                         " );"))
@@ -56,6 +57,8 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " ( telephone_id integer NOT NULL, "
                         " fk_telephone_zk integer, "
                         " telephone_num character varying(11) NOT NULL, "
+                        " internum boolean,"
+                        " oldnum boolean,"
                         " CONSTRAINT PK_telephone_id PRIMARY KEY (telephone_id),"
                         " CONSTRAINT FK_Telephone_ZK FOREIGN KEY (fk_telephone_zk)"
                         "  REFERENCES zk (zk_id) MATCH SIMPLE"
@@ -71,6 +74,8 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " cl_telephone character varying(11), "
                         " cl_info character varying(50), "
                         " fk_cl_telephone integer, "
+                        " internum boolean,"
+                        " oldnum boolean,"
                         " CONSTRAINT PK_Contact_list_id PRIMARY KEY (contact_list_id),"
                         " CONSTRAINT FK_Cl_telephone FOREIGN KEY (fk_cl_telephone) "
                         " REFERENCES owners_tel (telephone_id) MATCH SIMPLE"
@@ -89,12 +94,12 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                                 "Liv_city,Liv_street,Liv_home,Liv_corp,"
                                 "Liv_flat,"
                                 "Check_for, Dop_info,"
-                                "Date_add, Time_add) "
+                                "Date_add, Time_add, date_upd) "
                                 " VALUES ((:lastname),(:name),(:mid_name), (:b_d),"
                                 "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                                 "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                                 "(:c_f),(:d_i),"
-                                "(:d_a), (:t_a))");
+                                "(:d_a), (:t_a), (:d_u))");
             query.bindValue(":lastname",crud->at(i)->lastname);
             query.bindValue(":name",crud->at(i)->name);
             query.bindValue(":mid_name",crud->at(i)->mid_name);
@@ -117,7 +122,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
 
             query.bindValue(":d_a",crud->at(i)->date_add);
             query.bindValue(":t_a",crud->at(i)->time_add);
-
+            query.bindValue(":d_u",crud->at(i)->date_upd);
             if(!query.exec())
              {
              qDebug() << query.lastError();
@@ -128,10 +133,12 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
           qDebug() << crud->at(i)->owt()->size();
             for (int a = 0; a < crud->at(i)->owt()->size(); a++)
             {
-                query.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk) "
-                              " VALUES ((:tel_num), (:fk_id))");
+                query.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk, internum, oldnum) "
+                              " VALUES ((:tel_num), (:fk_id), (:i_n), (:o_n))");
                 query.bindValue(":tel_num",crud->at(i)->owt()->at(a)->tel_num);
                 query.bindValue(":fk_id",crud->at(i)->owt()->at(a)->parentZK_id);
+                query.bindValue(":i_n",crud->at(i)->owt()->at(a)->internum);
+                query.bindValue(":o_n",crud->at(i)->owt()->at(a)->oldnum);
 
                 if (!query.exec())
                 {
@@ -143,11 +150,12 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                     qDebug()<< crud->at(i)->owt()->at(a)->cont()->size();
                     for (int b=0; b<crud->at(i)->owt()->at(a)->cont()->size();b++)
                     {
-                        query.prepare("INSERT INTO contacts (cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id))");
+                        query.prepare("INSERT INTO contacts (cl_telephone, cl_info, FK_Cl_telephone, internum, oldnum) VALUES ( (:tel_num), (:mark), (:fk_id), (:i_n), (:o_n))");
                         query.bindValue(":tel_num",crud->at(i)->owt()->at(a)->cont()->at(b)->contact_tel_num);
                         query.bindValue(":mark",crud->at(i)->owt()->at(a)->cont()->at(b)->mark);
                         query.bindValue(":fk_id",crud->at(i)->owt()->at(a)->cont()->at(b)->parent_OT_id);
-
+                        query.bindValue(":i_n",crud->at(i)->owt()->at(a)->cont()->at(b)->internum);
+                        query.bindValue(":o_n",crud->at(i)->owt()->at(a)->cont()->at(b)->oldnum);
                         if (!query.exec())
                         {
                             qDebug() << query.lastError();

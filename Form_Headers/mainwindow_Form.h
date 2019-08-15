@@ -102,7 +102,7 @@ private:
 private slots:
     void Add_pagination_buttons();
 
-    void on_tableView_clicked(const QModelIndex &index);
+    void on_tableView_clicked(const QModelIndex &index_tab1, QString num = nullptr);
 
     void on_tableView_2_clicked(const QModelIndex &index);
 
@@ -165,6 +165,8 @@ private slots:
     void on_action_3_del_triggered();
 
     void on_action_5_show_triggered();
+
+    void on_tableView_3_doubleClicked(const QModelIndex &index);
 
 signals:
     void Send_data(Crud *cr, int index);

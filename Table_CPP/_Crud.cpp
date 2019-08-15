@@ -258,10 +258,10 @@ bool Crud::add_zk()
      time_add = QTime::currentTime().toString();
     QSqlQuery querry(db_connection::instance()->db());
     querry.prepare("INSERT INTO zk "
-                   "(Lastname, Name,Mid_name, Birth_date,"
-                   "Reg_city,Reg_street,Reg_home,Reg_corp,"
+                   "(Lastname, Name, Mid_name, Birth_date,"
+                   "Reg_city, Reg_street, Reg_home, Reg_corp,"
                    "Reg_flat,"
-                   "Liv_city,Liv_street,Liv_home,Liv_corp,"
+                   "Liv_city, Liv_street, Liv_home, Liv_corp,"
                    "Liv_flat,"
                    "Check_for, Dop_info,"
                    "Date_add, Time_add) "

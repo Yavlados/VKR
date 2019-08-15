@@ -1,6 +1,7 @@
 #include "mainwindow_Form.h"
 #include "ui_mainwindow.h"
 #include "db_connection.h"
+#include "table_cb_delegate.h"
 
 #include <QRect>
 #include <QSqlDatabase>
@@ -28,6 +29,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //set_fonts();
     add_splitter_lines();
     Settings_connection::instance();
+
+    Table_cb_delegate *delegate = new Table_cb_delegate();
+    ui->tableView_3->setItemDelegateForColumn(1, delegate);
 }
 
 MainWindow::~MainWindow()
@@ -68,7 +72,7 @@ void MainWindow::Add_pagination_buttons()
     }
 }
 
-void MainWindow::on_tableView_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Владельцами номеров
+void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //Обрабатываем клик по таблице с Владельцами номеров
 {
     (void)index;
     index_tab1 = ui->tableView->currentIndex();
@@ -77,11 +81,22 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index) //Обрабат
        ui->action_delete->setEnabled(true);
        ui->action_update->setEnabled(true); //включаю кнопку редактировать
 
-        if(Owners_tel::selectZkTelForAdd(crud_model->actcrudlist.at(index_tab1.row())->owt(), crud_model->actcrudlist.at(index_tab1.row())->zk_id))
-        {
-           ot_model->setOTList(crud_model->actcrudlist.at(index_tab1.row())->owt());
-           if(ot_model->actotlist.at(0)->tel_num.isEmpty())
-           ot_model->actotlist.removeAt(0);//Костыль, тк не могу не отображать пустые номера
+       if (!ot_model->mark_rows.isEmpty()) //Чищу список подсвечивания
+           ot_model->mark_rows.clear();
+
+           if(Owners_tel::selectZkTelForAdd(crud_model->actcrudlist.at(index_tab1.row())->owt(), crud_model->actcrudlist.at(index_tab1.row())->zk_id))
+           {
+               ot_model->setOTList(crud_model->actcrudlist.at(index_tab1.row())->owt());
+               if(!num.isNull())
+               {
+                 for (int i = 0; i < ot_model->actotlist.size(); i++)
+                 {
+                     if(ot_model->actotlist.at(i)->tel_num == num)
+                         ot_model->mark_rows.append(i);
+                 }
+               }
+            if(ot_model->actotlist.at(0)->tel_num.isEmpty())
+                ot_model->actotlist.removeAt(0);//Костыль, тк не могу не отображать пустые номера
         }
         ui->tableView_2->setModel(ot_model);
         ui->tableView_2->setColumnWidth(0,250);
@@ -635,4 +650,23 @@ void MainWindow::on_action_3_del_triggered()
 void MainWindow::on_action_5_show_triggered()
 {
        ui->tabWidget->setCurrentIndex(0);
+}
+
+void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
+{
+    if(index.column() == 4 && contacts_model->actlist.at(index.row())->linked_id != 0)
+    {
+        int zk_id = contacts_model->actlist.at(index.row())->linked_id;
+        for (int i = 0; i < crud_model->actcrudlist.size(); i++)
+        {
+            if(crud_model->actcrudlist.at(i)->zk_id == zk_id)
+            {
+                zk_id = i;
+                break;
+            }
+        }
+        index_tab1 = crud_model->index(zk_id,0);
+        ui->tableView->setCurrentIndex(index_tab1);
+        on_tableView_clicked(index_tab1, contacts_model->actlist.at(index.row())->contact_tel_num);
+    }
 }

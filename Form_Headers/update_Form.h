@@ -37,7 +37,7 @@ public:
     QMessageBox msgbx;
 
     MTM_OwTel *ot_model = new MTM_OwTel;
-    MTM_Contacts *contacts_model = new MTM_Contacts;
+    MTM_Contacts *contacts_model =  new MTM_Contacts;
     List_master *list;
     Crud *new_cr; //Новая зк
     explicit Update(QWidget *parent = nullptr);
@@ -90,6 +90,10 @@ private slots:
     ///Слоты для редактирования при импорте
     void recieve_import_data(Crud *cr);
     void update_import_data();
+
+    ///Слот установки делегата и коннекта модели
+    void  set_delegates_and_connections();
+    void slot_for_model(QModelIndex, QModelIndex);
 };
 
 #endif // UPDATE_H

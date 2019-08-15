@@ -1,13 +1,12 @@
 #include "_MTM_Contacts.h"
+#include <QPushButton>
 
 MTM_Contacts::MTM_Contacts(QObject *parent):
     QAbstractTableModel(parent)
 {
     clist = nullptr;
     state = Show_cont;
-    type = ContactMod; ///неважно какой тип модели в пустом конструкторе
 }
-
 
 /// Определение методов
 int MTM_Contacts::columnCount(const QModelIndex & parent) const
@@ -15,8 +14,17 @@ int MTM_Contacts::columnCount(const QModelIndex & parent) const
     if( clist==nullptr)
         return 0;
     else {
-        if(type == ContactMod || type == OffTelMod)        /// Contacts
-          return 2;
+        if (state == Show_cont)
+        {
+            for (int i = 0; i < actlist.size(); i++)
+            {
+               if (actlist.at(i)->linked_id != 0)
+                   return 5;
+            }
+            return 4;
+        }
+        if (state == Edit_cont)
+          return 4;
     }
 }
 
@@ -27,54 +35,13 @@ int MTM_Contacts::rowCount(const QModelIndex &parent) const
         return 0;
     else
     {
-        if(type == ContactMod || type == OffTelMod) /// Contacts
           return actlist.size();
     }
 }
 
 /////////?????????????????????///////////////
-void MTM_Contacts::setContactList(QList<Contacts *> *contactList)
+void MTM_Contacts:: setContactList(QList<Contacts *> *contactList)
 {
-    type = ContactMod;
-    beginResetModel();
-
-    clist = contactList;
-    actlist.clear();
-
-    if(clist!=nullptr)
-    {
-        for(int i=0; i < clist->size(); i++)
-            if( clist->at(i)->cont_state!=IsRemoved )
-                actlist.append(clist->at(i));
-    }
-
-    endResetModel();
-}
-
-void MTM_Contacts::setContactList(QList<Contacts *> *contactList, int tel_id)
-{
-    type = ContactMod;
-    beginResetModel();
-
-    clist = contactList;
-    actlist.clear();
-
-    if(clist!=nullptr)
-    {
-        for(int i=0; i < clist->size(); i++)
-            if( clist->at(i)->cont_state!=IsRemoved)
-            {
-                qDebug() << clist->at(i)->parent_OT_id;
-                actlist.append(clist->at(i));
-            }
-    }
-
-    endResetModel();
-}
-
-void MTM_Contacts::setOffTList(QList<Contacts *> *contactList)
-{
-    type = OffTelMod;
     beginResetModel();
 
     clist = contactList;
@@ -98,16 +65,12 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
     int row = index.row();      ///целочисленные указатели на строку
     int col = index.column();   /// и столбец
 
-    if (type == ContactMod || type == OffTelMod)
-    {
     if( row>actlist.size() || row<0 )
         return QVariant();
 
     if (role == Qt::DisplayRole)
-        {        
-        if(actlist.at(row)->contact_tel_num.size() == 11
-                && actlist.at(row)->contact_tel_num.at(0) != "+"
-                && actlist.at(row)->cont_state != IsNewing)
+        {
+        if(actlist.at(row)->oldnum == false && actlist.at(row)->internum == false && actlist.at(row)->cont_state != IsNewing)
         {
             QString _temp =  actlist.at(row)->contact_tel_num;
             _temp.insert(0,"+");
@@ -122,6 +85,11 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
                return _temp;
             case 1:             /// 2 колонка - пометка к номеру
                 return actlist.at(row)->mark;
+            case 4:
+                if (actlist.at(row)->linked_id != 0)
+                    return QString("Перейти к ЗК №")+ QString::number(actlist.at(row)->linked_id);
+                else
+                    return QVariant();
                 }
         }
         else {
@@ -131,11 +99,39 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
                return actlist.at(row)->contact_tel_num;
             case 1:             /// 2 колонка - пометка к номеру
                 return actlist.at(row)->mark;
+            case 4:
+                if (actlist.at(row)->linked_id != 0)
+                    return QString("Перейти к ЗК №")+ QString::number(actlist.at(row)->linked_id);
+                else
+                    return QVariant();
                 }
             }
         }
-      return QVariant();
+    if (role == Qt::CheckStateRole && col == 2)  // this shows the checkbox
+            {
+                bool aBool = actlist.at(row)->internum;
+                if (aBool)
+                        return Qt::Checked;
+                else
+                        return Qt::Unchecked;
+            }
+    if (role == Qt::CheckStateRole && col == 3)  // this shows the checkbox
+            {
+                bool aBool = actlist.at(row)->oldnum;
+                if (aBool)
+                        return Qt::Checked;
+                else
+                        return Qt::Unchecked;
+            }
+
+    if (role == Qt::BackgroundRole)
+    {
+        for (int i = 0; i < actlist.size(); i++)
+            if (actlist.at(i)->linked_id != 0 && row == i)
+                return QVariant(QBrush(QColor(Qt::yellow)));
     }
+      return QVariant();
+
 }
 
 void MTM_Contacts::reset_ContactModel()
@@ -150,9 +146,7 @@ QVariant MTM_Contacts::headerData(int section, Qt::Orientation orientation, int 
     if (role != Qt::DisplayRole)
             return QVariant();
 
-    switch (type)
-    {
-    case ContactMod:  ///Контакты
+
         if (orientation == Qt::Horizontal)
             switch (section)
           {
@@ -160,25 +154,15 @@ QVariant MTM_Contacts::headerData(int section, Qt::Orientation orientation, int 
                 return QString("Номер телефона");
             case 1:
                 return QString("Пометка");
+            case 2:
+                return QString("М-н");
+            case 3:
+                return QString("Старый");
           }
         else {
             return QString("%1").arg(section+1);
         }
-        break;
-    case OffTelMod:  /// СЛУЖЕБНЫЕ ТЕЛЕФОНЫ
-        if (orientation == Qt::Horizontal)
-            switch (section)
-          {
-             case 0:
-                return QString("Номер телефона");
-            case 1:
-                return QString("Наименование службы");
-          }
-        else {
-            return QString("%1").arg(section+1);
-        }
-        break;
-    }
+
     return QVariant();
 
 }
@@ -191,7 +175,7 @@ Qt::ItemFlags MTM_Contacts::flags ( const QModelIndex & index ) const
     if( state == Show_cont )
         return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     if( state == Edit_cont )
-        return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable;
+        return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsUserCheckable;
 }
 
 bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, int role )
@@ -201,8 +185,7 @@ bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, 
 
     int row = index.row();      ///целочисленные указатели на строку
     int col = index.column();   /// и столбец
-if (type == ContactMod)
-    {
+
         if( row>actlist.size() || row<0 )
             return false;
 
@@ -227,9 +210,51 @@ if (type == ContactMod)
                 return true;
             }
         }
+        if (role == Qt::CheckStateRole && col == 2)
+         {
+            if (actlist.at(row)->internum == false && actlist.at(row)->oldnum == false)
+                 actlist.at(row)->internum = true;
+            else
+                if(actlist.at(row)->internum == true && actlist.at(row)->oldnum == false)
+            {
+                actlist.at(row)->internum = false;
+            }
+
+            if(actlist.at(row)->internum == false && actlist.at(row)->oldnum == true)
+            {
+                actlist.at(row)->internum = true;
+                actlist.at(row)->oldnum = false;
+            }
+
+            if( actlist.at(row)->cont_state!=IsNewing )
+                actlist.at(row)->cont_state = IsChanged;
+
+              emit dataChanged(index,index);
+                return true;
+         }
+        if (role == Qt::CheckStateRole && col == 3)
+         {
+            if (actlist.at(row)->oldnum == false && actlist.at(row)->internum == false)
+                actlist.at(row)->oldnum = true;
+           else
+               if (actlist.at(row)->oldnum == true && actlist.at(row)->internum == false)
+               {
+                   actlist.at(row)->oldnum = false;
+               }
+           if (actlist.at(row)->oldnum == false && actlist.at(row)->internum == true)
+           {
+               actlist.at(row)->oldnum = true;
+               actlist.at(row)->internum = false;
+
+           }
+
+           if( actlist.at(row)->cont_state!=IsNewing )
+               actlist.at(row)->cont_state = IsChanged;
+             emit dataChanged(index,index);
+               return true;
+        }
 
         return false;
-    }
 }
 
 void MTM_Contacts::addRow_contact(int OTid)
@@ -238,6 +263,7 @@ void MTM_Contacts::addRow_contact(int OTid)
         return;
 
     Contacts *newc = new Contacts();
+    newc->parent_OT_id = OTid;
     beginInsertRows(QModelIndex(),actlist.size(),actlist.size());
 
     actlist.append(newc);

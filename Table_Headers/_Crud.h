@@ -29,7 +29,7 @@ public:
     CheckState checkState_;
     DbState state;
     QString search_res;
-    bool search_is_ready, model_is_ready;
+    bool search_is_ready;
     QMessageBox msgbx;
     QString search_result;
 

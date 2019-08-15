@@ -14,16 +14,12 @@
 enum Calling_state_Model {Show_cont = 1,  /// Модель для просмотра
                         Edit_cont = 0}; /// Модель для изменения (формы update и add_form)
 
-enum Model_type {OffTelMod = 0,
-                 ContactMod = 1}; /// Круд под вопросом, делать!
-
 
 class MTM_Contacts: public QAbstractTableModel
 {
      Q_OBJECT
 public:
     Calling_state_Model state;
-    Model_type type;
 
     /// Пустой конструктор модели
     MTM_Contacts(QObject *parent = nullptr);
@@ -36,12 +32,6 @@ public:
 
     /// Получение списка КОНТАКТОВ моделью
     virtual void setContactList(QList<Contacts*> *contactList);
-
-    /// Получения списка моделью для формы Добавления и редактирования
-     virtual void setContactList(QList<Contacts*> *contactList, int);
-
-    /// Получение списка СЛУЖЕБНЫХ ТЕЛЕФОНОВ моделью
-   virtual void setOffTList(QList<Contacts*> *contactList);
 
     /// Заполнение модели данными из списка
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
@@ -56,10 +46,8 @@ public:
 
     virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 
-private:
     QList<Contacts*> *clist;    ///< исходный список
     QList<Contacts*> actlist;  ///<  отображаемый список
-
 public slots:
     void addRow_contact(int);                      /// Добавление ячейки контакта
     void delRow_contact(const QModelIndex &index); /// Удаление ячейки контакта

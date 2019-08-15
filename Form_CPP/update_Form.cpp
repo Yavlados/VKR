@@ -3,7 +3,8 @@
 #include "_Crud.h"
 #include "_Owners_tel.h"
 #include "_Contacts.h"
-#include "table_delegate.h"
+#include "table_line_delegate.h"
+#include "table_cb_delegate.h"
 
 #include <QSqlRecord>
 #include <QStringRef>
@@ -18,10 +19,7 @@ Update::Update(QWidget *parent) :
     set_validators();
     new_cr = nullptr;
     set_splitter_lines();
-    Table_delegate *delegate = new Table_delegate(this);
-    ui->tableView->setItemDelegateForColumn(0,delegate);
-    ui->tableView_2->setItemDelegateForColumn(0,delegate);
-
+    set_delegates_and_connections();
 }
 
 Update::~Update()
@@ -206,8 +204,10 @@ void Update::on_tableView_clicked(const QModelIndex &index)
 {
     //В добавлении мы работаем исключительно с моделью
                   //Также как и в импорте
-            contacts_model->setContactList(new_cr->owt()->at(index.row())->cont(), new_cr->owt()->at(index.row())->tel_id);
+    QList<Contacts*> *cont_temp = new QList<Contacts*>;
+    cont_temp = ot_model->actotlist.at(index.row())->cont();
 
+    contacts_model->setContactList(new_cr->owt()->at(index.row())->cont());
     qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
 
     contacts_model->state = Edit_cont;
@@ -221,10 +221,17 @@ void Update::on_pb_del_line_telephone_clicked()
 {
     QModelIndex ind = ui->tableView->currentIndex();
     if( ind.isValid() && new_cr->owt()->count()>1)
-    {
-        contacts_model->delBindedContacts(new_cr->owt()->at(ind.row())->tel_id);
-        ot_model->delRow_owner_tel(ind);
-    }
+        {
+            contacts_model->delBindedContacts(new_cr->owt()->at(ind.row())->tel_id);
+            ot_model->delRow_owner_tel(ind);
+            if(imprt_t == Update_import_data) //взаимодействие с моделью
+            {
+                Owners_tel *temp_owt  = new_cr->owt()->at(ind.row());
+                 delete temp_owt;
+                 temp_owt = nullptr;
+                 new_cr->owt()->removeAt(ind.row());
+            }
+        }
     contacts_model->reset_ContactModel();
 }
 
@@ -314,15 +321,33 @@ bool Update::compare_tel_num()
     QString query_for_nums, query_for_fio; //добавить иф на пустой список телефонов
     for (int i=0; i < new_cr->owt()->size(); i++)
     {
-        if (!new_cr->owt()->at(i)->tel_num.isEmpty())
+        if (!new_cr->owt()->at(i)->tel_num.isEmpty() && new_cr->owt()->at(i)->state != IsRemoved)
         //Составление запроса для проверки телефонов
         {
+            if(new_cr->owt()->at(i)->tel_num.at(0) == "+")
+            {
+                if(new_cr->owt()->at(i)->tel_num.count() < 16)
+                {
+                    new_cr->owt()->removeAt(i);
+                    i--;
+                    break;
+
+                }else
+                {
+                    QString temp = new_cr->owt()->at(i)->tel_num.at(1)+new_cr->owt()->at(i)->tel_num.mid(3,3)+
+                            new_cr->owt()->at(i)->tel_num.mid(7,3)+
+                            new_cr->owt()->at(i)->tel_num.mid(11,2)+new_cr->owt()->at(i)->tel_num.mid(14,2);
+                new_cr->owt()->at(i)->tel_num = temp;
+                }
+
+            }
+
             if (query_for_nums.isEmpty())
                 query_for_nums += " owners_tel.Telephone_num = ('"+new_cr->owt()->at(i)->tel_num+"') ";
             else
                 query_for_nums += " OR owners_tel.Telephone_num = ('"+new_cr->owt()->at(i)->tel_num+"')";
+            }
         }
-    }
     //Составление запроса для проверки фио и др
         query_for_fio = " zk.lastname = ('"+new_cr->lastname+"') AND"
         " zk.name = ('"+new_cr->name+"') AND"
@@ -510,6 +535,8 @@ void Update::Add_zk()
             new_cr->liv_flat = ui->le_liv_flat->text();
         }
 
+        new_cr->date_add = QDate::currentDate().toString(Qt::ISODate);
+        new_cr->time_add = QTime::currentTime().toString();
         new_cr->check();
 
     QList<Crud*> *temp_crudlist = new  QList<Crud*>;
@@ -634,5 +661,44 @@ void Update::update_import_data()
         break;
     }
     close();
+}
+
+void inline Update::set_delegates_and_connections()
+{
+    connect(ot_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
+    connect(contacts_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
+    Table_line_delegate *delegate_ot = new Table_line_delegate(this);
+    delegate_ot->set_type(OT);
+    delegate_ot->set_MTM_model(ot_model, contacts_model);
+    ui->tableView->setItemDelegateForColumn(0,delegate_ot);
+
+    Table_line_delegate *delegate_cont = new Table_line_delegate(this);
+    delegate_cont->set_type(Cont);
+    delegate_cont->set_MTM_model(ot_model, contacts_model);
+    ui->tableView_2->setItemDelegateForColumn(0,delegate_cont);
+
+}
+
+void Update::slot_for_model(QModelIndex i1, QModelIndex i2)
+{
+    (void) i2;
+    MTM_OwTel *Ot_sender_ptr = qobject_cast<MTM_OwTel*>(sender());
+    MTM_Contacts *Cont_sender_ptr = qobject_cast<MTM_Contacts*>(sender());
+
+        if (Ot_sender_ptr == nullptr)
+        {
+            qDebug() << "Mimo";
+            if (Cont_sender_ptr == nullptr)
+            {
+                return;
+            }
+            else
+                ui->tableView_2->selectRow(i1.row());
+
+        }
+        else {
+            qDebug() << "Popal";
+            ui->tableView->selectRow(i1.row());
+        }
 }
 

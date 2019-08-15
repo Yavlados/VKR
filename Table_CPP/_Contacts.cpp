@@ -7,8 +7,8 @@ Contacts::Contacts()
 }
 
 /// Конструктор класса с тремя переменными
-Contacts::Contacts(int cont_id, QString tel, QString mark, int ot_id, DbState st)
-    :contact_id(cont_id), contact_tel_num(tel), mark(mark)
+Contacts::Contacts(int cont_id, QString tel, QString mark, int ot_id, bool i_n, bool o_n, DbState st, int l_id)
+    :contact_id(cont_id), contact_tel_num(tel), mark(mark), internum(i_n), oldnum(o_n), linked_id(l_id)
 {
     parent_OT_id = ot_id;
     cont_state = st;
@@ -17,40 +17,6 @@ Contacts::Contacts(int cont_id, QString tel, QString mark, int ot_id, DbState st
 Contacts::~Contacts()
 {
     qDebug()<<"delete contact"<<contact_id;
-}
-
-
-bool Contacts::selectAll(QList<Contacts*> *list)
-{
-    if(list==nullptr)
-        return false;
-
-    qDeleteAll(*list);
-    list->clear();
-
-    if( !db_connection::instance()->db_connect() )
-        return false;
-
-    QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("SELECT "
-                 "contacts.contact_list_id,"
-                 "contacts.cl_telephone,"
-                 "contacts.cl_info, "
-                 "contacts.FK_Cl_telephone"
-                    " FROM contacts");
-    if (!temp.exec())
-    {
-        qDebug() << temp.lastError();
-        return false;
-    }
-
-    while (temp.next())
-    {
-        Contacts *cnt = new Contacts(temp.value(0).toInt(), temp.value(1).toString(), temp.value(2).toString(),temp.value(3).toInt(), IsReaded);
-        list->append(cnt);
-    }
-
-    return true;
 }
 
 bool Contacts::saveAll_cont(QList<Contacts*> *list, int new_tel_id)
@@ -106,7 +72,7 @@ bool Contacts::saveAll_cont(QList<Contacts*> *list, int new_tel_id)
 
 bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
 {
-    if(list==0)
+    if(list==nullptr)
         return false;
 
     qDeleteAll(*list);
@@ -120,10 +86,12 @@ bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
     temp.prepare("SELECT "
                  "contacts.contact_list_id,"
                  "contacts.cl_telephone,"
-                 "contacts.cl_info,"
-                 "contacts.FK_Cl_telephone "
-                  " FROM contacts "
-                  "WHERE contacts.FK_Cl_telephone = (:id) ");
+                 "contacts.cl_info, "
+                 "contacts.FK_Cl_telephone, "
+                 "contacts.internum, "
+                 "contacts.oldnum "
+                 " FROM contacts"
+                  " WHERE contacts.FK_Cl_telephone = (:id) ");
     temp.bindValue(":id",tel_id);
     if (!temp.exec())
     {
@@ -133,18 +101,72 @@ bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
 
     while (temp.next())
     {
-            Contacts *cnt = new Contacts(temp.value(0).toInt(), temp.value(1).toString(), temp.value(2).toString(), temp.value(3).toInt(), IsReaded);
+            Contacts *cnt = new Contacts(temp.value(0).toInt(), temp.value(1).toString(), temp.value(2).toString(),temp.value(3).toInt(),temp.value(4).toBool(),temp.value(5).toBool(), IsReaded);
             list->append(cnt);
     }
+
+    var2_analysis_for_main(list, tel_id);
+
 }
 
-bool Contacts::selectContactsforEdit(QList<Contacts *> *list, int)
+bool inline Contacts::var2_analysis_for_main(QList<Contacts *> *list, int tel_id)
 {
-    selectAll(list);
-    for (int i = 0; i<list->size(); i++)
+    QString temp_str;
+    for (int i = 0 ; i<list->size(); i++)
     {
-        qDebug() << list->at(i)->contact_tel_num + " " + list->at(i)->mark;
+        if(temp_str.isEmpty())
+        {
+            temp_str = " contacts.cl_telephone = ('"+list->at(i)->contact_tel_num+"')";
+        }else
+        {
+            temp_str += " OR contacts.cl_telephone = ('"+list->at(i)->contact_tel_num+"')";
+        }
+        if(list->at(i)->oldnum == true)
+            temp_str += " OR contacts.cl_telephone = ('499"+list->at(i)->contact_tel_num+"')"
+                                " OR contacts.cl_telephone = ('495"+list->at(i)->contact_tel_num+"')";
     }
+
+    db_connection *db = db_connection::instance();
+    QSqlQuery querry(db->db());
+    QString tempSQL;
+    /// 2 вариант - в КОНТАКТАХ анализируемого человека обнаружен этот человек
+
+    tempSQL += " SELECT DISTINCT zk.zk_id, OWT.OWNER_TEL,"
+                 " OWT.TEL_NUM, OWT.CONT_MARK"
+                 " FROM zk"
+                 " INNER JOIN (SELECT DISTINCT owners_tel.fk_telephone_zk AS FK_ZK,"
+                 " owners_tel.telephone_num AS TEL_NUM,"
+                 " CONT.CONT_MARK AS CONT_MARK,"
+                 " CONT.OWNER_TEL AS OWNER_TEL"
+                 " FROM owners_tel"
+                 " INNER JOIN (SELECT DISTINCT contacts.cl_telephone AS CONT_TEL,"
+                 " contacts.cl_info AS CONT_MARK,"
+                 " tels.OWNER_TEL AS OWNER_TEL"
+                 " FROM contacts,(SELECT DISTINCT owners_tel.telephone_id as tel_id,"
+                 " owners_tel.telephone_num AS OWNER_TEL"
+                 " FROM owners_tel"
+                 " WHERE owners_tel.telephone_id = "+QString::number(tel_id)+") as tels"
+                 " WHERE ("+temp_str+") AND tels.tel_id = contacts.fk_cl_telephone) AS CONT"
+                 " ON CONT.CONT_TEL = owners_tel.telephone_num) AS OWT"
+                 " ON OWT.FK_ZK = zk.zk_id"
+                 " WHERE ZK.zk_id>0 ";
+
+         querry.prepare(tempSQL);
+
+         if (!querry.exec())
+             qDebug() << querry.lastError();
+         while (querry.next())
+         {
+             for (int i = 0; i < list->size(); i++)
+             {
+                 if (list->at(i)->contact_tel_num == querry.value(2).toString())
+                 {
+                     Contacts *cnt = list->at(i);
+                     cnt->linked_id = querry.value(0).toInt();
+                 }
+
+             }
+         }
 }
 
 bool Contacts::insert(bool setState, int new_tel_id)
@@ -152,20 +174,20 @@ bool Contacts::insert(bool setState, int new_tel_id)
     if( !db_connection::instance()->db_connect() )
         return false;
 
-    if (contact_tel_num.count() < 16) //номер введен неполностью
-        return false;
-    else {
-        QString temp = contact_tel_num.at(1)+contact_tel_num.mid(3,3)+
-                contact_tel_num.mid(7,3)+
-                contact_tel_num.mid(11,2)+contact_tel_num.mid(14,2);
-        contact_tel_num = temp;
-    }
+    QString _temp = contact_tel_num.at(1)+contact_tel_num.mid(3,3)+
+            contact_tel_num.mid(7,3)+
+            contact_tel_num.mid(11,2)+contact_tel_num.mid(14,2);
+contact_tel_num = _temp;
 
     QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("INSERT INTO contacts( cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id)) RETURNING Contact_list_id");
+    temp.prepare("INSERT INTO contacts( cl_telephone, cl_info, FK_Cl_telephone, internum, oldnum) "
+                 " VALUES ( (:tel_num), (:mark), (:fk_id), (:i_n), (:o_n))"
+                 " RETURNING Contact_list_id");
     temp.bindValue(":tel_num",contact_tel_num);
     temp.bindValue(":mark",mark);
     temp.bindValue(":fk_id", new_tel_id);
+    temp.bindValue(":i_n", internum);
+    temp.bindValue(":o_n", oldnum);
 
     if (!temp.exec())
     {
@@ -191,23 +213,24 @@ bool Contacts::update(bool setState)
     if( !db_connection::instance()->db_connect() )
         return false;
 
-    if (contact_tel_num.count() < 16) //номер введен неполностью
-        return false;
-    else {
-        QString temp = contact_tel_num.at(1)+contact_tel_num.mid(3,3)+
-                contact_tel_num.mid(7,3)+
-                contact_tel_num.mid(11,2)+contact_tel_num.mid(14,2);
-        contact_tel_num = temp;
-    }
+    QString _temp = contact_tel_num.at(1)+contact_tel_num.mid(3,3)+
+            contact_tel_num.mid(7,3)+
+            contact_tel_num.mid(11,2)+contact_tel_num.mid(14,2);
+contact_tel_num = _temp;
 
     QSqlQuery temp(db_connection::instance()->db());
     temp.prepare("UPDATE contacts SET cl_telephone = (:cl_tel), "
-                            "cl_info = (:cl_info) "
+                            "cl_info = (:cl_info),"
+                            "internum = (:i_n),"
+                            "oldnum = (:o_n) "
                             " WHERE "
                             " Contact_list_id = (:id)");
       temp.bindValue(":cl_tel", contact_tel_num);
       temp.bindValue(":cl_info", mark);
       temp.bindValue(":id", contact_id);
+      temp.bindValue(":i_n", internum);
+      temp.bindValue(":o_n", oldnum);
+
     if (!temp.exec())
     {
         db_connection::instance()->lastError = temp.lastError().text();

@@ -118,8 +118,11 @@ QString Search::create_search_query(Crud *search_crud)
     }
 
     if (!search_crud->owt()->isEmpty())
-    {
-       qry += " AND owners_tel.Telephone_num = ('"+search_crud->owt()->at(0)->tel_num+"')"
+    {//Замена символов для шаблона поиска
+        search_crud->owt()->at(0)->tel_num.replace("*","%");
+        search_crud->owt()->at(0)->tel_num.replace("?","_");
+
+       qry += " AND owners_tel.Telephone_num LIKE '"+search_crud->owt()->at(0)->tel_num+"'"
                " AND owners_tel.FK_Telephone_Zk = zk.Zk_id ";
     }
 

@@ -7,12 +7,40 @@ For_analysis::For_analysis()
 
 QList<Crud *> *For_analysis::get_crud(Crud *cr, QString added_SQL)
 {
+    for (int i = 0; i < cr->owt()->size(); i++)
+    {
+        if(temp_str_for_num.isEmpty())
+        {
+            temp_str_for_num = " owners_tel.telephone_num = ('"+cr->owt()->at(i)->tel_num+"')";
+        }else
+        {
+            temp_str_for_num += " OR owners_tel.telephone_num = ('"+cr->owt()->at(i)->tel_num+"')";
+        }
+        if(cr->owt()->at(i)->oldnum == true)
+            temp_str_for_num += " OR owners_tel.telephone_num = ('499"+cr->owt()->at(i)->tel_num+"')"
+                                " OR owners_tel.telephone_num = ('495"+cr->owt()->at(i)->tel_num+"')";
+
+        for (int j = 0; j < cr->owt()->at(i)->cont()->size(); j++)
+        {
+            if(temp_str_for_cont_num.isEmpty())
+            {
+                temp_str_for_cont_num = " contacts.cl_telephone = ('"+cr->owt()->at(i)->cont()->at(j)->contact_tel_num+"')";
+            }else
+            {
+                temp_str_for_cont_num += " OR contacts.cl_telephone = ('"+cr->owt()->at(i)->cont()->at(j)->contact_tel_num+"')";
+            }
+            if(cr->owt()->at(i)->cont()->at(j)->oldnum == true)
+                temp_str_for_cont_num += " OR contacts.cl_telephone = ('499"+cr->owt()->at(i)->cont()->at(j)->contact_tel_num+"')"
+                                    " OR contacts.cl_telephone = ('495"+cr->owt()->at(i)->cont()->at(j)->contact_tel_num+"')";
+        }
+    }
     analysis_res.clear();
 
     QList<int> temp_zk_id;//лист для избежания повторов
 
     QList<Crud*> *crudlist = new QList <Crud*>; //Список для результатов анализа
-
+    qDebug() << temp_str_for_cont_num;
+    qDebug() << temp_str_for_num;
     ///Делаю 3 запроса, согласно с вариантами знакомства
    crudlist = get_1_var(cr, crudlist, added_SQL);
    crudlist = get_2_var(cr, crudlist, added_SQL);
@@ -30,13 +58,14 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
 
     ///1 вариант - собираю людей, у которых в КОНТАКТАХ лежит номер анализируемого человека
 
+
         QString tempSQL =" SELECT zk.zk_id, S.TEL_NUM, S.CONTACT_MARK,"
                 " S.OW_TEL_NUM "
                 " FROM zk "
                 " INNER JOIN (SELECT "
                 " owners_tel.telephone_num AS TEL_NUM,"
                 " Q.CONTACT_MARK AS CONTACT_MARK,"
-                " owners_tel.telephone_id AS TEL_ID, Q.TEL_NUM AS OW_TEL_NUM"
+                " owners_tel.fk_telephone_zk AS TEL_ID, Q.TEL_NUM AS OW_TEL_NUM"
                 " FROM OWners_tel"
                 " INNER join(SELECT contacts.cl_telephone AS CONTACT_NUM,"
                 " contacts.cl_info AS CONTACT_MARK,"
@@ -45,7 +74,7 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
                 " FROM contacts"
                 " INNER JOIN (SELECT owners_tel.telephone_num AS TEL_NUM"
                 " FROM owners_tel"
-                " where owners_tel.fk_telephone_zk = (:zk_id)) AS OW"
+                " where"+temp_str_for_num+") AS OW"
                 " ON OW.TEL_NUM = contacts.cl_telephone) AS Q"
                 " ON Q.FK = owners_tel.telephone_id) AS S"
                 " ON S.TEL_ID = zk.zk_id "
@@ -55,7 +84,6 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
             tempSQL+=added_SQL;
 
         querry.prepare(tempSQL);
-        querry.bindValue(":zk_id", cr->zk_id);
 
         if (!querry.exec())
             qDebug() << querry.lastError();
@@ -74,10 +102,18 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
             {
                 if(crudlist->at(a)->zk_id == querry.value(0).toInt())    //Если запись совпадает
                 {
+                    Owners_tel *temp_ot = nullptr;
                    ///Просто добавляю новый телефон в старую запись
-                    Owners_tel *temp_ot = new Owners_tel(querry.value(1).toString(),1,crudlist->at(a)->zk_id);
+                    if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
+                        temp_ot = new Owners_tel(querry.value(1).toString(),1,crudlist->at(a)->zk_id, false, true);
+                    else
+                        temp_ot = new Owners_tel(querry.value(1).toString(),1,crudlist->at(a)->zk_id, false, false);
 
-                    Contacts *temp_cont = new Contacts(1, querry.value(3).toString(), querry.value(2).toString(),temp_ot->tel_id);
+                    Contacts *temp_cont = nullptr;
+                    if(querry.value(3).toString().startsWith("499") || querry.value(3).toString().startsWith("495") )
+                        temp_cont = new Contacts(1, querry.value(3).toString(), querry.value(2).toString(),temp_ot->tel_id, false, true);
+                    else
+                        temp_cont = new Contacts(1, querry.value(3).toString(), querry.value(2).toString(),temp_ot->tel_id, false, false);
                     ///Собираем воедино
                     temp_ot->cont()->append(temp_cont);//Засунул контакт в телефон
                     crudlist->at(a)->owt()->append(temp_ot);
@@ -90,10 +126,19 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
                 metka: //То добавляю новую запись
                 Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
 
+                Owners_tel *temp_ot = nullptr;
                 ///Беру его телефон с id = 1 (Значит телефон анализируемого обнаружен в контактах этого человека)
-                Owners_tel *temp_ot = new Owners_tel(querry.value(1).toString(),1,temp_crud->zk_id);
 
-                Contacts *temp_cont = new Contacts(1, querry.value(3).toString(), querry.value(2).toString(),temp_ot->tel_id);
+                if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
+                    temp_ot = new Owners_tel(querry.value(1).toString(),1,temp_crud->zk_id, false, true);
+                else
+                    temp_ot = new Owners_tel(querry.value(1).toString(),1,temp_crud->zk_id, false, false);
+
+                Contacts *temp_cont = nullptr;
+                if( querry.value(3).toString().startsWith("499") || querry.value(3).toString().startsWith("495") )
+                    temp_cont = new Contacts(1, querry.value(3).toString(), querry.value(2).toString(),temp_ot->tel_id,false, true);
+                else
+                    temp_cont = new Contacts(1, querry.value(3).toString(), querry.value(2).toString(),temp_ot->tel_id, false, false);
 
                 ///Собираем воедино
                 temp_ot->cont()->append(temp_cont);
@@ -111,26 +156,25 @@ QList<Crud *> *For_analysis::get_2_var(Crud *cr, QList<Crud *> *crudlist, QStrin
     QSqlQuery querry(db->db());
     QString tempSQL;
     /// 2 вариант - в КОНТАКТАХ анализируемого человека обнаружен этот человек
-          tempSQL +=" SELECT zk.zk_id, OWT.OWNER_TEL,"
-                    " OWT.TEL_NUM, OWT.CONT_MARK"
-                    " FROM zk"
-                    " INNER JOIN (SELECT owners_tel.fk_telephone_zk AS FK_ZK,"
-                    " owners_tel.telephone_num AS TEL_NUM,"
-                    " CONT.CONT_MARK AS CONT_MARK,"
-                    " CONT.OWNER_TEL AS OWNER_TEL"
-                    " FROM owners_tel"
-                    " INNER JOIN (SELECT contacts.cl_telephone AS CONT_TEL,"
-                    " contacts.cl_info AS CONT_MARK,"
-                    " tels.OWNER_TEL AS OWNER_TEL"
-                    " FROM contacts "
-                    " INNER JOIN(SELECT  DISTINCT owners_tel.telephone_id as tel_id,"
-                    " owners_tel.telephone_num AS OWNER_TEL"
-                    " FROM owners_tel"
-                    " WHERE owners_tel.fk_telephone_zk = (:zk_id)) as tels"
-                    " ON tels.tel_id = contacts.fk_cl_telephone) AS CONT"
-                    " ON CONT.CONT_TEL = owners_tel.telephone_num) AS OWT"
-                    " ON OWT.FK_ZK = zk.zk_id"
-                    " WHERE ZK.zk_id>0 ";
+          tempSQL += " SELECT DISTINCT zk.zk_id, OWT.OWNER_TEL,"
+                 " OWT.TEL_NUM, OWT.CONT_MARK"
+                 " FROM zk"
+                 " INNER JOIN (SELECT DISTINCT owners_tel.fk_telephone_zk AS FK_ZK,"
+                 " owners_tel.telephone_num AS TEL_NUM,"
+                 " CONT.CONT_MARK AS CONT_MARK,"
+                 " CONT.OWNER_TEL AS OWNER_TEL"
+                 " FROM owners_tel"
+                 " INNER JOIN (SELECT DISTINCT contacts.cl_telephone AS CONT_TEL,"
+                 " contacts.cl_info AS CONT_MARK,"
+                 " tels.OWNER_TEL AS OWNER_TEL"
+                 " FROM contacts,(SELECT DISTINCT owners_tel.telephone_id as tel_id,"
+                 " owners_tel.telephone_num AS OWNER_TEL"
+                 " FROM owners_tel"
+                 " WHERE "+temp_str_for_num+") as tels"
+                 " WHERE ("+temp_str_for_cont_num+") AND tels.tel_id = contacts.fk_cl_telephone) AS CONT"
+                 " ON CONT.CONT_TEL = owners_tel.telephone_num) AS OWT"
+                 " ON OWT.FK_ZK = zk.zk_id"
+                 " WHERE ZK.zk_id>0 ";
 
          if(!added_SQL.isEmpty()) //Дополнительные условия запроса (ограничения по дате и ЗК)
              tempSQL+=added_SQL;
@@ -140,6 +184,8 @@ QList<Crud *> *For_analysis::get_2_var(Crud *cr, QList<Crud *> *crudlist, QStrin
 
               if (!querry.exec())
                   qDebug() << querry.lastError();
+
+              qDebug() << querry.executedQuery();
 
               /// 0 - id
               /// 1- номер анализируемого к которому привязан контакт
@@ -155,26 +201,46 @@ QList<Crud *> *For_analysis::get_2_var(Crud *cr, QList<Crud *> *crudlist, QStrin
                       {
                           if(crudlist->at(a)->zk_id == querry.value(0).toInt())    //Если запись совпадает
                           {
-                              ///Просто добавляю новый телефон в старую запись
-                               Owners_tel *temp_ot = new Owners_tel(querry.value(1).toString(),2,crudlist->at(a)->zk_id);
+                              Owners_tel *temp_ot = nullptr;
+                              Contacts *temp_cont = nullptr;
 
-                               Contacts *temp_cont = new Contacts(2, querry.value(2).toString(), querry.value(3).toString(),temp_ot->tel_id);
+                                if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
+                               temp_ot = new Owners_tel(querry.value(1).toString(),2,crudlist->at(a)->zk_id, false, true);
+                                else
+                               temp_ot = new Owners_tel(querry.value(1).toString(),2,crudlist->at(a)->zk_id, false, false);
+
+
+                                if(querry.value(2).toString().startsWith("499") || querry.value(2).toString().startsWith("495") )
+                                    temp_cont = new Contacts(2, querry.value(2).toString(), querry.value(3).toString(),temp_ot->tel_id, false, true);
+                                else
+                                    temp_cont = new Contacts(2, querry.value(2).toString(), querry.value(3).toString(),temp_ot->tel_id, false, false);
+
                                ///Собираем воедино
                                temp_ot->cont()->append(temp_cont);//Засунул контакт в телефон
                                crudlist->at(a)->owt()->append(temp_ot);
                               add_is_ready=true;
                               break;
+
                           }
                       }
                       if(add_is_ready==false) //если флаг апдейта не изменился
                       {
                           metka: //То добавляю новую запись
                           Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
+                          Owners_tel *temp_ot = nullptr;
+                          Contacts *temp_cont = nullptr;
 
                           ///Беру его телефон с id = 2 (ЗНАЧИТ ТЕЛЕФОН - НОМЕР АНАЛИЗИРУЕМОГО, В КОТОРОМ ОБНАРУЖЕН КОНТАКТ)
-                          Owners_tel *temp_ot = new Owners_tel(querry.value(1).toString(),2,temp_crud->zk_id);
+                          if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
+                            temp_ot = new Owners_tel(querry.value(1).toString(),2,temp_crud->zk_id, false, true);
+                          else
+                            temp_ot = new Owners_tel(querry.value(1).toString(),2,temp_crud->zk_id, false, false);
 
-                          Contacts *temp_cont = new Contacts(2, querry.value(2).toString(), querry.value(3).toString(), temp_ot->tel_id);
+
+                          if(querry.value(2).toString().startsWith("499") || querry.value(2).toString().startsWith("495") )
+                              temp_cont = new Contacts(2, querry.value(2).toString(), querry.value(3).toString(), temp_ot->tel_id, false, true);
+                          else
+                              temp_cont = new Contacts(2, querry.value(2).toString(), querry.value(3).toString(), temp_ot->tel_id, false, true);
 
                           ///Собираем воедино
                           temp_ot->cont()->append(temp_cont);
@@ -192,29 +258,24 @@ QList<Crud *> *For_analysis::get_3_var(Crud *cr, QList<Crud *> *crudlist, QStrin
     QSqlQuery querry(db->db());
     QString tempSQL;
 
-    tempSQL += " SELECT zk.zk_id, OW.TEL_NUM, OW.CONTACT_TEL, OW.CONTACT_MARK "
-           " FROM zk"
-           " INNER JOIN(SELECT  DISTINCT owners_tel.fk_telephone_zk as ID,"
-           " owners_tel.telephone_num as TEL_NUM,"
-           " Q.CONT_MARK AS CONTACT_MARK, "
-           " Q.CONT_TEL AS CONTACT_TEL"
-           " FROM owners_tel"
-           " INNER JOIN"
-           " (SELECT DISTINCT contacts.cl_telephone as CONT_TEL,"
-           " contacts.contact_list_id as CONT_ID,"
-           " contacts.fk_cl_telephone as CONT_FK,"
-           " contacts.cl_info as CONT_MARK "
-           " FROM contacts"
-           " INNER JOIN (SELECT DISTINCT contacts.cl_telephone as TELEPHONE"
-           " , contacts.contact_list_id as ID "
-           " FROM contacts, owners_tel"
-           " WHERE owners_tel.fk_telephone_zk = (:zk_id)) AS S"
-           " ON S.TELEPHONE = contacts.cl_telephone"
-           " WHERE S.ID != contacts.contact_list_id ) AS Q"
-           " ON Q.CONT_FK = owners_tel.telephone_id"
-           " WHERE owners_tel.fk_telephone_zk != (:zk_id)) AS OW"
-           " ON OW.ID = zk.zk_id"
-           " WHERE zk_id>0 ";
+
+   tempSQL +=" SELECT tab.s_fk, tab.telephone_num, tab.cont_num, tab.cont_mark"
+   " FROM (SELECT NOT_SORTED_CONTS.CONT_MARK, NOT_SORTED_CONTS.CONT_NUM, NOT_SORTED_CONTS.FK, owners_tel.telephone_num, owners_tel.fk_telephone_zk AS S_FK"
+   " FROM owners_tel"
+   " INNER JOIN(SELECT contacts.contact_list_id, contacts.cl_info AS CONT_MARK, contacts.cl_telephone AS CONT_NUM, contacts.fk_cl_telephone AS FK"
+   " FROM contacts,(SELECT DISTINCT contacts.cl_telephone AS CONT_TEL, contacts.cl_info AS CONT_MARK, "
+   " tels.OWNER_TEL AS OWNER_TEL,"
+   " tels.FK AS TELS_FK"
+   " FROM contacts, "
+   " (SELECT DISTINCT owners_tel.telephone_id as tel_id, owners_tel.telephone_num AS OWNER_TEL,"
+   " owners_tel.fk_telephone_zk AS FK"
+   " FROM owners_tel WHERE  "+temp_str_for_num+") as tels "
+   " WHERE ("+temp_str_for_cont_num+")"
+   " AND tels.tel_id = contacts.fk_cl_telephone) as CONTS"
+   " WHERE CONTS.CONT_TEL =  contacts.cl_telephone) AS NOT_SORTED_CONTS"
+   " ON NOT_SORTED_CONTS.FK = owners_tel.telephone_id) as  tab"
+   " WHERE tab.S_FK!= "+QString::number(cr->zk_id);
+
 
    if(!added_SQL.isEmpty()) //Дополнительные условия запроса (ограничения по дате и ЗК)
        tempSQL+=added_SQL;
@@ -238,11 +299,20 @@ QList<Crud *> *For_analysis::get_3_var(Crud *cr, QList<Crud *> *crudlist, QStrin
               {
                   if(crudlist->at(a)->zk_id == querry.value(0).toInt())    //Если запись совпадает
                   {
+                      Owners_tel *temp_ot = nullptr;
+                      Contacts *temp_cont = nullptr;
                       ///Просто добавляю новый телефон в старую запись
-                       Owners_tel *temp_ot = new Owners_tel(querry.value(1).toString(),3,crudlist->at(a)->zk_id);
+                      if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
+                        temp_ot = new Owners_tel(querry.value(1).toString(),3,crudlist->at(a)->zk_id,false, true);
+                      else
+                        temp_ot = new Owners_tel(querry.value(1).toString(),3,crudlist->at(a)->zk_id, false, false);
 
-                       Contacts *temp_cont = new Contacts(3, querry.value(2).toString(), querry.value(3).toString(),temp_ot->tel_id);
-                       ///Собираем воедино
+                      if(querry.value(2).toString().startsWith("499") || querry.value(2).toString().startsWith("495") )
+                        temp_cont = new Contacts(3, querry.value(2).toString(), querry.value(3).toString(),temp_ot->tel_id, false, true);
+                      else
+                        temp_cont = new Contacts(3, querry.value(2).toString(), querry.value(3).toString(),temp_ot->tel_id,  false, false);
+
+                      ///Собираем воедино
                        temp_ot->cont()->append(temp_cont);//Засунул контакт в телефон
                        crudlist->at(a)->owt()->append(temp_ot);
                       add_is_ready=true;
@@ -252,12 +322,20 @@ QList<Crud *> *For_analysis::get_3_var(Crud *cr, QList<Crud *> *crudlist, QStrin
               if(add_is_ready==false) //если флаг апдейта не изменился
               {
                   metka: //То добавляю новую запись
+                  Owners_tel *temp_ot = nullptr;
+                  Contacts *temp_cont = nullptr;
                   Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
 
                   ///Беру его телефон с id = 2 (ЗНАЧИТ ТЕЛЕФОН - НОМЕР АНАЛИЗИРУЕМОГО, В КОТОРОМ ОБНАРУЖЕН КОНТАКТ)
-                  Owners_tel *temp_ot = new Owners_tel(querry.value(1).toString(),3,temp_crud->zk_id);
+                  if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
+                    temp_ot  = new Owners_tel(querry.value(1).toString(),3,temp_crud->zk_id, false, true);
+                  else
+                     temp_ot  = new Owners_tel(querry.value(1).toString(),3,temp_crud->zk_id, false, false);
 
-                  Contacts *temp_cont = new Contacts(3, querry.value(2).toString(), querry.value(3).toString(), temp_ot->tel_id);
+                  if(querry.value(2).toString().startsWith("499") || querry.value(2).toString().startsWith("495") )
+                    temp_cont = new Contacts(3, querry.value(2).toString(), querry.value(3).toString(), temp_ot->tel_id, false, true);
+                  else
+                    temp_cont = new Contacts(3, querry.value(2).toString(), querry.value(3).toString(), temp_ot->tel_id, false, false);
 
                   ///Собираем воедино
                   temp_ot->cont()->append(temp_cont);
@@ -314,7 +392,11 @@ metka:
 if(!temp_crudlist->isEmpty())
 {
     analysis_res +="Номер телефона ";
-    analysis_res += temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num + ", принадлежащий владельцу записной книжки: "+
+    if (temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
+        analysis_res += temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num + "(старый)";
+    else
+       analysis_res +=temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num ;
+    analysis_res += ", принадлежащий владельцу записной книжки: "+
             cr->lastname+" "+cr->name+" "+cr->mid_name+" обнаружен в ";
 
     if (temp_crudlist->count()>1)
@@ -369,7 +451,10 @@ void For_analysis::long_face_analysis(Crud *cr, QList<Crud*> *crudlist)
              analysis_res +=" телефон: ";
              for(int a = 0 ; a < list->size(); a++)
              {
-                 analysis_res += list->at(a)->tel_num+", ";
+                 if (list->at(a)->oldnum == true)
+                    analysis_res += list->at(a)->tel_num+"(старый), ";
+                 else
+                     analysis_res += list->at(a)->tel_num+", ";
              }
          }
          analysis_res +=", окраска ???, дополнительная информация: "+crudlist->at(i)->dop_info +
@@ -379,7 +464,12 @@ void For_analysis::long_face_analysis(Crud *cr, QList<Crud*> *crudlist)
          {
              if(crudlist->at(i)->owt()->at(a)->tel_id == 1)
              {
-                 analysis_res+="1 ВАРИАНТ Номер телефона "+crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num+", принадлежащий " +
+                 analysis_res+="1 ВАРИАНТ Номер телефона ";
+                 if (crudlist->at(i)->owt()->at(a)->cont()->at(0)->oldnum == true)
+                    analysis_res+=crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num+"(старый), ";
+                 else
+                     analysis_res += crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num+", ";
+                  analysis_res += "принадлежащий " +
                          cr->lastname+" "+cr->name+" "+cr->mid_name+", обнаружен в записной книжке, владельцем которой является "+
                          crudlist->at(i)->lastname +" "+crudlist->at(i)->name +" "+crudlist->at(i)->mid_name +" ";
                  if(!crudlist->at(i)->owt()->at(a)->cont()->at(0)->mark.isEmpty())
@@ -388,8 +478,13 @@ void For_analysis::long_face_analysis(Crud *cr, QList<Crud*> *crudlist)
                      analysis_res+=" \r\n";
              }
              if(crudlist->at(i)->owt()->at(a)->tel_id == 2)
-             {
-                 analysis_res+="2 ВАРИАНТ Номер телефона "+crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num;
+             {                 
+                 analysis_res+="2 ВАРИАНТ Номер телефона  ";
+                 if (crudlist->at(i)->owt()->at(a)->cont()->at(0)->oldnum == true)
+                    analysis_res+=crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num+"(старый), ";
+                 else
+                     analysis_res += crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num+", ";
+
                  if(!crudlist->at(i)->owt()->at(a)->cont()->at(0)->mark.isEmpty())
                      analysis_res +=" с пометкой "+crudlist->at(i)->owt()->at(a)->cont()->at(0)->mark + " ";
                  else
@@ -401,7 +496,12 @@ void For_analysis::long_face_analysis(Crud *cr, QList<Crud*> *crudlist)
              }
              if(crudlist->at(i)->owt()->at(a)->tel_id == 3)
              {
-                 analysis_res+="3 ВАРИАНТ Номер телефона "+crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num;
+                 analysis_res+="3 ВАРИАНТ Номер телефона ";
+                 if (crudlist->at(i)->owt()->at(a)->cont()->at(0)->oldnum == true)
+                    analysis_res+=crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num+"(старый), ";
+                 else
+                     analysis_res += crudlist->at(i)->owt()->at(a)->cont()->at(0)->contact_tel_num+", ";
+
                  if(!crudlist->at(i)->owt()->at(a)->cont()->at(0)->mark.isEmpty())
                      analysis_res +=" с пометкой "+crudlist->at(i)->owt()->at(a)->cont()->at(0)->mark + " ";
                  else
@@ -441,9 +541,13 @@ metka:
 
 if(!temp_crudlist->isEmpty())
 {
-    analysis_res +="Номер телефона "+temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num;
+    analysis_res +="Номер телефона ";
+    if (temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
+       analysis_res+=temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+"(старый), ";
+    else
+        analysis_res += temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+", ";
 
-    analysis_res+=", принадлежащий владельцу записной книжки: ";
+    analysis_res+=" принадлежащий владельцу записной книжки: ";
     analysis_res += cr->lastname+" "+cr->name+" "+cr->mid_name;
     analysis_res +=" обнаружен, в ";
     if (temp_crudlist->count()>1)
@@ -461,7 +565,12 @@ if(!temp_crudlist->isEmpty())
        temp_crudlist->at(i)->liv_corp+ ", " + temp_crudlist->at(i)->liv_home;
 
 
-        analysis_res +=" телефон: "+temp_crudlist->at(i)->owt()->at(0)->tel_num;
+        analysis_res +=" телефон: ";
+        if ( temp_crudlist->at(i)->owt()->at(0)->oldnum == true)
+            analysis_res += temp_crudlist->at(i)->owt()->at(0)->tel_num + "(старый), ";
+        else
+            analysis_res += temp_crudlist->at(i)->owt()->at(0)->tel_num + ", ";
+
         analysis_res +=", окраска ???, дополнительная информация: "+temp_crudlist->at(i)->dop_info +
         ", Дата формирования " + temp_crudlist->at(i)->date_add + " в интересах: "+temp_crudlist->at(i)->check_for;
 

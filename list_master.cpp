@@ -113,7 +113,7 @@ void List_master::fill_owners_tel_list(QList<Owners_tel *> *owner_telLIST, int z
     db_connection *db = db_connection::instance();
     db->set_Sql_type(sqlt);
     QSqlQuery query(db->db());
-    query.prepare(" SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk, owners_tel.internum "
+    query.prepare(" SELECT owners_tel.Telephone_num, owners_tel.Telephone_id, owners_tel.FK_Telephone_Zk, owners_tel.internum, owners_tel.oldnum "
                  " FROM  owners_tel "
                  " WHERE owners_tel.FK_Telephone_Zk = (:id)");
     query.bindValue(":id", zk_id);
@@ -130,19 +130,19 @@ void List_master::fill_owners_tel_list(QList<Owners_tel *> *owner_telLIST, int z
         switch (frm_st)
         {
         case Export:
-            ot = new Owners_tel(query.value(0).toString(), counter_tel, new_zk, query.value(3).toBool(), IsReaded);
+            ot = new Owners_tel(query.value(0).toString(), counter_tel, new_zk, query.value(3).toBool(), query.value(4).toBool(), IsReaded);
             ///Экспорт: новый номер, новый айди, новый парентАйди
             break;
         case Import:
-            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), IsReaded);
+            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), query.value(4).toBool(), IsReaded);
             ///Импорт: Достаю данные как в базе
             break;
         case Analysis:
-            ot =new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), IsReaded);
+            ot =new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), query.value(4).toBool(),  IsReaded);
             ///Анализ: Достаю данные как в базе
             break;
         case Main_window_for_Update:
-            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), IsReaded);
+            ot = new Owners_tel(query.value(0).toString(), query.value(1).toInt(), query.value(2).toInt() , query.value(3).toBool(), query.value(4).toBool(),  IsReaded);
             ///Импорт: Достаю данные как в базе
             break;
         }
@@ -180,7 +180,9 @@ void List_master::fill_contacts_list(QList<Contacts *> *contactLIST, int tel_id,
                  "contacts.contact_list_id,"
                  "contacts.cl_telephone,"
                  "contacts.cl_info, "
-                 "contacts.FK_Cl_telephone"
+                 "contacts.FK_Cl_telephone,"
+                  " contacts.internum,"
+                  " contacts.oldnum"
                  " FROM contacts"
                 " WHERE contacts.FK_Cl_telephone = (:id) ");
     query.bindValue(":id",tel_id);
@@ -196,19 +198,19 @@ void List_master::fill_contacts_list(QList<Contacts *> *contactLIST, int tel_id,
         switch (frm_st)
         {
         case Export:
-            cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(),new_tel_id, IsReaded);
+            cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(),new_tel_id, query.value(4).toBool(), query.value(5).toBool(), IsReaded);
             ///Экспорт: новый номер, новый айди, новый парентАйди
             break;
         case Import:
-           cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), IsReaded);
+           cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), query.value(4).toBool(), query.value(5).toBool(), IsReaded);
             ///Импорт: Достаю данные как в базе
             break;
         case Analysis:
-            cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), IsReaded);
+            cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), query.value(4).toBool(), query.value(5).toBool(), IsReaded);
             ///Анализ: Достаю данные как в базе
             break;
         case Main_window_for_Update:
-           cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), IsReaded);
+           cnt = new Contacts(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString(), query.value(3).toInt(), query.value(4).toBool(), query.value(5).toBool(), IsReaded);
             ///Импорт: Достаю данные как в базе
             break;
         }
@@ -471,10 +473,12 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud)
        {
            if (!crud->at(i)->owt()->at(a)->tel_num.isEmpty())
            {
-               query1.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk) "
-                              " VALUES ((:tel_num), (:fk_id)) RETURNING telephone_id");
+               query1.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk, internum, oldnum) "
+                              " VALUES ((:tel_num), (:fk_id), (:i_n), (:o_n)) RETURNING telephone_id");
                query1.bindValue(":tel_num",crud->at(i)->owt()->at(a)->tel_num);
                query1.bindValue(":fk_id",query.value(0).toInt());
+               query1.bindValue(":i_n",crud->at(i)->owt()->at(a)->internum);
+               query1.bindValue(":o_n",crud->at(i)->owt()->at(a)->oldnum);
 
                if (!query1.exec())
                {
@@ -488,10 +492,12 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud)
                    {
                     if(!crud->at(i)->owt()->at(a)->cont()->at(b)->contact_tel_num.isEmpty())
                        {
-                           query2.prepare("INSERT INTO contacts (cl_telephone, cl_info, FK_Cl_telephone) VALUES ( (:tel_num), (:mark), (:fk_id))");
+                           query2.prepare("INSERT INTO contacts (cl_telephone, cl_info, FK_Cl_telephone,internum, oldnum ) VALUES ( (:tel_num), (:mark), (:fk_id), (:i_n), (:o_n))");
                            query2.bindValue(":tel_num",crud->at(i)->owt()->at(a)->cont()->at(b)->contact_tel_num);
                            query2.bindValue(":mark",crud->at(i)->owt()->at(a)->cont()->at(b)->mark);
                            query2.bindValue(":fk_id",query1.value(0).toInt());
+                           query2.bindValue(":i_n",crud->at(i)->owt()->at(a)->cont()->at(b)->internum);
+                           query2.bindValue(":o_n",crud->at(i)->owt()->at(a)->cont()->at(b)->oldnum);
 
                            if (!query2.exec())
                            {
@@ -567,7 +573,9 @@ QList<Crud *> *List_master::search(QString search_query)
         qDebug() << temp.executedQuery();
         return nullptr;
     }
+    qDebug() << temp.executedQuery();
     QList<Crud*> *crudlist = new QList<Crud*>;
+
     while (temp.next())
     {
         Crud *cr = new Crud();
