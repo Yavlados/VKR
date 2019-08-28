@@ -30,6 +30,7 @@ private slots:
     void Fill_table();
     void on_pb_add_clicked();
     void on_pb_del_clicked();
+    void on_pushButton_clicked();
 };
 
 #endif // OFFICIALTELEPHONES_FORM_H

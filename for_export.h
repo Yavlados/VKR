@@ -7,6 +7,9 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QObject>
+#include <QDate>
+#include <QFileInfo>
+
 
 /**
  * \file for_export.h
@@ -21,9 +24,15 @@ public:
 
     bool Do_export(QString filename, QList<Crud*> *crud, QString password , bool cb_checked, bool cb_set_password, QList<Off_tels*> *offtel);
 
+    QString Create_report_filename(QString filename);
+
     List_master *list;
+
+    QString info_text;
+    QList<int> exported_zk_id;
 private:
     QFile db_file;
+    QFile export_report;
 };
 
 #endif // FOR_EXPORT_H

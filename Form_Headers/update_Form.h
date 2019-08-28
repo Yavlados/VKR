@@ -18,8 +18,9 @@
 namespace Ui {
 class Update;
 }
-enum Form_type { Update_form =1,
-                 Add_form = 0};
+enum Form_type { Update_form =0,
+                 Add_form,
+                 Confluence_form};
 
 enum Import_type {Update_import_data =0,
                   Update_pg_data = 2,
@@ -38,8 +39,14 @@ public:
 
     MTM_OwTel *ot_model = new MTM_OwTel;
     MTM_Contacts *contacts_model =  new MTM_Contacts;
-    List_master *list;
+    List_master *list = nullptr;
+
     Crud *new_cr; //Новая зк
+    Crud *main_cr = nullptr; //Зк, главная в скписке линкованных или при слиянии
+    Crud *added_cr = nullptr; //добавочная при слиянии
+
+    QList<Crud*> *linked_crud();
+
     explicit Update(QWidget *parent = nullptr);
 
     ~Update();
@@ -51,7 +58,14 @@ public slots:
     void Fill_fields_update(Crud *new_cr);
     void Fill_table_in_add();
     void close(); //деструктор класса для сигнал
+
+    ///-----Методы для слияния-----///
+    /// метод начала слияния
+    void start_confluence(Crud *confl_cr, Crud *m_cr, Crud *a_cr);
+
 private:
+    QList<Crud*> * _linked_crud = nullptr;
+    int index = 0;
     Ui::Update *ui;
 
 signals:
@@ -62,9 +76,11 @@ signals:
     void updated_import_crud(Crud*);
     void add_import_crud(Crud*);
     void update_import_pg();
+    void open_confluence_upd(Crud *confl_crud,Crud *main_crud,Crud *second_crud);
 
 private slots:
 
+    void closeEvent(QCloseEvent *event);
     void clear_ALL();
     void clear_Vl();
 
@@ -78,13 +94,18 @@ private slots:
     void on_pb_del_contact_line_clicked();
     void on_pb_add_contact_line_clicked();
     void on_tableView_2_clicked(const QModelIndex &index);
+
+    ///Метод проверки ФИО+ДР и телефонов
     void set_splitter_lines();
     bool compare_tel_num();
+
     ///Метод сбора строки дня рождения
     QString get_birthdate();
-    ///Методы добавления
 
+    ///Методы добавления
      void Add_zk();
+     void Add_zk_into_base();
+
      void cb_clicked();
 
     ///Слоты для редактирования при импорте
@@ -93,7 +114,35 @@ private slots:
 
     ///Слот установки делегата и коннекта модели
     void  set_delegates_and_connections();
+
     void slot_for_model(QModelIndex, QModelIndex);
+
+    void take_linked_zk();
+
+    ///Слот поиска совпадающих полей
+    void compare_linked_cruds();
+
+    ///Слот подсветки совпавших
+    void mark_le(QLineEdit *le, QLineEdit *le1 = nullptr, QLineEdit *le2 = nullptr);
+
+    ///Слот Заолнения вл
+    void fill_vl();
+
+    ///пагинация связаных ЗК
+    void prev_page();
+    void next_page();
+
+    ///Чистка вл для линковки
+    void clear_vl_for_links();
+
+    ///месседжбокс перед слиянием
+    void msg_before_confluence(Crud *cr);
+
+    ///метод слияния
+    void prepare_confluence_crud(Crud*main_crud, Crud*added_crud);
+
+    ///метод слияния связанных ЗК в одну
+    void start_confluence_all_linked();
 };
 
 #endif // UPDATE_H

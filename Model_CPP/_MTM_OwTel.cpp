@@ -52,7 +52,7 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
           return QVariant();
       if (role == Qt::DisplayRole)
       {
-          if(actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false && actotlist.at(row)->state != IsNewing)
+          if(actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false && actotlist.at(row)->state != IsNewing && state == Show_Ot)
           {
               QString _temp =  actotlist.at(row)->tel_num;
 

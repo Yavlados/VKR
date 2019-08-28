@@ -35,7 +35,9 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
 
          qDebug() << db->db_connect()<<db->db().lastError();
          QSqlQuery query(db->db());
-
+    
+         if(!crud->isEmpty())
+         {
          if(!query.exec("CREATE TABLE zk"
                         " ( zk_id integer NOT NULL,"
                         " lastname character varying(20),"
@@ -185,9 +187,11 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
         }
             query.clear();
        }
+    }
          ///Если захотели служебные телефоны
-         if (cb_checked == true)
+         if (!offtel->isEmpty())
          {
+             in << "\r\n Следующие служебные телефоны:";
            if (!query.exec("CREATE TABLE official_tel"
                        "("
                         " of_t_id integer NOT NULL,"
@@ -205,7 +209,9 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                 query.bindValue(":t_n", offtel->at(y)->tel_num);
                 query.bindValue(":s_n", offtel->at(y)->service_name);
                 if(!query.exec())
-                    qDebug() << query.lastError();
+                   qDebug() << query.lastError();
+                else
+                    in << "\r\n "+offtel->at(y)->service_name;
             }
          }
 

@@ -37,7 +37,8 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
                    "zk.dop_info,"
                    "zk.date_add,"
                    "zk.time_add,"
-                   "zk.date_upd "
+                   "zk.date_upd,"
+                   "zk.linked_id "
                    " FROM "
                    " zk "
                    " WHERE zk . Zk_id =(:id)"
@@ -71,6 +72,7 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
         cr->date_add = query.value(17).toString();
         cr->time_add = query.value(18).toString();
         cr->date_upd = query.value(19).toString();
+        cr->linked_nums = query.value(20).toString();
         cr->state = IsReaded;
         switch (sqlt)
         {
@@ -433,12 +435,12 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud)
                            "Liv_city,Liv_street,Liv_home,Liv_corp,"
                            "Liv_flat,"
                            "Check_for, Dop_info,"
-                           "Date_add, Time_add) "
+                           "Date_add, Time_add, linked_id) "
                            " VALUES ((:lastname),(:name),(:mid_name), (:b_d),"
                            "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                            "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                            "(:c_f),(:d_i),"
-                           "(:d_a), (:t_a)) RETURNING zk_id");
+                           "(:d_a), (:t_a), (:l_n)) RETURNING zk_id");
        query.bindValue(":lastname",crud->at(i)->lastname);
        query.bindValue(":name",crud->at(i)->name);
        query.bindValue(":mid_name",crud->at(i)->mid_name);
@@ -462,6 +464,8 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud)
        query.bindValue(":d_a",crud->at(i)->date_add);
        query.bindValue(":t_a",crud->at(i)->time_add);
 
+       query.bindValue(":l_n",crud->at(i)->linked_nums);
+
        if(!query.exec())
         {
         qDebug() << query.lastError();
@@ -469,6 +473,11 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud)
         }
    while (query.next())
    {
+       crud->at(i)->zk_id = query.value(0).toInt();
+
+       if(frm_st == Main_window_for_Update)
+            crud->at(i)->Change_linked_in_db(false,query.value(0).toInt(),crud->at(i)->linked_nums);
+
        for (int a = 0; a < crud->at(i)->owt()->size(); a++)
        {
            if (!crud->at(i)->owt()->at(a)->tel_num.isEmpty())

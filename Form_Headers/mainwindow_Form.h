@@ -168,6 +168,7 @@ private slots:
 
     void on_tableView_3_doubleClicked(const QModelIndex &index);
 
+    void open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *added_cr);
 signals:
     void Send_data(Crud *cr, int index);
 

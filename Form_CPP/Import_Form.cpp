@@ -463,11 +463,11 @@ void Import_Form::on_pushButton_clicked()
     switch (ret)
     {
     case QMessageBox::Ok:
-    prepare_main_to_add(crud_model->actcrudlist.at(0),crud_model_pg->actcrudlist.at(0));
+    prepare_main_to_add(crud_model->actcrudlist.at(0), crud_model_pg->actcrudlist.at(0));
         break;
 
     case QMessageBox::Open:
-        prepare_main_to_add(crud_model_pg->actcrudlist.at(0),crud_model->actcrudlist.at(0));
+        prepare_main_to_add(crud_model_pg->actcrudlist.at(0), crud_model->actcrudlist.at(0));
         break;
 
     case QMessageBox::Cancel:

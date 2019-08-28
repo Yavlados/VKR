@@ -33,12 +33,12 @@ MainWindow::MainWindow(QWidget *parent) :
     Table_cb_delegate *delegate = new Table_cb_delegate();
     ui->tableView_3->setItemDelegateForColumn(1, delegate);
 }
-
+//-----------------------------------------------------------------------------------//
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::Add_pagination_buttons()
 {
     while(ui->hl_for_pagination_button_back->count() != 0)
@@ -71,7 +71,7 @@ void MainWindow::Add_pagination_buttons()
         }
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //Обрабатываем клик по таблице с Владельцами номеров
 {
     (void)index;
@@ -108,7 +108,7 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //�
         ui->action_update->setEnabled(false); //включаю кнопку редактировать
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Номерами владельцев
 {
     if (index_tab1.isValid())
@@ -123,7 +123,7 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
         ui->tableView_3->setColumnWidth(1,250);
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и рефреш таблиц
 {
     RefreshTab();
@@ -155,7 +155,7 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
         }
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::RefreshTab()
 {
     crud_model = new  MTM_Crud;
@@ -184,7 +184,7 @@ void MainWindow::RefreshTab()
     set_validators();
     ui->tabWidget->setCurrentIndex(0);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
 {
     if( addlist == nullptr)
@@ -198,13 +198,14 @@ void MainWindow::on_action_add_triggered()
         addlist->at(0)->Fill_table_in_add();
         ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
         connect (addlist->at(0), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
+        connect(addlist->at(0), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
         connect(addlist->at(0), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
     }
     else
         ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(addlist->at(0)));
 
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_delete_triggered()
 {
     if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
@@ -235,7 +236,7 @@ void MainWindow::on_action_delete_triggered()
         QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для удаления!")); ///Хвалимся
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_update_triggered()
 {
     if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
@@ -248,7 +249,7 @@ void MainWindow::on_action_update_triggered()
         QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для изменения!")); ///Хвалимся
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_analysis_triggered()
 {
     if (an == nullptr)
@@ -263,7 +264,7 @@ void MainWindow::on_action_analysis_triggered()
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(an));
 
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_search_triggered()
 {
     if(sr == nullptr)
@@ -279,7 +280,7 @@ void MainWindow::on_action_search_triggered()
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(sr));
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::Search_result(QList<Crud*> *crudlist)
 {
     crud_model->setCrudlist(crudlist);
@@ -308,7 +309,7 @@ void MainWindow::on_pushButton_clicked()
         }
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::add_cancel_button()
 {
     if (p_b_counter < 1)
@@ -322,10 +323,9 @@ void MainWindow::add_cancel_button()
     connect(p_b, SIGNAL(clicked()), this ,SLOT(RefreshTab()));
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::open_upd_tab(Crud *cr)
 {
-
         if(updlist == nullptr)
         {
             updlist = new QList<Update*>;
@@ -358,16 +358,17 @@ void MainWindow::open_upd_tab(Crud *cr)
         upd->Recieve_data(crudlist->at(0));
         connect (updlist->at(updlist->size()-1), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
         connect(updlist->at(updlist->size()-1), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
+        connect(updlist->at(updlist->size()-1), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
         ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,updlist->at(updlist->size()-1),"Редактировать ЗК № "+QString::number(updlist->at(updlist->size()-1)->new_cr->zk_id));
         ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::set_validators()
 {
     qDebug() << crud_model->crudlist->first()->zk_id << crud_model->crudlist->last()->zk_id;
     ui->lineEdit->setValidator(new QIntValidator(crud_model->crudlist->first()->zk_id,crud_model->crudlist->last()->zk_id));
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_tabCloseRequested(int index)
 {
     ///обработка редактирования/добавления
@@ -413,7 +414,7 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
     }
 
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_2_tabCloseRequested(int index)
 {
     if ( ui->tabWidget_2->widget(index)->objectName() == "Search")
@@ -450,7 +451,7 @@ void MainWindow::on_tabWidget_2_tabCloseRequested(int index)
     }
 
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_official_tel_triggered()
 {
     if(of == nullptr)
@@ -465,7 +466,7 @@ void MainWindow::on_action_official_tel_triggered()
         ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(of));
 
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_actionexport_triggered()
 {
     if(exprt == nullptr)
@@ -481,7 +482,7 @@ void MainWindow::on_actionexport_triggered()
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(exprt));
 
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk)
 {
     if( form_exprt == nullptr)
@@ -500,12 +501,12 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
         form_exprt->list->set_counters();
 
         if(cb_zk)
-            for (int i=0;i<crud_model->actcrudlist.size();i++) // пробегаюсь по отображаемому списку
+            for (int i=0;i<crud_model->crudlist->size();i++) // пробегаюсь по отображаемому списку
             {
-                if (crud_model->actcrudlist.at(i)->checkState_ == Checked)
+                if (crud_model->crudlist->at(i)->checkState_ == Checked)
                 {
-                    qDebug() << crud_model->actcrudlist.at(i)->zk_id;
-                    form_exprt->list->fill_crud_list(crud, crud_model->actcrudlist.at(i)->zk_id, PSQLtype);
+                    form_exprt->exported_zk_id.append( crud_model->crudlist->at(i)->zk_id);
+                    form_exprt->list->fill_crud_list(crud, crud_model->crudlist->at(i)->zk_id, PSQLtype);
                 }
             }
 
@@ -515,7 +516,7 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
         if(!crud->isEmpty() || !offtel->isEmpty())
         {
             if( form_exprt->Do_export(filename,crud, password, cb_off_tels, cb_set_password, offtel))
-                QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Данные сохранены в файл, расположенный по пути : %1").arg(filename)); ///Хвалимся
+                QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 .").arg(filename)); ///Хвалимся
             else
                 QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Во время экспорта данных что-то пошло не так!")); ///Хвалимся
         }
@@ -527,7 +528,7 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
         delete crud;
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::testing_opening(QString filename, QString password)
 {
     ///Класс для импорта
@@ -546,7 +547,7 @@ void MainWindow::testing_opening(QString filename, QString password)
    else
        delete import_form;
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_pb_check_model_clicked()
 {
     switch (m_c_s)
@@ -563,7 +564,7 @@ void MainWindow::on_pb_check_model_clicked()
     return;
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_import_triggered()
 {
     if(imprt == nullptr)
@@ -576,33 +577,33 @@ void MainWindow::on_action_import_triggered()
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(imprt));
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_Settings_triggered()
 {
         Settings_Form *settings = new Settings_Form;
         settings->show();
         connect (settings, SIGNAL(Update_main()), this, SLOT(RefreshTab()));
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::next_page()
 {
     crud_model->next_page_crud();
     ui->tableView->setModel(crud_model);
     Add_pagination_buttons();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::previous_page()
 {
     crud_model->previous_page_crud();
     ui->tableView->setModel(crud_model);
     Add_pagination_buttons();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::set_fonts()
 {
 
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::add_splitter_lines()
 {
     QSplitterHandle *handle = ui->splitter_3->handle(1);
@@ -625,33 +626,33 @@ void MainWindow::add_splitter_lines()
     line_2->setFrameShadow(QFrame::Sunken);
     layout_2->addWidget(line_2);
 }
-////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_tabBarClicked(int index)
 {
     qDebug() << ui->tabWidget->tabBar()->accessibleTabName(index);
 }
 
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_1_triggered()
 {
     on_action_add_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_2_upd_triggered()
 {
     on_action_update_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_3_del_triggered()
 {
     on_action_delete_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_5_show_triggered()
 {
        ui->tabWidget->setCurrentIndex(0);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
 {
     if(index.column() == 4 && contacts_model->actlist.at(index.row())->linked_id != 0)
@@ -669,4 +670,17 @@ void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
         ui->tableView->setCurrentIndex(index_tab1);
         on_tableView_clicked(index_tab1, contacts_model->actlist.at(index.row())->contact_tel_num);
     }
+}
+
+void MainWindow::open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *added_cr)
+{
+        Update *upd = new Update;
+        upd->frm_t = Confluence_form;
+        upd->imprt_t = Update_pg_data;
+
+        connect(this,SIGNAL(Send_data(Crud*)), upd, SLOT(recieve_import_data(Crud*)));
+        connect(upd,SIGNAL(add_import_crud(Crud*)), this, SLOT(recieve_added_import_crud(Crud*)));
+        connect(upd, SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
+        upd->start_confluence(cnfl_cr, main_crud,added_cr);
+        upd->show();
 }

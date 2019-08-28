@@ -255,5 +255,19 @@ bool Owners_tel::remove_tel()
     state = IsRemoved;
     return true;
 }
+
+QList<int> Owners_tel::compare_nums(QList<Owners_tel*> *owt1, QList<Owners_tel*> *owt2)
+{
+    QList<int> templist;
+    for (int i = 0; i < owt1->size(); i++)
+        for(int j =0; j <owt2->size(); j++)
+        {
+            if(owt1->at(i)->tel_num == owt2->at(j)->tel_num)
+            {
+                templist.append(i);
+            }
+        }
+    return templist;
+}
 //////////////////////////////////////////////////////////////////////
 

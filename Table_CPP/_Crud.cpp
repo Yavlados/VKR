@@ -16,6 +16,7 @@ QList<Owners_tel *> *Crud::owt()
     return _owt;
 }
 
+
 Crud::Crud(int id): zk_id(id)
 {
     _owt = nullptr;
@@ -27,7 +28,7 @@ Crud::Crud()
         _owt = nullptr;
     checkState_ = Unchecked;
 }
-
+//-----------------------------------------------------------------------------------//
 bool Crud:: selectAll(QList<Crud *> *list)
 {
     if(list==nullptr)
@@ -63,7 +64,8 @@ bool Crud:: selectAll(QList<Crud *> *list)
                  "zk.dop_info,"
                  "zk.date_add,"
                  "zk.time_add, "
-                 "zk.date_upd "
+                 "zk.date_upd,"
+                 "zk.linked_id "
                  " FROM "
                  " zk "
                  " ORDER BY zk.zk_id");
@@ -99,13 +101,14 @@ bool Crud:: selectAll(QList<Crud *> *list)
         cr->date_add = temp.value(17).toString();
         cr->time_add = temp.value(18).toString();
         cr->date_upd = temp.value(19).toString();
+        cr->linked_nums = temp.value(20).toString();
         cr->state = IsReaded;
         list->append(cr);
     }
 
     return true;
 }
-
+//-----------------------------------------------------------------------------------//
 void Crud::check() const
 {
     qDebug() << zk_id;
@@ -132,7 +135,7 @@ void Crud::check() const
     qDebug() << time_add;
 
 }
-
+//-----------------------------------------------------------------------------------//
 void Crud::zk_search_report(QString qry)
 {
      QSqlQuery querry(db_connection::instance()->db());
@@ -152,7 +155,7 @@ void Crud::zk_search_report(QString qry)
                    "zk.Check_for,"
                    "zk.Dop_info,"
                    "zk.Date_add,"
-                   "zk.Time_add,"
+                   "zk.Time_add"
                    ""
                    " FROM "
                    "zk ,owners_tel"
@@ -191,7 +194,7 @@ void Crud::zk_search_report(QString qry)
        search_is_ready = true;
       }
 }
-
+//-----------------------------------------------------------------------------------//
 bool Crud::update_zk()
 {
     date_upd = QDate::currentDate().toString(Qt::ISODate)+" "+QTime::currentTime().toString();
@@ -217,7 +220,8 @@ bool Crud::update_zk()
                    ""
                    "Check_for = (:c_f),"
                    "Dop_info = (:d_i),"
-                   "Date_upd = (:d_u) "
+                   "Date_upd = (:d_u),"
+                   "Linked_id = (:l_id)"
                    " WHERE zk.Zk_id = (:id)");
 
     querry.bindValue(":lastname",lastname);
@@ -241,17 +245,23 @@ bool Crud::update_zk()
     querry.bindValue(":d_i",dop_info);
 
     querry.bindValue(":d_u",date_upd);
+    querry.bindValue(":l_id",linked_nums);
+
     querry.bindValue(":id", zk_id);
     if (!querry.exec())
     {
         qDebug() << querry.lastError();
         return false;
+    }else
+    {
+        qDebug() << querry.executedQuery();
+        //вызвать метод добавления в линкед намс
+        Change_linked_in_db(true, zk_id, linked_nums);
+        Change_linked_in_db(false,zk_id,linked_nums);
+        return true;
     }
-    qDebug() << querry.executedQuery();
-    querry.clear();
-    return true;
 }
-
+//-----------------------------------------------------------------------------------//
 bool Crud::add_zk()
 {
      date_add = QDate::currentDate().toString(Qt::ISODate);
@@ -307,20 +317,35 @@ bool Crud::add_zk()
     }
 
     qDebug() << querry.executedQuery();
-    querry.clear();
     return true;
 }
 
+//-----------------------------------------------------------------------------------//
 void Crud::del_zk(int del_id)
-{    QSqlQuery querry(db_connection::instance()->db());
+{
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+
+    QSqlQuery querry(db_connection::instance()->db());
     querry.prepare("DELETE FROM zk "
                  " WHERE zk.Zk_id = (:id)");
     querry.bindValue(":id", del_id);
     if (!querry.exec())
+    {
+        isOk = false;
         qDebug() << querry.lastError();
+    }else
+        qDebug() << querry.executedQuery();
+
+    if(!isOk)
+    {
+        db_connection::instance()->db().database(cname).rollback();
+    }else
+        Change_linked_in_db(true,del_id);   //Также чищу подвязанные id
 
 }
-
+//-----------------------------------------------------------------------------------//
 Crud* Crud::id_zk_search(int zk_id)
 {
         QSqlQuery querry(db_connection::instance()->db());
@@ -347,7 +372,8 @@ Crud* Crud::id_zk_search(int zk_id)
                    "zk.dop_info,"
                    "zk.date_add,"
                    "zk.time_add, "
-                   "zk.date_upd "
+                   "zk.date_upd,"
+                   "zk.linked_id "
                    " FROM "
                    " zk "
                    " WHERE zk.zk_id = (:id)");
@@ -383,6 +409,7 @@ Crud* Crud::id_zk_search(int zk_id)
         cr->date_add = querry.value(17).toString();
         cr->time_add = querry.value(18).toString();
         cr->date_upd = querry.value(19).toString();
+        cr->linked_nums = querry.value(20).toString();
         cr->state = IsReaded;
         return cr;
     }
@@ -390,7 +417,7 @@ Crud* Crud::id_zk_search(int zk_id)
         return nullptr;
     }
 }
-
+//-----------------------------------------------------------------------------------//
 int Crud::get_id_from_tel(QString t_n)
 {
     QSqlQuery querry(db_connection::instance()->db());
@@ -406,10 +433,10 @@ int Crud::get_id_from_tel(QString t_n)
       return zk_id;
     }
 }
-
+//-----------------------------------------------------------------------------------//
 bool Crud::save_all_crud(Crud *cr)
 {
-    if (cr->owt()->isEmpty())
+        if (cr->owt()->isEmpty())
         return true;
     if(!db_connection::instance()->db_connect())
         return false;
@@ -464,7 +491,7 @@ bool Crud::save_all_crud(Crud *cr)
     db_connection::instance()->db().database(cname).commit();
     return true;
 }
-
+//-----------------------------------------------------------------------------------//
 Crud* Crud::operator+ (Crud *old_crud)
 {
      zk_id = old_crud->zk_id;
@@ -488,23 +515,220 @@ Crud* Crud::operator+ (Crud *old_crud)
      liv_home= old_crud->liv_home;
      liv_corp= old_crud->liv_corp;
      liv_flat= old_crud->liv_flat;
+     linked_nums += old_crud->linked_nums;
      return this;
 }
+//-----------------------------------------------------------------------------------//
+QList<CompareResult>* Crud::compare_cruds(Crud *cmp_cr)
+{
+    QList<CompareResult> *list = new QList<CompareResult>;
 
-bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id)
+    if(lastname == cmp_cr->lastname)
+        list->append(lastname_CR);
+
+    if(name == cmp_cr->name)
+        list->append(name_CR);
+
+    if(mid_name == cmp_cr->mid_name)
+        list->append(mid_name_CR);
+
+    if(birth_date == cmp_cr->birth_date)
+        list->append(birth_date_CR);
+
+    if(check_for == cmp_cr->check_for)
+        list->append(check_for_CR);
+
+    if(dop_info == cmp_cr->dop_info)
+        list->append(dop_info_CR);
+
+    if(reg_city == cmp_cr->reg_city)
+        list->append(reg_city_CR);
+
+    if(reg_street == cmp_cr->reg_street)
+        list->append(reg_street_CR);
+
+    if(reg_home == cmp_cr->reg_home)
+        list->append(reg_home_CR);
+
+    if(reg_corp == cmp_cr->reg_corp)
+        list->append(reg_corp_CR);
+
+    if(reg_flat == cmp_cr->reg_flat)
+        list->append(reg_flat_CR);
+
+    if(liv_city == cmp_cr->liv_city)
+        list->append(liv_city_CR);
+
+    if(liv_street == cmp_cr->liv_street)
+        list->append(liv_street_CR);
+
+    if(liv_home == cmp_cr->liv_home)
+         list->append(liv_home_CR);
+
+    if(liv_corp == cmp_cr->liv_corp)
+        list->append(liv_corp_CR);
+
+    if(liv_flat == cmp_cr->liv_flat)
+        list->append(liv_flat_CR);
+    return list;
+}
+//-----------------------------------------------------------------------------------//
+void Crud::Change_linked_in_db(bool state, int id, QString linked)
+{
+    QList<Cl_in_db_struct> templist;
+    QList<int> temp_linked_list;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+
+    if (state) //вызов из удаления
+    {     //при удалении Зк нам необходимо удалить ее номер из связанных
+        QSqlQuery querry(db_connection::instance()->db());
+        QList<int> id_from_db;//массив для сбора линкованных id из базы
+        querry.prepare(" SELECT zk.zk_id, zk.linked_id"
+                       " FROM zk"
+                       " WHERE CONCAT(',', linked_id, ',') LIKE ('%,"+QString::number(id)+",%')");
+        if (!querry.exec())
+        {
+            isOk = false;
+            qDebug() << querry.lastError();
+        }else
+             qDebug() << querry.executedQuery();
+
+        while (querry.next())
+        {
+            Cl_in_db_struct t;
+            t.id = querry.value(0).toInt();
+            t.linked_id  = querry.value(1).toString();
+
+            id_from_db.append(t.id);
+            templist.append(t);
+        }
+
+        if(!isOk)
+        {
+            db_connection::instance()->db().database(cname).rollback();
+        }
+
+        if (linked != nullptr) //Если подал еще и список линкованных записей
+        {
+            temp_linked_list = string_parsing(linked);//преобразую строку в списко ид
+        }
+        for (int i = 0; i < templist.size(); i++ )
+        {
+            if(temp_linked_list.isEmpty() || !temp_linked_list.contains(id_from_db.at(i)))
+             { //выбранные из базы ЗК не совпадают с ЗК из списка линковки
+                Cl_in_db_struct t;
+
+                t.linked_id = templist.at(i).linked_id;
+                t.linked_id.remove(","+QString::number(id), Qt::CaseInsensitive);
+                t.id = templist.at(i).id;
+                templist.replace(i,t);
+
+                querry.prepare(" UPDATE zk "
+                               " SET linked_id = (:l_id)"
+                               " WHERE zk.Zk_id = (:id)");
+                querry.bindValue(":l_id",templist.at(i).linked_id);
+                querry.bindValue(":id",templist.at(i).id);
+                if (!querry.exec())
+                {
+                    isOk = false;
+                    qDebug() << querry.lastError();
+                }
+                if(!isOk)
+                {
+                    db_connection::instance()->db().database(cname).rollback();
+                }
+            } //иначе нет необходимости удалять, тк все равно придется добавлять
+        }
+    }else //вызов из апдейта или добавления
+    {
+        if (!linked.isEmpty())
+        {
+            temp_linked_list = string_parsing(linked); //массив линкованных чисел
+            QString add_query; //доп условия к запросу
+            QSqlQuery querry(db_connection::instance()->db());
+
+            for (int t = 0; t < temp_linked_list.size(); t++)  //обход массива
+            {
+                if (t == 0)
+                    add_query +=" WHERE (zk.zk_id = "+QString::number(temp_linked_list.at(t));
+                 else
+                    add_query +=" OR zk.zk_id = "+QString::number(temp_linked_list.at(t));
+            }
+            QString main_query = "SELECT zk.zk_id, zk.linked_id"
+                                 " FROM zk";
+
+            if(!add_query.isEmpty())
+                add_query+= ") AND CONCAT(',', linked_id, ',') NOT LIKE ('%,"+QString::number(id)+",%')";
+            else
+                add_query+=" WHERE CONCAT(',', linked_id, ',') NOT LIKE ('%,"+QString::number(id)+",%')";
+
+            querry.prepare(main_query+add_query);
+            if (!querry.exec())
+            {
+                isOk = false;
+                qDebug() << querry.lastError();
+            }else
+            {
+                qDebug() << querry.executedQuery();
+            }
+
+            while (querry.next())
+            {
+                Cl_in_db_struct t;
+                t.id = querry.value(0).toInt();
+                t.linked_id  = querry.value(1).toString();
+                templist.append(t);
+            }
+
+            for (int i = 0; i < templist.size(); i++ )
+            {
+                Cl_in_db_struct t;
+
+                t.linked_id = templist.at(i).linked_id;
+                t.linked_id.append(","+QString::number(id));
+                t.id = templist.at(i).id;
+                templist.replace(i,t);
+
+                querry.prepare(" UPDATE zk "
+                               " SET linked_id = (:l_id)"
+                               " WHERE zk.Zk_id = (:id)");
+                querry.bindValue(":l_id",templist.at(i).linked_id);
+                querry.bindValue(":id",templist.at(i).id);
+                if (!querry.exec())
+                {
+                    isOk = false;
+                    qDebug() << querry.lastError();
+                }
+                if(!isOk)
+                {
+                    db_connection::instance()->db().database(cname).rollback();
+                }
+            }
+        }
+    }
+}
+//-----------------------------------------------------------------------------------//
+bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id, QString l_n)
 {//id необходим для сортировки запроса
     if( !db_connection::instance()->db_connect() )
         return false;
 
+    if (!linked_nums.isEmpty())
+        linked_nums.clear();
+
     QSqlQuery temp(db_connection::instance()->db());
     QString Query;
+
     ///Собираем строку для запроса
     //Если не ищем номера, то ставим некорректное условие для запроса
     if (query_tel_num.isEmpty())
         query_tel_num = " owners_tel.FK_Telephone_Zk = 0 ";
 
     Query = "SELECT DISTINCT B.id, C.id, B.t_n"
-            " FROM "
+            " FROM"
             " (SELECT zk.zk_id as id, a.tel_num as t_n"
             " FROM zk"
             " INNER JOIN (SELECT owners_tel.FK_Telephone_Zk AS fk, owners_tel.telephone_num AS tel_num"
@@ -517,10 +741,11 @@ bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id)
     }
 
     Query +=") AS a"
-            " ON zk.zk_id = a.fk) AS B FULL OUTER JOIN"
-            " (SELECT zk.zk_id as id"
-            " FROM zk"
-            " WHERE "+query_fio;
+            " ON zk.zk_id = a.fk";
+    Query +=") AS B FULL OUTER JOIN"
+                    " (SELECT zk.zk_id as id"
+                    " FROM zk"
+                    " WHERE "+query_fio;
 
     if (id != 0) //в случае редактирования имеющейся записи
     {            //исключаем редактируемую запись
@@ -536,18 +761,84 @@ bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id)
             db_connection::instance()->lastError = temp.lastError().text();
             qDebug() << temp.lastError() << Query;
             return false;
-        }else {
-    qDebug() << temp.executedQuery();
-}
-        while(temp.next())
+        }else
         {
-            zk_id = temp.value(1).toInt();
-            Owners_tel *ow = new Owners_tel();
-            owt()->append(ow);
-            owt()->at(0)->parentZK_id = temp.value(0).toInt();
-            owt()->at(0)->tel_num = temp.value(2).toString();
-            return false;
+            qDebug() << temp.executedQuery();
         }
 
-    return true;
+        QList<int> for_numbers;
+
+         while(temp.next())
+        {//необходимо проверить появились ли новые совпадения
+            zk_id = temp.value(0).toInt();
+
+            if(!for_numbers.contains(zk_id) && zk_id != 0)
+                for_numbers.append(zk_id);
+
+            if (temp.value(1).toInt() != 0 && !for_numbers.contains(temp.value(1).toInt()))
+                for_numbers.append(temp.value(1).toInt());
+
+            if(zk_id != 0 && !linked_nums.contains(","+QString::number(zk_id)))
+                linked_nums += ","+QString::number(zk_id);
+
+            if (temp.value(1).toInt() != 0 && !linked_nums.contains(","+QString::number(temp.value(1).toInt())))
+                linked_nums += ","+QString::number(temp.value(1).toInt());
+
+
+            Owners_tel *ow = new Owners_tel();
+            owt()->append(ow);
+            owt()->at(0)->parentZK_id = temp.value(1).toInt();
+            owt()->at(0)->tel_num = temp.value(2).toString();
+        }
+        //return false;
+        if (!linked_nums.isEmpty())
+        { //Здесь сравнить строки l_n - старая строка
+          //linked_nums - новая
+            if(l_n.isEmpty() && !linked_nums.isEmpty())
+                return false;
+            else {
+                    QList<int> linked_n = string_parsing(l_n);
+                    for (int i = 0; i < for_numbers.size(); i++)
+                    {
+                        if(!linked_n.contains(for_numbers.at(i)))
+                        {
+                            return false;
+                        }
+                    }
+                    if(!linked_nums.contains(","+QString::number(owt()->at(0)->parentZK_id)))
+                    {
+                        zk_id = 0;
+
+                        if(owt()->at(0)->parentZK_id != 0)
+                            linked_nums += ","+QString::number(owt()->at(0)->parentZK_id);
+
+                        return false;
+                    }
+            }
+        }
+            return true;
+}
+//-----------------------------------------------------------------------------------//
+QList<int> Crud::string_parsing(QString linked_nums_string)
+{
+    //парсинг строки
+        int t = 0;
+        QString a;
+        QList<int> temp;
+        while (t  < linked_nums_string.size() )
+        {
+           if (linked_nums_string.at(t) != ",")
+           {
+              a.append(linked_nums_string.at(t));
+              t++;
+           }else
+           {
+            if(!a.isEmpty())
+                temp.append(a.toInt());
+            a.clear();
+            t++;
+           }
+        }
+        temp.append(a.toInt());
+        return temp;
 }

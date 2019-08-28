@@ -15,6 +15,7 @@ public:
     QString service_name;
     QString tel_num;
 
+   static bool search(QList<Off_tels *> *list, QString tel_num, QString name);
    static bool selectOffTel(QList<Off_tels*> *list);
    static bool add_off_tel(Off_tels * of_t);
    static bool del_off_tel (Off_tels * of_t);

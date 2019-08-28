@@ -49,6 +49,7 @@ Owners_tel(QString t_n, int t_id, int zk, bool i_m = false, bool o_n = false, Db
      bool update_tel(bool setState=true);
      bool remove_tel();
 ///////////////////////////////////////////////////
+    static QList<int> compare_nums(QList<Owners_tel*> *owt1, QList<Owners_tel*> *owt2);
 ///////////////////////////////////////////////////
 
 private:

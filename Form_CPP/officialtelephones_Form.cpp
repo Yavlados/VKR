@@ -69,3 +69,19 @@ void OfficialTelephones::on_pb_del_clicked()
           };
    }
 }
+
+void OfficialTelephones::on_pushButton_clicked()
+{
+    QString tel_num, name;
+    tel_num = ui->le_search_num->text();
+    name = ui->le_search_name->text();
+    //Парсинг
+    tel_num.replace("*","%");
+    tel_num.replace("?","_");
+    name.replace("*","%");
+    name.replace("?","_");
+
+    Off_tels::search(ofTlist, tel_num, name);
+     of_model->setOffTList(ofTlist);
+      ui->tableView->setModel(of_model);
+}

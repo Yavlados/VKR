@@ -24,7 +24,8 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
         QLineEdit *line = new QLineEdit(parent);
         if (ot_model->actotlist.at(index.row())->oldnum  == true)
         {
-            line->setMaxLength(8);
+            QString temp = "99999999"; //8 цифр
+            line->setInputMask(temp);
             return line;
         }
         if (ot_model->actotlist.at(index.row())->internum == false)
@@ -44,7 +45,8 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
         QLineEdit *line = new QLineEdit(parent);
         if (cont->actlist.at(index.row())->oldnum  == true)
         {
-            line->setMaxLength(8);
+            QString temp = "99999999"; //8 цифр
+            line->setInputMask(temp);
             return line;
         }
         if (cont->actlist.at(index.row())->internum == false)

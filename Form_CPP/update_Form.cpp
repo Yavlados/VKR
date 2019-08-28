@@ -5,9 +5,19 @@
 #include "_Contacts.h"
 #include "table_line_delegate.h"
 #include "table_cb_delegate.h"
+#include "list_master.h"
 
 #include <QSqlRecord>
 #include <QStringRef>
+
+QList<Crud *> *Update::linked_crud()
+{
+    if (_linked_crud == nullptr)
+    {
+        _linked_crud = new QList<Crud *>;
+    }
+    return _linked_crud;
+}
 
 Update::Update(QWidget *parent) :
     QWidget(parent),
@@ -26,16 +36,36 @@ Update::~Update()
 {
     delete ui;
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::Recieve_data(Crud *cr)
 {
     new_cr = cr;
-    Fill_fields_update(new_cr);//заполнение полей
-
     clear_Vl();
+    Fill_fields_update(new_cr);//заполнение полей
+    //Уже есть главная ЗК
 
-     QLabel *lb = new QLabel("<font size = 10> <h1> <div align=\"center\"> Редактирование </div> </h1> </font>");
-     ui->vl_for_label->addWidget(lb);
+    //сначала очистка имеющегося списка
+    if (!ot_model->mark_rows.isEmpty())
+        ot_model->mark_rows.clear();
+
+    if( (main_cr != nullptr && main_cr != new_cr) || frm_t == Confluence_form   )
+    {
+        compare_linked_cruds();
+    }
+    if (frm_t == Update_form)
+    {
+        QLabel *lb = new QLabel("<font size = 10> <h1> <div align=\"center\"> Редактирование </div> </h1> </font>");
+        ui->vl_for_label->addWidget(lb);
+    }else if(frm_t == Confluence_form)
+    {
+        QLabel *lb = new QLabel;
+        QString str;
+        str = "<font size = 10> <h1> <div align=\"center\"> Слияние ЗК:  №"+QString::number(new_cr->zk_id)+
+                "(основная) и №"+QString::number(added_cr->zk_id)+" </div> </h1> </font>";
+
+        lb->setText(str);
+        ui->vl_for_label->addWidget(lb);
+    }
 
      QPushButton *p_b = new QPushButton;
      p_b->setText("Редактировать");
@@ -44,7 +74,7 @@ void Update::Recieve_data(Crud *cr)
 
      connect(p_b, SIGNAL(clicked()), this ,SLOT(on_pb_Update_clicked()));
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::Fill_fields_update(Crud *new_cr)
 {
     ui->le_last_name->setText(new_cr->lastname);
@@ -74,13 +104,14 @@ if(!new_cr->birth_date.isEmpty())
     ui->le_liv_corp->setText(new_cr->liv_corp);
     ui->le_liv_flat->setText(new_cr->liv_flat);
 
-    QLabel *lb = new QLabel("<font size = 5>  <div align=\"left\"> Дата добавления: "+new_cr->date_add+" "+new_cr->time_add+" </div>  </font>");
-    ui->vl_for_date_add->addWidget(lb);
-    if(!new_cr->date_upd.isEmpty())
-    {
-        QLabel *lb2 = new QLabel("<font size = 5> <div align=\"right\"> Дата редактирования: "+new_cr->date_upd+" </div> </font>");
-        ui->vl_for_date_upd->addWidget(lb2);
-    }
+    QLabel *lb = new QLabel("<font size = 5>  <div align=\"left\"> Добавлен: "+new_cr->date_add+" "+new_cr->time_add+" </div>  </font>");
+        ui->vl_for_date_add->addWidget(lb);
+        if(!new_cr->date_upd.isEmpty())
+        {
+            QLabel *lb2 = new QLabel("<font size = 5> <div align=\"right\"> Изменен: "+new_cr->date_upd+" </div> </font>");
+            ui->vl_for_date_upd->addWidget(lb2);
+        }
+
 
     ///Если список пустой (редактирование телефона из базы),
     /// то достаю телефоны из БАЗЫ ЗАПРОСОМ и заполняю список
@@ -92,8 +123,16 @@ if(!new_cr->birth_date.isEmpty())
     ui->tableView->setModel(ot_model);
     ui->tableView->setColumnWidth(0,250);
     contacts_model->reset_ContactModel();
+    if(!new_cr->linked_nums.isEmpty() && _linked_crud == nullptr && frm_t != Confluence_form)
+    {
+     main_cr = new_cr; //первая ЗК - главная(необходимо для сравнения)
+     linked_crud()->push_front(new_cr);//также заношу в список и текущий id
+     take_linked_zk();
+    }
+    else
+     fill_vl();
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::on_pb_Update_clicked()
 {
     ///Сначала собираю дату рождения, ФИО + телефоны собираются динамически для проверки на совпадения
@@ -103,7 +142,7 @@ void Update::on_pb_Update_clicked()
 
     get_birthdate();
 
-    msgbx.setGeometry(960,510, 180,210);
+    msgbx.setGeometry(960,510, 900,210);
     msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     int ret = msgbx.exec();
@@ -155,6 +194,16 @@ void Update::on_pb_Update_clicked()
         return;
 
     case Update_pg_data:
+        if(frm_t == Confluence_form)
+        {
+            new_cr->linked_nums.remove(","+QString::number(added_cr->zk_id));
+            if(new_cr->zk_id == 0)
+            {
+                Add_zk_into_base();
+                return;
+            }else
+                Crud::del_zk(added_cr->zk_id);
+        }
         if( new_cr->update_zk() )
         {
             if(Crud::save_all_crud(new_cr)) /// Если сохранили телефоны
@@ -194,12 +243,12 @@ void Update::on_pb_Update_clicked()
 
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::on_pb_Back_to_Main_clicked()
 {
     clear_ALL();
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::on_tableView_clicked(const QModelIndex &index)
 {
     //В добавлении мы работаем исключительно с моделью
@@ -216,7 +265,7 @@ void Update::on_tableView_clicked(const QModelIndex &index)
     ui->tableView_2->setColumnWidth(1,250);
     qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::on_pb_del_line_telephone_clicked()
 {
     QModelIndex ind = ui->tableView->currentIndex();
@@ -234,7 +283,7 @@ void Update::on_pb_del_line_telephone_clicked()
         }
     contacts_model->reset_ContactModel();
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::on_pb_del_contact_line_clicked()
 {
     QModelIndex ind = ui->tableView_2->currentIndex();
@@ -243,19 +292,21 @@ void Update::on_pb_del_contact_line_clicked()
         contacts_model->delRow_contact(ind);
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::on_pb_add_contact_line_clicked()
 {
     QModelIndex index = ui->tableView->currentIndex();
     if(index.isValid())
         emit Add_contact_row(new_cr->owt()->at(index.row())->tel_id);
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::clear_ALL()
 {
    emit Ready_for_update(new_cr->zk_id);
+  if(frm_t == Confluence_form)
+    close();
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::clear_Vl()
 {
     while (ui->vl_for_label->count() > 0)
@@ -266,22 +317,40 @@ void Update::clear_Vl()
 
     while (ui->vl_for_cb->count() > 0)
         delete ui->vl_for_cb->takeAt(0);
-}
+    //сброс текста и подсветки на лайнах
+    foreach(QLineEdit *le, this->findChildren<QLineEdit*>() )
+    {
+        if(!le->text().isEmpty())
+            le->clear();
+        le->setStyleSheet("");
+    }
+    if(ui->vl_for_date_add->count() != 0)
+    {
+        QLayoutItem *item = ui->vl_for_date_add->takeAt(0);
+        delete item->widget();
+    }
 
+    if (ui->vl_for_date_upd->count() != 0)
+     {
+      QLayoutItem *item = ui->vl_for_date_upd->takeAt(0);
+      delete item->widget();
+    }
+}
+//-----------------------------------------------------------------------------------//
 void Update::set_validators()
 {
     ui->le_birth_date_day->setValidator(new QIntValidator(1,31));
     ui->le_birth_date_month->setValidator(new QIntValidator(1,12));
     ui->le_birth_date_year->setValidator(new QIntValidator(1960,2100));
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::on_tableView_2_clicked(const QModelIndex &index)
 {
     QModelIndex indexOT = ui->tableView->currentIndex();
     qDebug() << new_cr->owt()->at(indexOT.row())->cont()->at(index.row())->contact_id
              << new_cr->owt()->at(indexOT.row())->cont()->at(index.row())->parent_OT_id ;
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::set_splitter_lines()
 {
     QSplitterHandle *handle = ui->splitter->handle(1);
@@ -314,7 +383,7 @@ void Update::set_splitter_lines()
     line_3->setFrameShadow(QFrame::Sunken);
     layout_3->addWidget(line_3);
 }
-
+//-----------------------------------------------------------------------------------//
 bool Update::compare_tel_num()
 {
     /// Проверка на уникальность
@@ -361,65 +430,66 @@ bool Update::compare_tel_num()
     qDebug() << query_for_nums << query_for_fio;
 
     Crud *cr = new Crud();
-     if (!cr->compare_with_base(query_for_nums,query_for_fio, new_cr->zk_id))
+
+    msgbx.setStandardButtons(QMessageBox::Yes | QMessageBox::Retry | QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
+    msgbx.setButtonText(QMessageBox::Yes,"Сохранить со связью");
+    msgbx.setButtonText(QMessageBox::Retry,"Слияние совпавших ЗК");
+    msgbx.setButtonText(QMessageBox::Open,"Редактировать телефонный номер");
+    msgbx.setButtonText(QMessageBox::Cancel,"Закрыть без сохранения");
+
+    repeat:
+     if (!cr->compare_with_base(query_for_nums,query_for_fio, new_cr->zk_id,new_cr->linked_nums))
      {
          qDebug() << cr->zk_id << cr->owt()->at(0)->parentZK_id
                   << cr->owt()->at(0)->tel_num;
 
-         if( cr->owt()->at(0)->parentZK_id != 0)//Если обнаружилось совпадение по номеру телефона
+         if(cr->zk_id != 0)//Если обнаружилось совпадение по номеру телефона
          {
-             cr->zk_id = cr->owt()->at(0)->parentZK_id;//переписываю
              msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->owt()->at(0)->tel_num+" "
                                 "обнаружен принадлежим владельцу записной книжки № "+QString::number(cr->zk_id)+"</font>");
-             msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
              msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->zk_id));
-             msgbx.setButtonText(QMessageBox::Open,"Редактировать телефонный номер");
-             msgbx.setButtonText(QMessageBox::Cancel,"Закрыть карточку без сохранения");
+         }
+         else if( cr->owt()->at(0)->parentZK_id != 0)//Если обнаружилось совпадение по фио
+         {
+             cr->zk_id = cr->owt()->at(0)->parentZK_id;//переписываю
+          msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенные фамилия, имя, отчество и дата рождения "
+                             "обнаружены принадлежащими владельцу записной книжки № "+QString::number(cr->zk_id)+"</font>");
+                      msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->zk_id));
+         } else
+         {
+            new_cr->linked_nums = cr->linked_nums;
+            return true;
+         }
              int ret = msgbx.exec();
 
              switch (ret)
              {
+             case QMessageBox::Yes:
+                 new_cr->linked_nums = cr->linked_nums;
+                 goto repeat;
+
+             case QMessageBox::Retry:
+             msg_before_confluence(cr);
+                 return false;
+
              case QMessageBox::Ok:
                  emit open_update_tab(cr);
-                 //delete cr;
-                 return false; /// во всех случаях return - мы выходим из функции
+                return false; /// во всех случаях return - мы выходим из функции
 
              case QMessageBox::Open:
                  return false;
 
              case QMessageBox::Cancel:
               clear_ALL();
-                 return false;
+                   return false;
               }
-         }
-     if( cr->zk_id != 0)//Если обнаружилось совпадение по фио
-        {
-         msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенные фамилия, имя, отчество и дата рождения "
-                            "обнаружены принадлежащими владельцу записной книжки № "+QString::number(cr->zk_id)+"</font>");
-         msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
-         msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->zk_id));
-         msgbx.setButtonText(QMessageBox::Open,"Редактировать ФИО и дату рождения");
-         msgbx.setButtonText(QMessageBox::Cancel,"Закрыть карточку без сохранения");
-         int ret = msgbx.exec();
-
-         switch (ret)
-         {
-         case QMessageBox::Ok:
-             emit open_update_tab(cr);
-             return false; /// во всех случаях return - мы выходим из функции
-
-         case QMessageBox::Open:
-             return false;
-
-         case QMessageBox::Cancel:
-          clear_ALL();
-             return false;
-          }
-        }
-     }
+         }else
+            if(cr->linked_nums.isEmpty())//список опустел или нет связей
+                new_cr->linked_nums = cr->linked_nums;
+     delete cr;
      return true;
 }
-
+//-----------------------------------------------------------------------------------//
 QString Update::get_birthdate()
 {
     if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
@@ -453,7 +523,7 @@ QString Update::get_birthdate()
     } else
         return nullptr;
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::Fill_table_in_add()
 {
     new_cr = new Crud();
@@ -482,7 +552,7 @@ void Update::Fill_table_in_add()
        connect(cb, SIGNAL(clicked()), this, SLOT(cb_clicked()));
        connect(p_b, SIGNAL(clicked()), this ,SLOT(Add_zk()));
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::Add_zk()
 {
     /// СНАЧАЛА  СОБИРАЕМ НУЖНЫЕ ПОЛЯ, А ПОТОМ
@@ -494,8 +564,6 @@ void Update::Add_zk()
     new_cr->name=ui->le_name->text();
     new_cr->mid_name = ui->le_mid_name->text();
 
-    if (!compare_tel_num())
-        return;
 
     msgbx.setText("<font size = '5'><h1> Подтверждение </h1> <br>Вы готовы завершить добавление записной книги?</font>");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -507,6 +575,8 @@ void Update::Add_zk()
     case QMessageBox::Cancel:
         return;
     case QMessageBox::Ok:
+        if (!compare_tel_num())
+            return;
 
         new_cr->check_for = ui->le_check_for->text();
         new_cr->dop_info = ui->le_dop_info->toPlainText();
@@ -539,21 +609,31 @@ void Update::Add_zk()
         new_cr->time_add = QTime::currentTime().toString();
         new_cr->check();
 
-    QList<Crud*> *temp_crudlist = new  QList<Crud*>;
+        Add_zk_into_base();
+    }
+}
+//-----------------------------------------------------------------------------------//
+void Update::Add_zk_into_base()
+{
+    QList<Crud*> *temp_crudlist = new QList<Crud*>;
     temp_crudlist->append(new_cr);  ///Лист для работы с list
 
+    if(list == nullptr)
+        list = new List_master(Main_window_for_Update);
         if( list->insert_crud_in_db(temp_crudlist))
         {
+            new_cr->zk_id = temp_crudlist->at(0)->zk_id;
             QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("ЗК успешно добавлена!"));
+            delete list;
+            list = nullptr;
             clear_ALL();
         }
         else {
             QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить обновление данных!"));
              clear_ALL();
              }
-    }
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::cb_clicked()
 {
   foreach (QCheckBox *ch, this->findChildren<QCheckBox*>())
@@ -575,7 +655,7 @@ void Update::cb_clicked()
       }
   }
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::recieve_import_data(Crud *cr)
 {
     new_cr = cr;
@@ -616,12 +696,12 @@ void Update::recieve_import_data(Crud *cr)
 
     connect(p_b_back, SIGNAL(clicked()), this ,SLOT(close()));
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::close()
 {
     delete this;
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::update_import_data()
 {//РАБОТА с списком, а не с базой!!
     new_cr->lastname = ui->le_last_name->text();
@@ -662,7 +742,7 @@ void Update::update_import_data()
     }
     close();
 }
-
+//-----------------------------------------------------------------------------------//
 void inline Update::set_delegates_and_connections()
 {
     connect(ot_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
@@ -678,7 +758,7 @@ void inline Update::set_delegates_and_connections()
     ui->tableView_2->setItemDelegateForColumn(0,delegate_cont);
 
 }
-
+//-----------------------------------------------------------------------------------//
 void Update::slot_for_model(QModelIndex i1, QModelIndex i2)
 {
     (void) i2;
@@ -701,4 +781,282 @@ void Update::slot_for_model(QModelIndex i1, QModelIndex i2)
             ui->tableView->selectRow(i1.row());
         }
 }
+//-----------------------------------------------------------------------------------//
+void inline Update::take_linked_zk()
+{
+    //парсинг строки
+     QList<int> temp = Crud::string_parsing(new_cr->linked_nums);
 
+    if(list == nullptr)
+         list = new List_master(Main_window_for_Update);
+  list->set_counters();
+  for (int a = 0; a < temp.size();a++)
+  {
+      list->fill_crud_list(linked_crud(), temp.at(a), PSQLtype);
+  }
+  fill_vl();
+  delete list;
+  list = nullptr;
+}
+//-----------------------------------------------------------------------------------//
+void Update::compare_linked_cruds()
+{
+        QList<CompareResult> *list = nullptr;
+
+        if (frm_t == Confluence_form)
+            list = new_cr->compare_cruds(added_cr);
+        else
+            list = main_cr->compare_cruds(new_cr);
+
+        if( !list->isEmpty())
+        {
+            for (int i =0; i<list->size(); i++)
+            {
+               switch (list->at(i)){
+               case lastname_CR:
+                   mark_le(ui->le_last_name);
+                   break;
+               case name_CR:
+                   mark_le(ui->le_name);
+                   break;
+               case mid_name_CR:
+                   mark_le(ui->le_mid_name);
+                   break;
+               case birth_date_CR:
+                   mark_le(ui->le_birth_date_day,ui->le_birth_date_month, ui->le_birth_date_year);
+                   break;
+               case check_for_CR:
+                   mark_le(ui->le_check_for);
+                   break;
+               case dop_info_CR:
+                   //mark_le(ui->le_dop_info);
+                   break;
+               case reg_city_CR:
+                   mark_le(ui->le_reg_city);
+                   break;
+               case reg_street_CR:
+                   mark_le(ui->le_reg_street);
+                   break;
+               case reg_home_CR:
+                   mark_le(ui->le_reg_house);
+                   break;
+               case reg_corp_CR:
+                   mark_le(ui->le_reg_corp);
+                   break;
+               case reg_flat_CR:
+                   mark_le(ui->le_reg_flat);
+                   break;
+               case liv_city_CR:
+                   mark_le(ui->le_liv_city);
+                   break;
+               case liv_street_CR:
+                   mark_le(ui->le_liv_street);
+                   break;
+               case liv_home_CR:
+                   mark_le(ui->le_liv_house);
+                   break;
+               case liv_corp_CR:
+                   mark_le(ui->le_liv_corp);
+                   break;
+               case liv_flat_CR:
+                   mark_le(ui->le_liv_flat);
+                   break;
+               }
+            }
+        }
+        //проверка телефонов
+       if (frm_t == Confluence_form)
+            ot_model->mark_rows = Owners_tel::compare_nums(new_cr->owt(),added_cr->owt());
+       else
+            ot_model->mark_rows = Owners_tel::compare_nums(new_cr->owt(),main_cr->owt());
+}
+//-----------------------------------------------------------------------------------//
+void Update::fill_vl()
+{
+    if(_linked_crud != nullptr && ui->vl_for_cnfl_button->count() == 0)
+    {
+        QPushButton *pb = new QPushButton("Преступить к слиянию ЗК");
+        ui->vl_for_cnfl_button->addWidget(pb);
+            connect(pb,SIGNAL(clicked()),this,SLOT(start_confluence_all_linked()));
+    }
+    if (_linked_crud != nullptr)
+    {
+        int i;
+        QLabel *lab = nullptr;
+
+        clear_vl_for_links();
+
+        for (i =0 ;i<linked_crud()->size();i++)
+        {
+            if(linked_crud()->at(i) == new_cr)
+            {
+                lab = new QLabel("№ "+QString::number(i+1)+" из "+QString::number(linked_crud()->size()) + " (ЗК № "+QString::number(new_cr->zk_id)+")");
+                break;
+            }
+        }
+        if ( i != 0)
+        {
+            QPushButton *p_b_forward = new QPushButton;
+            p_b_forward->setText("<<");
+            index = i;
+            ui->vl_for_prev_linked->addWidget(p_b_forward);
+            connect(p_b_forward,SIGNAL(clicked()),this,SLOT(prev_page()));
+        }
+        if ( i != linked_crud()->size()-1)
+        {
+            QPushButton *p_b_forward = new QPushButton;
+            p_b_forward->setText(">>");
+            ui->vl_for_next_linked->addWidget(p_b_forward);
+            index = i;
+            connect(p_b_forward,SIGNAL(clicked()),this,SLOT(next_page()));
+        }
+        ui->vl_for_label_linked->addWidget(lab);
+    }
+}
+//-----------------------------------------------------------------------------------//
+void Update::prev_page()
+{
+    Recieve_data(linked_crud()->at(index-1));
+}
+//-----------------------------------------------------------------------------------//
+void Update::next_page()
+{
+    Recieve_data(linked_crud()->at(index+1));
+}
+//-----------------------------------------------------------------------------------//
+void Update::clear_vl_for_links()
+{
+    if(ui->vl_for_label_linked->count() != 0)
+    {
+        QLayoutItem *item = ui->vl_for_label_linked->takeAt(0);
+        delete item->widget();
+    }
+
+    if(ui->vl_for_next_linked->count() != 0)
+    {
+        QLayoutItem *item = ui->vl_for_next_linked->takeAt(0);
+        delete item->widget();
+    }
+
+    if (ui->vl_for_prev_linked->count() != 0)
+    {
+        QLayoutItem *item = ui->vl_for_prev_linked->takeAt(0);
+        delete item->widget();
+    }
+
+}
+//-----------------------------------------------------------------------------------//
+void Update::msg_before_confluence(Crud *cr)
+{
+    QList<Crud*> *crudlist = new QList<Crud*>;
+    if(list == nullptr)
+        list = new List_master(Main_window_for_Update);
+    list->set_counters();
+    list->fill_crud_list(crudlist,cr->zk_id,PSQLtype);
+
+    QMessageBox msgbx;
+    msgbx.setText("<font size = '5'> Вы собираетесь объеденить две записи в одну. <br> Какую выбрать в качестве основной?</font>");
+    msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
+    msgbx.setButtonText(QMessageBox::Ok,"Совпавшую ЗК №"+ QString::number(cr->zk_id));
+
+    if(new_cr->zk_id != 0)
+        msgbx.setButtonText(QMessageBox::Open,"Текущую ЗК №"+ QString::number(new_cr->zk_id));
+    else
+        msgbx.setButtonText(QMessageBox::Open,"Новую ЗК");
+
+    msgbx.setButtonText(QMessageBox::Cancel,"Отмена");
+    int ret = msgbx.exec();
+
+    switch (ret)
+    {
+    case QMessageBox::Ok:
+        prepare_confluence_crud(crudlist->at(0), new_cr);
+        delete list;
+        list = nullptr;
+        clear_ALL();
+        return;
+
+    case QMessageBox::Open:
+        prepare_confluence_crud(new_cr, crudlist->at(0));
+        delete list;
+        list = nullptr;
+        clear_ALL();
+        return;
+
+    case QMessageBox::Cancel:
+        delete list;
+        list = nullptr;
+        return;
+    }
+}
+
+void Update::prepare_confluence_crud(Crud *main_crud, Crud *added_crud)
+{
+    Crud *cnfl_cr = new Crud;        //Новая запись
+
+    cnfl_cr->operator+(main_crud);                  //Скопировал все поля ЗК
+    cnfl_cr->linked_nums += added_crud->linked_nums;//Добавил в линкед вторую цепь
+    cnfl_cr->linked_nums.append(","+QString::number(added_crud->zk_id));//В линкед еще и номер добавленного
+
+    for(int a=0; a < main_crud->owt()->size();a++) //Взял список номеров
+        cnfl_cr->owt()->append(main_crud->owt()->at(a));
+
+    int b=0;
+    while(b<added_crud->owt()->size())
+    {
+        int i=0;
+        while (i<cnfl_cr->owt()->size())
+        {
+            if(cnfl_cr->owt()->at(i)->tel_num == added_crud->owt()->at(b)->tel_num )
+            {   //Если совпадение, то смещаем основной итератор
+                goto mark;
+            }
+            else //Если нет, то проверяем со следующим телефоном
+                i++;
+        } //Прошло сравнение
+        added_crud->owt()->at(b)->state = IsNewing;
+        cnfl_cr->owt()->append(added_crud->owt()->at(b));
+        mark:
+        b++;
+    }
+
+//    Update *upd = new Update;
+//    upd->frm_t = Confluence_form;
+//    upd->imprt_t = Update_pg_data_import;
+
+      emit open_confluence_upd(cnfl_cr,main_crud,added_crud);
+
+//    connect(this,SIGNAL(Send_data(Crud*)), upd, SLOT(recieve_import_data(Crud*)));
+//    connect(upd,SIGNAL(add_import_crud(Crud*)), this, SLOT(recieve_added_import_crud(Crud*)));
+//    upd->Recieve_data(cnfl_cr);
+    //    upd->show();
+}
+//-----------------------------------------------------------------------------------//
+void Update::start_confluence_all_linked()
+{
+    qDebug() << "kuku";
+}
+//-----------------------------------------------------------------------------------//
+void Update::start_confluence(Crud *confl_cr, Crud *m_cr, Crud *a_cr)
+{
+    main_cr = m_cr ;
+    added_cr = a_cr;
+    Recieve_data(confl_cr);
+}
+//-----------------------------------------------------------------------------------//
+void Update::closeEvent(QCloseEvent *event)
+{
+    (void)event;
+    close();
+}
+
+//-----------------------------------------------------------------------------------//
+void Update::mark_le(QLineEdit *le, QLineEdit *le1, QLineEdit *le2)
+{
+  le->setStyleSheet("QLineEdit { background: rgb(0, 255, 255); selection-background-color: rgb(233, 99, 0); }");
+   if(le1 != nullptr)
+       le1->setStyleSheet("QLineEdit { background: rgb(0, 255, 255); selection-background-color: rgb(233, 99, 0); }");
+   if(le2 != nullptr)
+       le2->setStyleSheet("QLineEdit { background: rgb(0, 255, 255); selection-background-color: rgb(233, 99, 0); }");
+}
+//-----------------------------------------------------------------------------------//

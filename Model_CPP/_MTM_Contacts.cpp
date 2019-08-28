@@ -70,7 +70,7 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
         {
-        if(actlist.at(row)->oldnum == false && actlist.at(row)->internum == false && actlist.at(row)->cont_state != IsNewing)
+        if(actlist.at(row)->oldnum == false && actlist.at(row)->internum == false && actlist.at(row)->cont_state != IsNewing && state == Show_cont)
         {
             QString _temp =  actlist.at(row)->contact_tel_num;
             _temp.insert(0,"+");

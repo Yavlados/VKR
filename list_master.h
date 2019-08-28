@@ -20,6 +20,8 @@ class List_master
 public:
     List_master();
     List_master(Form_state st);
+
+
     ///
     /// Методы переехали из экспорта
     ///
