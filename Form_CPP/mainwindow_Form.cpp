@@ -326,6 +326,7 @@ void MainWindow::add_cancel_button()
 //-----------------------------------------------------------------------------------//
 void MainWindow::open_upd_tab(Crud *cr)
 {
+    qDebug() << ui->tabWidget->count();
         if(updlist == nullptr)
         {
             updlist = new QList<Update*>;
@@ -356,6 +357,7 @@ void MainWindow::open_upd_tab(Crud *cr)
 
         updlist->append(upd);
         upd->Recieve_data(crudlist->at(0));
+        upd->take_linked_zk(crudlist->at(0));
         connect (updlist->at(updlist->size()-1), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
         connect(updlist->at(updlist->size()-1), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
         connect(updlist->at(updlist->size()-1), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
@@ -386,26 +388,29 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
             addlist = nullptr;
             return;
         }
-    }
-    if (upd->frm_t == Update_form)
+    } else if (upd->frm_t == Update_form)
         {
             if(updlist != nullptr)
             {
-                for (int i=0; i<updlist->size(); i++)
+                int i = 0;
+                int zk_id_local = upd->new_cr->zk_id;
+                while (i < updlist->size())
                 {
-                    if(updlist->at(i)->new_cr->zk_id == upd->new_cr->zk_id)
+                    if(updlist->at(i)->new_cr->zk_id == zk_id_local)
                     {
                         delete  updlist->at(i);
                         updlist->removeAt(i);
                         if (updlist->isEmpty())
+                        {
                             updlist = nullptr;
-                        return;
-                    }
+                            return;
+                        }
+                    }  else
+                        i++;
                 }
             }
         }
-    }
-    if ( ui->tabWidget->widget(index)->objectName() == "OfficialTelephones")
+    } else if ( ui->tabWidget->widget(index)->objectName() == "OfficialTelephones")
     {
         ui->tabWidget->widget(index)->deleteLater();
         delete of;
@@ -497,7 +502,8 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
 
         QList<Crud*> *crud = new  QList<Crud*> ;
         QList<Off_tels*> *offtel = new QList<Off_tels*>;
-
+        zk_links *links_for_export = new zk_links;
+        QList<int> *exported_id = new QList<int>;
         form_exprt->list->set_counters();
 
         if(cb_zk)
@@ -507,15 +513,22 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
                 {
                     form_exprt->exported_zk_id.append( crud_model->crudlist->at(i)->zk_id);
                     form_exprt->list->fill_crud_list(crud, crud_model->crudlist->at(i)->zk_id, PSQLtype);
+                    exported_id->append(crud_model->crudlist->at(i)->zk_id);
                 }
             }
+
+        if(!exported_id->isEmpty())
+        {
+            links_for_export->take_links(exported_id);
+            delete exported_id;
+        }
 
         if(cb_off_tels)
             form_exprt->list->fill_off_tels(offtel,PSQLtype);
 
         if(!crud->isEmpty() || !offtel->isEmpty())
         {
-            if( form_exprt->Do_export(filename,crud, password, cb_off_tels, cb_set_password, offtel))
+            if( form_exprt->Do_export(filename,crud, password, cb_off_tels, cb_set_password, offtel, links_for_export))
                 QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 .").arg(filename)); ///Хвалимся
             else
                 QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Во время экспорта данных что-то пошло не так!")); ///Хвалимся

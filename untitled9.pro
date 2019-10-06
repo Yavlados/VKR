@@ -32,6 +32,7 @@ SOURCES += \
     Table_CPP/_Contacts.cpp \
     Table_CPP/_Crud.cpp \
     Table_CPP/_Owners_tel.cpp \
+    Table_CPP/_Zk_links.cpp \
     Form_CPP/an_result_Form.cpp \
     Form_CPP/analysis_Form.cpp \
     Form_CPP/mainwindow_Form.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
     Table_Headers/_Owners_tel.h \
     Table_Headers/_Crud.h \
     Table_Headers/_Off_tels.h \
+    Table_Headers/_Zk_links.h \
     Form_Headers/an_result_Form.h \
     Form_Headers/analysis_Form.h \
     Form_Headers/mainwindow_Form.h \

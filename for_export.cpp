@@ -5,7 +5,7 @@ For_export::For_export()
 }
 
 bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString password,
-                           bool cb_checked, bool cb_set_password, QList<Off_tels*>  *offtel)
+                           bool cb_checked, bool cb_set_password, QList<Off_tels*>  *offtel, zk_links *linklist)
 {
     db_file.setFileName(filename); //Установка имени файлу дб
 
@@ -36,6 +36,8 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
          qDebug() << db->db_connect()<<db->db().lastError();
          QSqlQuery query(db->db());
 
+         if(!crud->isEmpty())
+         {
          if(!query.exec("CREATE TABLE zk"
                         " ( zk_id integer NOT NULL,"
                         " lastname character varying(20),"
@@ -57,10 +59,26 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " dop_info character varying(50), "
                         " check_for character varying(25),"
                         " date_upd character varying(20),"
+                        " row_id uuid UNIQUE,"
                         " CONSTRAINT PK_Zk_id PRIMARY KEY (zk_id),"
                         " CONSTRAINT Zk_Zk_id_key UNIQUE (zk_id)"
                         " );"))
              qDebug() << query.lastError();
+
+
+
+         if(!query.exec(" CREATE TABLE zk_links"
+        " ("
+          " row_id1 uuid,"
+          " row_id2 uuid,"
+          " CONSTRAINT row_id_1_zk FOREIGN KEY (row_id1)"
+             "  REFERENCES zk (row_id) MATCH SIMPLE"
+              " ON UPDATE CASCADE ON DELETE CASCADE,"
+          " CONSTRAINT row_id_2_zk FOREIGN KEY (row_id2)"
+              " REFERENCES zk (row_id) MATCH SIMPLE"
+              " ON UPDATE CASCADE ON DELETE CASCADE"
+         ")"))
+                 qDebug() << query.lastError();
 
          if(!query.exec(" CREATE TABLE owners_tel"
                         " ( telephone_id integer NOT NULL, "
@@ -103,12 +121,12 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                                 "Liv_city,Liv_street,Liv_home,Liv_corp,"
                                 "Liv_flat,"
                                 "Check_for, Dop_info,"
-                                "Date_add, Time_add, date_upd) "
+                                "Date_add, Time_add, date_upd, row_id) "
                                 " VALUES ((:lastname),(:name),(:mid_name), (:b_d),"
                                 "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                                 "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                                 "(:c_f),(:d_i),"
-                                "(:d_a), (:t_a), (:d_u))");
+                                "(:d_a), (:t_a), (:d_u), (:r_i))");
             query.bindValue(":lastname",crud->at(i)->lastname);
             query.bindValue(":name",crud->at(i)->name);
             query.bindValue(":mid_name",crud->at(i)->mid_name);
@@ -132,6 +150,8 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
             query.bindValue(":d_a",crud->at(i)->date_add);
             query.bindValue(":t_a",crud->at(i)->time_add);
             query.bindValue(":d_u",crud->at(i)->date_upd);
+
+            query.bindValue(":r_i",crud->at(i)->row_id);
 
             in << "\r\n";
             in << QString::number(exported_zk_id.at(i));
@@ -185,9 +205,23 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
         }
             query.clear();
        }
+         if (!linklist->links->isEmpty())
+             for (int a = 0; a < linklist->links->size();a++)
+             {
+                 query.prepare("INSERT INTO zk_links (row_id1, row_id2) VALUES ( (:r_id1), (:r_id2))");
+                 query.bindValue(":r_id1",linklist->links->at(a)->uuid1);
+                 query.bindValue(":r_id2",linklist->links->at(a)->uuid2);
+                 if (!query.exec())
+                 {
+                     qDebug() << query.lastError();
+                 }
+
+             }
+    }
          ///Если захотели служебные телефоны
-         if (cb_checked == true)
+         if (!offtel->isEmpty())
          {
+             in << "\r\n Следующие служебные телефоны:";
            if (!query.exec("CREATE TABLE official_tel"
                        "("
                         " of_t_id integer NOT NULL,"
@@ -205,7 +239,9 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                 query.bindValue(":t_n", offtel->at(y)->tel_num);
                 query.bindValue(":s_n", offtel->at(y)->service_name);
                 if(!query.exec())
-                    qDebug() << query.lastError();
+                   qDebug() << query.lastError();
+                else
+                    in << "\r\n "+offtel->at(y)->service_name;
             }
          }
 

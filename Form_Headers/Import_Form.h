@@ -2,6 +2,8 @@
 #define IMPORT_FORM_H
 #include "_Crud.h"
 #include "_Off_tels.h"
+#include "_Zk_links.h"
+
 #include "list_master.h"
 #include "update_Form.h"
 
@@ -12,6 +14,7 @@
 
 #include <QWidget>
 #include <QCloseEvent>
+#include <QVector>
 
 /**
  * @file Import_Form.h
@@ -98,6 +101,16 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void make_link_clicked();
+
+    void begin_work_with_links();
+
+    void abort_link_import();
+
+    void import_list_with_link();
+
+
+
 signals:
     void Refresh_tab();
     void Send_data(Crud *cr);
@@ -105,12 +118,17 @@ signals:
     void Send_main_pg(Crud *cr);
 
 private:
+    QVector<QVector<QString>> *vector = nullptr;    //связанные ююайди
+    QVector<QVector<int> > *links_vector =nullptr;   //для связывания цепочек
+    QList<int> *linked_id_list = nullptr;
     QCloseEvent *event ;
     int a;  ///Итераторы для сравнений
     QFile db_file;
     QList<Crud*>        *crud;      ///Локальные списки
     QList<Off_tels*>    *offtel;    ///С данными из SQLite
+    QList<zk_links*>    *links;
     Crud *crud_from_pg;             ///Локальный круд из БД
+    QString Local_filename ;
     Ui::Import_Form *ui;
 };
 

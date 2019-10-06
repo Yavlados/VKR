@@ -46,18 +46,20 @@ public:
     Crud *added_cr = nullptr; //добавочная при слиянии
 
     QList<Crud*> *linked_crud();
+    QList<int> *linked_crud_id = nullptr;
 
     explicit Update(QWidget *parent = nullptr);
-
     ~Update();
 public slots:
 
-    void Recieve_data(Crud*);
+    void Recieve_data(Crud*);    
+    void take_linked_zk(Crud *cr);
     ///метод заполнения полей формы при редактирвании
     /// имеющейся записи в бд или при импорте
     void Fill_fields_update(Crud *new_cr);
     void Fill_table_in_add();
     void close(); //деструктор класса для сигнал
+
 
     ///-----Методы для слияния-----///
     /// метод начала слияния
@@ -117,7 +119,6 @@ private slots:
 
     void slot_for_model(QModelIndex, QModelIndex);
 
-    void take_linked_zk();
 
     ///Слот поиска совпадающих полей
     void compare_linked_cruds();
@@ -141,8 +142,8 @@ private slots:
     ///метод слияния
     void prepare_confluence_crud(Crud*main_crud, Crud*added_crud);
 
-    ///метод слияния связанных ЗК в одну
-    void start_confluence_all_linked();
+    ///метод разрыва связи
+    void destroy_link();
 };
 
 #endif // UPDATE_H

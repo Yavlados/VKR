@@ -2,6 +2,7 @@
 #define FOR_EXPORT_H
 #include "_Off_tels.h"
 #include "list_master.h"
+#include "_Zk_links.h"
 
 #include <QString>
 #include <QFile>
@@ -22,7 +23,7 @@ class For_export
 public:
     For_export();
 
-    bool Do_export(QString filename, QList<Crud*> *crud, QString password , bool cb_checked, bool cb_set_password, QList<Off_tels*> *offtel);
+    bool Do_export(QString filename, QList<Crud*> *crud, QString password , bool cb_checked, bool cb_set_password, QList<Off_tels*> *offtel, zk_links *linklist);
 
     QString Create_report_filename(QString filename);
 

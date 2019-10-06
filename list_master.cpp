@@ -38,7 +38,7 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
                    "zk.date_add,"
                    "zk.time_add,"
                    "zk.date_upd,"
-                   "zk.linked_id "
+                   "zk.row_id "
                    " FROM "
                    " zk "
                    " WHERE zk . Zk_id =(:id)"
@@ -72,7 +72,7 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
         cr->date_add = query.value(17).toString();
         cr->time_add = query.value(18).toString();
         cr->date_upd = query.value(19).toString();
-        cr->linked_nums = query.value(20).toString();
+        cr->row_id = query.value(20).toString();
         cr->state = IsReaded;
         switch (sqlt)
         {
@@ -250,7 +250,8 @@ bool List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
                    "zk.dop_info,"
                    "zk.date_add,"
                    "zk.time_add,"
-                   "zk.date_upd "
+                   "zk.date_upd,"
+                   " zk.row_id "
                    " FROM "
                    " zk "
                    " ORDER BY zk.zk_id");
@@ -286,6 +287,7 @@ bool List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
         cr->date_add = query.value(17).toString();
         cr->time_add = query.value(18).toString();
         cr->date_upd = query.value(19).toString();
+        cr->row_id = query.value(20).toString();
         cr->state = IsReaded;
         switch (sqlt)
         {
@@ -336,7 +338,8 @@ querry.prepare("SELECT "
                "zk.dop_info,"
                "zk.date_add,"
                "zk.time_add,"
-               "zk.date_upd "
+               "zk.date_upd,"
+               "zk.row_id "
                " FROM "
                " zk "
                " WHERE zk.zk_id = (:id)");
@@ -372,6 +375,7 @@ if (querry.next())
     cr->date_add = querry.value(17).toString();
     cr->time_add = querry.value(18).toString();
     cr->date_upd = querry.value(19).toString();
+    cr->row_id = querry.value(20).toString();
     cr->state = IsReaded;
 
     fill_owners_tel_list(cr->owt(), cr->zk_id, counter_tel, PSQLtype);
@@ -410,7 +414,7 @@ void List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt)
     db->db().close();
 }
 
-bool List_master::insert_crud_in_db(QList<Crud *> *crud)
+bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QVector<QVector<int> > *vector, QVector<QVector<QString> > *vector_str)
 {
     if(crud == nullptr || !db_connection::instance()->db_connect())
         return false;
@@ -435,12 +439,12 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud)
                            "Liv_city,Liv_street,Liv_home,Liv_corp,"
                            "Liv_flat,"
                            "Check_for, Dop_info,"
-                           "Date_add, Time_add, linked_id) "
+                           "Date_add, Time_add, Row_id) "
                            " VALUES ((:lastname),(:name),(:mid_name), (:b_d),"
                            "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                            "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                            "(:c_f),(:d_i),"
-                           "(:d_a), (:t_a), (:l_n)) RETURNING zk_id");
+                           "(:d_a), (:t_a), (:r_i)) RETURNING zk_id, row_id");
        query.bindValue(":lastname",crud->at(i)->lastname);
        query.bindValue(":name",crud->at(i)->name);
        query.bindValue(":mid_name",crud->at(i)->mid_name);
@@ -464,19 +468,47 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud)
        query.bindValue(":d_a",crud->at(i)->date_add);
        query.bindValue(":t_a",crud->at(i)->time_add);
 
-       query.bindValue(":l_n",crud->at(i)->linked_nums);
+       //////////////////////////////////////////////
+       bool temp = false;
+       if(vector_str != nullptr)
+           for (int v=0;v<vector_str->size();v++)
+           {
+               if(crud->at(i)->row_id == vector_str->at(v).at(0))
+               {
+                   temp = true;
+                   query.bindValue(":r_i",crud->at(i)->row_id);
+                   break;
+               }
+           }
+       if (!temp)
+       {
+           query1.prepare("SELECT uuid_generate_v1()");
+           if(query1.exec())
+               while (query1.next())
+                query.bindValue(":r_i",query1.value(0).toString());
+           else
+           {
+               qDebug() << query1.lastError() << query1.executedQuery();
+                   isOk = false;
+                   break;
+           }
+       }
 
        if(!query.exec())
         {
-        qDebug() << query.lastError();
+        qDebug() << query.lastError() << query.executedQuery();
             isOk = false;
-        }
+            break;
+        }else
+       {
+           qDebug() << query.executedQuery();
+           db_connection::instance()->db().database(cname).commit();
+           isOk = db_connection::instance()->db().database(cname).transaction();
+       }
+
    while (query.next())
    {
-       crud->at(i)->zk_id = query.value(0).toInt();
-
-       if(frm_st == Main_window_for_Update)
-            crud->at(i)->Change_linked_in_db(false,query.value(0).toInt(),crud->at(i)->linked_nums);
+       qDebug() << query.value(0).toString() << query.value(1).toString();
 
        for (int a = 0; a < crud->at(i)->owt()->size(); a++)
        {
@@ -519,6 +551,56 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud)
                }
            }
        }
+       //Линкование записей
+       if (list_id != nullptr)
+       {
+           for (int a = 0; a < list_id->size();a++)
+           {
+            query1.prepare("INSERT INTO zk_links (row_id1,row_id2) "
+                          " VALUES ('"+query.value(1).toString()+"',(SELECT row_id"
+                                                   " FROM zk"
+                                                  " WHERE zk.zk_id = "+QString::number(list_id->at(a))+"))");
+           if(!query1.exec())
+           {
+               qDebug() << query1.lastError();
+               isOk = false;
+               break;
+           }
+           }
+
+       }
+       //Линкование вектором
+       if (vector != nullptr)
+           for(int u=0;u<vector->size();u++)
+           {
+               if(vector->at(u).at(0) == crud->at(i)->zk_id)
+               {
+                   query1.prepare("INSERT INTO zk_links (row_id1,row_id2) "
+                                 " VALUES ('"+query.value(1).toString()+"',(SELECT row_id"
+                                                          " FROM zk"
+                                                         " WHERE zk.zk_id = "+QString::number(vector->at(u).at(1))+"))");
+                   if(!query1.exec())
+                   {
+                       qDebug() << query1.lastError() << query1.executedQuery();
+                       isOk = false;
+                       break;
+                   }
+                   break;
+               }
+           }
+       if(vector_str != nullptr)
+           for (int i = 0; i<vector_str->size(); i++)
+           {
+                  query1.prepare("INSERT INTO zk_links (row_id1, row_id2) VALUES ((:r_id1),(:r_id2))");
+                  query1.bindValue(":r_id1",vector_str->at(i).at(0));
+                  query1.bindValue(":r_id2",vector_str->at(i).at(1));
+                  if (!query1.exec())
+                  {
+                      qDebug() << query1.lastError();
+                      isOk = false;
+                      break;
+                  }
+           }
    }
   }
     if(!isOk)
@@ -542,6 +624,12 @@ bool List_master::del_zk_from_pg(QList<int> del_list)
         Crud::del_zk(del_list.at(i));
     }
     return true;
+}
+
+void List_master::fill_links(QVector<QVector <QString> > *vector)
+{
+     QSqlQuery temp(db_connection::instance()->db());
+
 }
 
 QList<Crud *> *List_master::search(QString search_query)

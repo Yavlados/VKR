@@ -2,6 +2,7 @@
 #define LIST_MASTER_H
 #include "_Crud.h"/// ->_Owners_tel.h->_Contacts.h->db_connrction
 #include "_Off_tels.h"
+#include "_Zk_links.h"
 
 #include <QString>
 
@@ -35,8 +36,11 @@ public:
     bool fill_all_crud_list(QList<Crud*> *crud, SqlType);
     void set_counters();
     void fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt);
-    bool insert_crud_in_db(QList<Crud*>*crud);
+    bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = nullptr, QVector<QVector<int> > *vector = nullptr,QVector<QVector<QString>> *vector_str = nullptr);//Лист удобно использовать при добавлении, при импорте - вектор
     bool del_zk_from_pg(QList<int> del_list);
+
+    void fill_links(QVector<QVector <QString> > *vector);
+
     static QList<Crud*>* search(QString search_query);
 private:
     Form_state         frm_st;

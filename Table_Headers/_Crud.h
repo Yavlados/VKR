@@ -38,9 +38,14 @@ enum CompareResult {
 
 struct Cl_in_db_struct
     {
-        QString linked_id;
         int     id;
+        QString Tel_num;
     };
+
+struct link_id
+{
+    QString rowid1;
+};
 
 class Crud
 {
@@ -50,8 +55,7 @@ public:
     Crud(int id);
 
     QList<Owners_tel*> *owt();  ///Инициализация пустого списка телефонов
-
-    QString linked_nums = nullptr;
+    QString row_id = nullptr;
 
     CheckState checkState_;
     DbState state;
@@ -94,10 +98,8 @@ public:
 
     void check() const;
     ///Методы поиска
-    void zk_search();
-    void zk_search_model(QString qry);
     void zk_search_report(QString qry);
-    bool update_zk();
+    bool update_zk(QList<int> *list_id = nullptr);
     bool add_zk();
     static void del_zk(int);
     static Crud* id_zk_search(int zk_id);
@@ -115,9 +117,18 @@ public:
     //Метод изменения БД линкованных записей
     static void Change_linked_in_db(bool state,int id, QString linked = nullptr);
 
-    bool compare_with_base(QString query_tel_num = nullptr, QString query_fio = nullptr, int id = 0 , QString l_n = nullptr);
+    bool compare_with_base(QString query_tel_num = nullptr, QString query_fio = nullptr, int id = 0 , QList<int> *id_list = nullptr);
 
     static QList<int> string_parsing(QString linked_nums_string);
+
+    ///Метод разрыва связи
+    bool destroy_link(int id);
+
+    QList<Cl_in_db_struct> *compare_result = nullptr;
+
+    ///Методы rowid
+    static QList<int> *take_links(QString row_id, SqlType sqltype, QString filename = nullptr);
+
 private:
     QList<Owners_tel*> *_owt; ///У ЗК есть список телефонов
 signals:
