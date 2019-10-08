@@ -52,7 +52,8 @@ SOURCES += \
     Form_CPP/settings_Form.cpp \
     settings_connection.cpp \
     table_line_delegate.cpp \
-    table_cb_delegate.cpp
+    table_cb_delegate.cpp \
+    olddbservice.cpp
 
 HEADERS += \
     db_connection.h \
@@ -80,7 +81,8 @@ HEADERS += \
     Form_Headers/settings_Form.h \
     settings_connection.h \
     table_line_delegate.h \
-    table_cb_delegate.h
+    table_cb_delegate.h \
+    olddbservice.h
 
 FORMS += \
         mainwindow.ui \

@@ -25,7 +25,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                        this,
                        tr("Save Document"),
                        QDir::currentPath(),
-                       tr("Dump database (*.db)") );
+                       tr("Dump database (*.db)"), nullptr, QFileDialog::DontUseNativeDialog  );
 
     if( !filename.isNull() )
         ui->le_file_path_2->setText(filename);

@@ -426,6 +426,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
     QSqlQuery query(db_connection::instance()->db());
     QSqlQuery query1(db_connection::instance()->db());
     QSqlQuery query2(db_connection::instance()->db());
+    QList<QString> *Local_link_list = nullptr;
     ///Заполнение созданных таблиц
     for(int i = 0; i < crud->size(); i++)
     {
@@ -523,7 +524,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
 
                if (!query1.exec())
                {
-                   qDebug() << query1.lastError();
+                   qDebug() << query1.lastError() << query1.executedQuery();
                    isOk = false;
                }
                while (query1.next())
@@ -542,7 +543,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
 
                            if (!query2.exec())
                            {
-                               qDebug() << query2.lastError();
+                               qDebug() << query2.lastError() << query2.executedQuery();
                                isOk = false;
                            }
                        }
@@ -562,7 +563,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                                                   " WHERE zk.zk_id = "+QString::number(list_id->at(a))+"))");
            if(!query1.exec())
            {
-               qDebug() << query1.lastError();
+               qDebug() << query1.lastError() << query1.executedQuery();
                isOk = false;
                break;
            }
@@ -585,31 +586,68 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                        isOk = false;
                        break;
                    }
-                   break;
+                        else
+                   {
+                       if (Local_link_list == nullptr)
+                            Local_link_list = new QList<QString>;
+
+                       Local_link_list->append(query.value(1).toString());
+                               break;
+                   }
                }
            }
-       if(vector_str != nullptr)
-           for (int i = 0; i<vector_str->size(); i++)
-           {
-                  query1.prepare("INSERT INTO zk_links (row_id1, row_id2) VALUES ((:r_id1),(:r_id2))");
-                  query1.bindValue(":r_id1",vector_str->at(i).at(0));
-                  query1.bindValue(":r_id2",vector_str->at(i).at(1));
-                  if (!query1.exec())
-                  {
-                      qDebug() << query1.lastError();
-                      isOk = false;
-                      break;
-                  }
-           }
-   }
+    }
   }
+
     if(!isOk)
     {
         db_connection::instance()->db().database(cname).rollback();
         qDebug() << "отсюда";
         return false;
     }
-    db_connection::instance()->db().database(cname).commit();
+        else
+    {
+        db_connection::instance()->db().database(cname).commit();
+        isOk = db_connection::instance()->db().database(cname).transaction();
+    }
+
+    if(Local_link_list != nullptr)
+    {
+        for (int i = 1; i<Local_link_list->size(); i++)
+        {
+               query1.prepare("INSERT INTO zk_links (row_id1, row_id2) VALUES ((:r_id1),(:r_id2))");
+               query1.bindValue(":r_id1",Local_link_list->at(0));
+               query1.bindValue(":r_id2",Local_link_list->at(i));
+               if (!query1.exec())
+               {
+                   qDebug() << query1.lastError();
+                   isOk = false;
+                   break;
+               }
+        }
+        delete Local_link_list;
+    }
+    if(vector_str != nullptr)
+        for (int i = 0; i<vector_str->size(); i++)
+        {
+               query1.prepare("INSERT INTO zk_links (row_id1, row_id2) VALUES ((:r_id1),(:r_id2))");
+               query1.bindValue(":r_id1",vector_str->at(i).at(0));
+               query1.bindValue(":r_id2",vector_str->at(i).at(1));
+               if (!query1.exec())
+               {
+                   qDebug() << query1.lastError() << query1.executedQuery();
+                   isOk = false;
+                   break;
+               }
+        }
+    if(!isOk)
+    {
+        db_connection::instance()->db().database(cname).rollback();
+        qDebug() << "отсюда";
+        return false;
+    }
+        else
+      db_connection::instance()->db().database(cname).commit();
 
     return true;
 }
