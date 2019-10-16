@@ -16,6 +16,8 @@
 #include <QCloseEvent>
 #include <QVector>
 
+
+#include "olddbservice.h"
 /**
  * @file Import_Form.h
  * @brief Форма импорта
@@ -34,6 +36,7 @@ class Import_Form : public QWidget
     Q_OBJECT
 
 public:
+    bool old_db = false;
     explicit Import_Form(QWidget *parent = nullptr);
     ~Import_Form();
 
@@ -63,6 +66,10 @@ public:
     bool begin_import();
 
 private slots:
+    // Проверка олд_дб на соответствие
+    bool testHeadFile(QByteArray *arr);
+
+    void switch_zk_to_crud(QList<Crud*> *crud_list, OldDbZk *zk);
 
     bool compare_dump_db();
 

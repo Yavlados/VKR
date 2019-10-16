@@ -314,6 +314,8 @@ void List_master::set_counters()
 
 Crud* List_master::get_crud(int zk_id)
 {
+    db_connection *db = db_connection::instance();
+    db->set_Sql_type(PSQLtype);
     QSqlQuery querry(db_connection::instance()->db());
 querry.prepare("SELECT "
                "zk.zk_id,"
@@ -414,7 +416,7 @@ void List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt)
     db->db().close();
 }
 
-bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QVector<QVector<int> > *vector, QVector<QVector<QString> > *vector_str)
+bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QVector<QVector<int> > *vector, QVector<QVector<QString> > *vector_str, bool old_db)
 {
     if(crud == nullptr || !db_connection::instance()->db_connect())
         return false;
@@ -470,6 +472,12 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
        query.bindValue(":t_a",crud->at(i)->time_add);
 
        //////////////////////////////////////////////
+
+       if(old_db)
+       {
+           query.bindValue(":r_i",crud->at(i)->row_id);
+       }
+
        bool temp = false;
        if(vector_str != nullptr)
            for (int v=0;v<vector_str->size();v++)
@@ -481,7 +489,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                    break;
                }
            }
-       if (!temp)
+       if (!temp && vector_str != nullptr)
        {
            query1.prepare("SELECT uuid_generate_v1()");
            if(query1.exec())

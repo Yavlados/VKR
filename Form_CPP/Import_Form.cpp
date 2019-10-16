@@ -167,7 +167,7 @@ bool Import_Form::add_to_db()
     return false;
   }
     QList<int> *templist = nullptr;
-    if(list->insert_crud_in_db(crud,templist,links_vector,vector))
+    if(list->insert_crud_in_db(crud,templist,links_vector,vector, old_db))
     {
 //        if(vector != nullptr)
 //            if(!vector->isEmpty())
@@ -226,11 +226,15 @@ void Import_Form::prepare_main_to_add(Crud *main_crud, Crud *added_crud)
 bool Import_Form::compare_dump_db()
 {
     QString query_for_nums, query_for_fio;
+    db_connection *db = db_connection::instance();
+    db->set_Sql_type(PSQLtype);
 
     if(a<crud->size())
         while (a<crud->size())
         {
     ///Проверка по ююид
+    if (crud->at(a)->row_id != 1)
+    {
         //Сперва проверим по роу айди
         QSqlQuery temp(db_connection::instance()->db());
         temp.prepare("SELECT zk.zk_id FROM zk WHERE zk.row_id = ('"+crud->at(a)->row_id+"')");
@@ -238,73 +242,74 @@ bool Import_Form::compare_dump_db()
             qDebug() << temp.executedQuery();
         else
         {
-         while(temp.next())
-         {
-             QLabel *lb = new QLabel("<font size = 6>  <div align=\"left\"> Уникальный идентификатор ЗК  <b>"+QString::number(crud->at(a)->zk_id)+"</b>"+
-                                         " совпадает с уникальным идентификатором "
-                                          "<b>"+QString::number(temp.value(0).toInt())+"</b> </div>  </font>");
-            ui->vl_for_label->addWidget(lb);
-
-            QList<int> *import_crud_links = Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
-
-            if(!import_crud_links->isEmpty())
+            while(temp.next())
             {
-                if(linked_id_list != nullptr)
-                    delete linked_id_list;
+                QLabel *lb = new QLabel("<font size = 6>  <div align=\"left\"> Уникальный идентификатор ЗК  <b>"+QString::number(crud->at(a)->zk_id)+"</b>"+
+                                        " совпадает с уникальным идентификатором "
+                                        "<b>"+QString::number(temp.value(0).toInt())+"</b> </div>  </font>");
+                ui->vl_for_label->addWidget(lb);
 
-                linked_id_list = new QList<int>;
-                linked_id_list = import_crud_links;         //Сделал список глобальным для класса
-                QLabel *label_for_compares  = new QLabel;
-                QString Label_text = "<font size = 10><i>РАБОТА СО СПИСКОМ:</i></font><font size = 6> ЗК №"+QString::number(crud->at(a)->zk_id)+" связана с импортируемыми ЗК: ";
-                for (int a =0; a<import_crud_links->size(); a++)
+                QList<int> *import_crud_links = Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
+
+                if(!import_crud_links->isEmpty())
                 {
-                    if(a == 0)
-                        Label_text += QString::number(import_crud_links->at(a));
-                    else
-                        Label_text +=", " + QString::number(import_crud_links->at(a));
+                    if(linked_id_list != nullptr)
+                        delete linked_id_list;
+
+                    linked_id_list = new QList<int>;
+                    linked_id_list = import_crud_links;         //Сделал список глобальным для класса
+                    QLabel *label_for_compares  = new QLabel;
+                    QString Label_text = "<font size = 10><i>РАБОТА СО СПИСКОМ:</i></font><font size = 6> ЗК №"+QString::number(crud->at(a)->zk_id)+" связана с импортируемыми ЗК: ";
+                    for (int a =0; a<import_crud_links->size(); a++)
+                    {
+                        if(a == 0)
+                            Label_text += QString::number(import_crud_links->at(a));
+                        else
+                            Label_text +=", " + QString::number(import_crud_links->at(a));
+                    }
+                    Label_text += "</font>";
+                    label_for_compares->setText(Label_text);
+                    ui->vl_for_count_of_compares->addWidget(label_for_compares);
+                    QPushButton *pb = new QPushButton("Перейти к работе со списком");
+                    ui->vl_for_pb->addWidget(pb);
+                    connect(pb,SIGNAL(clicked()), this, SLOT(begin_work_with_links()));
                 }
-                Label_text += "</font>";
-                label_for_compares->setText(Label_text);
-                ui->vl_for_count_of_compares->addWidget(label_for_compares);
-                QPushButton *pb = new QPushButton("Перейти к работе со списком");
-                ui->vl_for_pb->addWidget(pb);
-                connect(pb,SIGNAL(clicked()), this, SLOT(begin_work_with_links()));
+
+                QList<Crud*> *temp1 = new QList<Crud*>;
+                QList<Crud*> *temp2 = new QList<Crud*>;
+
+                crud_model =      new MTM_Crud;
+                temp1->append(crud->at(a));
+                crud_model->setCrudlist(temp1);
+                ui->tableView_crud->setModel(crud_model);
+
+                crud_model_pg =   new MTM_Crud;
+                crud_from_pg = new Crud;//Обнуляю этот круд
+                crud_from_pg = list->get_crud(temp.value(0).toInt());
+                temp2->append(crud_from_pg);
+                crud_model_pg->setCrudlist(temp2);
+                ui->tableView_crud_pg->setModel(crud_model_pg);
+
+                tel_mod =         new MTM_OwTel;
+
+                tel_mod->setOTList(crud->at(a)->owt());
+                ui->tableView_owt->setModel(tel_mod);
+
+                tel_mod_pg =      new MTM_OwTel;
+
+
+                tel_mod_pg->setOTList(crud_from_pg->owt());
+
+
+                ui->tableView_owt_pg->setModel(tel_mod_pg);
+
+                delete temp1; delete temp2;
+
+                return true;
+
             }
-
-            QList<Crud*> *temp1 = new QList<Crud*>;
-            QList<Crud*> *temp2 = new QList<Crud*>;
-
-            crud_model =      new MTM_Crud;
-            temp1->append(crud->at(a));
-            crud_model->setCrudlist(temp1);
-            ui->tableView_crud->setModel(crud_model);
-
-            crud_model_pg =   new MTM_Crud;
-            crud_from_pg = new Crud;//Обнуляю этот круд
-            crud_from_pg = list->get_crud(temp.value(0).toInt());
-            temp2->append(crud_from_pg);
-            crud_model_pg->setCrudlist(temp2);
-            ui->tableView_crud_pg->setModel(crud_model_pg);
-
-            tel_mod =         new MTM_OwTel;
-
-            tel_mod->setOTList(crud->at(a)->owt());
-            ui->tableView_owt->setModel(tel_mod);
-
-            tel_mod_pg =      new MTM_OwTel;
-
-
-           tel_mod_pg->setOTList(crud_from_pg->owt());
-
-
-           ui->tableView_owt_pg->setModel(tel_mod_pg);
-
-           delete temp1; delete temp2;
-
-        return true;
-
-         }
         }
+    }
 
         for (int i=0; i < crud->at(a)->owt()->size(); i++)
         {
@@ -334,36 +339,43 @@ bool Import_Form::compare_dump_db()
         if (!cr->compare_with_base(query_for_nums,query_for_fio))
         {
             //После проверки на совпадения необходимо убедится - связана ли импортируемая ЗК
-
-            QList<int> *import_crud_links = Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
-            if(!import_crud_links->isEmpty())
+            if(crud->at(a)->row_id != 1)
             {
-                if(linked_id_list != nullptr)
-                    delete linked_id_list;
-
-                linked_id_list = new QList<int>;
-                linked_id_list = import_crud_links;         //Сделал список глобальным для класса
-
-                QLabel *label_for_compares  = new QLabel;
-                QString Label_text = "<font size = 10><i>РАБОТА СО СПИСКОМ:</i></font><font size = 6> ЗК №"+QString::number(crud->at(a)->zk_id)+" связана с импортируемыми ЗК: ";
-                for (int a =0; a<import_crud_links->size(); a++)
+                QList<int> *import_crud_links = Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
+               if(import_crud_links != nullptr)
                 {
-                    if(a == 0)
-                        Label_text += QString::number(import_crud_links->at(a));
-                    else
-                        Label_text +=", " + QString::number(import_crud_links->at(a));
+                    if(!import_crud_links->isEmpty())
+                    {
+                        if(linked_id_list != nullptr)
+                            delete linked_id_list;
+
+                        linked_id_list = new QList<int>;
+                        linked_id_list = import_crud_links;         //Сделал список глобальным для класса
+
+                        QLabel *label_for_compares  = new QLabel;
+                        QString Label_text = "<font size = 10><i>РАБОТА СО СПИСКОМ:</i></font><font size = 6> ЗК №"+QString::number(crud->at(a)->zk_id)+" связана с импортируемыми ЗК: ";
+                        for (int a =0; a<import_crud_links->size(); a++)
+                        {
+                            if(a == 0)
+                                Label_text += QString::number(import_crud_links->at(a));
+                            else
+                                Label_text +=", " + QString::number(import_crud_links->at(a));
+                        }
+                        Label_text += "</font>";
+                        label_for_compares->setText(Label_text);
+                        ui->vl_for_count_of_compares->addWidget(label_for_compares);
+                        QPushButton *pb = new QPushButton("Перейти к работе со списком");
+                        ui->vl_for_pb->addWidget(pb);
+                        connect(pb,SIGNAL(clicked()), this, SLOT(begin_work_with_links()));
+                    }
                 }
-                Label_text += "</font>";
-                label_for_compares->setText(Label_text);
-                ui->vl_for_count_of_compares->addWidget(label_for_compares);
-                QPushButton *pb = new QPushButton("Перейти к работе со списком");
-                ui->vl_for_pb->addWidget(pb);
-                connect(pb,SIGNAL(clicked()), this, SLOT(begin_work_with_links()));
             }
 
                 QLabel *lb= nullptr;
                 if(cr->compare_result->at(0).Tel_num != "NULL") //Совпадение по телефону
                 {
+                    db->set_Sql_type(PSQLtype);
+
                     QString _temp = cr->compare_result->at(0).Tel_num;
 
                     _temp.insert(0,"+");
@@ -565,55 +577,114 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
   //false - либо успешный импорт, либо нет необходимости открывать
   //пустую форму, а достаточно вывести сообщение об ошибке
 
-        /// В зависимости от наличия пароля меняем драйвер
-        crud = new QList <Crud*>;   /// Инициализируем списки
-        offtel = new QList<Off_tels*>;
+    db_file.setFileName(filename);
+        if(filename.endsWith(".db"))
+        {
 
-        Local_filename = filename;
-       db_connection *db = db_connection::instance();
-        db_file.setFileName(filename);
+            /// В зависимости от наличия пароля меняем драйвер
+            crud = new QList <Crud*>;   /// Инициализируем списки
+            offtel = new QList<Off_tels*>;
 
-       if (password.isEmpty())               ///Если пароля нет, то Склайт
-       {
-           type = SQLliteType;
-           db->set_Sql_type(type);
-       }
-       else
-       {
-           type = SQLlitechipher;
-           db->set_Sql_type(type);    ///Если есть,то заходим с паролем
-          if (!db->db().open("user",password) )
-          {
-     QMessageBox::critical(this,
-                   QObject::tr("Внимание"),
-                   QObject::tr("НЕВЕРНЫЙ ПАРОЛЬ"));
-              return false;
-          }
-       }
+            Local_filename = filename;
+            db_connection *db = db_connection::instance();
 
-       db->db().setDatabaseName(db_file.fileName());
+            if (password.isEmpty())               ///Если пароля нет, то Склайт
+            {
+                type = SQLliteType;
+                db->set_Sql_type(type);
+            }
+            else
+            {
+                type = SQLlitechipher;
+                db->set_Sql_type(type);    ///Если есть,то заходим с паролем
+                if (!db->db().open("user",password) )
+                {
+                    QMessageBox::critical(this,
+                                          QObject::tr("Внимание"),
+                                          QObject::tr("НЕВЕРНЫЙ ПАРОЛЬ"));
+                    return false;
+                }
+            }
 
-       list->fill_all_crud_list(crud, type); /// Заполняю списки из дампа
-       list->fill_off_tels(offtel,type);
+            db->db().setDatabaseName(db_file.fileName());
 
-    ///Закрываем файл и БД
-    db_file.close();
-    db->db().close();
-    db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
-    qDebug() << db->db_connect()<<db->db().lastError();
+            list->fill_all_crud_list(crud, type); /// Заполняю списки из дампа
+            list->fill_off_tels(offtel,type);
 
-       ///Перед операцией слияния дампа и основной бд необходимо проверить
-       /// оба списка на повторы
-    if(!crud->isEmpty() || !offtel->isEmpty()) // Удачно выгрузил даные в локальный список
-    {
-          return true;
-    }
-    else {
-        QMessageBox::critical(this,
-                      QObject::tr("Внимание"),
-                      QObject::tr("Файл либо пуст либо не требует пароль для доступа"));
-    return false;
-    }
+            ///Закрываем файл и БД
+            db_file.close();
+            db->db().close();
+            db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
+            qDebug() << db->db_connect()<<db->db().lastError();
+
+            ///Перед операцией слияния дампа и основной бд необходимо проверить
+            /// оба списка на повторы
+            if(!crud->isEmpty() || !offtel->isEmpty()) // Удачно выгрузил даные в локальный список
+            {
+                return true;
+            }
+            else {
+                QMessageBox::critical(this,
+                                      QObject::tr("Внимание"),
+                                      QObject::tr("Файл либо пуст либо не требует пароль для доступа"));
+                return false;
+            }
+        }
+        else
+        {
+             if (!db_file.open(QIODevice::ReadOnly | QIODevice::Unbuffered) )
+             {
+                 QMessageBox::critical(this,
+                                       QObject::tr("Внимание"),
+                                       QObject::tr("Невозможно открыть файл"));;
+                 return 0;
+             }
+             QByteArray arr=db_file.readAll();
+             if(arr.count()==0)
+             {
+                 QMessageBox::critical(this,
+                                       QObject::tr("Внимание"),
+                                       QObject::tr("Файл либо не подходит под формат old_db, либо пуст!"));
+                 return false;
+             }
+
+             if( !testHeadFile(&arr) ||
+                     arr[0xC2]==0 )
+             {
+                 QMessageBox::critical(this,
+                                       QObject::tr("Внимание"),
+                                       QObject::tr("Файл либо не подходит под формат old_db"));
+                return false;
+             }else
+             {
+                 OldDbService *service;
+                 OldDbZk *zk = new OldDbZk();
+                 int pos = 0xC2;
+                 if (service->Open_Old_db(zk,pos,arr))
+                 {
+                       qDebug() << "Крутяяк";
+                       crud = new QList<Crud*>;
+                       switch_zk_to_crud(crud, zk);
+                       old_db = true;
+
+                       db_file.close();
+
+                       ///Перед операцией слияния дампа и основной бд необходимо проверить
+                       /// оба списка на повторы
+                       if(!crud->isEmpty() || !offtel->isEmpty()) // Удачно выгрузил даные в локальный список
+                       {
+                           return true;
+                       }
+                       else {
+                           QMessageBox::critical(this,
+                                                 QObject::tr("Внимание"),
+                                                 QObject::tr("Файл либо пуст либо не требует пароль для доступа"));
+                           return false;
+                       }
+                 }
+
+             }
+        }
 }
 
 
@@ -634,6 +705,108 @@ bool Import_Form::begin_import()
             return false;
         }
     }
+}
+
+bool Import_Form::testHeadFile(QByteArray *arr)
+{
+    return arr->mid(3,6)=="prolog";
+}
+
+void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
+{
+    QSqlQuery query1(db_connection::instance()->db());
+    Crud *person = new Crud;
+    person->lastname = zk->person.famil;
+    person->name =zk->person.imya;
+    person->mid_name = zk->person.otchestvo;
+    person->reg_city = zk->person.city;
+    person->reg_street = zk->person.street;
+    person->reg_home = zk->person.dom;
+    person->reg_corp = zk->person.korpus;
+    person->reg_flat = zk->person.kvar;
+    person->dop_info = "ИМПОРТИРОВАН ИЗ СТАРОЙ БД";
+    person->dop_info += zk->person.dopinfo;
+
+    query1.prepare("SELECT uuid_generate_v1()");
+    if(query1.exec())
+        while (query1.next())
+          person->row_id = query1.value(0).toString();
+
+    person->state = IsNewing;
+    person->dop_info.append(", Кличка:" + zk->person.klichka);
+    int i;
+    for (i = 1;i<zk->contacts.size(); i++)
+    {
+        Crud *cr = new Crud;
+        cr->zk_id = i;
+        cr->lastname = zk->contacts.at(i)->famil;
+        cr->name =zk->contacts.at(i)->imya;
+        cr->mid_name = zk->contacts.at(i)->otchestvo;
+        cr->reg_city = zk->contacts.at(i)->city;
+        cr->reg_street = zk->contacts.at(i)->street;
+        cr->reg_home = zk->contacts.at(i)->dom;
+        cr->reg_corp = zk->contacts.at(i)->korpus;
+        cr->reg_flat = zk->contacts.at(i)->kvar;
+        cr->dop_info = "ИМПОРТИРОВАН ИЗ СТАРОЙ БД";
+        cr->dop_info += zk->contacts.at(i)->dopinfo;
+        cr->state = IsNewing;
+
+        query1.prepare("SELECT uuid_generate_v1()");
+        if(query1.exec())
+            while (query1.next())
+              cr->row_id = query1.value(0).toString();
+
+        cr->dop_info.append(", Кличка:" + zk->contacts.at(i)->klichka);
+        if (!zk->contacts.at(i)->tel1.isEmpty())
+        {
+            Owners_tel *ow = new Owners_tel;
+            ow->tel_num = zk->contacts.at(i)->tel1;
+            ow->oldnum = true;
+            ow->parentZK_id = i;
+            ow->state = IsNewing;
+            cr->owt()->append(ow);
+        }
+        if (!zk->contacts.at(i)->tel2.isEmpty())
+        {
+            Owners_tel *ow = new Owners_tel;
+            ow->tel_num = zk->contacts.at(i)->tel2;
+            ow->oldnum = true;
+            ow->parentZK_id = i;
+            ow->state = IsNewing;
+            cr->owt()->append(ow);
+        }
+        if (!zk->contacts.at(i)->tel3.isEmpty())
+        {
+            Owners_tel *ow = new Owners_tel;
+            ow->tel_num = zk->contacts.at(i)->tel3;
+            ow->oldnum = true;
+            ow->parentZK_id = i;
+            ow->state = IsNewing;
+            cr->owt()->append(ow);
+        }
+        if (!zk->contacts.at(i)->tel4.isEmpty())
+        {
+            Owners_tel *ow = new Owners_tel;
+            ow->tel_num = zk->contacts.at(i)->tel4;
+            ow->oldnum = true;
+            ow->parentZK_id = i;
+            ow->state = IsNewing;
+            cr->owt()->append(ow);
+        }
+        if (!zk->contacts.at(i)->tel5.isEmpty())
+        {
+            Owners_tel *ow = new Owners_tel;
+            ow->tel_num = zk->contacts.at(i)->tel5;
+            ow->oldnum = true;
+            ow->parentZK_id = i;
+            ow->state = IsNewing;
+            cr->owt()->append(ow);
+        }
+        crud_list->append(cr);
+    }
+    person->zk_id = i;
+    crud_list->append(person);
+
 }
 
 void Import_Form::on_pb_save_import_slot(QString str)

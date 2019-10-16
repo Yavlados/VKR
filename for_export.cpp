@@ -154,7 +154,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
             query.bindValue(":r_i",crud->at(i)->row_id);
 
             in << "\r\n";
-            in << QString::number(exported_zk_id.at(i));
+            in << crud->at(i)->row_id;
             in <<"\t";
             in << crud->at(i)->lastname;
             in << "\t";
