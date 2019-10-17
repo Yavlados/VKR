@@ -16,7 +16,7 @@ namespace Ui {
 class Analysis;
 }
 
-class Analysis : public QWidget
+class Analysis : public QWidget         ///Форма анализа
 {
     Q_OBJECT
 

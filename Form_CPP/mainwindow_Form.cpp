@@ -8,6 +8,12 @@
 #include <QSettings>
 #include "settings_connection.h"
 
+/**
+ * \file Mainwindow_Form.cpp
+ * \brief Исполняемый файл класса MainWindow
+*/
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -37,6 +43,13 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::Add_pagination_buttons1(int a1, int a2)
+{
+    a1 = 3;
+    a2 = 4;
+   ///Тестовый метод, необходимо удалить после демонстрации
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::Add_pagination_buttons()

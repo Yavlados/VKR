@@ -15,7 +15,7 @@
 enum Calling_state_Ot{Show_Ot = 1,  /// Модель для просмотра
                       Edit_Ot = 0}; /// Модель для изменения (формы update и add_form)
 
-class MTM_OwTel: public QAbstractTableModel
+class MTM_OwTel: public QAbstractTableModel     ///Модель отображения данных о номерах телефонов
 {
     Q_OBJECT
 public:

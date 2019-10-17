@@ -14,7 +14,7 @@ enum SqlType {SQLlitechipher = 0,
  * \file db_connection.h
  * \brief Класс подключения к базе данных
 */
-class db_connection
+class db_connection     ///Класс подключения к базе данных
 {
 public:
     /// Доступ к статической переменной класса

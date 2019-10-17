@@ -7,6 +7,21 @@
  * \par Использует классы:
  *     @ref mainwindow_Form.h
 */
+
+/**   \mainpage Программа для анализа записных книг
+ *         \par  Состоит из следующих главных частей:
+ *        - \ref Analysis
+ *        - \ref Search
+ *        - \ref Update
+ *        - \ref Master_import_form
+ *        - \ref Master_export_Form
+ *        - \ref OfficialTelephones
+ *          \author Житенев Владислав Германович
+ *          \copyright BMSTU
+ *          \version 3.0.1
+ */
+
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

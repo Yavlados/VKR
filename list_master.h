@@ -16,7 +16,7 @@ enum Form_state { Export = 0,
 * \brief Класс работы со списками
 */
 
-class List_master
+class List_master           ///Класс работы со списками
 {
 public:
     List_master();

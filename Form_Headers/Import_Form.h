@@ -31,7 +31,7 @@ namespace Ui {
 class Import_Form;
 }
 
-class Import_Form : public QWidget
+class Import_Form : public QWidget ///Форма импорта
 {
     Q_OBJECT
 

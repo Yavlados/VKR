@@ -8,7 +8,7 @@
 enum Number_type {OT = 0,
                  Cont = 1};
 
-class Table_line_delegate: public QItemDelegate
+class Table_line_delegate: public QItemDelegate     ///Класс делегата LineEdit
 {
     Q_OBJECT
 public:

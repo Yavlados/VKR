@@ -27,7 +27,7 @@ enum Import_type {Update_import_data =0,
                   Update_pg_data_import = 3,
                   Add_import_data = 1};
 
-class Update : public QWidget
+class Update : public QWidget   ///Форма поиска
 {
     Q_OBJECT
 

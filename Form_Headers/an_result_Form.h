@@ -13,7 +13,7 @@ namespace Ui {
 class An_result;
 }
 
-class An_result : public QWidget
+class An_result : public QWidget ///Форма вывода справок
 {
     Q_OBJECT
 

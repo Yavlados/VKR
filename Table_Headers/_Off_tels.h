@@ -5,7 +5,7 @@
 * \file _Off_tels.h
 * \brief Класс сущности "Служебные телефоны"
 */
-class Off_tels
+class Off_tels          ///Класс сущности "Служебные телефоны"
 {
 public:
     Off_tels();

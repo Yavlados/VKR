@@ -11,7 +11,7 @@ namespace Ui {
 class Master_import_form;
 }
 
-class Master_import_form : public QWidget
+class Master_import_form : public QWidget ///Форма импорта
 {
     Q_OBJECT
 

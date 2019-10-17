@@ -14,7 +14,7 @@ namespace Ui {
 class Settings_Form;
 }
 
-class Settings_Form : public QWidget
+class Settings_Form : public QWidget    ///Форма поиска
 {
     Q_OBJECT
 

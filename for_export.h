@@ -17,7 +17,7 @@
  * \brief Класс методов экспорта
 */
 
-class For_export
+class For_export            /// Класс методов экспорта
 {
 
 public:

@@ -12,7 +12,7 @@ namespace Ui {
 class Search;
 }
 
-class Search : public QWidget
+class Search : public QWidget   ///Форма поиска
 {
     Q_OBJECT
 

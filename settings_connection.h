@@ -3,13 +3,13 @@
 #include <QString>
 #include <QSettings>
 
-struct Columns
+struct Columns      ///Структура для колонок
 {
     int number;
     QString column_name;
 };
 
-class Settings_connection
+class Settings_connection         ///Класс настроек
 {
 public:
     QList<Columns*> showing_cols;

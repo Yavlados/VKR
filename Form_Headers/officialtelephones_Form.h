@@ -12,7 +12,7 @@ namespace Ui {
 class OfficialTelephones;
 }
 
-class OfficialTelephones : public QWidget
+class OfficialTelephones : public QWidget ///Форма служебных телефонов
 {
     Q_OBJECT
 

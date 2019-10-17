@@ -16,7 +16,7 @@
  * \brief Класс методов анализа
 */
 
-class For_analysis
+class For_analysis          /// Класс методов анализа
 {
 public:
     For_analysis();

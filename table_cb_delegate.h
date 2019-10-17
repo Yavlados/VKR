@@ -4,7 +4,7 @@
 #include <QCheckBox>
 #include <QItemDelegate>
 
-class Table_cb_delegate: public QItemDelegate
+class Table_cb_delegate: public QItemDelegate       ///Класс делегата CheckBox
 {
     Q_OBJECT
 public:

@@ -16,7 +16,7 @@
  * \brief Модель отображения данных о ЗК
 */
 
-class MTM_Crud: public QAbstractTableModel
+class MTM_Crud: public QAbstractTableModel      ///Модель отображения данных о ЗК
 {
          Q_OBJECT
 public:

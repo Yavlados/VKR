@@ -5,8 +5,8 @@
 #include <QFile>
 #include <QTextCodec>
 
-/// Структура с данными абонента (zk 2.4)
-struct OldDbAbonent
+
+struct OldDbAbonent /// Структура с данными абонента (zk 2.4)
 {
     QString famil, imya, otchestvo, klichka;
     QString city, street, dom, korpus, kvar;
@@ -14,8 +14,8 @@ struct OldDbAbonent
     QString dopinfo;
 };
 
-/// Структура с данными записной канижки (zk 2.4)
-struct OldDbZk
+
+struct OldDbZk /// Структура с данными записной канижки (zk 2.4)
 {
     OldDbZk();
     ~OldDbZk();
@@ -29,7 +29,7 @@ struct OldDbZk
 };
 
 
-class OldDbService
+class OldDbService  ///Класс импорта старых Записных Книг
 {
 public:
     OldDbService();

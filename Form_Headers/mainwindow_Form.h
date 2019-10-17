@@ -26,35 +26,39 @@
 #include <QMessageBox>
 #include <QSqlQueryModel>
 #include <QFileDialog>
-/**
- * \file Mainwindow_Form.h
- * \brief Форма главного окна
- * \par Использует классы форм:
- *     @ref analysis_Form.h
- *     @ref update_Form.h
- *     @ref search_Form.h
- *     @ref master_export_Form.h
- *     @ref master_import_Form.h
- *     @ref settings_Form.h
- *     @ref Import_Form.h
- *     @ref officialtelephones_Form.h
- * \par Использует классы моделей:
- *     @ref _MTM_Contacts.h
- *     @ref _MTM_Crud.h
- *     @ref _MTM_OwTel.h
- * \par Использует вспомогательные классы:
- *     @ref list_master.h
- *     @ref db_connection.h
- *     @ref for_export.h
+/** \file mainwindow_form.h
+    \brief Заголовочный файл класса MainWindow
 */
+
 namespace Ui {
 class MainWindow;
 }
 enum Model_check_state { All_checked = 1,
                          All_unchecked = 0};
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow ///Форма главного окна
+                                      /**
+                                         * \brief Форма главного окна
+                                         * \par Использует классы форм:
+                                         *     @ref analysis_Form.h
+                                         *     @ref update_Form.h
+                                         *     @ref search_Form.h
+                                         *     @ref master_export_Form.h
+                                         *     @ref master_import_Form.h
+                                         *     @ref settings_Form.h
+                                         *     @ref Import_Form.h
+                                         *     @ref officialtelephones_Form.h
+                                         * \par Использует классы моделей:
+                                         *     @ref _MTM_Contacts.h
+                                         *     @ref _MTM_Crud.h
+                                         *     @ref _MTM_OwTel.h
+                                         * \par Использует вспомогательные классы:
+                                         *     @ref list_master.h
+                                         *     @ref db_connection.h
+                                         *     @ref for_export.h
+                                        */
 {
+
     Q_OBJECT
 
 public:
@@ -64,6 +68,11 @@ public:
     OfficialTelephones *of = nullptr;     //форма служебных телефонов
     class Analysis *an = nullptr;         //форма анализа
 
+    ///Атрибут класса MessageBox
+    /**
+     * \brief Переменная MessageBox
+     * \par Необходима  для отображения сообщений в формате MessageBox
+     */
     QMessageBox msgbx;
 
     Model_check_state m_c_s;
@@ -89,8 +98,26 @@ public:
     ///Счетчик для кнопки
     int p_b_counter = 0;
 
+
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+
+    ///Добавление кнопок пагинации
+    /**
+     * \brief Кнопки пагинации
+     * \par Добавляются PushButton в зависимости от настроек, указанных в форме
+     * \ref settings_Form.h
+     *
+     * \param a1 Атрибут1
+     * \param a2 Атрибут2
+     * \return Sum of a1 and a2
+     */
+    void Add_pagination_buttons1(int a1,
+                                 int a2
+                                 );
+
+
 
 public slots:
 
@@ -100,7 +127,14 @@ private:
 
 
 private slots:
+    ///Добавление кнопок пагинации
+    /**
+     * \brief Кнопки пагинации
+     * \par Добавляются PushButton в зависимости от настроек, указанных в форме
+     * \ref settings_Form.h
+     */
     void Add_pagination_buttons();
+
 
     void on_tableView_clicked(const QModelIndex &index_tab1, QString num = nullptr);
 

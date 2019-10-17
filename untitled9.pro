@@ -53,7 +53,8 @@ SOURCES += \
     settings_connection.cpp \
     table_line_delegate.cpp \
     table_cb_delegate.cpp \
-    olddbservice.cpp
+    olddbservice.cpp \
+    class_from_crud.cpp
 
 HEADERS += \
     db_connection.h \
@@ -82,7 +83,8 @@ HEADERS += \
     settings_connection.h \
     table_line_delegate.h \
     table_cb_delegate.h \
-    olddbservice.h
+    olddbservice.h \
+    class_from_crud.h
 
 FORMS += \
         mainwindow.ui \

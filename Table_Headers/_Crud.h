@@ -36,18 +36,13 @@ enum CompareResult {
                       liv_corp_CR,
                       liv_flat_CR};
 
-struct Cl_in_db_struct
+struct Cl_in_db_struct      ///Структура для результатов сравнения
     {
         int     id;
         QString Tel_num;
     };
 
-struct link_id
-{
-    QString rowid1;
-};
-
-class Crud
+class Crud          ///Класс сущности "Записная книга"
 {
 
 public:

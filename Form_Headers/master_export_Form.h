@@ -14,7 +14,7 @@ namespace Ui {
 class master_export_Form;
 }
 
-class Master_export_Form : public QWidget
+class Master_export_Form : public QWidget ///Форма экспорта
 {
     Q_OBJECT
 

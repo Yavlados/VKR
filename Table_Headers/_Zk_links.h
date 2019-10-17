@@ -6,7 +6,7 @@
 #include "db_connection.h"
 #include <QDebug>
 
-class zk_links
+class zk_links      ///Класс связей Записнх Книг
 {
 public:
     QList<zk_links*> *links ;

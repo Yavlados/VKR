@@ -12,7 +12,7 @@
  * \brief Модель отображения данных о служебных телефонах
 */
 
-class MTM_Off_Tels: public QAbstractTableModel
+class MTM_Off_Tels: public QAbstractTableModel      ///Модель отображения данных о служебных телефонах
 {
      Q_OBJECT
 public:

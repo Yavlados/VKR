@@ -16,7 +16,7 @@
  * \brief Класс сущности "Телефон"
 */
 
-class Owners_tel
+class Owners_tel            ///Класс сущности "Телефон"
 {
 
 public:
