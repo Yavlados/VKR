@@ -54,7 +54,7 @@ SOURCES += \
     table_line_delegate.cpp \
     table_cb_delegate.cpp \
     olddbservice.cpp \
-    class_from_crud.cpp
+    dialog_conflict.cpp
 
 HEADERS += \
     db_connection.h \
@@ -84,7 +84,7 @@ HEADERS += \
     table_line_delegate.h \
     table_cb_delegate.h \
     olddbservice.h \
-    class_from_crud.h
+    dialog_conflict.h
 
 FORMS += \
         mainwindow.ui \
@@ -96,7 +96,8 @@ FORMS += \
     master_export_form.ui \
     import_form.ui \
     master_import_form.ui \
-    settings_form.ui
+    settings_form.ui \
+    dialog_conflict.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -304,8 +304,8 @@ bool Crud::add_zk()
                    "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                    "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                    "(:c_f),(:d_i),"
-                   "(:d_a), (:t_a)) "
-                   " RETURNING zk.Zk_id");
+                   "(:d_a), (:t_a))) "
+                   " RETURNING zk.Zk_id, zk.row_id");
 
     querry.bindValue(":lastname",lastname);
     querry.bindValue(":name",name);
@@ -332,7 +332,7 @@ bool Crud::add_zk()
 
     if (!querry.exec())
     {
-        qDebug() << querry.lastError();
+        qDebug() << querry.lastError() << querry.value(1).toString();
         return false;
     }
 

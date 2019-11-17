@@ -25,6 +25,7 @@ public:
     explicit Master_export_Form(QWidget *parent = nullptr);
     ~Master_export_Form();
 
+    QSize actual_size;
 private slots:
     void on_cb_zk_clicked();
 

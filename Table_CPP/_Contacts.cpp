@@ -4,6 +4,9 @@ Contacts::Contacts()
 {
     contact_id=0;
     cont_state = IsNewing;
+    oldnum = false;
+    internum = false;
+    linked_id = 0;
 }
 
 /// Конструктор класса с тремя переменными

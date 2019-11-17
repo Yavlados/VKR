@@ -8,6 +8,7 @@ Search::Search(QWidget *parent) :
     ui(new Ui::Search)
 {
     ui->setupUi(this);
+        actual_size = this->size();
 }
 
 Search::~Search()
@@ -52,7 +53,7 @@ void Search::on_pb_search_clicked()
         else {//Если в листе есть что-то
             QMessageBox msgbx;
             msgbx.setText("Результат поиска<br>");
-            msgbx.setGeometry(960,510, 180,210);
+            //msgbx.setGeometry(960,510, 180,210);
             msgbx.setText("<font size = '8'> Найдено " + QString::number(temp_list->count()) + " совпадений </font>");
             msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
             msgbx.setButtonText(QMessageBox::Ok,"ПРОСМОТР");

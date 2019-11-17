@@ -7,7 +7,7 @@ Master_import_form::Master_import_form(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->le_password_2->setEchoMode(QLineEdit::Password);
-
+    actual_size = this->size();
 }
 
 Master_import_form::~Master_import_form()

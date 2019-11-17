@@ -24,6 +24,7 @@ Import_Form::Import_Form(QWidget *parent) :
     ui->tableView_crud->setColumnHidden(1,true);
     ui->tableView_crud_pg->setColumnHidden(1,true);
     ui->pb_update_pg->setVisible(false);
+        actual_size = this->size();
 }
 
 Import_Form::~Import_Form()

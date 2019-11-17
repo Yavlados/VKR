@@ -16,6 +16,8 @@ Analysis::Analysis(QWidget *parent) :
     ui->le_some_new_zk->setVisible(false);
     //Analysis::set_validators();
     Analysis::clear_rb_3(false);
+
+    actual_size = this->size();
 }
 
 Analysis::~Analysis()
@@ -135,214 +137,234 @@ void Analysis::clear_rb_3(bool stat)
 
 void Analysis::on_pushButton_clicked()
 {
-    //////////////////     1     //////////////////
-    if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
+    qDebug() << this->size().width();
+
+
+    ///Проверка на валидность номера
+
+    QSqlQuery querry(db_connection::instance()->db());
+    querry.prepare("SELECT zk.zk_id"
+                   " FROM  zk"
+                   " WHERE "
+                   "zk.zk_id= (:z_id)");
+    querry.bindValue(":z_id", ui->le_an_zk->text());
+
+    if (querry.exec() )
     {
-    An_result *ar = new An_result();
-    ar->setWindowModality(Qt::WindowModal);
-    ar->show();
-
-    connect(this, SIGNAL(Send_short_face_analysis_all_db(int)), ar, SLOT(Recieve_short_face_analysis_all_db(int)));
-
-    emit Send_short_face_analysis_all_db(ui->le_an_zk->text().toInt());
-    }
-
-    //////////////////     2     //////////////////
-    if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
-    {
-    An_result *ar = new An_result();
-    ar->show();
-
-    connect(this, SIGNAL(Send_short_tel_analysis_all_db(int)), ar, SLOT(Recieve_short_tel_analysis_all_db(int)));
-
-    emit Send_short_tel_analysis_all_db(ui->le_an_zk->text().toInt());
-    }
-
-    //////////////////     3     //////////////////
-    if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
-    {
-    An_result *ar = new An_result();
-    ar->show();
-
-    connect(this, SIGNAL(Send_long_face_analysis_all_db(int)), ar, SLOT(Recieve_long_face_analysis_all_db(int)));
-
-    emit Send_long_face_analysis_all_db(ui->le_an_zk->text().toInt());
-    }
-
-    //////////////////     4     //////////////////
-   if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
-   {
-   An_result *ar = new An_result();
-   ar->show();
-
-   connect(this, SIGNAL(Send_long_tel_analysis_all_db(int)), ar, SLOT(Recieve_long_tel_analysis_all_db(int)));
-
-   emit Send_long_tel_analysis_all_db(ui->le_an_zk->text().toInt());
-   }
-
-    //////////////////     5     //////////////////
-   if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
-   {
-
-        foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
+        if(!querry.next())
         {
-            if(!l->text().isEmpty())
-                vector.append(l->text().toInt());
+            if (querry.value(0).isNull() || !querry.value(0).isValid())
+            {
+                qDebug() << querry.value(0).toString() << querry.executedQuery();
+                QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("ЗК под таким номером не существует"));
+                return;
+            }
+        }
+        else {
+        //////////////////     1     //////////////////
+        if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
+        {
+        An_result *ar = new An_result();
+        ar->setWindowModality(Qt::WindowModal);
+        ar->show();
+
+        connect(this, SIGNAL(Send_short_face_analysis_all_db(int)), ar, SLOT(Recieve_short_face_analysis_all_db(int)));
+
+        emit Send_short_face_analysis_all_db(ui->le_an_zk->text().toInt());
         }
 
-        Analysis::uniq_array();
-
+        //////////////////     2     //////////////////
+        if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
+        {
         An_result *ar = new An_result();
         ar->show();
 
-        connect(this, SIGNAL(Send_short_face_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_short_face_analysis_all_db(QVector<int>, int)));
+        connect(this, SIGNAL(Send_short_tel_analysis_all_db(int)), ar, SLOT(Recieve_short_tel_analysis_all_db(int)));
 
-        emit Send_short_face_analysis_all_db(vector,ui->le_an_zk->text().toInt());
+        emit Send_short_tel_analysis_all_db(ui->le_an_zk->text().toInt());
+        }
 
-        vector.clear();
-   }
-
-    //////////////////     6     //////////////////
-  if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
-  {
-   foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
-   {
-       if(!l->text().isEmpty())
-          vector.append(l->text().toInt());
-   }
-
-   Analysis::uniq_array();
-
-   An_result *ar = new An_result();
-   ar->show();
-
-   connect(this, SIGNAL(Send_short_tel_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_short_tel_analysis_all_db(QVector<int>, int)));
-
-   emit Send_short_tel_analysis_all_db(vector,ui->le_an_zk->text().toInt());
-
-   vector.clear();
-  }
-
-    //////////////////     7     //////////////////
- if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
- {
-  foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
-  {
-      if(!l->text().isEmpty())
-         vector.append(l->text().toInt());
-  }
-
-  Analysis::uniq_array();
-
-  An_result *ar = new An_result();
-  ar->show();
-
-  connect(this, SIGNAL(Send_long_face_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_long_face_analysis_all_db(QVector<int>, int)));
-
-  emit Send_long_face_analysis_all_db(vector,ui->le_an_zk->text().toInt());
-
-  vector.clear();
- }
-
-    //////////////////     8     //////////////////
- if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
- {
-  foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
-  {
-      if(!l->text().isEmpty())
-         vector.append(l->text().toInt());
-  }
-
-  Analysis::uniq_array();
-
-  An_result *ar = new An_result();
-  ar->show();
-
-  connect(this, SIGNAL(Send_long_tel_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_long_tel_analysis_all_db(QVector<int>, int)));
-
-  emit Send_long_tel_analysis_all_db(vector,ui->le_an_zk->text().toInt());
-
-  vector.clear();
- }
-
-    //////////////////     9     //////////////////
- if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
- {
-    if(get_date_from() < get_date_to())
-    {
+        //////////////////     3     //////////////////
+        if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
+        {
         An_result *ar = new An_result();
         ar->show();
 
-        connect(this, SIGNAL(Send_short_face_analysis_all_db(QString, QString, int)), ar, SLOT(Recieve_short_face_analysis_all_db(QString, QString, int)));
+        connect(this, SIGNAL(Send_long_face_analysis_all_db(int)), ar, SLOT(Recieve_long_face_analysis_all_db(int)));
 
-        emit Send_short_face_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
+        emit Send_long_face_analysis_all_db(ui->le_an_zk->text().toInt());
+        }
 
-    }
-    else {
-        qDebug() << "DATE TO < DATE FOR";
-    }
- }
-
-    //////////////////     10     //////////////////
-if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
-{
-    if(!get_date_from().isEmpty() || !get_date_to().isEmpty())
-    {
+        //////////////////     4     //////////////////
+       if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
+       {
        An_result *ar = new An_result();
        ar->show();
 
-       connect(this, SIGNAL(Send_short_tel_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_short_tel_analysis_all_db(QDate, QDate, int)));
+       connect(this, SIGNAL(Send_long_tel_analysis_all_db(int)), ar, SLOT(Recieve_long_tel_analysis_all_db(int)));
 
-       emit Send_short_tel_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
-   }
-   else {
-       qDebug() << "DATE TO < DATE FOR";
-   }
-}
+       emit Send_long_tel_analysis_all_db(ui->le_an_zk->text().toInt());
+       }
 
-    //////////////////     11     //////////////////
-if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
-{
-  if(get_date_from() < get_date_to())
-    {
-       An_result *ar = new An_result();
-       ar->show();
+        //////////////////     5     //////////////////
+       if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
+       {
 
-       connect(this, SIGNAL(Send_long_face_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_long_face_analysis_all_db(QDate, QDate, int)));
+            foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
+            {
+                if(!l->text().isEmpty())
+                    vector.append(l->text().toInt());
+            }
 
-       emit Send_long_face_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
-    }
-    else {
-       qDebug() << "DATE TO < DATE FOR";
-    }
-}
+            Analysis::uniq_array();
 
-    //////////////////     12      //////////////////
-if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
-{
-    if(get_date_from() < get_date_to())
+            An_result *ar = new An_result();
+            ar->show();
+
+            connect(this, SIGNAL(Send_short_face_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_short_face_analysis_all_db(QVector<int>, int)));
+
+            emit Send_short_face_analysis_all_db(vector,ui->le_an_zk->text().toInt());
+
+            vector.clear();
+       }
+
+        //////////////////     6     //////////////////
+      if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
       {
-               An_result *ar = new An_result();
-               ar->show();
+       foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
+       {
+           if(!l->text().isEmpty())
+              vector.append(l->text().toInt());
+       }
 
-               connect(this, SIGNAL(Send_long_tel_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_long_tel_analysis_all_db(QDate, QDate, int)));
+       Analysis::uniq_array();
 
-               emit Send_long_tel_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
-            }
-            else {
-               qDebug() << "DATE TO < DATE FOR";
-            }
+       An_result *ar = new An_result();
+       ar->show();
+
+       connect(this, SIGNAL(Send_short_tel_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_short_tel_analysis_all_db(QVector<int>, int)));
+
+       emit Send_short_tel_analysis_all_db(vector,ui->le_an_zk->text().toInt());
+
+       vector.clear();
+      }
+
+        //////////////////     7     //////////////////
+     if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
+     {
+      foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
+      {
+          if(!l->text().isEmpty())
+             vector.append(l->text().toInt());
+      }
+
+      Analysis::uniq_array();
+
+      An_result *ar = new An_result();
+      ar->show();
+
+      connect(this, SIGNAL(Send_long_face_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_long_face_analysis_all_db(QVector<int>, int)));
+
+      emit Send_long_face_analysis_all_db(vector,ui->le_an_zk->text().toInt());
+
+      vector.clear();
+     }
+
+        //////////////////     8     //////////////////
+     if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
+     {
+      foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
+      {
+          if(!l->text().isEmpty())
+             vector.append(l->text().toInt());
+      }
+
+      Analysis::uniq_array();
+
+      An_result *ar = new An_result();
+      ar->show();
+
+      connect(this, SIGNAL(Send_long_tel_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_long_tel_analysis_all_db(QVector<int>, int)));
+
+      emit Send_long_tel_analysis_all_db(vector,ui->le_an_zk->text().toInt());
+
+      vector.clear();
+     }
+
+        //////////////////     9     //////////////////
+     if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
+     {
+        if(get_date_from() < get_date_to())
+        {
+            An_result *ar = new An_result();
+            ar->show();
+
+            connect(this, SIGNAL(Send_short_face_analysis_all_db(QString, QString, int)), ar, SLOT(Recieve_short_face_analysis_all_db(QString, QString, int)));
+
+            emit Send_short_face_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
+
+        }
+        else {
+            qDebug() << "DATE TO < DATE FOR";
+        }
+     }
+
+        //////////////////     10     //////////////////
+    if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
+    {
+        if(!get_date_from().isEmpty() || !get_date_to().isEmpty())
+        {
+           An_result *ar = new An_result();
+           ar->show();
+
+           connect(this, SIGNAL(Send_short_tel_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_short_tel_analysis_all_db(QDate, QDate, int)));
+
+           emit Send_short_tel_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
+       }
+       else {
+           qDebug() << "DATE TO < DATE FOR";
+       }
+    }
+
+        //////////////////     11     //////////////////
+    if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
+    {
+      if(get_date_from() < get_date_to())
+        {
+           An_result *ar = new An_result();
+           ar->show();
+
+           connect(this, SIGNAL(Send_long_face_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_long_face_analysis_all_db(QDate, QDate, int)));
+
+           emit Send_long_face_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
+        }
+        else {
+           qDebug() << "DATE TO < DATE FOR";
+        }
+    }
+
+        //////////////////     12      //////////////////
+    if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
+    {
+        if(get_date_from() < get_date_to())
+          {
+                   An_result *ar = new An_result();
+                   ar->show();
+
+                   connect(this, SIGNAL(Send_long_tel_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_long_tel_analysis_all_db(QDate, QDate, int)));
+
+                   emit Send_long_tel_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
+                }
+                else {
+                   qDebug() << "DATE TO < DATE FOR";
+                }
+        }
+     }
     }
 }
 
 void Analysis::set_validators()
 {
-    int min, max;
-    Crud *cr = new Crud();
-//    cr->get_min_zk();   min = cr->zk_id;
-//    cr->get_max_zk();   max = cr->zk_id;
-    ui->le_an_zk->setValidator(new QIntValidator(min,max));
-    delete cr;
     ui->le_day_to->setValidator(new QIntValidator(1,31));
     ui->le_day_from->setValidator(new QIntValidator(1,31));
 

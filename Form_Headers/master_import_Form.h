@@ -19,6 +19,7 @@ public:
     explicit Master_import_form(QWidget *parent = nullptr);
     ~Master_import_form();
 
+    QSize actual_size;
 private slots:
     void on_pushButton_clicked();
     void on_pb_directory_2_clicked();

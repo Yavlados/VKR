@@ -31,8 +31,8 @@ void OfficialTelephones::Fill_table()
 void OfficialTelephones::on_pb_add_clicked()
 {
     Off_tels *of_t = new Off_tels;
-    of_t->tel_num = ui->le_set_num->text();
     of_t->service_name = ui->le_set_name->text();
+    of_t->tel_num = ui->le_set_num->text();
     if (Off_tels::add_off_tel(of_t))
     {//или просто добавлять указатель в список
 //        delete of_model;

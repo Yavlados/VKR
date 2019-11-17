@@ -21,6 +21,8 @@ public:
     ~Search();
 
     QString Date_From, Date_To, Birth_date, Add_date;
+
+    QSize actual_size;
 signals:
 
     void Show_search_result(QList<Crud*> *crudlist);

@@ -6,6 +6,7 @@
 #include "table_line_delegate.h"
 #include "table_cb_delegate.h"
 #include "list_master.h"
+#include "dialog_conflict.h"
 
 #include <QSqlRecord>
 #include <QStringRef>
@@ -137,6 +138,27 @@ void Update::Fill_fields_update(Crud *new_cr)
 //-----------------------------------------------------------------------------------//
 void Update::on_pb_Update_clicked()
 {
+    ///Исключаю пропуски
+    for (int a=0; a < ot_model->actotlist.size(); a++)
+    {
+        if((ot_model->actotlist.at(a)->tel_num == "") && (ot_model->actotlist.at(a)->state == IsNewing))
+        {
+            ot_model->actotlist.removeAt(a);
+            ot_model->otlist->removeAt(a);
+            a--;
+        }
+    }
+
+    for (int a=0; a < contacts_model->actlist.size(); a++)
+    {
+        if((contacts_model->actlist.at(a)->contact_tel_num == "") && (contacts_model->actlist.at(a)->cont_state == IsNewing))
+        {
+            contacts_model->actlist.removeAt(a);
+            contacts_model->clist->removeAt(a);
+            a--;
+        }
+    }
+
     ///Сначала собираю дату рождения, ФИО + телефоны собираются динамически для проверки на совпадения
     new_cr->lastname = ui->le_last_name->text();
     new_cr->name = ui->le_name->text();
@@ -144,7 +166,7 @@ void Update::on_pb_Update_clicked()
 
     get_birthdate();
 
-    msgbx.setGeometry(960,510, 900,210);
+   // msgbx.setGeometry(0,0, 900,210);
     msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     int ret = msgbx.exec();
@@ -439,6 +461,8 @@ bool Update::compare_tel_num()
 
      if (!cr->compare_with_base(query_for_nums,query_for_fio, new_cr->zk_id,linked_crud_id))
      {
+         Dialog_conflict *dlg = new Dialog_conflict;
+
          msgbx.setStandardButtons(QMessageBox::Yes | QMessageBox::Retry | QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
          msgbx.setButtonText(QMessageBox::Yes,"Сохранить со связью");
          msgbx.setButtonText(QMessageBox::Retry,"Слияние совпавших ЗК");
@@ -452,39 +476,75 @@ bool Update::compare_tel_num()
         {
             if (cr->compare_result->at(i).Tel_num != "NULL")//Если обнаружилось совпадение по номеру телефона
             {
+                dlg->setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->compare_result->at(i).Tel_num+" "
+                     "обнаружен принадлежим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
+                dlg->setButtonText("Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
+
+
                 msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->compare_result->at(i).Tel_num+" "
                                    "обнаружен принадлежим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
                 msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
             }
             else
             {
+                dlg->setText("<font size = '5'> ВНИМАНИЕ: введенные фамилия, имя, отчество и дата рождения "
+                                   "обнаружены принадлежащими владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
+               dlg->setButtonText("Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
+
+
              msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенные фамилия, имя, отчество и дата рождения "
                                 "обнаружены принадлежащими владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
-                         msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
+             msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
             }
-            int ret = msgbx.exec();
-
-            switch (ret)
+            dlg->exec();
+            switch (dlg->state)
             {
-            case QMessageBox::Yes:
-                linked_crud_id->append(cr->compare_result->at(i).id);
-                break;
+           case 1:
+            linked_crud_id->append(cr->compare_result->at(i).id);
+            delete dlg;
+            break;
 
-            case QMessageBox::Retry:
+          case 2:
             msg_before_confluence(Crud::id_zk_search(cr->compare_result->at(i).id));
-                return false;
+            delete dlg;
+            return false;
 
-            case QMessageBox::Ok:
-                emit open_update_tab(Crud::id_zk_search(cr->compare_result->at(i).id));
-               return false; /// во всех случаях return - мы выходим из функции
+          case 5:
+          emit open_update_tab(Crud::id_zk_search(cr->compare_result->at(i).id));
+          delete dlg;
+          return false; /// во всех случаях return - мы выходим из функции
 
-            case QMessageBox::Open:
-                return false;
+           case 3:
+           delete dlg;
+           return false;
 
-            case QMessageBox::Cancel:
-             clear_ALL();
-                  return false;
-             }
+          case 4:
+          clear_ALL();
+          delete dlg;
+          return false;
+            }
+//            int ret = msgbx.exec();
+//            switch (ret)
+//            {
+//            case QMessageBox::Yes:
+//                linked_crud_id->append(cr->compare_result->at(i).id);
+//                break;
+
+//            case QMessageBox::Retry:
+//            msg_before_confluence(Crud::id_zk_search(cr->compare_result->at(i).id));
+//                return false;
+
+//            case QMessageBox::Ok:
+//                emit open_update_tab(Crud::id_zk_search(cr->compare_result->at(i).id));
+//               return false; /// во всех случаях return - мы выходим из функции
+
+//            case QMessageBox::Open:
+//                return false;
+
+//            case QMessageBox::Cancel:
+//             clear_ALL();
+//                  return false;
+//             }
         }
 /*         if(cr->zk_id != 0)
 //         {
@@ -636,9 +696,9 @@ void Update::Add_zk()
         {
             new_cr->liv_city = new_cr->reg_city;
             new_cr->liv_street = new_cr->reg_street;
-            new_cr->reg_home = new_cr->liv_home;
-            new_cr->reg_corp = new_cr->liv_corp;
-            new_cr->reg_flat = new_cr->liv_flat;
+            new_cr->liv_home = new_cr->reg_home;
+            new_cr->liv_corp = new_cr->reg_corp;
+            new_cr->liv_flat = new_cr->reg_flat;
         }
         else
         {

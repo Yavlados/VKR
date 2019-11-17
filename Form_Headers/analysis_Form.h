@@ -30,6 +30,8 @@ public:
     QVector<int> vector;
     QString Date_From, Date_To;
 
+    QSize actual_size;
+
 private slots:
 
     void closeEvent(QCloseEvent *event);

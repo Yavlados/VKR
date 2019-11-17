@@ -11,6 +11,7 @@ Master_export_Form::Master_export_Form(QWidget *parent) :
     on_cb_zk_clicked();
     on_cb_set_password_clicked();
     ui->le_password->setEchoMode(QLineEdit::Password);
+        actual_size = this->size();
 }
 
 Master_export_Form::~Master_export_Form()

@@ -370,60 +370,138 @@ void For_analysis::short_tel_analysis(Crud *cr, QList<Crud*> *crudlist)
 {
  if(!crudlist->isEmpty())
     {
-      QList<Crud*> *temp_crudlist = new QList<Crud*>;
       analysis_res +="\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ТЕЛЕФОНАМ \r\n \r\n";
 
-      int a =0; //Итератор
+      QList<Crud*> *temp_crudlist1 = new QList<Crud*>;
+      QList<Crud*> *temp_crudlist2 = new QList<Crud*>;
+      QList<Crud*> *temp_crudlist3 = new QList<Crud*>;
 
-metka:
-    if(crudlist->at(a)->owt()->at(0)->tel_id == 1)
-        temp_crudlist->append(crudlist->at(a));
-    else
-        return;
+    ///Новый вариант
+///Раннее работало неправильно - буду трижды писать тот же код
+       for(int a = 0; a < crudlist->size(); a++)
+       {
+           if(crudlist->at(a)->owt()->at(0)->tel_id == 1)
+           {
+               temp_crudlist1->append(crudlist->at(a));
+               if(a<crudlist->size()-1 && crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
+                  crudlist->at(a)->owt()->at(0)->tel_id == 1 )
+                 {
+                    continue;
+                 }
+           }
+          else if(crudlist->at(a)->owt()->at(0)->tel_id == 2)
+           {
+               temp_crudlist2->append(crudlist->at(a));
+               if(a<crudlist->size()-1 && crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
+                  crudlist->at(a)->owt()->at(0)->tel_id == 2 )
+                {
+                    continue;
+                }
+           }
+            else if(crudlist->at(a)->owt()->at(0)->tel_id == 3)
+           {
+               temp_crudlist3->append(crudlist->at(a));
+    if(a<crudlist->size()-1 && crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
+       crudlist->at(a)->owt()->at(0)->tel_id == 3 )
+              {
+                continue;
+              }
+           }
+       }
 
-    if(crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
-      crudlist->at(a)->owt()->at(0)->tel_id == 1 && a<crudlist->size()-1)
-      {
-          a++;
-          goto metka;
-      }
    ///Сгруппировали массив
 
-if(!temp_crudlist->isEmpty())
+if(!temp_crudlist1->isEmpty())
 {
+    analysis_res +="1 ВАРИАНТ \r\n";
     analysis_res +="Номер телефона ";
-    if (temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
-        analysis_res += temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num + "(старый)";
+    if (temp_crudlist1->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
+        analysis_res += temp_crudlist1->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num + "(старый)";
     else
-       analysis_res +=temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num ;
+       analysis_res +=temp_crudlist1->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num ;
     analysis_res += ", принадлежащий владельцу записной книжки: "+
             cr->lastname+" "+cr->name+" "+cr->mid_name+" обнаружен в ";
 
-    if (temp_crudlist->count()>1)
+    if (temp_crudlist1->count()>1)
         analysis_res += "записных книжках \r\n \r\n";
     else
         analysis_res += "записной книжке: \r\n \r\n";
-    for (int i = 0; i< temp_crudlist->size(); i++ )
+    for (int i = 0; i< temp_crudlist1->size(); i++ )
     {
-        analysis_res += "Cформированной "+ temp_crudlist->at(i)->date_add+" в отношении: "+
-                temp_crudlist->at(i)->lastname +" "+temp_crudlist->at(i)->name +" " +temp_crudlist->at(i)->mid_name+
-                ", по ораске ???, в интересах "+temp_crudlist->at(i)->check_for;
+        analysis_res += "Cформированной "+ temp_crudlist1->at(i)->date_add+" в отношении: "+
+                temp_crudlist1->at(i)->lastname +" "+temp_crudlist1->at(i)->name +" " +temp_crudlist1->at(i)->mid_name+
+                ", по ораске ???, в интересах "+temp_crudlist1->at(i)->check_for;
 
-        if (!temp_crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
-            analysis_res += " с пометкой "+temp_crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+        if (!temp_crudlist1->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+            analysis_res += " с пометкой "+temp_crudlist1->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
         else
             analysis_res +="\r\n \r\n";
     }
-    if(a<crudlist->size()-1)
-    {
-        temp_crudlist->clear();
-        a++ ;
-        goto metka;
-    }
+        temp_crudlist1->clear();
+        delete temp_crudlist1;
+
 }
-else
-    return;
+if(!temp_crudlist2->isEmpty())
+{
+        analysis_res +="2 ВАРИАНТ \r\n";
+    analysis_res +="Номер телефона ";
+    if (temp_crudlist2->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
+        analysis_res += temp_crudlist2->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num + "(старый)";
+    else
+       analysis_res +=temp_crudlist2->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num ;
+    analysis_res += ", принадлежащий владельцу записной книжки: "+
+            cr->lastname+" "+cr->name+" "+cr->mid_name+" обнаружен в ";
+
+    if (temp_crudlist2->count()>1)
+        analysis_res += "записных книжках \r\n \r\n";
+    else
+        analysis_res += "записной книжке: \r\n \r\n";
+    for (int i = 0; i< temp_crudlist2->size(); i++ )
+    {
+        analysis_res += "Cформированной "+ temp_crudlist2->at(i)->date_add+" в отношении: "+
+                temp_crudlist2->at(i)->lastname +" "+temp_crudlist2->at(i)->name +" " +temp_crudlist2->at(i)->mid_name+
+                ", по ораске ???, в интересах "+temp_crudlist2->at(i)->check_for;
+
+        if (!temp_crudlist2->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+            analysis_res += " с пометкой "+temp_crudlist2->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+        else
+            analysis_res +="\r\n \r\n";
     }
+        temp_crudlist2->clear();
+        delete temp_crudlist2;
+
+}
+if(!temp_crudlist3->isEmpty())
+{
+    analysis_res +="3 ВАРИАНТ \r\n";
+    analysis_res +="Номер телефона ";
+    if (temp_crudlist3->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
+        analysis_res += temp_crudlist3->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num + "(старый)";
+    else
+       analysis_res +=temp_crudlist3->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num ;
+    analysis_res += ", принадлежащий владельцу записной книжки: "+
+            cr->lastname+" "+cr->name+" "+cr->mid_name+" обнаружен в ";
+
+    if (temp_crudlist3->count()>1)
+        analysis_res += "записных книжках \r\n \r\n";
+    else
+        analysis_res += "записной книжке: \r\n \r\n";
+    for (int i = 0; i< temp_crudlist3->size(); i++ )
+    {
+        analysis_res += "Cформированной "+ temp_crudlist3->at(i)->date_add+" в отношении: "+
+                temp_crudlist3->at(i)->lastname +" "+temp_crudlist3->at(i)->name +" " +temp_crudlist3->at(i)->mid_name+
+                ", по ораске ???, в интересах "+temp_crudlist3->at(i)->check_for;
+
+        if (!temp_crudlist3->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+            analysis_res += " с пометкой "+temp_crudlist3->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+        else
+            analysis_res +="\r\n \r\n";
+    }
+        temp_crudlist3->clear();
+        delete temp_crudlist3;
+
+}
+ }
 }
 
 void For_analysis::long_face_analysis(Crud *cr, QList<Crud*> *crudlist)
@@ -520,75 +598,189 @@ void For_analysis::long_tel_analysis(Crud *cr, QList<Crud*> *crudlist)
 {
  if(!crudlist->isEmpty())
     {
-      QList<Crud*> *temp_crudlist = new QList<Crud*>;
+      //QList<Crud*> *temp_crudlist = new QList<Crud*>;
+      QList<Crud*> *temp_crudlist1 = new QList<Crud*>;
+      QList<Crud*> *temp_crudlist2 = new QList<Crud*>;
+      QList<Crud*> *temp_crudlist3 = new QList<Crud*>;
+
       analysis_res +="\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К ТЕЛЕФОНАМ \n\r \n\r";
-
-      int a =0; //Итератор
-
-metka:
-    if(crudlist->at(a)->owt()->at(0)->tel_id == 1)
-        temp_crudlist->append(crudlist->at(a));
-    else
-        return;
-
-   if(crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
-              crudlist->at(a)->owt()->at(0)->tel_id == 1 && a<crudlist->size()-1)
-      {
-          a++;
-          goto metka;
-      }
+    ///Новый вариант
+///Раннее работало неправильно - буду трижды писать тот же код
+       for(int a = 0; a < crudlist->size(); a++)
+       {
+           if(crudlist->at(a)->owt()->at(0)->tel_id == 1)
+           {
+               temp_crudlist1->append(crudlist->at(a));
+               if(a<crudlist->size()-1 && crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
+                  crudlist->at(a)->owt()->at(0)->tel_id == 1 )
+                 {
+                    continue;
+                 }
+           }
+          else if(crudlist->at(a)->owt()->at(0)->tel_id == 2)
+           {
+               temp_crudlist2->append(crudlist->at(a));
+               if(a<crudlist->size()-1 && crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
+                  crudlist->at(a)->owt()->at(0)->tel_id == 2 )
+                {
+                    continue;
+                }
+           }
+            else if(crudlist->at(a)->owt()->at(0)->tel_id == 3)
+           {
+               temp_crudlist3->append(crudlist->at(a));
+    if(a<crudlist->size()-1 && crudlist->at(a)->owt()->at(0)->cont()->at(0)->contact_tel_num == crudlist->at(a+1)->owt()->at(0)->cont()->at(0)->contact_tel_num &&
+       crudlist->at(a)->owt()->at(0)->tel_id == 3 )
+              {
+                continue;
+              }
+           }
+       }
    ///Сгруппировали массив
+   ///
+   ///
+   ///  ///
+   ///
+       if(!temp_crudlist1->isEmpty())
+             {
+                 analysis_res+="1 ВАРИАНТ \r\n";
+                 analysis_res +="Номер телефона ";
+                 if (temp_crudlist1->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
+                    analysis_res+=temp_crudlist1->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+"(старый), ";
+                 else
+                     analysis_res += temp_crudlist1->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+", ";
 
-if(!temp_crudlist->isEmpty())
+                 analysis_res+=" принадлежащий владельцу записной книжки: ";
+                 analysis_res += cr->lastname+" "+cr->name+" "+cr->mid_name;
+                 analysis_res +=" обнаружен, в ";
+                 if (temp_crudlist1->count()>1)
+                     analysis_res += " записных книжках: \r\n \r\n";
+                 else
+                     analysis_res += " записной книжке: \r\n \r\n";
+
+                 for (int i = 0; i< temp_crudlist1->size(); i++ )
+                 {
+                     analysis_res += temp_crudlist1->at(i)->lastname +" "+temp_crudlist1->at(i)->name +" " +temp_crudlist1->at(i)->mid_name+", "+
+                    temp_crudlist1->at(i)->birth_date+", адрес регистрации "+
+                    temp_crudlist1->at(i)->reg_city+", "+temp_crudlist1->at(i)->reg_street+", "+ temp_crudlist1->at(i)->reg_home +"/"+
+                    temp_crudlist1->at(i)->reg_corp+ ", " + temp_crudlist1->at(i)->reg_home + ", адрес проживания: " +
+                    temp_crudlist1->at(i)->liv_city+", "+temp_crudlist1->at(i)->liv_street+", "+ temp_crudlist1->at(i)->liv_home +"/"+
+                    temp_crudlist1->at(i)->liv_corp+ ", " + temp_crudlist1->at(i)->liv_home;
+
+
+                     analysis_res +=" телефон: ";
+                     if ( temp_crudlist1->at(i)->owt()->at(0)->oldnum == true)
+                         analysis_res += temp_crudlist1->at(i)->owt()->at(0)->tel_num + "(старый), ";
+                     else
+                         analysis_res += temp_crudlist1->at(i)->owt()->at(0)->tel_num + ", ";
+
+                     analysis_res +=", окраска ???, дополнительная информация: "+temp_crudlist1->at(i)->dop_info +
+                     ", Дата формирования " + temp_crudlist1->at(i)->date_add + " в интересах: "+temp_crudlist1->at(i)->check_for;
+
+                     if (!temp_crudlist1->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+                         analysis_res += " с пометкой "+temp_crudlist1->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+                     else
+                         analysis_res +="\r\n \r\n";
+                 }
+                     temp_crudlist1->clear();
+                     delete temp_crudlist1;
+             }
+       if(!temp_crudlist2->isEmpty())
+       {
+           analysis_res+="2 ВАРИАНТ \r\n";
+           analysis_res +="Номер телефона ";
+           if (temp_crudlist2->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
+              analysis_res+=temp_crudlist2->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+"(старый), ";
+           else
+               analysis_res += temp_crudlist2->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+", ";
+
+           analysis_res+=" принадлежащий владельцу записной книжки: ";
+           analysis_res += cr->lastname+" "+cr->name+" "+cr->mid_name;
+           analysis_res +=" обнаружен, в ";
+           if (temp_crudlist2->count()>1)
+               analysis_res += " записных книжках: \r\n \r\n";
+           else
+               analysis_res += " записной книжке: \r\n \r\n";
+
+           for (int i = 0; i< temp_crudlist2->size(); i++ )
+           {
+               analysis_res += temp_crudlist2->at(i)->lastname +" "+temp_crudlist2->at(i)->name +" " +temp_crudlist2->at(i)->mid_name+", "+
+              temp_crudlist2->at(i)->birth_date+", адрес регистрации "+
+              temp_crudlist2->at(i)->reg_city+", "+temp_crudlist2->at(i)->reg_street+", "+ temp_crudlist2->at(i)->reg_home +"/"+
+              temp_crudlist2->at(i)->reg_corp+ ", " + temp_crudlist2->at(i)->reg_home + ", адрес проживания: " +
+              temp_crudlist2->at(i)->liv_city+", "+temp_crudlist2->at(i)->liv_street+", "+ temp_crudlist2->at(i)->liv_home +"/"+
+              temp_crudlist2->at(i)->liv_corp+ ", " + temp_crudlist2->at(i)->liv_home;
+
+
+               analysis_res +=" телефон: ";
+               if ( temp_crudlist2->at(i)->owt()->at(0)->oldnum == true)
+                   analysis_res += temp_crudlist2->at(i)->owt()->at(0)->tel_num + "(старый), ";
+               else
+                   analysis_res += temp_crudlist2->at(i)->owt()->at(0)->tel_num + ", ";
+
+               analysis_res +=", окраска ???, дополнительная информация: "+temp_crudlist2->at(i)->dop_info +
+               ", Дата формирования " + temp_crudlist2->at(i)->date_add + " в интересах: "+temp_crudlist2->at(i)->check_for;
+
+               if (!temp_crudlist2->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+                   analysis_res += " с пометкой "+temp_crudlist2->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+               else
+                   analysis_res +="\r\n \r\n";
+           }
+               temp_crudlist2->clear();
+               delete temp_crudlist2;
+       }
+if(!temp_crudlist3->isEmpty())
 {
+    analysis_res+="3 ВАРИАНТ \r\n";
     analysis_res +="Номер телефона ";
-    if (temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
-       analysis_res+=temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+"(старый), ";
+    if (temp_crudlist3->at(0)->owt()->at(0)->cont()->at(0)->oldnum == true)
+       analysis_res+=temp_crudlist3->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+"(старый), ";
     else
-        analysis_res += temp_crudlist->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+", ";
+        analysis_res += temp_crudlist3->at(0)->owt()->at(0)->cont()->at(0)->contact_tel_num+"";
+
+     analysis_res += "(с пометкой "+temp_crudlist3->at(0)->owt()->at(0)->cont()->at(0)->mark+"),";
 
     analysis_res+=" принадлежащий владельцу записной книжки: ";
     analysis_res += cr->lastname+" "+cr->name+" "+cr->mid_name;
     analysis_res +=" обнаружен, в ";
-    if (temp_crudlist->count()>1)
+
+    if (temp_crudlist3->count()>1)
         analysis_res += " записных книжках: \r\n \r\n";
     else
         analysis_res += " записной книжке: \r\n \r\n";
 
-    for (int i = 0; i< temp_crudlist->size(); i++ )
+
+
+    for (int i = 0; i< temp_crudlist3->size(); i++ )
     {
-        analysis_res += temp_crudlist->at(i)->lastname +" "+temp_crudlist->at(i)->name +" " +temp_crudlist->at(i)->mid_name+", "+
-       temp_crudlist->at(i)->birth_date+", адрес регистрации "+
-       temp_crudlist->at(i)->reg_city+", "+temp_crudlist->at(i)->reg_street+", "+ temp_crudlist->at(i)->reg_home +"/"+
-       temp_crudlist->at(i)->reg_corp+ ", " + temp_crudlist->at(i)->reg_home + ", адрес проживания: " +
-       temp_crudlist->at(i)->liv_city+", "+temp_crudlist->at(i)->liv_street+", "+ temp_crudlist->at(i)->liv_home +"/"+
-       temp_crudlist->at(i)->liv_corp+ ", " + temp_crudlist->at(i)->liv_home;
+        analysis_res += temp_crudlist3->at(i)->lastname +" "+temp_crudlist3->at(i)->name +" " +temp_crudlist3->at(i)->mid_name+", "+
+       temp_crudlist3->at(i)->birth_date+", адрес регистрации "+
+       temp_crudlist3->at(i)->reg_city+", "+temp_crudlist3->at(i)->reg_street+", "+ temp_crudlist3->at(i)->reg_home +"/"+
+       temp_crudlist3->at(i)->reg_corp+ ", " + temp_crudlist3->at(i)->reg_home + ", адрес проживания: " +
+       temp_crudlist3->at(i)->liv_city+", "+temp_crudlist3->at(i)->liv_street+", "+ temp_crudlist3->at(i)->liv_home +"/"+
+       temp_crudlist3->at(i)->liv_corp+ ", " + temp_crudlist3->at(i)->liv_home;
 
 
         analysis_res +=" телефон: ";
-        if ( temp_crudlist->at(i)->owt()->at(0)->oldnum == true)
-            analysis_res += temp_crudlist->at(i)->owt()->at(0)->tel_num + "(старый), ";
+        if ( temp_crudlist3->at(i)->owt()->at(0)->oldnum == true)
+            analysis_res += temp_crudlist3->at(i)->owt()->at(0)->tel_num + "(старый), ";
         else
-            analysis_res += temp_crudlist->at(i)->owt()->at(0)->tel_num + ", ";
+            analysis_res += temp_crudlist3->at(i)->owt()->at(0)->tel_num + ", ";
 
-        analysis_res +=", окраска ???, дополнительная информация: "+temp_crudlist->at(i)->dop_info +
-        ", Дата формирования " + temp_crudlist->at(i)->date_add + " в интересах: "+temp_crudlist->at(i)->check_for;
+        analysis_res +=", окраска ???, дополнительная информация: "+temp_crudlist3->at(i)->dop_info +
+        ", Дата формирования " + temp_crudlist3->at(i)->date_add + " в интересах: "+temp_crudlist3->at(i)->check_for;
 
-        if (!temp_crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
-            analysis_res += " с пометкой "+temp_crudlist->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
+        if (!temp_crudlist3->at(i)->owt()->at(0)->cont()->at(0)->mark.isEmpty())
+            analysis_res += " с пометкой "+temp_crudlist3->at(i)->owt()->at(0)->cont()->at(0)->mark + "\r\n \r\n";
         else
             analysis_res +="\r\n \r\n";
     }
-    if(a<crudlist->size()-1)
-    {
-        temp_crudlist->clear();
-        a++ ;
-        goto metka;
-    }
+        temp_crudlist3->clear();
+        delete temp_crudlist3;
 }
 else
     return;
-    }
+ }
 }
 
 void For_analysis::short_face_analysis_all_db(int id)

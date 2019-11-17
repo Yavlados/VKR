@@ -60,10 +60,10 @@ QVariant MTM_Off_Tels::data(const QModelIndex &index, int role) const
         {
         switch(col)
             {
-        case 0:            /// 1 колонка - номер телефона
-           return actofflist.at(row)->tel_num;
-        case 1:             /// 2 колонка - пометка к номеру
+        case 0:            /// 1 колонка - название службы
             return actofflist.at(row)->service_name;
+        case 1:             /// 2 колонка - телефон
+            return actofflist.at(row)->tel_num;
             }
         }
       return QVariant();

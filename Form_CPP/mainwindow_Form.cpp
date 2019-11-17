@@ -3,6 +3,8 @@
 #include "db_connection.h"
 #include "table_cb_delegate.h"
 
+#include <QGuiApplication>
+#include <QDesktopWidget>
 #include <QRect>
 #include <QSqlDatabase>
 #include <QSettings>
@@ -27,8 +29,15 @@ MainWindow::MainWindow(QWidget *parent) :
     auto tabbar2 = ui->tabWidget_2->tabBar();
     tabbar2->tabButton(0,QTabBar::RightSide)->deleteLater();
     tabbar2->setTabButton(0, QTabBar::RightSide, nullptr);
+    QDesktopWidget* widget = qApp->desktop();
 
+    ///---Фиксирую размер окна
     showMaximized();
+    int difference = this->frameGeometry().height() - this->geometry().height();
+    int height = QApplication::desktop()->availableGeometry().height() - difference;
+    this->setFixedSize( QApplication::desktop()->screenGeometry().width(), height);
+    ///---
+
     RefreshTab();
     ui->tableView->selectRow(0);
     on_tableView_clicked(index_tab1);
@@ -276,6 +285,8 @@ void MainWindow::on_action_analysis_triggered()
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(an));
 
+    set_normal_width(an->actual_size.width());
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_search_triggered()
@@ -292,6 +303,8 @@ void MainWindow::on_action_search_triggered()
     {
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(sr));
     }
+
+    set_normal_width(sr->actual_size.width());
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::Search_result(QList<Crud*> *crudlist)
@@ -301,7 +314,7 @@ void MainWindow::Search_result(QList<Crud*> *crudlist)
     Add_pagination_buttons();
     MainWindow::add_cancel_button();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_pushButton_clicked()
 {
     if (ui->lineEdit->text() == QString(""))
@@ -499,6 +512,7 @@ void MainWindow::on_actionexport_triggered()
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(exprt));
 
+    set_normal_width(exprt->actual_size.width());
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk)
@@ -602,6 +616,8 @@ void MainWindow::on_action_import_triggered()
     }
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(imprt));
+
+    set_normal_width(imprt->actual_size.width());
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_Settings_triggered()
@@ -697,7 +713,7 @@ void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
         on_tableView_clicked(index_tab1, contacts_model->actlist.at(index.row())->contact_tel_num);
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *added_cr)
 {
         Update *upd = new Update;
@@ -709,4 +725,12 @@ void MainWindow::open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *adde
         connect(upd, SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
         upd->start_confluence(cnfl_cr, main_crud,added_cr);
         upd->show();
+}
+//-----------------------------------------------------------------------------------//
+void MainWindow::set_normal_width(int size)
+{
+    QList<int> size_list;
+    size_list.append(size);
+    size_list.append(this->size().width() - size);
+    ui->splitter->setSizes(size_list);
 }

@@ -1,6 +1,10 @@
 #include "mainwindow_Form.h"
 #include <QTextCodec>
 #include <QApplication>
+
+
+#include <QMessageBox>
+
 /**
  * \file main.cpp
  * \brief Исполнительный файл запуска программы

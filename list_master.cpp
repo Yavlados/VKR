@@ -477,6 +477,13 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
        {
            query.bindValue(":r_i",crud->at(i)->row_id);
        }
+       else
+       {
+           query1.prepare("SELECT uuid_generate_v1()");
+           if(query1.exec())
+               while (query1.next())
+                query.bindValue(":r_i",query1.value(0).toString());
+       }
 
        bool temp = false;
        if(vector_str != nullptr)
@@ -510,7 +517,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
             break;
         }else
        {
-           qDebug() << query.executedQuery();
+           qDebug() << query.executedQuery() << query.value(1).toString();
            db_connection::instance()->db().database(cname).commit();
            isOk = db_connection::instance()->db().database(cname).transaction();
        }

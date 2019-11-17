@@ -65,6 +65,9 @@ public:
 
     bool begin_import();
 
+
+    QSize actual_size;
+
 private slots:
     // Проверка олд_дб на соответствие
     bool testHeadFile(QByteArray *arr);
