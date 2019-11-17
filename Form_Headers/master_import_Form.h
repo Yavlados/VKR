@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QFileDialog>
+#include <QMessageBox>
 /**
  * \file master_import_Form.h
  * \brief Форма импорта данных

@@ -19,48 +19,71 @@ void Table_line_delegate::input_code_num(QString c_n)
 
 QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if(type == OT)
+    if(index.column() == 0)
     {
-        QLineEdit *line = new QLineEdit(parent);
-        if (ot_model->actotlist.at(index.row())->oldnum  == true)
+        if(type == OT)
         {
-            QString temp = "99999999"; //8 цифр
-            line->setInputMask(temp);
-            return line;
+            QLineEdit *line = new QLineEdit(parent);
+            if (ot_model->actotlist.at(index.row())->oldnum  == true)
+            {
+                QString temp = "99999999"; //8 цифр
+                line->setInputMask(temp);
+                return line;
+            }
+            if (ot_model->actotlist.at(index.row())->internum == false)
+            {
+                QString temp = "+"+code_num+"(999)999-99-99"; //ФОРМА ВВОДА НОМЕРА
+                line->setInputMask(temp);
+                return line;
+            }else
+            {
+                QString temp = "999999999999999999999999999999"; //30 цифр
+                line->setInputMask(temp);
+                return line;
+            }
         }
-        if (ot_model->actotlist.at(index.row())->internum == false)
+        if(type == Cont)
         {
-            QString temp = "+"+code_num+"(999)999-99-99"; //ФОРМА ВВОДА НОМЕРА
-            line->setInputMask(temp);
-            return line;
-        }else
-        {
-            QString temp = "999999999999999999999999999999"; //30 цифр
-            line->setInputMask(temp);
-            return line;
+            QLineEdit *line = new QLineEdit(parent);
+            if (cont->actlist.at(index.row())->oldnum  == true)
+            {
+                QString temp = "99999999"; //8 цифр
+                line->setInputMask(temp);
+                return line;
+            }
+            if (cont->actlist.at(index.row())->internum == false)
+            {
+                QString temp = "+"+code_num+"(999)999-99-99"; //ФОРМА ВВОДА НОМЕРА
+                line->setInputMask(temp);
+                return line;
+            }else
+            {
+                QString temp = "999999999999999999999999999999"; //30 цифр
+                line->setInputMask(temp);
+                return line;
+            }
         }
     }
-    if(type == Cont)
+    else if (type == OT && index.column() == 2)
     {
         QLineEdit *line = new QLineEdit(parent);
-        if (cont->actlist.at(index.row())->oldnum  == true)
-        {
-            QString temp = "99999999"; //8 цифр
-            line->setInputMask(temp);
-            return line;
-        }
-        if (cont->actlist.at(index.row())->internum == false)
-        {
-            QString temp = "+"+code_num+"(999)999-99-99"; //ФОРМА ВВОДА НОМЕРА
-            line->setInputMask(temp);
-            return line;
-        }else
-        {
-            QString temp = "999999999999999999999999999999"; //30 цифр
-            line->setInputMask(temp);
-            return line;
-        }
+        line->setReadOnly(true);
+        return line;
     }
+    else if (type == OT && index.column() == 1)
+    {
+        QLineEdit *line = new QLineEdit(parent);
+        line->setReadOnly(true);
+        return line;
+    }else if (type == Cont && index.column() == 3)
+    {
+        QLineEdit *line = new QLineEdit(parent);
+        line->setReadOnly(true);
+        return line;
+    }else {
+        QLineEdit *line = new QLineEdit(parent);
+        return line;
+        }
 }
 
 void Table_line_delegate::set_MTM_model(MTM_OwTel *om, MTM_Contacts *cnt)

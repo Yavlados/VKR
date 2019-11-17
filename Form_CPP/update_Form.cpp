@@ -292,7 +292,7 @@ void Update::on_tableView_clicked(const QModelIndex &index)
 void Update::on_pb_del_line_telephone_clicked()
 {
     QModelIndex ind = ui->tableView->currentIndex();
-    if( ind.isValid() && new_cr->owt()->count()>1)
+    if( ind.isValid())
         {
             contacts_model->delBindedContacts(new_cr->owt()->at(ind.row())->tel_id);
             ot_model->delRow_owner_tel(ind);
@@ -303,7 +303,13 @@ void Update::on_pb_del_line_telephone_clicked()
                  temp_owt = nullptr;
                  new_cr->owt()->removeAt(ind.row());
             }
-        }
+             if (new_cr->owt()->count() == 0)
+             {
+                 ot_model->addRow_owner_tel();
+                 ot_model->reset_OTModel();
+
+             }
+    }
     contacts_model->reset_ContactModel();
 }
 //-----------------------------------------------------------------------------------//
@@ -854,12 +860,14 @@ void inline Update::set_delegates_and_connections()
     Table_line_delegate *delegate_ot = new Table_line_delegate(this);
     delegate_ot->set_type(OT);
     delegate_ot->set_MTM_model(ot_model, contacts_model);
-    ui->tableView->setItemDelegateForColumn(0,delegate_ot);
+    //ui->tableView->setItemDelegateForColumn(0,delegate_ot);
+    ui->tableView->setItemDelegate(delegate_ot);
 
     Table_line_delegate *delegate_cont = new Table_line_delegate(this);
     delegate_cont->set_type(Cont);
     delegate_cont->set_MTM_model(ot_model, contacts_model);
-    ui->tableView_2->setItemDelegateForColumn(0,delegate_cont);
+    //ui->tableView_2->setItemDelegateForColumn(0,delegate_cont);
+    ui->tableView_2->setItemDelegate(delegate_cont);
 
 }
 //-----------------------------------------------------------------------------------//

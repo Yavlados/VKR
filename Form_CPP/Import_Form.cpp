@@ -654,7 +654,7 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
              {
                  QMessageBox::critical(this,
                                        QObject::tr("Внимание"),
-                                       QObject::tr("Файл либо не подходит под формат old_db"));
+                                       QObject::tr("Файл не подходит под формат old_db"));
                 return false;
              }else
              {

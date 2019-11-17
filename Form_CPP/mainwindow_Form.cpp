@@ -700,14 +700,22 @@ void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
     if(index.column() == 4 && contacts_model->actlist.at(index.row())->linked_id != 0)
     {
         int zk_id = contacts_model->actlist.at(index.row())->linked_id;
+        int zk_id1 = zk_id;
+
+        while (zk_id1 > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
+        {
+            next_page();
+        }
+
         for (int i = 0; i < crud_model->actcrudlist.size(); i++)
         {
-            if(crud_model->actcrudlist.at(i)->zk_id == zk_id)
+            if(crud_model->actcrudlist.at(i)->zk_id == zk_id1)
             {
                 zk_id = i;
                 break;
             }
         }
+
         index_tab1 = crud_model->index(zk_id,0);
         ui->tableView->setCurrentIndex(index_tab1);
         on_tableView_clicked(index_tab1, contacts_model->actlist.at(index.row())->contact_tel_num);

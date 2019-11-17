@@ -170,6 +170,7 @@ bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int rol
         }
    if (role == Qt::CheckStateRole && col == 1)
     {
+       ~Qt::ItemIsEditable;
      if (actotlist.at(row)->internum == false && actotlist.at(row)->oldnum == false)
           actotlist.at(row)->internum = true;
      else
