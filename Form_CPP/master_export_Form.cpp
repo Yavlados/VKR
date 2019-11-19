@@ -46,12 +46,22 @@ void Master_export_Form::on_rb_check_all_clicked()
 
 void Master_export_Form::on_pb_directory_clicked()
 {
-    QString filename = QFileDialog::getSaveFileName(
-                       this,
-                       tr("Save Document"),
-                       QDir::currentPath(),
-                       tr("Dump database (*.db)") );
+    QString filename ;
+    if(file_path == nullptr)
+        filename = QFileDialog::getSaveFileName(
+                           this,
+                           tr("Save Document"),
+                           QDir::currentPath(),
+                           tr("Dump database (*.db)") );
+    else
+        filename = QFileDialog::getSaveFileName(
+                           this,
+                           tr("Save Document"),
+                           file_path,
+                           tr("Dump database (*.db)") );
 
+    int x = filename.lastIndexOf("/");
+    file_path = filename.left(x);
     if( !filename.isNull() )
         ui->le_file_path->setText(filename);
 }
@@ -74,4 +84,9 @@ void Master_export_Form::on_cb_set_password_clicked()
         ui->label->setVisible(false);
         ui->le_password->setVisible(false);
     }
+}
+
+void Master_export_Form::add_file_path(QString path_from_main)
+{
+    file_path = path_from_main;
 }

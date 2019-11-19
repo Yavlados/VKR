@@ -33,24 +33,59 @@ void Master_import_form::on_pb_directory_2_clicked()
     switch (ret)
     {
         case QMessageBox::Ok :
+    if(file_path == nullptr)
+    {
         filename = QFileDialog::getOpenFileName(
-                           this,
-                           tr("Save Document"),
-                           QDir::currentPath(),
-                           tr("Dump database (*)"), nullptr, QFileDialog::DontUseNativeDialog  );
-
+                    this,
+                    tr("Save Document"),
+                    QDir::currentPath(),
+                    tr("Dump database (*)"), nullptr, QFileDialog::DontUseNativeDialog  );
+        int x = filename.lastIndexOf("/");
+        file_path = filename.left(x);
         if( !filename.isNull() )
             ui->le_file_path_2->setText(filename);
         return;
+    }
+        else
+    {
+        filename = QFileDialog::getOpenFileName(
+                    this,
+                    tr("Save Document"),
+                    file_path,
+                    tr("Dump database (*)"), nullptr, QFileDialog::DontUseNativeDialog  );
+        int x = filename.lastIndexOf("/");
+        file_path = filename.left(x);
+        if( !filename.isNull() )
+            ui->le_file_path_2->setText(filename);
+        return;
+    }
     case QMessageBox::Cancel:
-        filename = QFileDialog::getOpenFileName(
-                           this,
-                           tr("Save Document"),
-                           QDir::currentPath(),
-                           tr("Dump database (*.db)"), nullptr, QFileDialog::DontUseNativeDialog  );
+          if(file_path == nullptr)
+          {
+              filename = QFileDialog::getOpenFileName(
+                          this,
+                          tr("Save Document"),
+                          QDir::currentPath(),
+                          tr("Dump database (*.db)"), nullptr, QFileDialog::DontUseNativeDialog  );
+              int x = filename.lastIndexOf("/");
+              file_path = filename.left(x);
+              if( !filename.isNull() )
+                  ui->le_file_path_2->setText(filename);
+              return;
+          }
+          else
+          {
 
-        if( !filename.isNull() )
-            ui->le_file_path_2->setText(filename);
-        return;
+              filename = QFileDialog::getOpenFileName(
+                          this,
+                          tr("Save Document"),
+                          file_path,
+                          tr("Dump database (*.db)"), nullptr, QFileDialog::DontUseNativeDialog  );
+              int x = filename.lastIndexOf("/");
+              file_path = filename.left(x);
+              if( !filename.isNull() )
+                  ui->le_file_path_2->setText(filename);
+              return;
+          }
     }
 }

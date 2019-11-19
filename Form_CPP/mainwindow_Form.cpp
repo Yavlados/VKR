@@ -1,7 +1,7 @@
 #include "mainwindow_Form.h"
 #include "ui_mainwindow.h"
 #include "db_connection.h"
-#include "table_cb_delegate.h"
+#include "table_show_delegate.h"
 
 #include <QGuiApplication>
 #include <QDesktopWidget>
@@ -45,8 +45,10 @@ MainWindow::MainWindow(QWidget *parent) :
     add_splitter_lines();
     Settings_connection::instance();
 
-    Table_cb_delegate *delegate = new Table_cb_delegate();
-    ui->tableView_3->setItemDelegateForColumn(1, delegate);
+    size_list = ui->splitter->sizes();
+
+    connect(ui->tableView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(header_clicked(int)));
+
 }
 //-----------------------------------------------------------------------------------//
 MainWindow::~MainWindow()
@@ -121,7 +123,13 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //�
                 ot_model->actotlist.removeAt(0);//Костыль, тк не могу не отображать пустые номера
         }
         ui->tableView_2->setModel(ot_model);
-        ui->tableView_2->setColumnWidth(0,250);
+        Table_show_delegate *dl = new Table_show_delegate(this);
+        for(int row = 0; row < ot_model->actotlist.size(); row++)
+        {
+            if(ot_model->actotlist.at(row)->oldnum == false && ot_model->actotlist.at(row)->internum == false)
+                ui->tableView->setItemDelegateForRow(row,dl);
+        }
+
         contacts_model->reset_ContactModel();
     }
     else
@@ -141,8 +149,8 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
         contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
 
         ui->tableView_3->setModel(contacts_model);
-        ui->tableView_3->setColumnWidth(0,250);
-        ui->tableView_3->setColumnWidth(1,250);
+        //ui->tableView_3->setColumnWidth(0,250);
+       // ui->tableView_3->setColumnWidth(1,250);
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -180,7 +188,17 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
 //-----------------------------------------------------------------------------------//
 void MainWindow::RefreshTab()
 {
+    if (crud_model != nullptr)
+    {
+        delete crud_model;
+        crud_model = nullptr;
+        QTableView *table = ui->tableView;
+        table->viewport()->update();
+        table->repaint();
+     }
+
     crud_model = new  MTM_Crud;
+    //QHeaderView *header =crud_model->headerData();
     QList<Crud*> *crudlist = new QList<Crud*>;
     if(Crud::selectAll(crudlist)) ///Вызов статичной функции
         crud_model->setCrudlist(crudlist);
@@ -188,6 +206,7 @@ void MainWindow::RefreshTab()
     Add_pagination_buttons();
 
     ui->tableView->setModel(crud_model);
+
     m_c_s = All_unchecked;
     ot_model->reset_OTModel();
     contacts_model->reset_ContactModel();
@@ -503,10 +522,11 @@ void MainWindow::on_actionexport_triggered()
     if(exprt == nullptr)
     {
         exprt = new Master_export_Form;
+        exprt->add_file_path(file_path);
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,exprt,"Экспорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
         connect(exprt,SIGNAL(rb_zk_clicked()),this, SLOT(on_action_search_triggered()));
-        connect(exprt,SIGNAL(rb_check_all()),this, SLOT(on_pb_check_model_clicked()));
+        //connect(exprt,SIGNAL(rb_check_all()),this, SLOT(on_pb_check_model_clicked()));
         connect(exprt, SIGNAL(TESTING_export(QString,QString, bool, bool, bool)),this,SLOT(testing_export(QString, QString, bool, bool, bool)));
     }
     else
@@ -588,22 +608,7 @@ void MainWindow::testing_opening(QString filename, QString password)
        delete import_form;
 }
 //-----------------------------------------------------------------------------------//
-void MainWindow::on_pb_check_model_clicked()
-{
-    switch (m_c_s)
-    {
-    case All_unchecked:
-        crud_model->setCheckedCrudlist(crud_model->crudlist);
-        ui->tableView->setModel(crud_model);
-        m_c_s = All_checked;
-    return;
-    case All_checked:
-        crud_model->setUnCheckedCrudlist(crud_model->crudlist);
-        ui->tableView->setModel(crud_model);
-        m_c_s = All_unchecked;
-    return;
-    }
-}
+
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_import_triggered()
 {
@@ -632,6 +637,8 @@ void MainWindow::next_page()
     crud_model->next_page_crud();
     ui->tableView->setModel(crud_model);
     Add_pagination_buttons();
+    ot_model->reset_OTModel();
+    contacts_model->reset_ContactModel();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::previous_page()
@@ -639,6 +646,8 @@ void MainWindow::previous_page()
     crud_model->previous_page_crud();
     ui->tableView->setModel(crud_model);
     Add_pagination_buttons();
+    ot_model->reset_OTModel();
+    contacts_model->reset_ContactModel();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::set_fonts()
@@ -704,7 +713,9 @@ void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
 
         while (zk_id1 > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
         {
-            next_page();
+            crud_model->next_page_crud();
+            ui->tableView->setModel(crud_model);
+            Add_pagination_buttons();
         }
 
         for (int i = 0; i < crud_model->actcrudlist.size(); i++)
@@ -741,4 +752,66 @@ void MainWindow::set_normal_width(int size)
     size_list.append(size);
     size_list.append(this->size().width() - size);
     ui->splitter->setSizes(size_list);
+}
+
+void MainWindow::header_clicked(int id)
+{
+    if(id != 0)
+        return;
+    else
+    {
+        switch (m_c_s)
+        {
+        case All_unchecked:
+            crud_model->setCheckedCrudlist(crud_model->crudlist);
+            ui->tableView->setModel(crud_model);
+            m_c_s = All_checked;
+            Add_pagination_buttons();
+        return;
+        case All_checked:
+            crud_model->setUnCheckedCrudlist(crud_model->crudlist);
+            ui->tableView->setModel(crud_model);
+            m_c_s = All_unchecked;
+            Add_pagination_buttons();
+        return;
+        }
+    }
+}
+
+void MainWindow::on_action_4_analysis_triggered()
+{
+    on_action_analysis_triggered();
+}
+
+void MainWindow::on_action_6_triggered()
+{
+    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget_2->setCurrentIndex(0);
+    ui->splitter->setSizes(size_list);
+
+}
+
+void MainWindow::on_action_8_triggered()
+{
+    on_action_search_triggered();
+}
+
+void MainWindow::on_action_9_triggered()
+{
+    on_action_official_tel_triggered();
+}
+
+void MainWindow::on_action_10_triggered()
+{
+    on_actionexport_triggered();
+}
+
+void MainWindow::on_action_12_triggered()
+{
+    on_action_import_triggered();
+}
+
+void MainWindow::on_action_13_triggered()
+{
+   on_action_Settings_triggered();
 }

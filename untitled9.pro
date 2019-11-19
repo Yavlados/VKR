@@ -52,9 +52,9 @@ SOURCES += \
     Form_CPP/settings_Form.cpp \
     settings_connection.cpp \
     table_line_delegate.cpp \
-    table_cb_delegate.cpp \
     olddbservice.cpp \
-    dialog_conflict.cpp
+    dialog_conflict.cpp \
+    table_show_delegate.cpp
 
 HEADERS += \
     db_connection.h \
@@ -82,9 +82,9 @@ HEADERS += \
     Form_Headers/settings_Form.h \
     settings_connection.h \
     table_line_delegate.h \
-    table_cb_delegate.h \
     olddbservice.h \
-    dialog_conflict.h
+    dialog_conflict.h \
+    table_show_delegate.h
 
 FORMS += \
         mainwindow.ui \

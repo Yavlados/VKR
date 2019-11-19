@@ -13,6 +13,8 @@ Search::Search(QWidget *parent) :
 
 Search::~Search()
 {
+  on_pushButton_clicked();
+
     delete ui;
 }
 
@@ -85,7 +87,14 @@ void Search::Create_search_report(QList<Crud *> *crudlist)
     {
         search_report+="Записная книжка № "+QString::number(crudlist->at(i)->zk_id)+" \r\n Владелец: "+
                 crudlist->at(i)->lastname+" "+crudlist->at(i)->name+" "+crudlist->at(i)->mid_name+
-                ", "+crudlist->at(i)->birth_date+", адрес регистрации: г."+
+                ", "+crudlist->at(i)->birth_date+", ";
+
+            if(ui->rb_reg->isChecked())
+                search_report+= "адрес регистрации:";
+             else if(ui->rb_liv->isChecked())
+                search_report+= "адрес проживания:";
+
+            search_report += "г."+
                 crudlist->at(i)->reg_city+" ул. "+crudlist->at(i)->reg_street+" д. "+
                crudlist->at(i)->reg_home+" к. "+crudlist->at(i)->reg_corp+" кв. "+
                 crudlist->at(i)->reg_corp+" \r\n  \r\n ";
@@ -129,15 +138,30 @@ QString Search::create_search_query(Crud *search_crud)
 
     if (!search_crud->lastname.isEmpty())
     {
-        qry += " AND LOWER(zk.Lastname) LIKE LOWER('"+search_crud->lastname+"%') ";
+        if(search_crud->lastname.back() == "*")
+                search_crud->lastname.replace("*","%");
+        else if(search_crud->lastname.back() == "?")
+            search_crud->lastname.replace("?","_");
+
+        qry += " AND LOWER(zk.Lastname) LIKE LOWER('"+search_crud->lastname+"') ";
     }
     if (!search_crud->name.isEmpty())
     {
-        qry += " AND LOWER(zk.Name) LIKE LOWER('"+search_crud->name+"%')";
+        if(search_crud->name.back() == "*")
+            search_crud->name.replace("*","%");
+    else if(search_crud->name.back() == "?")
+        search_crud->name.replace("?","_");
+
+        qry += " AND LOWER(zk.Name) LIKE LOWER('"+search_crud->name+"')";
     }
     if (!search_crud->mid_name.isEmpty())
     {
-        qry += " AND LOWER(zk.Mid_name) LIKE LOWER('"+search_crud->mid_name+"%')";
+        if(search_crud->mid_name.back() == "*")
+            search_crud->mid_name.replace("*","%");
+    else if(search_crud->mid_name.back() == "?")
+        search_crud->mid_name.replace("?","_");
+
+        qry += " AND LOWER(zk.Mid_name) LIKE LOWER('"+search_crud->mid_name+"')";
     }
     //////////////////////////////////////////
     if(!search_crud->birth_date.isEmpty())
@@ -147,26 +171,52 @@ QString Search::create_search_query(Crud *search_crud)
 
     if (!search_crud->reg_city.isEmpty())
     {
-        qry += " AND LOWER(zk.Reg_city) LIKE LOWER('"+search_crud->reg_city+"%')";
+        if(search_crud->reg_city.back() == "*")
+            search_crud->reg_city.replace("*","%");
+    else if(search_crud->reg_city.back() == "?")
+        search_crud->reg_city.replace("?","_");
+
+    if(ui->rb_reg->isChecked())
+        qry += " AND LOWER(zk.Reg_city) LIKE LOWER('"+search_crud->reg_city+"')";
+    else if(ui->rb_liv->isChecked())
+        qry += " AND LOWER(zk.liv_city) LIKE LOWER('"+search_crud->reg_city+"')";
     }
     if (!search_crud->reg_street.isEmpty())
     {
-        qry += " AND LOWER(zk.Reg_street ) LIKE LOWER('"+search_crud->reg_street+"%')";
+        if(search_crud->reg_street.back() == "*")
+            search_crud->reg_street.replace("*","%");
+    else if(search_crud->reg_street.back() == "?")
+        search_crud->reg_street.replace("?","_");
+
+  if(ui->rb_reg->isChecked())
+        qry += " AND LOWER(zk.Reg_street ) LIKE LOWER('"+search_crud->reg_street+"')";
+   else if(ui->rb_liv->isChecked())
+      qry += " AND LOWER(zk.liv_street ) LIKE LOWER('"+search_crud->reg_street+"')";
     }
 
     if (!search_crud->reg_home.isEmpty())
     {
+        if(ui->rb_reg->isChecked())
         qry += " AND zk.Reg_home =('"+search_crud->reg_home+"')";
+        else if(ui->rb_liv->isChecked())
+        qry += " AND zk.liv_home =('"+search_crud->reg_home+"')";
     }
 
     if (!search_crud->reg_corp.isEmpty())
     {
+         if(ui->rb_reg->isChecked())
         qry += " AND zk.Reg_corp = ('"+search_crud->reg_corp+"')";
+         else if(ui->rb_liv->isChecked())
+        qry += " AND zk.liv_corp = ('"+search_crud->reg_corp+"')";
     }
     if (!search_crud->reg_flat.isEmpty())
     {
+        if(ui->rb_reg->isChecked())
         qry += " AND zk.Reg_flat = ('"+search_crud->reg_flat+"')";
+        else if(ui->rb_liv->isChecked())
+        qry += " AND zk.liv_flat = ('"+search_crud->reg_flat+"')";
     }
+
 /////////////////////////////////////////////////////////
     if(!search_crud->date_add.isEmpty())
     {

@@ -4,6 +4,7 @@
 #include "_MTM_OwTel.h"
 #include "_Crud.h"
 #include "list_master.h"
+#include "table_line_delegate.h"
 
 #include <QWidget>
 #include <QDebug>
@@ -32,6 +33,9 @@ class Update : public QWidget   ///Форма поиска
     Q_OBJECT
 
 public:
+     Table_line_delegate *delegate_ot = nullptr;
+     Table_line_delegate *delegate_cont = nullptr;
+
     int main_array_index; //Необходим для очистки памяти
     Form_type frm_t;
     Import_type imprt_t;
@@ -144,6 +148,9 @@ private slots:
 
     ///метод разрыва связи
     void destroy_link();
+    void on_tableView_doubleClicked(const QModelIndex &index);
+    void on_tableView_entered(const QModelIndex &index);
+    void on_cb_adres_clicked();
 };
 
 #endif // UPDATE_H

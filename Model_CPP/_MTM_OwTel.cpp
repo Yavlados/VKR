@@ -56,14 +56,14 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
           {
               QString _temp =  actotlist.at(row)->tel_num;
 
-              _temp.insert(0,"+");
-              _temp.insert(2,"(");
-              _temp.insert(6,")");
-              _temp.insert(10,"-");
-              _temp.insert(13,"-");
+//              _temp.insert(0,"+");
+//              _temp.insert(2,"(");
+//              _temp.insert(6,")");
+//              _temp.insert(10,"-");
+//              _temp.insert(13,"-");
               switch(col)
               {
-              case 0:            /// 1 колонка - Номер телефона
+              case 2:            /// 1 колонка - Номер телефона
                   return _temp;
               }
           }
@@ -71,14 +71,14 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
           {
               switch(col)
               {
-              case 0:            /// 1 колонка - Номер телефона
+              case 2:            /// 1 колонка - Номер телефона
                   return actotlist.at(row)->tel_num;
 
               }
           }
 
       }
-      if (role == Qt::CheckStateRole && col == 1)  // this shows the checkbox
+      if (role == Qt::CheckStateRole && col == 0)  // this shows the checkbox
               {
                   bool aBool = actotlist.at(row)->internum;
                   if (aBool)
@@ -86,7 +86,7 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
                   else
                           return Qt::Unchecked;
               }
-      if (role == Qt::CheckStateRole && col == 2)  // this shows the checkbox
+      if (role == Qt::CheckStateRole && col == 1)  // this shows the checkbox
               {
                   bool aBool = actotlist.at(row)->oldnum;
                   if (aBool)
@@ -122,14 +122,14 @@ QVariant MTM_OwTel::headerData(int section, Qt::Orientation orientation, int rol
             switch (section)
           {
              case 0:
-                return QString("Номер телефона");
-            case 1:
                 return QString("М-н");
+            case 1:
+                return QString("Ст.");
             case 2:
-                return QString("Старый");
+                return QString("Телефон");
           }
         else {
-            return QString("%1").arg(section+1);
+            return QVariant();
         }
 }
 
@@ -159,7 +159,7 @@ bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int rol
         {
             switch(col)
             {
-            case 0:             /// 1 колонка - номер телефона
+            case 2:             /// 1 колонка - номер телефона
                 actotlist.at(row)->tel_num = value.toString();
                 if( actotlist.at(row)->state!=IsNewing )
                     actotlist.at(row)->state = IsChanged;
@@ -168,7 +168,7 @@ bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int rol
                 return true;
             }
         }
-   if (role == Qt::CheckStateRole && col == 1)
+   if (role == Qt::CheckStateRole && col == 0)
     {
        ~Qt::ItemIsEditable;
      if (actotlist.at(row)->internum == false && actotlist.at(row)->oldnum == false)
@@ -191,7 +191,7 @@ bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int rol
        emit dataChanged(index,index);
          return true;
     }
-   if (role == Qt::CheckStateRole && col == 2)
+   if (role == Qt::CheckStateRole && col == 1)
     {
      if (actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false)
           actotlist.at(row)->oldnum = true;
@@ -204,7 +204,6 @@ bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int rol
      {
          actotlist.at(row)->oldnum = true;
          actotlist.at(row)->internum = false;
-
      }
 
      if( actotlist.at(row)->state!=IsNewing )

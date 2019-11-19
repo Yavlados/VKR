@@ -25,6 +25,8 @@ public:
     explicit Master_export_Form(QWidget *parent = nullptr);
     ~Master_export_Form();
 
+    void add_file_path(QString path_from_main);
+
     QSize actual_size;
 private slots:
     void on_cb_zk_clicked();
@@ -39,10 +41,11 @@ private slots:
 
     void on_cb_set_password_clicked();
 
+
 private:
     Ui::master_export_Form *ui;
+    QString file_path = nullptr;
 signals:
-
     void rb_zk_clicked();
     void rb_check_all();
     void TESTING_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk_tels);

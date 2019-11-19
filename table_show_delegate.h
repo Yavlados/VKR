@@ -4,11 +4,12 @@
 #include <QCheckBox>
 #include <QItemDelegate>
 
-class Table_cb_delegate: public QItemDelegate       ///Класс делегата CheckBox
+class Table_show_delegate: public QItemDelegate       ///Класс делегата CheckBox
 {
     Q_OBJECT
 public:
-    Table_cb_delegate(QObject *parent = nullptr);
+    QString code_num;
+    Table_show_delegate(QObject *parent = nullptr);
      bool hasClipping() const;
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 private:

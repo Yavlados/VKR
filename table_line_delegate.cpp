@@ -19,7 +19,7 @@ void Table_line_delegate::input_code_num(QString c_n)
 
 QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if(index.column() == 0)
+    if(index.column() == 2)
     {
         if(type == OT)
         {
@@ -28,6 +28,9 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
             {
                 QString temp = "99999999"; //8 цифр
                 line->setInputMask(temp);
+                line->displayText();
+                line->setText(content);
+                //line->setPlaceholderText("asd");
                 return line;
             }
             if (ot_model->actotlist.at(index.row())->internum == false)
@@ -38,6 +41,8 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
             }else
             {
                 QString temp = "999999999999999999999999999999"; //30 цифр
+                line->setPlaceholderText(content);
+
                 line->setInputMask(temp);
                 return line;
             }
@@ -49,22 +54,28 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
             {
                 QString temp = "99999999"; //8 цифр
                 line->setInputMask(temp);
+                line->setPlaceholderText(content);
+
                 return line;
             }
             if (cont->actlist.at(index.row())->internum == false)
             {
                 QString temp = "+"+code_num+"(999)999-99-99"; //ФОРМА ВВОДА НОМЕРА
                 line->setInputMask(temp);
+                line->setPlaceholderText(content);
+
                 return line;
             }else
             {
                 QString temp = "999999999999999999999999999999"; //30 цифр
                 line->setInputMask(temp);
+                line->setPlaceholderText(content);
+
                 return line;
             }
         }
-    }
-    else if (type == OT && index.column() == 2)
+
+    else if (type == OT && index.column() == 0)
     {
         QLineEdit *line = new QLineEdit(parent);
         line->setReadOnly(true);
@@ -84,6 +95,7 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
         QLineEdit *line = new QLineEdit(parent);
         return line;
         }
+    }
 }
 
 void Table_line_delegate::set_MTM_model(MTM_OwTel *om, MTM_Contacts *cnt)
@@ -98,5 +110,10 @@ void Table_line_delegate::set_MTM_model(MTM_OwTel *om, MTM_Contacts *cnt)
             cont = cnt;
             return;
     }
+}
+
+void Table_line_delegate::set_content(QString str)
+{
+    content = str;
 }
 

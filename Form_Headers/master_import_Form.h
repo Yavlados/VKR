@@ -26,6 +26,7 @@ private slots:
     void on_pb_directory_2_clicked();
 private:
     Ui::Master_import_form *ui;
+   QString file_path = nullptr;
 signals:
     void TESTING_open(QString filename, QString password);
 

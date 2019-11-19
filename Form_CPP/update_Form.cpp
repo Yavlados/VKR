@@ -3,8 +3,8 @@
 #include "_Crud.h"
 #include "_Owners_tel.h"
 #include "_Contacts.h"
-#include "table_line_delegate.h"
-#include "table_cb_delegate.h"
+
+#include "table_show_delegate.h"
 #include "list_master.h"
 #include "dialog_conflict.h"
 
@@ -123,7 +123,8 @@ void Update::Fill_fields_update(Crud *new_cr)
 
     ot_model->state = Edit_Ot; ///меняю флаги для изменения
     ui->tableView->setModel(ot_model);
-    ui->tableView->setColumnWidth(0,250);
+    ui->tableView->resizeColumnToContents(2);
+    //ui->tableView->setColumnWidth(0,250);
     contacts_model->reset_ContactModel();
 
 //    if(!main_cr->take_links()->isEmpty() && _linked_crud == nullptr && frm_t != Confluence_form)
@@ -192,6 +193,9 @@ void Update::on_pb_Update_clicked()
             break;
              }
 
+
+
+
     new_cr->check_for = ui->le_check_for->text();
     new_cr->dop_info = ui->le_dop_info->toPlainText();
     new_cr->reg_city = ui->le_reg_city->text();
@@ -200,11 +204,23 @@ void Update::on_pb_Update_clicked()
     new_cr->reg_corp = ui->le_reg_corp ->text();
     new_cr->reg_flat = ui->le_reg_flat->text();
 
-    new_cr->liv_city = ui->le_liv_city->text();
-    new_cr->liv_street = ui->le_liv_street->text();
-    new_cr->liv_home = ui->le_liv_house->text();
-    new_cr->liv_corp = ui->le_liv_corp->text();
-    new_cr->liv_flat = ui->le_liv_flat->text();
+    if (ui->cb_adres->checkState() == Qt::Checked)
+    {
+        new_cr->liv_city = new_cr->reg_city;
+        new_cr->liv_street = new_cr->reg_street;
+        new_cr->liv_home = new_cr->reg_home;
+        new_cr->liv_corp = new_cr->reg_corp;
+        new_cr->liv_flat = new_cr->reg_flat;
+    }
+    else
+    {
+        new_cr->liv_city = ui->le_liv_city->text();
+        new_cr->liv_street = ui->le_liv_street->text();
+        new_cr->liv_home = ui->le_liv_house->text();
+        new_cr->liv_corp = ui->le_liv_corp->text();
+        new_cr->liv_flat = ui->le_liv_flat->text();
+    }
+
 
     switch (imprt_t) {
     case Update_import_data:
@@ -284,8 +300,8 @@ void Update::on_tableView_clicked(const QModelIndex &index)
 
     contacts_model->state = Edit_cont;
     ui->tableView_2->setModel(contacts_model);
-    ui->tableView_2->setColumnWidth(0,250);
-    ui->tableView_2->setColumnWidth(1,250);
+    ui->tableView_2->resizeColumnToContents(2);
+
     qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
 }
 //-----------------------------------------------------------------------------------//
@@ -344,9 +360,7 @@ void Update::clear_Vl()
     while (ui->vl_for_button->count() > 0)
         delete ui->vl_for_button->takeAt(0);
 
-    while (ui->vl_for_cb->count() > 0)
-        delete ui->vl_for_cb->takeAt(0);
-    //сброс текста и подсветки на лайнах
+     //сброс текста и подсветки на лайнах
     foreach(QLineEdit *le, this->findChildren<QLineEdit*>() )
     {
         if(!le->text().isEmpty())
@@ -644,22 +658,19 @@ void Update::Fill_table_in_add()
 
        ot_model->state = Edit_Ot; ///меняю флаги для изменения
        ui->tableView->setModel(ot_model);
-       ui->tableView->setColumnWidth(0,250);
+       ui->tableView->resizeColumnToContents(2);
+       //ui->tableView->setColumnWidth(0,250);
 
             clear_Vl();
 
        QLabel *lb = new QLabel("<font size = 10> <h1> <div align=\"center\"> Добавление новой записной книжки  </div></h1> </font>");
        ui->vl_for_label->addWidget(lb);
 
-       QCheckBox *cb = new QCheckBox("<h3> <b> Адреса совпадают </b></h3>");
-       cb->setText("Адреса совпадают");
-       ui->vl_for_cb->addWidget(cb);
 
        QPushButton *p_b = new QPushButton;
        p_b->setText("Добавить новую записную книжку");
        ui->vl_for_button->addWidget(p_b);
 
-       connect(cb, SIGNAL(clicked()), this, SLOT(cb_clicked()));
        connect(p_b, SIGNAL(clicked()), this ,SLOT(Add_zk()));
 }
 //-----------------------------------------------------------------------------------//
@@ -696,9 +707,7 @@ void Update::Add_zk()
         new_cr->reg_corp = ui->le_reg_corp ->text();
         new_cr->reg_flat = ui->le_reg_flat->text();
 
-    foreach (QCheckBox *cb, this->findChildren<QCheckBox*>())
-
-        if (cb->checkState() == Qt::Checked)
+        if (ui->cb_adres->checkState() == Qt::Checked)
         {
             new_cr->liv_city = new_cr->reg_city;
             new_cr->liv_street = new_cr->reg_street;
@@ -857,13 +866,13 @@ void inline Update::set_delegates_and_connections()
 {
     connect(ot_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
     connect(contacts_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
-    Table_line_delegate *delegate_ot = new Table_line_delegate(this);
+    delegate_ot = new Table_line_delegate(this);
     delegate_ot->set_type(OT);
     delegate_ot->set_MTM_model(ot_model, contacts_model);
     //ui->tableView->setItemDelegateForColumn(0,delegate_ot);
     ui->tableView->setItemDelegate(delegate_ot);
 
-    Table_line_delegate *delegate_cont = new Table_line_delegate(this);
+    delegate_cont = new Table_line_delegate(this);
     delegate_cont->set_type(Cont);
     delegate_cont->set_MTM_model(ot_model, contacts_model);
     //ui->tableView_2->setItemDelegateForColumn(0,delegate_cont);
@@ -1204,3 +1213,36 @@ void Update::mark_le(QLineEdit *le, QLineEdit *le1, QLineEdit *le2)
        le2->setStyleSheet("QLineEdit { background: rgb(0, 255, 255); selection-background-color: rgb(233, 99, 0); }");
 }
 //-----------------------------------------------------------------------------------//
+
+void Update::on_tableView_doubleClicked(const QModelIndex &index)
+{
+//    if (index.column() == 2)
+//    {
+//        delegate_ot->set_content(index.data().toString());
+//    }
+}
+
+void Update::on_tableView_entered(const QModelIndex &index)
+{
+    qDebug() << "tut";
+}
+
+void Update::on_cb_adres_clicked()
+{
+    if (ui->cb_adres->isChecked())
+    {
+        ui->le_liv_city->setEnabled(false);
+        ui->le_liv_street->setEnabled(false);
+        ui->le_liv_house->setEnabled(false);
+        ui->le_liv_corp->setEnabled(false);
+        ui->le_liv_flat->setEnabled(false);
+    }
+    else {
+        ui->le_liv_city->setEnabled(true);
+        ui->le_liv_street->setEnabled(true);
+        ui->le_liv_house->setEnabled(true);
+        ui->le_liv_corp->setEnabled(true);
+        ui->le_liv_flat->setEnabled(true);
+    }
+
+}

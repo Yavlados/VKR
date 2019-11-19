@@ -117,14 +117,14 @@ public:
                                  int a2
                                  );
 
-
+    QString file_path = nullptr;
 
 public slots:
 
 
 private:
     Ui::MainWindow *ui;
-
+    QList<int> size_list;
 
 private slots:
     ///Добавление кнопок пагинации
@@ -174,8 +174,6 @@ private slots:
 
     void testing_opening(QString, QString);
 
-    void on_pb_check_model_clicked();
-
     void on_action_import_triggered();
 
     void on_action_Settings_triggered();
@@ -205,6 +203,23 @@ private slots:
     void open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *added_cr);
 
     void set_normal_width(int size);
+
+    void header_clicked(int id);
+
+    void on_action_4_analysis_triggered();
+
+    void on_action_6_triggered();
+
+    void on_action_8_triggered();
+
+    void on_action_9_triggered();
+
+    void on_action_10_triggered();
+
+    void on_action_12_triggered();
+
+    void on_action_13_triggered();
+
 signals:
     void Send_data(Crud *cr, int index);
 

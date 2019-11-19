@@ -12,11 +12,16 @@ class Table_line_delegate: public QItemDelegate     ///Класс делегат
 {
     Q_OBJECT
 public:
+
+    QString content;
+
     Table_line_delegate(QObject *parent = nullptr);
     void set_type(Number_type type_loc);
     void input_code_num (QString c_n);
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     void set_MTM_model(MTM_OwTel*,MTM_Contacts*);
+
+    void set_content(QString str);
 private:
     Number_type type;
     QString code_num;//код города, 7 по умолчанию

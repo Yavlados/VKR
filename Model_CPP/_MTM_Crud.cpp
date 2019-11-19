@@ -59,6 +59,7 @@ void MTM_Crud::setCheckedCrudlist(QList<Crud *> *crudl)
 
     crudlist = crudl;
     actcrudlist.clear();
+    int iterator = 0;
 
     if(crudlist!=nullptr)
     {
@@ -66,7 +67,11 @@ void MTM_Crud::setCheckedCrudlist(QList<Crud *> *crudl)
             if( crudlist->at(i)->state!=IsRemoved )
             {
                 crudlist->at(i)->checkState_ = Checked;
-                actcrudlist.append(crudlist->at(i));
+                if (iterator < showing_count && iterator < crudlist->size())
+                {
+                    actcrudlist.append(crudlist->at(iterator));
+                    iterator++;
+                }
             }
     }
 
@@ -84,15 +89,16 @@ void MTM_Crud::setUnCheckedCrudlist(QList<Crud *> *crudl)
 
     if(crudlist!=nullptr)
     {
-        while (iterator < showing_count && iterator < crudlist->size())
-        {
-            if( crudlist->at(iterator)->state!=IsRemoved )
+        for(int i=0; i < crudlist->size(); i++)
+            if( crudlist->at(i)->state!=IsRemoved )
             {
-                crudlist->at(iterator)->checkState_ = Unchecked;
-                actcrudlist.append(crudlist->at(iterator));
+                crudlist->at(i)->checkState_ = Unchecked;
+                if (iterator < showing_count && iterator < crudlist->size())
+                {
+                    actcrudlist.append(crudlist->at(iterator));
+                    iterator++;
+                }
             }
-            iterator++;
-        }
     }
 
     endResetModel();
@@ -227,6 +233,8 @@ QVariant MTM_Crud::headerData(int section, Qt::Orientation orientation, int role
         if (orientation == Qt::Horizontal)
             switch (section)
           {
+            case 0:
+                return "Выбрать все";
             case 1:
                 return Recieve_column_name(0);
             case 2:
@@ -265,6 +273,7 @@ QVariant MTM_Crud::headerData(int section, Qt::Orientation orientation, int role
                 return Recieve_column_name(17);
             case 19:
                 return Recieve_column_name(18);
+
           }
 
         return QVariant(); /// вот сюда внимание в случае краша
@@ -383,47 +392,47 @@ QString MTM_Crud::Recieve_column_name(int column) const
        return QString("Отчество");
 
     if (settings_str == "BIRTH_DATE")
-        return QString("Дата рождения");
+        return QString("Д/р");
 
     if (settings_str == "CHECK_FOR")
-        return QString("Проверяется в интересах");
+        return QString("П. в и.");
 
     if (settings_str == "DOP_INFO")
-        return QString("Дополнительная информация");
+        return QString("Доп. инф.");
 
     if (settings_str == "LIV_CITY")
-        return QString("Город проживания");
+        return QString("Гор. прож.");
 
     if (settings_str == "LIV_STREET")
-        return QString("Улица проживания");
+        return QString("Ул. прож.");
 
     if (settings_str == "LIV_HOME")
-        return QString("Дом проживания");
+        return QString("Дом прож.");
 
     if (settings_str == "LIV_CORP")
-        return QString("Корпус проживания");
+        return QString("Корп. прож.");
 
     if (settings_str == "LIV_FLAT")
-        return QString("Квартира проживания");
+        return QString("Кв. прож.");
 
     if (settings_str == "ADD_DATE")
-        return QString("День добавления");
+        return QString("День доб.");
 
     if (settings_str == "REG_CITY")
-        return QString("Город регистрации");
+        return QString("Гор. рег.");
 
     if (settings_str == "REG_STREET")
-        return QString("Улица регистрации");
+        return QString("Ул. рег.");
 
     if (settings_str == "REG_HOME")
-        return QString("Дом регистрации");
+        return QString("Дом рег.");
 
     if (settings_str == "REG_CORP")
-        return QString("Корпус регистрации");
+        return QString("Корп. рег.");
 
     if (settings_str == "REG_FLAT")
-        return QString("Квартира регистрации");
+        return QString("Кв. рег.");
 
     if (settings_str == "ADD_TIME")
-         return QString("Время добавления");
+         return QString("Время доб.");
 }

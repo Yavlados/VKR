@@ -756,5 +756,6 @@ QList<Crud *> *List_master::search(QString search_query)
         cr->state = IsReaded;
         crudlist->append(cr);
     }
+
     return crudlist;
 }

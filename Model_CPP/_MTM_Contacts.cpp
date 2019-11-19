@@ -81,9 +81,9 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
 
             switch(col)
                 {
-            case 0:            /// 1 колонка - номер телефона
+            case 2:            /// 1 колонка - номер телефона
                return _temp;
-            case 1:             /// 2 колонка - пометка к номеру
+            case 3:             /// 2 колонка - пометка к номеру
                 return actlist.at(row)->mark;
             case 4:
                 if (actlist.at(row)->linked_id != 0)
@@ -95,9 +95,9 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
         else {
             switch(col)
                 {
-            case 0:            /// 1 колонка - номер телефона
+            case 2:            /// 1 колонка - номер телефона
                return actlist.at(row)->contact_tel_num;
-            case 1:             /// 2 колонка - пометка к номеру
+            case 3:             /// 2 колонка - пометка к номеру
                 return actlist.at(row)->mark;
             case 4:
                 if (actlist.at(row)->linked_id != 0)
@@ -107,7 +107,7 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
                 }
             }
         }
-    if (role == Qt::CheckStateRole && col == 2)  // this shows the checkbox
+    if (role == Qt::CheckStateRole && col == 0)  // this shows the checkbox
             {
                 bool aBool = actlist.at(row)->internum;
                 if (aBool)
@@ -115,7 +115,7 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
                 else
                         return Qt::Unchecked;
             }
-    if (role == Qt::CheckStateRole && col == 3)  // this shows the checkbox
+    if (role == Qt::CheckStateRole && col == 1)  // this shows the checkbox
             {
                 bool aBool = actlist.at(row)->oldnum;
                 if (aBool)
@@ -151,13 +151,13 @@ QVariant MTM_Contacts::headerData(int section, Qt::Orientation orientation, int 
             switch (section)
           {
             case 0:
-                return QString("Номер телефона");
-            case 1:
-                return QString("Пометка");
-            case 2:
                 return QString("М-н");
+            case 1:
+                return QString("Ст.");
+            case 2:
+                return QString("Телефон");
             case 3:
-                return QString("Старый");
+                return QString("Пометка");
           }
         else {
             return QString("%1").arg(section+1);
@@ -193,7 +193,7 @@ bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, 
         {
             switch(col)
             {
-            case 0:             /// 1 колонка - номер телефона
+            case 2:             /// 1 колонка - номер телефона
                 actlist.at(row)->contact_tel_num = value.toString();
                 if( actlist.at(row)->cont_state!=IsNewing )
                     actlist.at(row)->cont_state = IsChanged;
@@ -201,7 +201,7 @@ bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, 
                 emit dataChanged(index,index);
                 return true;
 
-            case 1:             /// 2 колонка - пометка к номеру
+            case 3:             /// 2 колонка - пометка к номеру
                 actlist.at(row)->mark = value.toString();
                 if( actlist.at(row)->cont_state!=IsNewing )
                     actlist.at(row)->cont_state = IsChanged;
@@ -210,7 +210,7 @@ bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, 
                 return true;
             }
         }
-        if (role == Qt::CheckStateRole && col == 2)
+        if (role == Qt::CheckStateRole && col == 0)
          {
             if (actlist.at(row)->internum == false && actlist.at(row)->oldnum == false)
                  actlist.at(row)->internum = true;
@@ -232,7 +232,7 @@ bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, 
               emit dataChanged(index,index);
                 return true;
          }
-        if (role == Qt::CheckStateRole && col == 3)
+        if (role == Qt::CheckStateRole && col == 1)
          {
             if (actlist.at(row)->oldnum == false && actlist.at(row)->internum == false)
                 actlist.at(row)->oldnum = true;
