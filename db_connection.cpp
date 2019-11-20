@@ -42,8 +42,8 @@ bool db_connection::db_connect()
         _dbpg.setHostName("localhost");
         _dbpg.setDatabaseName("postgres");
        _dbpg.setUserName("postgres");
-        _dbpg.setPassword("23Xeromant23");
-        //_dbpg.setPassword("123");
+       // _dbpg.setPassword("23Xeromant23");
+        _dbpg.setPassword("123");
        _dbpg.setPort(5432);
         ok = _dbpg.open();
         if (ok == true)
