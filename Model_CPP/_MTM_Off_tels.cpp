@@ -60,9 +60,9 @@ QVariant MTM_Off_Tels::data(const QModelIndex &index, int role) const
         {
         switch(col)
             {
-        case 0:            /// 1 колонка - название службы
+        case 1:            /// 1 колонка - название службы
             return actofflist.at(row)->service_name;
-        case 1:             /// 2 колонка - телефон
+        case 0:             /// 2 колонка - телефон
             return actofflist.at(row)->tel_num;
             }
         }
@@ -77,13 +77,13 @@ QVariant MTM_Off_Tels::headerData(int section, Qt::Orientation orientation, int 
         if (orientation == Qt::Horizontal)
             switch (section)
           {
-             case 0:
+             case 1:
                 return QString("Наименование службы");
-            case 1:
+            case 0:
                 return QString("Номер телефона");
           }
         else {
-            return QString("%1").arg(section+1);
+            return QVariant();
         }
     return QVariant();
 

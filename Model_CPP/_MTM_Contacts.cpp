@@ -151,9 +151,9 @@ QVariant MTM_Contacts::headerData(int section, Qt::Orientation orientation, int 
             switch (section)
           {
             case 0:
-                return QString("М-н");
+                return QString("М.");
             case 1:
-                return QString("Ст.");
+                return QString("С.");
             case 2:
                 return QString("Телефон");
             case 3:

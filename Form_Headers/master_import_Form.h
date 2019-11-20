@@ -25,6 +25,7 @@ private slots:
     void on_pushButton_clicked();
     void on_pb_directory_2_clicked();
 private:
+    QWidget *parent_win;
     Ui::Master_import_form *ui;
    QString file_path = nullptr;
 signals:

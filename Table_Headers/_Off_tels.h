@@ -19,6 +19,7 @@ public:
    static bool selectOffTel(QList<Off_tels*> *list);
    static bool add_off_tel(Off_tels * of_t);
    static bool del_off_tel (Off_tels * of_t);
+
 };
 
 #endif // _OFF_TELS_H

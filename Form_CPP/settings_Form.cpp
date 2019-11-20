@@ -11,6 +11,8 @@ Settings_Form::Settings_Form(QWidget *parent) :
     setWindowFlags(windowFlags() | Qt::Dialog);
     setWindowModality(Qt::WindowModal);
 
+    //up_check_boxes();
+
     ui->setupUi(this);
 }
 
@@ -21,6 +23,11 @@ Settings_Form::~Settings_Form()
 
 void Settings_Form::dragEnterEvent(QDragEnterEvent *e)
 {
+}
+
+void Settings_Form::up_check_boxes()
+{
+
 }
 
 void Settings_Form::closeEvent(QCloseEvent *event)

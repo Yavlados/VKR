@@ -122,9 +122,9 @@ QVariant MTM_OwTel::headerData(int section, Qt::Orientation orientation, int rol
             switch (section)
           {
              case 0:
-                return QString("М-н");
+                return QString("М.");
             case 1:
-                return QString("Ст.");
+                return QString("С.");
             case 2:
                 return QString("Телефон");
           }
@@ -224,6 +224,7 @@ void MTM_OwTel::addRow_owner_tel()
         if (otlist == nullptr)
              return;
         Owners_tel *newc = new Owners_tel(otlist->count(),0,false,IsNewing);
+        newc->oldnum = false;
         beginInsertRows(QModelIndex(),actotlist.size(),actotlist.size());
 
         actotlist.append(newc);

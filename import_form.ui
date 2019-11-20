@@ -46,7 +46,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Найдено сопадение</string>
+         <string>Найдено совпадение</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>

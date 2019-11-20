@@ -5,6 +5,8 @@ Master_import_form::Master_import_form(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Master_import_form)
 {
+//    parent_win = qobject_cast<parent>();
+//    parent_win = parent->qt;
     ui->setupUi(this);
     ui->le_password_2->setEchoMode(QLineEdit::Password);
     actual_size = this->size();
@@ -55,6 +57,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                     tr("Dump database (*)"), nullptr, QFileDialog::DontUseNativeDialog  );
         int x = filename.lastIndexOf("/");
         file_path = filename.left(x);
+
         if( !filename.isNull() )
             ui->le_file_path_2->setText(filename);
         return;

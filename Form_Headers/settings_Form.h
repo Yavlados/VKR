@@ -25,6 +25,8 @@ public:
 
 private slots:
 
+    void up_check_boxes();
+
     void on_pb_save_settings_clicked();
 
     void on_groupBox_clicked();

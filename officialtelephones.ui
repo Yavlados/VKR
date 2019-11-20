@@ -52,12 +52,15 @@
         <widget class="QTableView" name="tableView">
          <property name="font">
           <font>
-           <family>Times New Roman</family>
-           <pointsize>20</pointsize>
+           <family>Segoe UI</family>
+           <pointsize>12</pointsize>
           </font>
          </property>
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -157,6 +160,13 @@
              <property name="icon">
               <iconset resource="resource.qrc">
                <normaloff>:/new/prefix1/png/001-magnifier.png</normaloff>:/new/prefix1/png/001-magnifier.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="text">
+              <string>Показать все</string>
              </property>
             </widget>
            </item>

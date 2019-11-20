@@ -8,6 +8,7 @@
 #include <QRect>
 #include <QSqlDatabase>
 #include <QSettings>
+#include <QKeyEvent>
 #include "settings_connection.h"
 
 /**
@@ -123,6 +124,13 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //�
                 ot_model->actotlist.removeAt(0);//Костыль, тк не могу не отображать пустые номера
         }
         ui->tableView_2->setModel(ot_model);
+
+        ui->tableView_2->resizeColumnToContents(0);
+        ui->tableView_2->resizeColumnToContents(1);
+         ui->tableView_2->resizeColumnToContents(2);
+         ui->tableView_2->setWordWrap(false);
+         ui->tableView_2->horizontalHeader()->setStretchLastSection(true);
+
         Table_show_delegate *dl = new Table_show_delegate(this);
         for(int row = 0; row < ot_model->actotlist.size(); row++)
         {
@@ -149,6 +157,13 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
         contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
 
         ui->tableView_3->setModel(contacts_model);
+        ui->tableView_3->resizeColumnToContents(0);
+        ui->tableView_3->resizeColumnToContents(1);
+        ui->tableView_3->resizeColumnToContents(2);
+        ui->tableView_3->resizeColumnToContents(3);
+        ui->tableView_3->setWordWrap(false);
+       ui->tableView_3->horizontalHeader()->setStretchLastSection(true);
+
         //ui->tableView_3->setColumnWidth(0,250);
        // ui->tableView_3->setColumnWidth(1,250);
     }
@@ -188,13 +203,11 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
 //-----------------------------------------------------------------------------------//
 void MainWindow::RefreshTab()
 {
+    Settings_connection::instance()->Set_settings();
     if (crud_model != nullptr)
     {
         delete crud_model;
         crud_model = nullptr;
-        QTableView *table = ui->tableView;
-        table->viewport()->update();
-        table->repaint();
      }
 
     crud_model = new  MTM_Crud;
@@ -224,6 +237,10 @@ void MainWindow::RefreshTab()
     ui->lineEdit->clear();
     set_validators();
     ui->tabWidget->setCurrentIndex(0);
+    ui->tableView->resizeColumnToContents(0);
+    ui->tableView->resizeColumnToContents(1);
+    ui->tableView->resizeColumnToContents(2);
+    ui->tableView->setWordWrap(false);
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
@@ -614,7 +631,7 @@ void MainWindow::on_action_import_triggered()
 {
     if(imprt == nullptr)
     {
-        imprt = new Master_import_form;
+        imprt = new Master_import_form(this);
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,imprt,"Импорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
         connect(imprt, SIGNAL(TESTING_open(QString,QString)), this, SLOT(testing_opening(QString, QString)));
@@ -813,5 +830,28 @@ void MainWindow::on_action_12_triggered()
 
 void MainWindow::on_action_13_triggered()
 {
-   on_action_Settings_triggered();
+    on_action_Settings_triggered();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+     case Qt::Key::Key_F3:
+        on_action_add_triggered();
+        return;
+    case Qt::Key::Key_F4:
+        on_action_6_triggered();
+       return;
+    case Qt::Key::Key_F5:
+       on_action_analysis_triggered();
+       return;
+    case Qt::Key::Key_F8:
+        on_action_delete_triggered();
+        return;
+    case Qt::Key::Key_F7:
+        on_action_search_triggered();
+        return;
+    }
+
 }

@@ -98,7 +98,7 @@ bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
     temp.bindValue(":id",tel_id);
     if (!temp.exec())
     {
-        qDebug() << temp.lastError();
+        qDebug() << temp.lastError() << temp.executedQuery();
         return false;
     }
 
@@ -108,6 +108,7 @@ bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
             list->append(cnt);
     }
 
+  if(!list->isEmpty())
     var2_analysis_for_main(list, tel_id);
 
 }

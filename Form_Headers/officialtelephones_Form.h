@@ -2,7 +2,7 @@
 #define OFFICIALTELEPHONES_FORM_H
 
 #include "_MTM_Off_tels.h"
-
+#include <QSortFilterProxyModel>
 #include <QWidget>
 /**
  * \file officialtelephones_Form.h
@@ -26,11 +26,13 @@ public:
 
 private:
     Ui::OfficialTelephones *ui;
+    QSortFilterProxyModel *m1;
 private slots:
     void Fill_table();
     void on_pb_add_clicked();
     void on_pb_del_clicked();
     void on_pushButton_clicked();
+    void on_pushButton_2_clicked();
 };
 
 #endif // OFFICIALTELEPHONES_FORM_H

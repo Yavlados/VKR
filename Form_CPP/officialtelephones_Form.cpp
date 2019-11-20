@@ -2,6 +2,7 @@
 #include "ui_officialtelephones.h"
 #include <QMessageBox>
 
+
 OfficialTelephones::OfficialTelephones(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::OfficialTelephones)
@@ -23,9 +24,15 @@ void OfficialTelephones::Fill_table()
     if(Off_tels::selectOffTel(ofTlist))
            of_model->setOffTList(ofTlist);
 
-       ui->tableView->setModel(of_model);
+       //ui->tableView->setModel(of_model);
+       m1 = new QSortFilterProxyModel();
+
+       m1->setSourceModel(of_model);
+       ui->tableView->setModel(m1);
        ui->tableView->resizeColumnToContents(1);
        ui->tableView->resizeColumnToContents(0);
+       ui->tableView->setWordWrap(false);
+       ui->tableView->horizontalHeader()->setStretchLastSection(true);
 }
 
 void OfficialTelephones::on_pb_add_clicked()
@@ -44,7 +51,9 @@ void OfficialTelephones::on_pb_add_clicked()
 
         ofTlist->append(of_t);
          of_model->setOffTList(ofTlist);
-         ui->tableView->setModel(of_model);
+
+         m1->setSourceModel(of_model);
+         ui->tableView->setModel(m1);
     }
     else {
         QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось добавить служебный телефон!")); ///Хвалимся
@@ -54,14 +63,17 @@ void OfficialTelephones::on_pb_add_clicked()
 void OfficialTelephones::on_pb_del_clicked()
 {
    QModelIndex index = ui->tableView->currentIndex();
-   if ( index.isValid())
+   QModelIndex index1 = m1->mapToSource(index);
+   if ( index1.isValid())
    {
-       Off_tels *oft = of_model->actofflist.at(index.row());
+       Off_tels *oft = of_model->actofflist.at(index1.row());
       if (Off_tels::del_off_tel(oft))
       {
           ofTlist->removeAt(ofTlist->indexOf(oft));
            of_model->setOffTList(ofTlist);
-           ui->tableView->setModel(of_model);
+
+           m1->setSourceModel(of_model);
+           ui->tableView->setModel(m1);
       }
       else
           {
@@ -82,6 +94,23 @@ void OfficialTelephones::on_pushButton_clicked()
     name.replace("?","_");
 
     Off_tels::search(ofTlist, tel_num, name);
-     of_model->setOffTList(ofTlist);
-      ui->tableView->setModel(of_model);
+        of_model->setOffTList(ofTlist);
+
+     m1->setSourceModel(of_model);
+     ui->tableView->setModel(m1);
+}
+
+void OfficialTelephones::on_pushButton_2_clicked()
+{
+    if(!ui->le_search_num->text().isEmpty())
+        ui->le_search_num->clear();
+    if(!ui->le_search_name->text().isEmpty())
+        ui->le_search_name->clear();
+
+    Off_tels::selectOffTel(ofTlist);
+        of_model->setOffTList(ofTlist);
+
+     m1->setSourceModel(of_model);
+     ui->tableView->setModel(m1);
+
 }

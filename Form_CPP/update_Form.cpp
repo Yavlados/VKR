@@ -123,7 +123,13 @@ void Update::Fill_fields_update(Crud *new_cr)
 
     ot_model->state = Edit_Ot; ///меняю флаги для изменения
     ui->tableView->setModel(ot_model);
+
+    ui->tableView->resizeColumnToContents(0);
+    ui->tableView->resizeColumnToContents(1);
     ui->tableView->resizeColumnToContents(2);
+    ui->tableView->setWordWrap(false);
+    ui->tableView->horizontalHeader()->setStretchLastSection(true);
+
     //ui->tableView->setColumnWidth(0,250);
     contacts_model->reset_ContactModel();
 
@@ -299,8 +305,13 @@ void Update::on_tableView_clicked(const QModelIndex &index)
     qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
 
     contacts_model->state = Edit_cont;
+
     ui->tableView_2->setModel(contacts_model);
+    ui->tableView_2->resizeColumnToContents(0);
+    ui->tableView_2->resizeColumnToContents(1);
     ui->tableView_2->resizeColumnToContents(2);
+    ui->tableView_2->setWordWrap(false);
+    ui->tableView_2->horizontalHeader()->setStretchLastSection(true);
 
     qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
 }
@@ -310,6 +321,7 @@ void Update::on_pb_del_line_telephone_clicked()
     QModelIndex ind = ui->tableView->currentIndex();
     if( ind.isValid())
         {
+
             contacts_model->delBindedContacts(new_cr->owt()->at(ind.row())->tel_id);
             ot_model->delRow_owner_tel(ind);
             if(imprt_t == Update_import_data) //взаимодействие с моделью
@@ -497,12 +509,12 @@ bool Update::compare_tel_num()
             if (cr->compare_result->at(i).Tel_num != "NULL")//Если обнаружилось совпадение по номеру телефона
             {
                 dlg->setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->compare_result->at(i).Tel_num+" "
-                     "обнаружен принадлежим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
+                     "обнаружен принадлежащим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
                 dlg->setButtonText("Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
 
 
                 msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->compare_result->at(i).Tel_num+" "
-                                   "обнаружен принадлежим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
+                                   "обнаружен принадлежащим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
                 msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
             }
             else
@@ -542,7 +554,7 @@ bool Update::compare_tel_num()
           clear_ALL();
           delete dlg;
           return false;
-            }
+            }/*
 //            int ret = msgbx.exec();
 //            switch (ret)
 //            {
@@ -564,7 +576,7 @@ bool Update::compare_tel_num()
 //            case QMessageBox::Cancel:
 //             clear_ALL();
 //                  return false;
-//             }
+//             }*/
         }
 /*         if(cr->zk_id != 0)
 //         {
@@ -658,7 +670,13 @@ void Update::Fill_table_in_add()
 
        ot_model->state = Edit_Ot; ///меняю флаги для изменения
        ui->tableView->setModel(ot_model);
+
+       ui->tableView->resizeColumnToContents(0);
+       ui->tableView->resizeColumnToContents(1);
        ui->tableView->resizeColumnToContents(2);
+       ui->tableView->setWordWrap(false);
+       ui->tableView->horizontalHeader()->setStretchLastSection(true);
+
        //ui->tableView->setColumnWidth(0,250);
 
             clear_Vl();

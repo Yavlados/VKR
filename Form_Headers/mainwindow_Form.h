@@ -220,6 +220,8 @@ private slots:
 
     void on_action_13_triggered();
 
+    void keyPressEvent(QKeyEvent *event);
+
 signals:
     void Send_data(Crud *cr, int index);
 

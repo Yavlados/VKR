@@ -36,6 +36,7 @@ class Import_Form : public QWidget ///Форма импорта
     Q_OBJECT
 
 public:
+    QWidget *parent_win;
     bool old_db = false;
     explicit Import_Form(QWidget *parent = nullptr);
     ~Import_Form();
@@ -57,7 +58,7 @@ public:
 
     ///Временные модели для отображения данных
     MTM_OwTel *tel_model;
-    MTM_Contacts *cont_model;
+
     MTM_Off_Tels *off_model;
     SqlType type;
 

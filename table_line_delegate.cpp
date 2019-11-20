@@ -26,9 +26,10 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
             QLineEdit *line = new QLineEdit(parent);
             if (ot_model->actotlist.at(index.row())->oldnum  == true)
             {
-                QString temp = "99999999"; //8 цифр
+                QString temp = "9999999"; //7 цифр
                 line->setInputMask(temp);
                 line->displayText();
+                line->setText(content);
                 line->setText(content);
                 //line->setPlaceholderText("asd");
                 return line;
@@ -37,12 +38,13 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
             {
                 QString temp = "+"+code_num+"(999)999-99-99"; //ФОРМА ВВОДА НОМЕРА
                 line->setInputMask(temp);
+
                 return line;
             }else
             {
                 QString temp = "999999999999999999999999999999"; //30 цифр
                 line->setPlaceholderText(content);
-
+                line->setText(content);
                 line->setInputMask(temp);
                 return line;
             }
@@ -74,28 +76,16 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
                 return line;
             }
         }
+    }
 
-    else if (type == OT && index.column() == 0)
+    else if ( index.column() == 0 ||  index.column() == 1)
     {
         QLineEdit *line = new QLineEdit(parent);
         line->setReadOnly(true);
         return line;
     }
-    else if (type == OT && index.column() == 1)
-    {
-        QLineEdit *line = new QLineEdit(parent);
-        line->setReadOnly(true);
-        return line;
-    }else if (type == Cont && index.column() == 3)
-    {
-        QLineEdit *line = new QLineEdit(parent);
-        line->setReadOnly(true);
-        return line;
-    }else {
         QLineEdit *line = new QLineEdit(parent);
         return line;
-        }
-    }
 }
 
 void Table_line_delegate::set_MTM_model(MTM_OwTel *om, MTM_Contacts *cnt)

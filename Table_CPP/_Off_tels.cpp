@@ -50,7 +50,10 @@ bool Off_tels::search(QList<Off_tels *> *list, QString tel_num, QString name)
 
     while (temp.next())
     {
-        Off_tels *cnt = new Off_tels(temp.value(0).toInt(), temp.value(1).toString(), temp.value(2).toString());
+        Off_tels *cnt = new Off_tels();
+        cnt->of_t_id = temp.value(0).toInt();
+        cnt->service_name = temp.value(1).toString();
+        cnt->tel_num = temp.value(2).toString();
         list->append(cnt);
     }
 }

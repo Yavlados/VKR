@@ -152,9 +152,9 @@ void List_master::fill_owners_tel_list(QList<Owners_tel *> *owner_telLIST, int z
         switch (sqlt)
         {///Импорт с постгреса делается в случае выявления повторов и корректировки списка импорта
             case PSQLtype: ///Нет необходимости собирать контакты для выявления повторов
-            if (frm_st == Import)
-                break;
-            else
+//            if (frm_st == Import)
+//                break;
+//            else
                 fill_contacts_list(ot->cont(), query.value(1).toInt(), counter_tel, PSQLtype);
             break;
 
