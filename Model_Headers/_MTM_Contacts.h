@@ -49,7 +49,7 @@ public:
     QList<Contacts*> *clist;    ///< исходный список
     QList<Contacts*> actlist;  ///<  отображаемый список
 public slots:
-    void addRow_contact(int);                      /// Добавление ячейки контакта
+    void addRow_contact(Contacts *cnt);                      /// Добавление ячейки контакта
     void delRow_contact(const QModelIndex &index); /// Удаление ячейки контакта
     void delBindedContacts(int);                   /// Удаление связанных контактов при удалении ячейки телефонов
 

@@ -12,14 +12,14 @@
  * \file _MTM_OwTel.h
  * \brief Модель отображения данных о номерах телефонов
 */
-enum Calling_state_Ot{Show_Ot = 1,  /// Модель для просмотра
-                      Edit_Ot = 0}; /// Модель для изменения (формы update и add_form)
+//enum Calling_state_Ot{Show_Ot = 1,  /// Модель для просмотра
+//                      Edit_Ot = 0}; /// Модель для изменения (формы update и add_form)
 
 class MTM_OwTel: public QAbstractTableModel     ///Модель отображения данных о номерах телефонов
 {
     Q_OBJECT
 public:
-     Calling_state_Ot state;
+     //Calling_state_Ot state;
      QList<int> mark_rows; //индексы строчек для подсвечивания
     MTM_OwTel(QObject *parent = nullptr);
     /// Получение списка ТЕЛЕФОНОВ моделью
@@ -41,7 +41,7 @@ public:
 
     virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
 
-    virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+    //virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 
     ///TESTING
     virtual QList<Owners_tel*> recall_list();
@@ -51,7 +51,7 @@ public:
 private:
 
 public slots:
-    void addRow_owner_tel();                       /// Удаление ячейки контакта
+    void addRow_owner_tel(Owners_tel *newc);                       /// Удаление ячейки контакта
     void delRow_owner_tel(const QModelIndex &index);/// Удаление ячейки телефона
 };
 

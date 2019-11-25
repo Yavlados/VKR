@@ -4,7 +4,8 @@
 #include "_MTM_OwTel.h"
 #include "_Crud.h"
 #include "list_master.h"
-#include "table_line_delegate.h"
+//#include "table_line_delegate.h"
+#include "component.h"
 
 #include <QWidget>
 #include <QDebug>
@@ -33,8 +34,8 @@ class Update : public QWidget   ///Форма поиска
     Q_OBJECT
 
 public:
-     Table_line_delegate *delegate_ot = nullptr;
-     Table_line_delegate *delegate_cont = nullptr;
+//     Table_line_delegate *delegate_ot = nullptr;
+//     Table_line_delegate *delegate_cont = nullptr;
 
     int main_array_index; //Необходим для очистки памяти
     Form_type frm_t;
@@ -51,6 +52,8 @@ public:
 
     QList<Crud*> *linked_crud();
     QList<int> *linked_crud_id = nullptr;
+
+    QList<Crud*> *list_for_destroy = nullptr;
 
     explicit Update(QWidget *parent = nullptr);
     ~Update();
@@ -147,10 +150,19 @@ private slots:
     void prepare_confluence_crud(Crud*main_crud, Crud*added_crud);
 
     ///метод разрыва связи
-    void destroy_link();
+    void destroy_link(Crud *m_cr, Crud *n_cr);
+
+    ///метод добавления круда на разрыв
+    void add_for_destroy();
+
     void on_tableView_doubleClicked(const QModelIndex &index);
     void on_tableView_entered(const QModelIndex &index);
     void on_cb_adres_clicked();
+
+    void upload_main_cr();
+
+    void on_pb_add_line_telephone_clicked();
+    void on_tableView_2_doubleClicked(const QModelIndex &index);
 };
 
 #endif // UPDATE_H

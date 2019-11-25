@@ -140,7 +140,8 @@ bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
     if(list->isEmpty())
     {
                 //////создаю модель с двумя - id и FK///////
-                Owners_tel *ot = new Owners_tel(0 , zk,false,IsNewing);
+                Owners_tel *ot = new Owners_tel(0 , 0,false,IsNewing);
+                ot->oldnum = false;
                 list->append(ot);
                return true;
     }

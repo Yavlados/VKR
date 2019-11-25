@@ -70,7 +70,7 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
         {
-        if(actlist.at(row)->oldnum == false && actlist.at(row)->internum == false && actlist.at(row)->cont_state != IsNewing && state == Show_cont)
+        if(!actlist.at(row)->contact_tel_num.isEmpty() && actlist.at(row)->oldnum == false && actlist.at(row)->internum == false)
         {
             QString _temp =  actlist.at(row)->contact_tel_num;
             _temp.insert(0,"+");
@@ -257,17 +257,15 @@ bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, 
         return false;
 }
 
-void MTM_Contacts::addRow_contact(int OTid)
+void MTM_Contacts::addRow_contact(Contacts *cnt)
 {
     if (clist==nullptr )
         return;
 
-    Contacts *newc = new Contacts();
-    newc->parent_OT_id = OTid;
     beginInsertRows(QModelIndex(),actlist.size(),actlist.size());
 
-    actlist.append(newc);
-    clist->append(newc);
+    actlist.append(cnt);
+    clist->append(cnt);
     endInsertRows();
 }
 

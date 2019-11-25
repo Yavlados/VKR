@@ -18,7 +18,7 @@ void Table_line_delegate::input_code_num(QString c_n)
 }
 
 QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
+{/*
     if(index.column() == 2)
     {
         if(type == OT)
@@ -85,7 +85,7 @@ QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionVi
         return line;
     }
         QLineEdit *line = new QLineEdit(parent);
-        return line;
+        return line;*/
 }
 
 void Table_line_delegate::set_MTM_model(MTM_OwTel *om, MTM_Contacts *cnt)

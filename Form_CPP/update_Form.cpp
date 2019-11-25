@@ -4,7 +4,7 @@
 #include "_Owners_tel.h"
 #include "_Contacts.h"
 
-#include "table_show_delegate.h"
+//#include "table_show_delegate.h"
 #include "list_master.h"
 #include "dialog_conflict.h"
 
@@ -25,8 +25,6 @@ Update::Update(QWidget *parent) :
     ui(new Ui::Update)
 {
     ui->setupUi(this);
-    connect(ui->pb_add_line_telephone, SIGNAL(clicked()), ot_model, SLOT(addRow_owner_tel()));
-    connect(this, SIGNAL(Add_contact_row(int)),contacts_model,SLOT(addRow_contact(int)));
     set_validators();
     new_cr = nullptr;
     set_splitter_lines();
@@ -121,7 +119,6 @@ void Update::Fill_fields_update(Crud *new_cr)
         Owners_tel::selectZkTelForAdd(new_cr->owt(),new_cr->zk_id);
       ot_model->setOTList(new_cr->owt());
 
-    ot_model->state = Edit_Ot; ///меняю флаги для изменения
     ui->tableView->setModel(ot_model);
 
     ui->tableView->resizeColumnToContents(0);
@@ -190,9 +187,14 @@ void Update::on_pb_Update_clicked()
             break;
 
         case Update_pg_data:            //Проверку номеров с базой
-            if (!compare_tel_num())     //Делаем только в случае редактирования
-                return;
-            else
+//          if(new_cr->zk_id == main_cr->zk_id)
+//          {
+              if (!compare_tel_num())     //Делаем только в случае редактирования
+              {
+                  return;
+              }
+                  break;
+//          }
                 break;
 
         case Update_pg_data_import:
@@ -253,6 +255,24 @@ void Update::on_pb_Update_clicked()
         {
             if(Crud::save_all_crud(new_cr)) /// Если сохранили телефоны
             {
+                if(list_for_destroy != nullptr)
+                {
+                    Crud *m_cr = list_for_destroy->at(0);
+
+                    for(int a = 1; a<list_for_destroy->size(); a++)
+                    {
+                        for(int b = 0 ; b< linked_crud_id->size(); b++)
+                        {
+                            if( list_for_destroy->at(a)->zk_id == linked_crud_id->at(b))
+                            {
+                                linked_crud_id->removeAt(b);
+                                break;
+                            }
+                        }
+                        destroy_link(m_cr,list_for_destroy->at(a));
+                    }
+                }
+
                 QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные сохранены в БД!")); ///Хвалимся
                clear_ALL();
             }
@@ -304,7 +324,7 @@ void Update::on_tableView_clicked(const QModelIndex &index)
     contacts_model->setContactList(new_cr->owt()->at(index.row())->cont());
     qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
 
-    contacts_model->state = Edit_cont;
+    //contacts_model->state = Edit_cont;
 
     ui->tableView_2->setModel(contacts_model);
     ui->tableView_2->resizeColumnToContents(0);
@@ -333,7 +353,9 @@ void Update::on_pb_del_line_telephone_clicked()
             }
              if (new_cr->owt()->count() == 0)
              {
-                 ot_model->addRow_owner_tel();
+                 Owners_tel *owt = new Owners_tel(ot_model->otlist->count(),0,false,IsNewing);
+                 owt->oldnum = false;
+                 ot_model->addRow_owner_tel(owt);
                  ot_model->reset_OTModel();
 
              }
@@ -353,8 +375,38 @@ void Update::on_pb_del_contact_line_clicked()
 void Update::on_pb_add_contact_line_clicked()
 {
     QModelIndex index = ui->tableView->currentIndex();
-    if(index.isValid())
-        emit Add_contact_row(new_cr->owt()->at(index.row())->tel_id);
+       if(index.isValid())
+       {
+           Component *comp = new Component();
+           comp->set_type(new_cont_tel);
+
+           Contacts *cnt = new Contacts();
+           cnt->parent_OT_id = new_cr->owt()->at(index.row())->tel_id;
+
+           cnt->oldnum = false;
+           comp->set_index_data(nullptr,cnt);
+           int st = comp->exec();
+           switch(st)
+           {
+           case 1:
+               cnt->oldnum = comp->content->Oldnum;
+               cnt->internum = comp->content->Internum;
+               cnt->contact_tel_num= comp->content->tel_num;
+               cnt->mark = comp->content->mark;
+               contacts_model->addRow_contact(cnt);
+               //owt->state = IsChanged;
+               //ot_model->setOTList(new_cr->owt());
+               ui->tableView_2->setModel(contacts_model);
+               ui->tableView_2->resizeColumnToContents(2);
+               break;
+           }
+           delete comp;
+       }else
+        return;
+
+//    QModelIndex index = ui->tableView->currentIndex();
+//    if(index.isValid())
+//        emit Add_contact_row(new_cr->owt()->at(index.row())->tel_id);
 }
 //-----------------------------------------------------------------------------------//
 void Update::clear_ALL()
@@ -493,68 +545,71 @@ bool Update::compare_tel_num()
 
      if (!cr->compare_with_base(query_for_nums,query_for_fio, new_cr->zk_id,linked_crud_id))
      {
-         Dialog_conflict *dlg = new Dialog_conflict;
-
-         msgbx.setStandardButtons(QMessageBox::Yes | QMessageBox::Retry | QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
-         msgbx.setButtonText(QMessageBox::Yes,"Сохранить со связью");
-         msgbx.setButtonText(QMessageBox::Retry,"Слияние совпавших ЗК");
-         msgbx.setButtonText(QMessageBox::Open,"Редактировать телефонный номер");
-         msgbx.setButtonText(QMessageBox::Cancel,"Закрыть без сохранения");
-
-         if(linked_crud_id == nullptr)
-             linked_crud_id = new QList<int>;
-
         for (int i = 0 ; i<cr->compare_result->size(); i++)
         {
-            if (cr->compare_result->at(i).Tel_num != "NULL")//Если обнаружилось совпадение по номеру телефона
+            Dialog_conflict *dlg = new Dialog_conflict;
+
+            if(linked_crud_id == nullptr)
+                linked_crud_id = new QList<int>;
+            QSqlQuery query2(db_connection::instance()->db());
+
+            query2.prepare("SELECT *"
+                           " FROM zk_links"
+                           " WHERE (row_id2 = '"+new_cr->row_id+ "' AND row_id1 = (SELECT row_id FROM zk WHERE zk_id = "+QString::number(cr->compare_result->at(i).id)+"))"
+                           " OR"
+                           " (row_id1 = '"+new_cr->row_id+ "' AND row_id2 = (SELECT row_id FROM zk WHERE zk_id = "+QString::number(cr->compare_result->at(i).id)+"))");
+
+            if(query2.exec())
             {
-                dlg->setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->compare_result->at(i).Tel_num+" "
-                     "обнаружен принадлежащим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
-                dlg->setButtonText("Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
+                if(!query2.next())
+                {
+                    if (cr->compare_result->at(i).Tel_num != "NULL")//Если обнаружилось совпадение по номеру телефона
+                    {
+                        dlg->setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->compare_result->at(i).Tel_num+" "
+                             "обнаружен принадлежащим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
+                        dlg->setButtonText("Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
+                    }
+                    else
+                    {
+                        dlg->setText("<font size = '5'> ВНИМАНИЕ: введенные фамилия, имя, отчество и дата рождения "
+                                           "обнаружены принадлежащими владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
+                       dlg->setButtonText("Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
 
+                    }
+                    dlg->exec();
+                    switch (dlg->state)
+                    {
+                   case 1:
+                    linked_crud_id->append(cr->compare_result->at(i).id);
+                    delete dlg;
+                    break;
 
-                msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенный телефонный номер " +cr->compare_result->at(i).Tel_num+" "
-                                   "обнаружен принадлежащим владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
-                msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
+                  case 2:
+                    msg_before_confluence(Crud::id_zk_search(cr->compare_result->at(i).id));
+                    delete dlg;
+                    return false;
+
+                  case 5:
+                  emit open_update_tab(Crud::id_zk_search(cr->compare_result->at(i).id));
+                  delete dlg;
+                  return false; /// во всех случаях return - мы выходим из функции
+
+                   case 3:
+                   delete dlg;
+                   return false;
+
+                  case 4:
+                  clear_ALL();
+                  delete dlg;
+                  return false;
+                    }
+                }
             }
             else
-            {
-                dlg->setText("<font size = '5'> ВНИМАНИЕ: введенные фамилия, имя, отчество и дата рождения "
-                                   "обнаружены принадлежащими владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
-               dlg->setButtonText("Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
+                qDebug() << query2.executedQuery();
 
 
-             msgbx.setText("<font size = '5'> ВНИМАНИЕ: введенные фамилия, имя, отчество и дата рождения "
-                                "обнаружены принадлежащими владельцу записной книжки № "+QString::number(cr->compare_result->at(i).id)+"</font>");
-             msgbx.setButtonText(QMessageBox::Ok,"Перейти к записной книжке № "+ QString::number( cr->compare_result->at(i).id));
-            }
-            dlg->exec();
-            switch (dlg->state)
-            {
-           case 1:
-            linked_crud_id->append(cr->compare_result->at(i).id);
-            delete dlg;
-            break;
-
-          case 2:
-            msg_before_confluence(Crud::id_zk_search(cr->compare_result->at(i).id));
-            delete dlg;
-            return false;
-
-          case 5:
-          emit open_update_tab(Crud::id_zk_search(cr->compare_result->at(i).id));
-          delete dlg;
-          return false; /// во всех случаях return - мы выходим из функции
-
-           case 3:
-           delete dlg;
-           return false;
-
-          case 4:
-          clear_ALL();
-          delete dlg;
-          return false;
-            }/*
+           /*
 //            int ret = msgbx.exec();
 //            switch (ret)
 //            {
@@ -668,7 +723,7 @@ void Update::Fill_table_in_add()
     if(Owners_tel::selectZkTelForAdd(new_cr->owt(), new_cr->zk_id))
            ot_model->setOTList(new_cr->owt());
 
-       ot_model->state = Edit_Ot; ///меняю флаги для изменения
+       //ot_model->state = Edit_Ot; ///меняю флаги для изменения
        ui->tableView->setModel(ot_model);
 
        ui->tableView->resizeColumnToContents(0);
@@ -884,18 +939,16 @@ void inline Update::set_delegates_and_connections()
 {
     connect(ot_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
     connect(contacts_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
-    delegate_ot = new Table_line_delegate(this);
-    delegate_ot->set_type(OT);
-    delegate_ot->set_MTM_model(ot_model, contacts_model);
-    //ui->tableView->setItemDelegateForColumn(0,delegate_ot);
-    ui->tableView->setItemDelegate(delegate_ot);
+//    delegate_ot = new Table_line_delegate(this);
+//    delegate_ot->set_type(OT);
+//    delegate_ot->set_MTM_model(ot_model, contacts_model);
+//    //ui->tableView->setItemDelegateForColumn(0,delegate_ot);
+//    ui->tableView->setItemDelegate(delegate_ot);
 
-    delegate_cont = new Table_line_delegate(this);
-    delegate_cont->set_type(Cont);
-    delegate_cont->set_MTM_model(ot_model, contacts_model);
-    //ui->tableView_2->setItemDelegateForColumn(0,delegate_cont);
-    ui->tableView_2->setItemDelegate(delegate_cont);
-
+//    delegate_cont = new Table_line_delegate(this);
+//    delegate_cont->set_type(Cont);
+//    delegate_cont->set_MTM_model(ot_model, contacts_model);
+//    /
 }
 //-----------------------------------------------------------------------------------//
 void Update::slot_for_model(QModelIndex i1, QModelIndex i2)
@@ -1027,7 +1080,7 @@ void Update::fill_vl()
     {
         QPushButton *pb = new QPushButton("Разрыв связи");
         ui->vl_for_cnfl_button->addWidget(pb);
-            connect(pb,SIGNAL(clicked()),this,SLOT(destroy_link()));
+            connect(pb,SIGNAL(clicked()),this,SLOT(add_for_destroy()));
     }
     if(main_cr == new_cr && ui->vl_for_cnfl_button->count() != 0)
     {
@@ -1072,12 +1125,16 @@ void Update::fill_vl()
 //-----------------------------------------------------------------------------------//
 void Update::prev_page()
 {
-    Recieve_data(linked_crud()->at(index-1));
+    //upload_main_cr();
+    index -= 1;
+    Recieve_data(linked_crud()->at(index));
 }
 //-----------------------------------------------------------------------------------//
 void Update::next_page()
 {
-    Recieve_data(linked_crud()->at(index+1));
+    //upload_main_cr();
+    index += 1;
+    Recieve_data(linked_crud()->at(index));
 }
 //-----------------------------------------------------------------------------------//
 void Update::clear_vl_for_links()
@@ -1190,22 +1247,38 @@ void Update::prepare_confluence_crud(Crud *main_crud, Crud *added_crud)
         upd->show();
 }
 //-----------------------------------------------------------------------------------//
-void Update::destroy_link()
+void Update::destroy_link(Crud *m_cr, Crud *n_cr)
 {
     QSqlQuery querry(db_connection::instance()->db());
 
   querry.prepare( "DELETE FROM zk_links"
-   " WHERE (row_id1 ='"+new_cr->row_id+"' AND row_id2='"+main_cr->row_id+"') OR "
-   " (row_id1 ='"+main_cr->row_id+"' AND row_id2='"+new_cr->row_id+"')");
+   " WHERE (row_id1 ='"+n_cr->row_id+"' AND row_id2='"+m_cr->row_id+"') OR "
+   " (row_id1 ='"+m_cr->row_id+"' AND row_id2='"+n_cr->row_id+"')");
+
     if(!querry.exec())
     {
        qDebug() << querry.lastError();
     } else
     {
         qDebug() << querry.executedQuery();
-        linked_crud()->removeOne(new_cr);
-        Recieve_data(main_cr);
+
     }
+}
+//-----------------------------------------------------------------------------------//
+
+void Update::add_for_destroy()
+{
+    if(list_for_destroy == nullptr)
+    {
+        list_for_destroy = new QList<Crud*>;
+        list_for_destroy->append(main_cr); //нулевой элемент - главная зк
+    }
+    list_for_destroy->append(new_cr);
+
+    linked_crud()->removeOne(new_cr);
+
+    index = 0;
+    Recieve_data(main_cr);
 }
 //-----------------------------------------------------------------------------------//
 void Update::start_confluence(Crud *confl_cr, Crud *m_cr, Crud *a_cr)
@@ -1234,10 +1307,26 @@ void Update::mark_le(QLineEdit *le, QLineEdit *le1, QLineEdit *le2)
 
 void Update::on_tableView_doubleClicked(const QModelIndex &index)
 {
-//    if (index.column() == 2)
-//    {
-//        delegate_ot->set_content(index.data().toString());
-//    }
+    Component *comp = new Component();
+    comp->set_type(Ow_tel_num);
+    Owners_tel *owt =ot_model->actotlist.at(index.row());
+    comp->set_index_data(owt, nullptr);
+    int st = comp->exec();
+    switch(st)
+    {
+        case 1:
+        owt->oldnum = comp->content->Oldnum;
+        owt->internum = comp->content->Internum;
+        owt->tel_num = comp->content->tel_num;
+
+        if(owt->state != IsNewing)
+            owt->state = IsChanged;
+
+        //ot_model->setOTList(new_cr->owt());
+        ui->tableView->setModel(ot_model);
+        break;
+    }
+    delete comp;
 }
 
 void Update::on_tableView_entered(const QModelIndex &index)
@@ -1263,4 +1352,91 @@ void Update::on_cb_adres_clicked()
         ui->le_liv_flat->setEnabled(true);
     }
 
+}
+
+void Update::upload_main_cr()
+{
+    get_birthdate();
+
+    main_cr->lastname = ui->le_last_name->text();
+    main_cr->name=ui->le_name->text();
+    main_cr->mid_name = ui->le_mid_name->text();
+    get_birthdate();
+
+    main_cr->check_for = ui->le_check_for->text();
+    main_cr->dop_info = ui->le_dop_info->toPlainText();
+    main_cr->reg_city = ui->le_reg_city->text();
+    main_cr->reg_street = ui->le_reg_street->text();
+    main_cr->reg_home = ui->le_reg_house->text();
+    main_cr->reg_corp = ui->le_reg_corp ->text();
+    main_cr->reg_flat = ui->le_reg_flat->text();
+
+    if (ui->cb_adres->checkState() == Qt::Checked)
+    {
+        main_cr->liv_city = main_cr->reg_city;
+        main_cr->liv_street = main_cr->reg_street;
+        main_cr->liv_home = main_cr->reg_home;
+        main_cr->liv_corp = main_cr->reg_corp;
+        main_cr->liv_flat = main_cr->reg_flat;
+    }
+    else
+    {
+        main_cr->liv_city = ui->le_liv_city->text();
+        main_cr->liv_street = ui->le_liv_street->text();
+        main_cr->liv_home = ui->le_liv_house->text();
+        main_cr->liv_corp = ui->le_liv_corp->text();
+        main_cr->liv_flat = ui->le_liv_flat->text();
+    }
+
+    main_cr->date_add = QDate::currentDate().toString(Qt::ISODate);
+    main_cr->time_add = QTime::currentTime().toString();
+}
+
+void Update::on_pb_add_line_telephone_clicked()
+{
+    Component *comp = new Component();
+    comp->set_type(new_ow_tel);
+    Owners_tel *owt = new Owners_tel(ot_model->otlist->count(),0,false,IsNewing);
+    owt->oldnum = false;
+    comp->set_index_data(owt);
+    int st = comp->exec();
+    switch(st)
+    {
+        case 1:
+        owt->oldnum = comp->content->Oldnum;
+        owt->internum = comp->content->Internum;
+        owt->tel_num = comp->content->tel_num;
+        ot_model->addRow_owner_tel(owt);
+        //owt->state = IsChanged;
+        //ot_model->setOTList(new_cr->owt());
+        ui->tableView->setModel(ot_model);
+        break;
+    }
+    delete comp;
+}
+
+void Update::on_tableView_2_doubleClicked(const QModelIndex &index)
+{
+    Component *comp = new Component();
+    comp->set_type(Contact_num);
+    Contacts *cnt = contacts_model->actlist.at(index.row());
+    comp->set_index_data(nullptr,cnt);
+    int st = comp->exec();
+    switch(st)
+    {
+        case 1:
+        cnt->oldnum = comp->content->Oldnum;
+        cnt->internum = comp->content->Internum;
+        cnt->contact_tel_num = comp->content->tel_num;
+        cnt->mark = comp->content->mark;
+
+        if(cnt->cont_state != IsNewing)
+            cnt->cont_state = IsChanged;
+
+        //ot_model->setOTList(new_cr->owt());
+        ui->tableView_2->setModel(contacts_model);
+        ui->tableView_2->resizeColumnToContents(2);
+        break;
+    }
+    delete comp;
 }

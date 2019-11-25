@@ -735,6 +735,13 @@ void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
             Add_pagination_buttons();
         }
 
+        while (zk_id1 < crud_model->actcrudlist.at(0)->zk_id)
+        {
+            crud_model->previous_page_crud();
+            ui->tableView->setModel(crud_model);
+            Add_pagination_buttons();
+        }
+
         for (int i = 0; i < crud_model->actcrudlist.size(); i++)
         {
             if(crud_model->actcrudlist.at(i)->zk_id == zk_id1)

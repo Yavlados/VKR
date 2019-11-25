@@ -198,6 +198,8 @@ bool Crud::update_zk(QList<int> *list_id)
     date_upd = QDate::currentDate().toString(Qt::ISODate)+" "+QTime::currentTime().toString();
         QSqlQuery querry(db_connection::instance()->db());
         QSqlQuery query1(db_connection::instance()->db());
+        QSqlQuery query2(db_connection::instance()->db());
+
         QString cname = db_connection::instance()->db().connectionName();
 
         bool isOk = db_connection::instance()->db().database(cname).transaction();
@@ -261,18 +263,39 @@ bool Crud::update_zk(QList<int> *list_id)
         if(list_id != nullptr)
             while(querry.next())
             {
+                //Сначла проверка
                 for (int i = 0; i < list_id->size(); i++)
                 {
-                    query1.prepare("INSERT INTO zk_links (row_id1,row_id2) "
-                                " VALUES ('"+querry.value(0).toString()+"',(SELECT row_id"
-                                                                            " FROM zk"
-                                                                            " WHERE zk.zk_id = "+QString::number(list_id->at(i))+"))");
-                 if(!query1.exec())
-                 {
-                     qDebug() << query1.lastError();
-                     isOk = false;
-                     break;
-                 }
+                    if(list_id->at(i) != zk_id)
+                    {
+                        query2.prepare("SELECT *"
+                                       " FROM zk_links"
+                                       " WHERE (row_id2 = '"+querry.value(0).toString()+ "' AND row_id1 = (SELECT row_id FROM zk WHERE zk_id = "+QString::number(list_id->at(i))+"))"
+                                                                                                                                                                                 " OR"
+                                                                                                                                                                                 " (row_id1 = '"+querry.value(0).toString()+ "' AND row_id2 = (SELECT row_id FROM zk WHERE zk_id = "+QString::number(list_id->at(i))+"))");
+
+                        if(query2.exec())
+                        {
+                            if(!query2.next())
+                            {
+                                query1.prepare("INSERT INTO zk_links (row_id1,row_id2) "
+                                               " VALUES ('"+querry.value(0).toString()+"',(SELECT row_id"
+                                                                                       " FROM zk"
+                                                                                       " WHERE zk.zk_id = "+QString::number(list_id->at(i))+"))");
+                                if(!query1.exec())
+                                {
+                                    qDebug() << query1.lastError();
+                                    isOk = false;
+                                    break;
+                                }
+                                else {
+                                    qDebug() << query1.executedQuery();
+                                }
+                            }
+                        }
+                        else
+                            qDebug() << query2.lastError() << query2.executedQuery();
+                    }
                 }
             }
 
@@ -463,7 +486,7 @@ int Crud::get_id_from_tel(QString t_n)
 bool Crud::save_all_crud(Crud *cr)
 {
         if (cr->owt()->isEmpty())
-        return true;
+            return true;
     if(!db_connection::instance()->db_connect())
         return false;
 

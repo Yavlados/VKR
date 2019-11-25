@@ -4,7 +4,7 @@ MTM_OwTel::MTM_OwTel(QObject *parent):
     QAbstractTableModel(parent)
 {
     otlist = nullptr;
-    state = Show_Ot;
+    //state = Show_Ot;
     mark_rows.clear();
 }
 
@@ -52,15 +52,15 @@ QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
           return QVariant();
       if (role == Qt::DisplayRole)
       {
-          if(actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false && actotlist.at(row)->state != IsNewing && state == Show_Ot)
+          if(!actotlist.at(row)->tel_num.isEmpty() && actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false )//&& state == Show_Ot
           {
               QString _temp =  actotlist.at(row)->tel_num;
 
-//              _temp.insert(0,"+");
-//              _temp.insert(2,"(");
-//              _temp.insert(6,")");
-//              _temp.insert(10,"-");
-//              _temp.insert(13,"-");
+              _temp.insert(0,"+");
+              _temp.insert(2,"(");
+              _temp.insert(6,")");
+              _temp.insert(10,"-");
+              _temp.insert(13,"-");
               switch(col)
               {
               case 2:            /// 1 колонка - Номер телефона
@@ -137,94 +137,92 @@ Qt::ItemFlags MTM_OwTel::flags(const QModelIndex &index) const
 {
     if( !index.isValid() ||  otlist==nullptr)
         return Qt::NoItemFlags;
-
-    if( state == Show_Ot )
+    else
+    //if( state == Show_Ot )
         return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-    if( state == Edit_Ot )
-        return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsUserCheckable;
+
 }
+/*
+//bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int role)
+//{
+//    if( !index.isValid() ||  otlist == nullptr )
+//        return false;
 
-bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    if( !index.isValid() ||  otlist == nullptr )
-        return false;
+//    int row = index.row();      ///целочисленные указатели на строку
+//    int col = index.column();   /// и столбец
 
-    int row = index.row();      ///целочисленные указатели на строку
-    int col = index.column();   /// и столбец
+//  if( row>actotlist.size() || row<0 )
+//            return false;
 
-  if( row>actotlist.size() || row<0 )
-            return false;
+//   if (role == Qt::EditRole)
+//        {
+//            switch(col)
+//            {
+//            case 2:             /// 1 колонка - номер телефона
+//                actotlist.at(row)->tel_num = value.toString();
+//                if( actotlist.at(row)->state!=IsNewing )
+//                    actotlist.at(row)->state = IsChanged;
 
-   if (role == Qt::EditRole)
-        {
-            switch(col)
-            {
-            case 2:             /// 1 колонка - номер телефона
-                actotlist.at(row)->tel_num = value.toString();
-                if( actotlist.at(row)->state!=IsNewing )
-                    actotlist.at(row)->state = IsChanged;
+//                emit dataChanged(index,index);
+//                return true;
+//            }
+//        }
+//   if (role == Qt::CheckStateRole && col == 0)
+//    {
+//       ~Qt::ItemIsEditable;
+//     if (actotlist.at(row)->internum == false && actotlist.at(row)->oldnum == false)
+//          actotlist.at(row)->internum = true;
+//     else
+//         if(actotlist.at(row)->internum == true && actotlist.at(row)->oldnum == false)
+//     {
+//         actotlist.at(row)->internum = false;
+//     }
 
-                emit dataChanged(index,index);
-                return true;
-            }
-        }
-   if (role == Qt::CheckStateRole && col == 0)
-    {
-       ~Qt::ItemIsEditable;
-     if (actotlist.at(row)->internum == false && actotlist.at(row)->oldnum == false)
-          actotlist.at(row)->internum = true;
-     else
-         if(actotlist.at(row)->internum == true && actotlist.at(row)->oldnum == false)
-     {
-         actotlist.at(row)->internum = false;
-     }
+//     if(actotlist.at(row)->internum == false && actotlist.at(row)->oldnum == true)
+//     {
+//         actotlist.at(row)->internum = true;
+//         actotlist.at(row)->oldnum = false;
+//     }
 
-     if(actotlist.at(row)->internum == false && actotlist.at(row)->oldnum == true)
-     {
-         actotlist.at(row)->internum = true;
-         actotlist.at(row)->oldnum = false;
-     }
+//     if( actotlist.at(row)->state!=IsNewing )
+//         actotlist.at(row)->state = IsChanged;
 
-     if( actotlist.at(row)->state!=IsNewing )
-         actotlist.at(row)->state = IsChanged;
+//       emit dataChanged(index,index);
+//         return true;
+//    }
+//   if (role == Qt::CheckStateRole && col == 1)
+//    {
+//     if (actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false)
+//          actotlist.at(row)->oldnum = true;
+//     else
+//         if (actotlist.at(row)->oldnum == true && actotlist.at(row)->internum == false)
+//         {
+//             actotlist.at(row)->oldnum = false;
+//         }
+//     if (actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == true)
+//     {
+//         actotlist.at(row)->oldnum = true;
+//         actotlist.at(row)->internum = false;
+//     }
 
-       emit dataChanged(index,index);
-         return true;
-    }
-   if (role == Qt::CheckStateRole && col == 1)
-    {
-     if (actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == false)
-          actotlist.at(row)->oldnum = true;
-     else
-         if (actotlist.at(row)->oldnum == true && actotlist.at(row)->internum == false)
-         {
-             actotlist.at(row)->oldnum = false;
-         }
-     if (actotlist.at(row)->oldnum == false && actotlist.at(row)->internum == true)
-     {
-         actotlist.at(row)->oldnum = true;
-         actotlist.at(row)->internum = false;
-     }
-
-     if( actotlist.at(row)->state!=IsNewing )
-         actotlist.at(row)->state = IsChanged;
-       emit dataChanged(index,index);
-         return true;
-    }
-   return false;
-}
+//     if( actotlist.at(row)->state!=IsNewing )
+//         actotlist.at(row)->state = IsChanged;
+//       emit dataChanged(index,index);
+//         return true;
+//    }
+//   return false;
+//}
+*/
 
 QList<Owners_tel *> MTM_OwTel::recall_list()
 {
     return *otlist;
 }
 
-void MTM_OwTel::addRow_owner_tel()
+void MTM_OwTel::addRow_owner_tel(Owners_tel *newc)
 {
         if (otlist == nullptr)
              return;
-        Owners_tel *newc = new Owners_tel(otlist->count(),0,false,IsNewing);
-        newc->oldnum = false;
         beginInsertRows(QModelIndex(),actotlist.size(),actotlist.size());
 
         actotlist.append(newc);
