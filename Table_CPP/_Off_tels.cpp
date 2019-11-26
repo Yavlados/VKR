@@ -86,6 +86,7 @@ bool Off_tels::selectOffTel(QList<Off_tels *> *list)
         cnt->of_t_id = temp.value(0).toInt();
         cnt->service_name = temp.value(1).toString();
         cnt->tel_num = temp.value(2).toString();
+        cnt->state = Readed;
         list->append(cnt);
     }
 
@@ -127,6 +128,45 @@ bool Off_tels::del_off_tel(Off_tels *of_t)
         qDebug() << querry.lastError();
         return false;
     }
+
+    return true;
+}
+
+bool Off_tels::update(QList<Off_tels *> *list)
+{
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+
+    QSqlQuery temp(db_connection::instance()->db());
+    for (int a = 0 ; a < list->size(); a++)
+    {
+        temp.prepare("UPDATE official_tel SET tel_num = (:tel_num), "
+                                " service_name = (:s_n)"
+                                " WHERE "
+                                " of_t_id = (:id)");
+          temp.bindValue(":tel_num", list->at(a)->tel_num);
+          temp.bindValue(":s_n", list->at(a)->service_name);
+          temp.bindValue(":id", list->at(a)->of_t_id);
+
+
+        if (!temp.exec())
+        {
+            db_connection::instance()->lastError = temp.lastError().text();
+            isOk =  false;
+            break;
+        }
+    }
+    if(!isOk)
+    {
+        db_connection::instance()->db().database(cname).rollback();
+        qDebug() << "отсюда";
+        return false;
+    }
+    db_connection::instance()->db().database(cname).commit();
 
     return true;
 }

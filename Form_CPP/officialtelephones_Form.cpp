@@ -114,3 +114,19 @@ void OfficialTelephones::on_pushButton_2_clicked()
      ui->tableView->setModel(m1);
 
 }
+
+void OfficialTelephones::on_pushButton_3_clicked()
+{
+    if(Off_tels::update(of_model->offlist))
+    {
+        QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные успешно изменены!")); ///Хвалимся
+        Fill_table();
+    }
+    else
+        qDebug()<< "ErRoR";
+}
+
+void OfficialTelephones::on_pushButton_4_clicked()
+{
+    Fill_table();
+}

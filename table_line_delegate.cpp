@@ -1,6 +1,7 @@
 #include "table_line_delegate.h"
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QPushButton>
 
 Table_line_delegate::Table_line_delegate(QObject *parent): QItemDelegate(parent)
 {
@@ -18,7 +19,10 @@ void Table_line_delegate::input_code_num(QString c_n)
 }
 
 QWidget *Table_line_delegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{/*
+{
+    QPushButton *pb = new QPushButton();
+    return pb;
+    /*
     if(index.column() == 2)
     {
         if(type == OT)

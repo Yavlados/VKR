@@ -41,7 +41,7 @@ public:
 
     virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
 
-    //virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+    virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 
     QList<Off_tels*> *offlist;    ///< исходный список
     QList<Off_tels*> actofflist;  ///<  отображаемый список

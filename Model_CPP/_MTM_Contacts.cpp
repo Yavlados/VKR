@@ -1,6 +1,11 @@
 #include "_MTM_Contacts.h"
 #include <QPushButton>
 
+void MTM_Contacts::up_flag()
+{
+    linked_flg = true;
+}
+
 MTM_Contacts::MTM_Contacts(QObject *parent):
     QAbstractTableModel(parent)
 {
@@ -128,7 +133,9 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
     {
         for (int i = 0; i < actlist.size(); i++)
             if (actlist.at(i)->linked_id != 0 && row == i)
+            {
                 return QVariant(QBrush(QColor(Qt::yellow)));
+            }
     }
       return QVariant();
 

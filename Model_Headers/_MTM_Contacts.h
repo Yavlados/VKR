@@ -21,6 +21,10 @@ class MTM_Contacts: public QAbstractTableModel ///Модель отображе�
 public:
     Calling_state_Model state;
 
+    bool linked_flg = false;
+
+    void up_flag();
+
     /// Пустой конструктор модели
     MTM_Contacts(QObject *parent = nullptr);
 

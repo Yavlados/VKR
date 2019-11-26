@@ -22,6 +22,7 @@ private:
 
 public:
 
+
     Contacts();                                 /// Пустой конструктор класса
     Contacts(int cont_id, QString tel, QString mark, int ot_id, bool i_n = false, bool o_n = false, DbState st = IsReaded, int linked_id = 0); /// Конструктор класса с тремя переменными
     ~Contacts();

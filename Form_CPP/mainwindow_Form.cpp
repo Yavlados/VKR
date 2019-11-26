@@ -9,6 +9,7 @@
 #include <QSqlDatabase>
 #include <QSettings>
 #include <QKeyEvent>
+
 #include "settings_connection.h"
 
 /**
@@ -153,8 +154,18 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
     {
         if(Contacts::selectTelContacts(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
                                        crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->tel_id))
+        {
+//            if(!crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont()->isEmpty())
+//            {
+//                if(Contacts::var2_analysis_for_main(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
+//                                                    crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->tel_id))
+//                {
 
-        contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
+//                }
+//            }
+            contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
+
+        }
 
         ui->tableView_3->setModel(contacts_model);
         ui->tableView_3->resizeColumnToContents(0);

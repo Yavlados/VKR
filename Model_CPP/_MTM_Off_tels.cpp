@@ -94,5 +94,39 @@ Qt::ItemFlags MTM_Off_Tels::flags(const QModelIndex &index) const
     if( !index.isValid() || offlist==nullptr)
         return Qt::NoItemFlags;
     else
-        return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+        return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable ;
+}
+
+bool MTM_Off_Tels::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if( !index.isValid() || offlist==nullptr )
+        return false;
+    int row = index.row();      ///целочисленные указатели на строку
+    int col = index.column();   /// и столбец
+
+    if( row>actofflist.size() || row<0 )
+        return false;
+
+    if (role == Qt::EditRole)
+    {
+        switch(col)
+        {
+        case 0:             /// 1 колонка - номер телефона
+            actofflist.at(row)->tel_num = value.toString();
+            if( actofflist.at(row)->state!=Newing )
+                actofflist.at(row)->state = Changed;
+
+            emit dataChanged(index,index);
+            return true;
+
+        case 1:             /// 2 колонка - пометка к номеру
+            actofflist.at(row)->service_name = value.toString();
+            if( actofflist.at(row)->state!=Newing )
+                actofflist.at(row)->state = Changed;
+
+            emit dataChanged(index,index);
+            return true;
+        }
+    }
+
 }
