@@ -66,7 +66,7 @@ public:
 
     bool begin_import();
 
-
+    bool folder = false;
     QSize actual_size;
 
 private slots:

@@ -21,11 +21,6 @@ int MTM_Contacts::columnCount(const QModelIndex & parent) const
     else {
         if (state == Show_cont)
         {
-            for (int i = 0; i < actlist.size(); i++)
-            {
-               if (actlist.at(i)->linked_id != 0)
-                   return 5;
-            }
             return 4;
         }
         if (state == Edit_cont)
@@ -90,11 +85,6 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
                return _temp;
             case 3:             /// 2 колонка - пометка к номеру
                 return actlist.at(row)->mark;
-            case 4:
-                if (actlist.at(row)->linked_id != 0)
-                    return QString("Перейти к ЗК №")+ QString::number(actlist.at(row)->linked_id);
-                else
-                    return QVariant();
                 }
         }
         else {
@@ -104,11 +94,6 @@ QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
                return actlist.at(row)->contact_tel_num;
             case 3:             /// 2 колонка - пометка к номеру
                 return actlist.at(row)->mark;
-            case 4:
-                if (actlist.at(row)->linked_id != 0)
-                    return QString("Перейти к ЗК №")+ QString::number(actlist.at(row)->linked_id);
-                else
-                    return QVariant();
                 }
             }
         }
@@ -196,27 +181,6 @@ bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, 
         if( row>actlist.size() || row<0 )
             return false;
 
-        if (role == Qt::EditRole)
-        {
-            switch(col)
-            {
-            case 2:             /// 1 колонка - номер телефона
-                actlist.at(row)->contact_tel_num = value.toString();
-                if( actlist.at(row)->cont_state!=IsNewing )
-                    actlist.at(row)->cont_state = IsChanged;
-
-                emit dataChanged(index,index);
-                return true;
-
-            case 3:             /// 2 колонка - пометка к номеру
-                actlist.at(row)->mark = value.toString();
-                if( actlist.at(row)->cont_state!=IsNewing )
-                    actlist.at(row)->cont_state = IsChanged;
-
-                emit dataChanged(index,index);
-                return true;
-            }
-        }
         if (role == Qt::CheckStateRole && col == 0)
          {
             if (actlist.at(row)->internum == false && actlist.at(row)->oldnum == false)

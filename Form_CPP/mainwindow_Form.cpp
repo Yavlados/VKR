@@ -155,23 +155,21 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
         if(Contacts::selectTelContacts(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
                                        crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->tel_id))
         {
-//            if(!crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont()->isEmpty())
-//            {
-//                if(Contacts::var2_analysis_for_main(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
-//                                                    crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->tel_id))
-//                {
-
-//                }
-//            }
             contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
 
+        }
+
+
+        if(ui->vl_for_search_contact->count())
+        {
+            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
+            delete item->widget();
         }
 
         ui->tableView_3->setModel(contacts_model);
         ui->tableView_3->resizeColumnToContents(0);
         ui->tableView_3->resizeColumnToContents(1);
         ui->tableView_3->resizeColumnToContents(2);
-        ui->tableView_3->resizeColumnToContents(3);
         ui->tableView_3->setWordWrap(false);
        ui->tableView_3->horizontalHeader()->setStretchLastSection(true);
 
@@ -617,23 +615,50 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
     }
 }
 //-----------------------------------------------------------------------------------//
-void MainWindow::testing_opening(QString filename, QString password)
+void MainWindow::testing_opening(QString filename, QString password, bool folder)
 {
     ///Класс для импорта
     Import_Form *import_form = new Import_Form; //необходим доступ для
     connect(import_form,SIGNAL(Refresh_tab()),this,SLOT(RefreshTab()));
-   if (import_form->Testing_open_db( filename,password)) //Если есть совпадение, то
-   {
-       ///Идем сравнивать выгруженный в список дамп с БД
-       /// Метод алгоритма сравнения и импорта
-       if(import_form->begin_import())
-          {
-           import_form->show(); //открываем форму
-           import_form->showMaximized();
-          }
-   }
-   else
-       delete import_form;
+    if(folder)
+    {
+        QDir direcotry(filename);
+        QStringList filelist = direcotry.entryList(QStringList("*"), QDir::Files);
+        foreach (QString file, filelist )
+        {
+            filename += "/" + file;
+            if (import_form->Testing_open_db( filename,password)) //Если есть совпадение, то
+            {
+                ///Идем сравнивать выгруженный в список дамп с БД
+                /// Метод алгоритма сравнения и импорта
+                if(import_form->begin_import())
+                   {
+                    import_form->show(); //открываем форму
+                    import_form->showMaximized();
+                   }
+            }
+        }
+        delete import_form;
+
+    }
+    else
+    {
+        if (import_form->Testing_open_db( filename,password)) //Если есть совпадение, то
+        {
+            ///Идем сравнивать выгруженный в список дамп с БД
+            /// Метод алгоритма сравнения и импорта
+            if(import_form->begin_import())
+               {
+                import_form->show(); //открываем форму
+                import_form->showMaximized();
+               }
+        }
+        else
+            delete import_form;
+    }
+
+
+
 }
 //-----------------------------------------------------------------------------------//
 
@@ -645,7 +670,7 @@ void MainWindow::on_action_import_triggered()
         imprt = new Master_import_form(this);
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,imprt,"Импорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
-        connect(imprt, SIGNAL(TESTING_open(QString,QString)), this, SLOT(testing_opening(QString, QString)));
+        connect(imprt, SIGNAL(TESTING_open(QString,QString, bool)), this, SLOT(testing_opening(QString, QString, bool)));
     }
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(imprt));
@@ -730,42 +755,6 @@ void MainWindow::on_action_3_del_triggered()
 void MainWindow::on_action_5_show_triggered()
 {
        ui->tabWidget->setCurrentIndex(0);
-}
-//-----------------------------------------------------------------------------------//
-void MainWindow::on_tableView_3_doubleClicked(const QModelIndex &index)
-{
-    if(index.column() == 4 && contacts_model->actlist.at(index.row())->linked_id != 0)
-    {
-        int zk_id = contacts_model->actlist.at(index.row())->linked_id;
-        int zk_id1 = zk_id;
-
-        while (zk_id1 > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
-        {
-            crud_model->next_page_crud();
-            ui->tableView->setModel(crud_model);
-            Add_pagination_buttons();
-        }
-
-        while (zk_id1 < crud_model->actcrudlist.at(0)->zk_id)
-        {
-            crud_model->previous_page_crud();
-            ui->tableView->setModel(crud_model);
-            Add_pagination_buttons();
-        }
-
-        for (int i = 0; i < crud_model->actcrudlist.size(); i++)
-        {
-            if(crud_model->actcrudlist.at(i)->zk_id == zk_id1)
-            {
-                zk_id = i;
-                break;
-            }
-        }
-
-        index_tab1 = crud_model->index(zk_id,0);
-        ui->tableView->setCurrentIndex(index_tab1);
-        on_tableView_clicked(index_tab1, contacts_model->actlist.at(index.row())->contact_tel_num);
-    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *added_cr)
@@ -870,6 +859,84 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key::Key_F7:
         on_action_search_triggered();
         return;
+    case Qt::Key::Key_F1:
+        on_action_official_tel_triggered();
+        return;
+    case Qt::Key::Key_F2:
+        on_action_update_triggered();
+        return;
+    case Qt::Key::Key_F6:
+        on_action_analysis_triggered();
+        return;
+
     }
 
+}
+
+void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
+{
+    if(contacts_model->actlist.at(index.row())->linked_id != 0)
+    {
+        if(ui->vl_for_search_contact->count())
+        {
+            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
+            delete item->widget();
+        }
+
+        QPushButton *pb = new QPushButton();
+        zk_id = &contacts_model->actlist.at(index.row())->linked_id;
+        pb->setText("Перейти к ЗК №" + QString::number(*zk_id));
+        ui->vl_for_search_contact->addWidget(pb);
+        connect(pb, SIGNAL(clicked()), this, SLOT(find_linked_zk()));
+        cont_num = &contacts_model->actlist.at(index.row())->contact_tel_num;
+  }
+    else
+    {
+        while(ui->vl_for_search_contact->count())
+        {
+            QLayoutItem *item = ui->hl_for_pagination_button_next->takeAt(0);
+            delete item->widget();
+        }
+    }
+}
+
+void MainWindow::find_linked_zk()
+{
+            while (*zk_id > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
+            {
+                crud_model->next_page_crud();
+                ui->tableView->setModel(crud_model);
+                Add_pagination_buttons();
+            }
+
+            while (*zk_id < crud_model->actcrudlist.at(0)->zk_id)
+            {
+                crud_model->previous_page_crud();
+                ui->tableView->setModel(crud_model);
+                Add_pagination_buttons();
+            }
+
+            for (int i = 0; i < crud_model->actcrudlist.size(); i++)
+            {
+                if(crud_model->actcrudlist.at(i)->zk_id == *zk_id)
+                {
+                    zk_id = &i;
+                    break;
+                }
+            }
+
+            index_tab1 = crud_model->index(*zk_id,0);
+            ui->tableView->setCurrentIndex(index_tab1);
+            on_tableView_clicked(index_tab1, *cont_num);
+            //Delete
+            delete zk_id;
+            delete cont_num;
+            zk_id = nullptr;
+            cont_num = nullptr;
+
+            if(ui->vl_for_search_contact->count())
+            {
+                QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
+                delete item->widget();
+            }
 }

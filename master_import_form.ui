@@ -96,6 +96,9 @@
     </layout>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="hl_for_label"/>
+   </item>
+   <item>
     <layout class="QVBoxLayout" name="verticalLayout_6">
      <item>
       <widget class="QLabel" name="label_6">

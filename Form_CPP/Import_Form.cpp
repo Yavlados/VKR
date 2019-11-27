@@ -579,6 +579,9 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
   //false - либо успешный импорт, либо нет необходимости открывать
   //пустую форму, а достаточно вывести сообщение об ошибке
 
+
+
+
     db_file.setFileName(filename);
         if(filename.endsWith(".db"))
         {

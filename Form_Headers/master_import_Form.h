@@ -21,6 +21,8 @@ public:
     ~Master_import_form();
 
     QSize actual_size;
+    bool folder = false;
+
 private slots:
     void on_pushButton_clicked();
     void on_pb_directory_2_clicked();
@@ -29,7 +31,7 @@ private:
     Ui::Master_import_form *ui;
    QString file_path = nullptr;
 signals:
-    void TESTING_open(QString filename, QString password);
+    void TESTING_open(QString filename, QString password, bool folder);
 
 };
 

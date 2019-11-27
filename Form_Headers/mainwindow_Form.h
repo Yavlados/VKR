@@ -85,6 +85,8 @@ public:
      MTM_OwTel *ot_model = new MTM_OwTel;
      MTM_Crud *crud_model = nullptr;
 
+     int *zk_id = nullptr;
+     QString *cont_num = nullptr;
      QList<Contacts*> *contactList = new QList<Contacts*>;
      QList<Owners_tel*> *otList = new QList<Owners_tel*>;
 
@@ -172,7 +174,7 @@ private slots:
 
     void testing_export(QString, QString, bool, bool, bool);
 
-    void testing_opening(QString, QString);
+    void testing_opening(QString, QString, bool);
 
     void on_action_import_triggered();
 
@@ -198,8 +200,6 @@ private slots:
 
     void on_action_5_show_triggered();
 
-    void on_tableView_3_doubleClicked(const QModelIndex &index);
-
     void open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *added_cr);
 
     void set_normal_width(int size);
@@ -221,6 +221,10 @@ private slots:
     void on_action_13_triggered();
 
     void keyPressEvent(QKeyEvent *event);
+
+    void on_tableView_3_clicked(const QModelIndex &index);
+
+    void find_linked_zk();
 
 signals:
     void Send_data(Crud *cr, int index);

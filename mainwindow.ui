@@ -83,46 +83,6 @@
             <enum>QFrame::Raised</enum>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_short_search">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <family>Arial</family>
-                <pointsize>20</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Быстрый поиск</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_3">
               <property name="sizePolicy">
@@ -162,6 +122,33 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_short_search">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Arial</family>
+                <pointsize>20</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="text">
+               <string>Быстрый поиск</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+              </property>
+             </widget>
+            </item>
             <item row="4" column="0">
              <widget class="QPushButton" name="pushButton">
               <property name="sizePolicy">
@@ -186,9 +173,6 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="0">
-             <layout class="QVBoxLayout" name="vl_cancel_button"/>
-            </item>
             <item row="6" column="0">
              <spacer name="verticalSpacer_2">
               <property name="orientation">
@@ -201,6 +185,22 @@
                </size>
               </property>
              </spacer>
+            </item>
+            <item row="0" column="0">
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="5" column="0">
+             <layout class="QVBoxLayout" name="vl_cancel_button"/>
             </item>
            </layout>
           </widget>
@@ -595,7 +595,7 @@
     <string>Добавить пользователя</string>
    </property>
    <property name="toolTip">
-    <string>Добавление нового пользователя</string>
+    <string>Добавление нового пользователя (F3)</string>
    </property>
   </action>
   <action name="action_delete">
@@ -609,8 +609,11 @@
    <property name="text">
     <string>Удалить</string>
    </property>
+   <property name="iconText">
+    <string>Удалить (F8)</string>
+   </property>
    <property name="toolTip">
-    <string>Удалить выбранный объект</string>
+    <string>Удалить выбранный объект (F8)</string>
    </property>
   </action>
   <action name="action_update">
@@ -622,10 +625,10 @@
      <normaloff>:/new/prefix1/png/005-screwdriver-and-wrench-crossed.png</normaloff>:/new/prefix1/png/005-screwdriver-and-wrench-crossed.png</iconset>
    </property>
    <property name="text">
-    <string>Редактировать</string>
+    <string>Редактировать (F2)</string>
    </property>
    <property name="toolTip">
-    <string>Редактировать выбранную запись</string>
+    <string>Редактировать выбранную запись (F2)</string>
    </property>
   </action>
   <action name="action_analysis">
@@ -646,7 +649,13 @@
      <normaloff>:/new/prefix1/png/001-magnifier.png</normaloff>:/new/prefix1/png/001-magnifier.png</iconset>
    </property>
    <property name="text">
-    <string>Расширенный поиск</string>
+    <string>Расширенный поиск (F7)</string>
+   </property>
+   <property name="iconText">
+    <string>Расширенный поиск (F7)</string>
+   </property>
+   <property name="toolTip">
+    <string>Расширенный поиск (F7)</string>
    </property>
   </action>
   <action name="action_official_tel">
@@ -655,10 +664,10 @@
      <normaloff>:/new/prefix1/png/006-info.png</normaloff>:/new/prefix1/png/006-info.png</iconset>
    </property>
    <property name="text">
-    <string>Служебные телефоны</string>
+    <string>Служебные телефоны (F1)</string>
    </property>
    <property name="toolTip">
-    <string>Просмотреть служебные телефоны</string>
+    <string>Просмотреть служебные телефоны (F1)</string>
    </property>
   </action>
   <action name="actionexport">
@@ -687,7 +696,7 @@
      <normaloff>:/new/prefix1/png/002-add-button-inside-black-circle.png</normaloff>:/new/prefix1/png/002-add-button-inside-black-circle.png</iconset>
    </property>
    <property name="text">
-    <string>Добавить</string>
+    <string>Добавить (F3)</string>
    </property>
    <property name="font">
     <font>
@@ -701,7 +710,7 @@
      <normaloff>:/new/prefix1/png/005-screwdriver-and-wrench-crossed.png</normaloff>:/new/prefix1/png/005-screwdriver-and-wrench-crossed.png</iconset>
    </property>
    <property name="text">
-    <string>Изменить</string>
+    <string>Изменить (F2)</string>
    </property>
    <property name="font">
     <font>
@@ -715,7 +724,7 @@
      <normaloff>:/new/prefix1/png/004-rubbish-bin.png</normaloff>:/new/prefix1/png/004-rubbish-bin.png</iconset>
    </property>
    <property name="text">
-    <string>Удалить</string>
+    <string>Удалить (F8)</string>
    </property>
    <property name="font">
     <font>
@@ -731,6 +740,9 @@
    <property name="text">
     <string>Просмотр</string>
    </property>
+   <property name="toolTip">
+    <string>Просмотр (F4)</string>
+   </property>
    <property name="font">
     <font>
      <pointsize>15</pointsize>
@@ -743,7 +755,7 @@
      <normaloff>:/new/prefix1/png/001-magnifier.png</normaloff>:/new/prefix1/png/001-magnifier.png</iconset>
    </property>
    <property name="text">
-    <string>Быстрый поиск</string>
+    <string>Быстрый поиск (F4)</string>
    </property>
   </action>
   <action name="action_8">
@@ -752,7 +764,13 @@
      <normaloff>:/new/prefix1/png/001-magnifier.png</normaloff>:/new/prefix1/png/001-magnifier.png</iconset>
    </property>
    <property name="text">
-    <string>Расширенный поиск</string>
+    <string>Расширенный поиск (F7)</string>
+   </property>
+   <property name="iconText">
+    <string>Расширенный поиск (F7)</string>
+   </property>
+   <property name="toolTip">
+    <string>Расширенный поиск (F7)</string>
    </property>
   </action>
   <action name="action_9">
@@ -761,7 +779,7 @@
      <normaloff>:/new/prefix1/png/006-info.png</normaloff>:/new/prefix1/png/006-info.png</iconset>
    </property>
    <property name="text">
-    <string>Открыть список служебных телефонов</string>
+    <string>Открыть список служебных телефонов (F1)</string>
    </property>
   </action>
   <action name="action_10">
@@ -771,6 +789,9 @@
    </property>
    <property name="text">
     <string>Экспорт</string>
+   </property>
+   <property name="toolTip">
+    <string>Открыть меню экспорта</string>
    </property>
   </action>
   <action name="action_12">
@@ -812,7 +833,7 @@
      <normaloff>:/new/prefix1/png/003-phone-symbol-of-an-auricular-inside-a-circle.png</normaloff>:/new/prefix1/png/003-phone-symbol-of-an-auricular-inside-a-circle.png</iconset>
    </property>
    <property name="text">
-    <string>Открыть анализ</string>
+    <string>Открыть анализ (F6)</string>
    </property>
   </action>
   <action name="action_13">
