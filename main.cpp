@@ -52,6 +52,12 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QStringList paths = QCoreApplication::libraryPaths();
+    paths.append(".");
+    paths.append("imageformats");
+    paths.append("platforms");
+    paths.append("sqldrivers");
+    QCoreApplication::setLibraryPaths(paths);
 
     QTextCodec * tc = QTextCodec::codecForName("UTF-8");
     //QTextCodec::setCodecForTr(tc);
