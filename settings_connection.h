@@ -19,9 +19,17 @@ public:
     int showing_count;
     int columns_count;
 
+    QString HostName,
+            DatabaseName,
+            setUserName,
+            setPassword;
+     int    Port;
+
+
     QSettings *settings = nullptr;
 
     void    Set_settings();
+    void    Set_pg_settings();
 
     /// Доступ к статической переменной класса
     static Settings_connection *instance();

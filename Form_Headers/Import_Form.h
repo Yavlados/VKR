@@ -15,6 +15,7 @@
 #include <QWidget>
 #include <QCloseEvent>
 #include <QVector>
+#include <QDialogButtonBox>
 
 
 #include "olddbservice.h"
@@ -68,6 +69,9 @@ public:
 
     bool folder = false;
     QSize actual_size;
+
+    QDialogButtonBox *ddb = nullptr;
+   // void take_buttons(QDialogButtonBox *dbb);
 
 private slots:
     // Проверка олд_дб на соответствие
@@ -127,6 +131,8 @@ signals:
     void Send_data(Crud *cr);
     void Send_main_local(Crud *cr);
     void Send_main_pg(Crud *cr);
+    void accepted();
+    void rejected();
 
 private:
     QVector<QVector<QString>> *vector = nullptr;    //связанные ююайди

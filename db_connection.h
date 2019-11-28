@@ -4,6 +4,8 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QSqlError>
+#include "settings_connection.h"
+
 /* в перспективе сделать класс подключения, если появится необходимость
         в диалоговом окне подключения. Пока реализована функция*/
 

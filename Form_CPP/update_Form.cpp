@@ -935,7 +935,7 @@ void Update::update_import_data()
     close();
 }
 //-----------------------------------------------------------------------------------//
-void inline Update::set_delegates_and_connections()
+void  Update::set_delegates_and_connections()
 {
     connect(ot_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
     connect(contacts_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));

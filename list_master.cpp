@@ -489,7 +489,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
        if(vector_str != nullptr)
            for (int v=0;v<vector_str->size();v++)
            {
-               if(crud->at(i)->row_id == vector_str->at(v).at(0))
+               if(crud->at(i)->row_id == vector_str->at(v).at(0) || crud->at(i)->row_id == vector_str->at(v).at(1))
                {
                    temp = true;
                    query.bindValue(":r_i",crud->at(i)->row_id);

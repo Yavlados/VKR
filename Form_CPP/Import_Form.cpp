@@ -165,7 +165,9 @@ bool Import_Form::add_to_db()
   if (crud->isEmpty())
   {
       QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("При сравнении не осталось ни одной записи для импорта")); ///Хвалимся
-    return false;
+      if(ddb != nullptr)
+          ddb->rejected();
+      return false;
   }
     QList<int> *templist = nullptr;
     if(list->insert_crud_in_db(crud,templist,links_vector,vector, old_db))
@@ -178,10 +180,16 @@ bool Import_Form::add_to_db()
 
         QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно!")); ///Хвалимся
         emit Refresh_tab();
+
+        if(ddb != nullptr)
+            ddb->accepted();
         return true;
     } else
     {
         QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("При импорте возникли неполадки!")); ///Хвалимся
+        if(ddb != nullptr)
+            ddb->rejected();
+
         return false; //Если нет совпадениий, необходимо начинать импорт
     }
 }
@@ -579,9 +587,6 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
   //false - либо успешный импорт, либо нет необходимости открывать
   //пустую форму, а достаточно вывести сообщение об ошибке
 
-
-
-
     db_file.setFileName(filename);
         if(filename.endsWith(".db"))
         {
@@ -745,123 +750,7 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             owt->oldnum = false;
             owt->internum = false;
         }
-        if(!zk->contacts.isEmpty())
-        {
-            for(int a = 0; a < zk->contacts.size(); a++)
-            {
 
-                if(zk->contacts.at(a)->tel1 != "")
-                {
-                    Contacts *cnt = new Contacts;
-                    QString temp = "Ф: "+zk->contacts.at(a)->famil+"; И: "+
-                   zk->contacts.at(a)->imya+"; O: "+zk->contacts.at(a)->otchestvo+"; Кл:"+
-                            zk->contacts.at(a)->klichka;
-                    cnt->mark = temp;
-                    cnt->cont_state = IsNewing;
-
-                    if (zk->contacts.at(a)->tel1.size() < 8)
-                        cnt->oldnum = true;
-                    else if (zk->contacts.at(a)->tel1.size() < 25)
-                        cnt->internum = true;
-                    else
-                    {
-                        cnt->oldnum = false;
-                        cnt->internum = false;
-                    }
-
-                    cnt->contact_tel_num = zk->contacts.at(a)->tel1;
-                    owt->cont()->append(cnt);
-                }
-                if(zk->contacts.at(a)->tel2 != "")
-                {
-                    Contacts *cnt = new Contacts;
-                    QString temp = "Ф: "+zk->contacts.at(a)->famil+"; И: "+
-                   zk->contacts.at(a)->imya+"; O: "+zk->contacts.at(a)->otchestvo+"; Кл:"+
-                            zk->contacts.at(a)->klichka;
-                    cnt->mark = temp;
-                    cnt->cont_state = IsNewing;
-
-                    if (zk->contacts.at(a)->tel2.size() < 8)
-                        cnt->oldnum = true;
-                    else if (zk->contacts.at(a)->tel2.size() < 25)
-                        cnt->internum = true;
-                    else
-                    {
-                        cnt->oldnum = false;
-                        cnt->internum = false;
-                    }
-
-                    cnt->contact_tel_num = zk->contacts.at(a)->tel2;
-                    owt->cont()->append(cnt);
-                }
-                if(zk->contacts.at(a)->tel3 != "")
-                {
-                    Contacts *cnt = new Contacts;
-                    QString temp = "Ф: "+zk->contacts.at(a)->famil+"; И: "+
-                   zk->contacts.at(a)->imya+"; O: "+zk->contacts.at(a)->otchestvo+"; Кл:"+
-                            zk->contacts.at(a)->klichka;
-                    cnt->mark = temp;
-                    cnt->cont_state = IsNewing;
-
-                    if (zk->contacts.at(a)->tel3.size() < 8)
-                        cnt->oldnum = true;
-                    else if (zk->contacts.at(a)->tel3.size() < 25)
-                        cnt->internum = true;
-                    else
-                    {
-                        cnt->oldnum = false;
-                        cnt->internum = false;
-                    }
-
-                    cnt->contact_tel_num = zk->contacts.at(a)->tel3;
-                    owt->cont()->append(cnt);
-                }
-                if(zk->contacts.at(a)->tel4 != "")
-                {
-                    Contacts *cnt = new Contacts;
-                    QString temp = "Ф: "+zk->contacts.at(a)->famil+"; И: "+
-                   zk->contacts.at(a)->imya+"; O: "+zk->contacts.at(a)->otchestvo+"; Кл:"+
-                            zk->contacts.at(a)->klichka;
-                    cnt->mark = temp;
-                    cnt->cont_state = IsNewing;
-
-                    if (zk->contacts.at(a)->tel4.size() < 8)
-                        cnt->oldnum = true;
-                    else if (zk->contacts.at(a)->tel4.size() < 25)
-                        cnt->internum = true;
-                    else
-                    {
-                        cnt->oldnum = false;
-                        cnt->internum = false;
-                    }
-
-                    cnt->contact_tel_num = zk->contacts.at(a)->tel4;
-                    owt->cont()->append(cnt);
-                }
-                if(zk->contacts.at(a)->tel5 != "")
-                {
-                    Contacts *cnt = new Contacts;
-                    QString temp = "Ф: "+zk->contacts.at(a)->famil+"; И: "+
-                   zk->contacts.at(a)->imya+"; O: "+zk->contacts.at(a)->otchestvo+"; Кл:"+
-                            zk->contacts.at(a)->klichka;
-                    cnt->mark = temp;
-                    cnt->cont_state = IsNewing;
-
-                    if (zk->contacts.at(a)->tel5.size() < 8)
-                        cnt->oldnum = true;
-                    else if (zk->contacts.at(a)->tel5.size() < 25)
-                        cnt->internum = true;
-                    else
-                    {
-                        cnt->oldnum = false;
-                        cnt->internum = false;
-                    }
-
-                    cnt->contact_tel_num = zk->contacts.at(a)->tel5;
-                    owt->cont()->append(cnt);
-                }
-            }
-        }
         person->owt()->append(owt);
     }
     /////////////////////////////////////////////
@@ -939,16 +828,19 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
         person->owt()->append(owt);
     }
     /////////////////////////////////////////////
-    person->dop_info = "OLD ";
-    person->dop_info += zk->person.dopinfo;
-    person->dop_info += "; Кат.:"+zk->category+"; Дат: "+zk->data_zad+
-            "; Мест:"+zk->keep_place+"; Кем: "+
-            zk->kem_zad+"; Прич:"+zk->povod_zad+";";
 
     query1.prepare("SELECT uuid_generate_v1()");
     if(query1.exec())
         while (query1.next())
           person->row_id = query1.value(0).toString();
+
+    QString row_id1 = person->row_id;
+
+    person->dop_info = "OLD ";
+    person->dop_info += zk->person.dopinfo;
+    person->dop_info += "; Кат.:"+zk->category+"; Дат: "+zk->data_zad+
+            "; Мест:"+zk->keep_place+"; Кем: "+
+            zk->kem_zad+"; Прич:"+zk->povod_zad+";";
 
     person->state = IsNewing;
     person->dop_info.append(", Кличка:" + zk->person.klichka);
@@ -957,6 +849,122 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
     person->zk_id = 1;
     crud_list->append(person);
 
+
+    if(!zk->contacts.isEmpty())
+    {
+        for(int a = 0; a < zk->contacts.size(); a++)
+        {
+            Crud *cr = new Crud;
+            cr->zk_id = a+2;
+            cr->lastname = zk->contacts.at(a)->famil;
+            cr->name = zk->contacts.at(a)->imya;
+            cr->mid_name = zk->contacts.at(a)->otchestvo;
+            cr->dop_info  = "Кличка: "+zk->contacts.at(a)->klichka;
+            cr->state = IsNewing;
+
+            if(zk->contacts.at(a)->tel1 != "")
+            {
+                Owners_tel *owt = new Owners_tel;
+
+                if (zk->contacts.at(a)->tel1.size() < 8)
+                    owt->oldnum = true;
+                else if (zk->contacts.at(a)->tel1.size() < 25)
+                    owt->internum = true;
+                else
+                {
+                    owt->oldnum = false;
+                    owt->internum = false;
+                }
+
+                owt->tel_num = zk->contacts.at(a)->tel1;
+                cr->owt()->append(owt);
+            }
+            if(zk->contacts.at(a)->tel2 != "")
+            {Owners_tel *owt = new Owners_tel;
+
+                if (zk->contacts.at(a)->tel2.size() < 8)
+                    owt->oldnum = true;
+                else if (zk->contacts.at(a)->tel2.size() < 25)
+                    owt->internum = true;
+                else
+                {
+                    owt->oldnum = false;
+                    owt->internum = false;
+                }
+
+                owt->tel_num = zk->contacts.at(a)->tel2;
+                cr->owt()->append(owt);
+            }
+            if(zk->contacts.at(a)->tel3 != "")
+            {
+                Owners_tel *owt = new Owners_tel;
+
+                if (zk->contacts.at(a)->tel3.size() < 8)
+                    owt->oldnum = true;
+                else if (zk->contacts.at(a)->tel3.size() < 25)
+                    owt->internum = true;
+                else
+                {
+                    owt->oldnum = false;
+                    owt->internum = false;
+                }
+
+                owt->tel_num = zk->contacts.at(a)->tel3;
+                cr->owt()->append(owt);
+            }
+            if(zk->contacts.at(a)->tel4 != "")
+            {
+                Owners_tel *owt = new Owners_tel;
+
+                if (zk->contacts.at(a)->tel4.size() < 8)
+                    owt->oldnum = true;
+                else if (zk->contacts.at(a)->tel4.size() < 25)
+                    owt->internum = true;
+                else
+                {
+                    owt->oldnum = false;
+                    owt->internum = false;
+                }
+
+                owt->tel_num = zk->contacts.at(a)->tel4;
+                cr->owt()->append(owt);
+            }
+            if(zk->contacts.at(a)->tel5 != "")
+            {
+                Owners_tel *owt = new Owners_tel;
+
+                if (zk->contacts.at(a)->tel5.size() < 8)
+                    owt->oldnum = true;
+                else if (zk->contacts.at(a)->tel5.size() < 25)
+                    owt->internum = true;
+                else
+                {
+                    owt->oldnum = false;
+                    owt->internum = false;
+                }
+
+                owt->tel_num = zk->contacts.at(a)->tel5;
+                cr->owt()->append(owt);
+            }
+
+            query1.prepare("SELECT uuid_generate_v1()");
+            if(query1.exec())
+                while (query1.next())
+                  cr->row_id = query1.value(0).toString();
+
+            QString row_id2 = cr->row_id;
+            QVector<QString> local_vector;
+            local_vector.append(row_id1);
+            local_vector.append(row_id2);
+
+            if(vector == nullptr)
+                 vector = new QVector<QVector<QString>   >;
+
+            vector->append(local_vector);
+
+           crud_list->append(cr);
+        }
+    }
 }
 
 void Import_Form::on_pb_save_import_slot(QString str)

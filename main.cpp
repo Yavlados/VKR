@@ -1,7 +1,8 @@
 #include "mainwindow_Form.h"
 #include <QTextCodec>
 #include <QApplication>
-
+#include <QtGlobal>
+#include "Settings_connection.h"
 
 #include <QMessageBox>
 
@@ -25,6 +26,28 @@
  *          \version 3.0.1
  */
 
+void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
+{
+    QString txt;
+    switch (type) {
+    case QtDebugMsg:
+        txt = QString("Debug: %1").arg(msg);
+        break;
+    case QtWarningMsg:
+        txt = QString("Warning: %1").arg(msg);
+    break;
+    case QtCriticalMsg:
+        txt = QString("Critical: %1").arg(msg);
+    break;
+    case QtFatalMsg:
+        txt = QString("Fatal: %1").arg(msg);
+    break;
+    }
+    QFile outFile("log");
+    outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    QTextStream ts(&outFile);
+    ts << txt << endl;
+}
 
 int main(int argc, char *argv[])
 {
@@ -38,13 +61,6 @@ int main(int argc, char *argv[])
     // Включение символа "." в качестве разделителя в вещественных числах
     //setlocale(LC_NUMERIC, "en_US.UTF-8");
 
-    db_connection *con = db_connection::instance();
-    //db_connection *r = db_connection::instance();
-    if( !con->db_connect() )
-    {
-        qCritical()<<"Error"<<con->db().lastError();
-        return -1;
-    }
 
 
     MainWindow *w = new MainWindow();
@@ -52,6 +68,5 @@ int main(int argc, char *argv[])
 
     int rez =  a.exec();
 
-    delete con;
     return rez;
 }

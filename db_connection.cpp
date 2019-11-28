@@ -1,5 +1,6 @@
 #include "db_connection.h"
 
+
 db_connection *db_connection::_instance = nullptr;
 
 db_connection::db_connection()
@@ -43,7 +44,7 @@ bool db_connection::db_connect()
         _dbpg.setDatabaseName("postgres");
        _dbpg.setUserName("postgres");
         _dbpg.setPassword("23Xeromant23");
-       // _dbpg.setPassword("123");
+        //_dbpg.setPassword("123");
        _dbpg.setPort(5432);
         ok = _dbpg.open();
         if (ok == true)

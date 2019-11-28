@@ -9,6 +9,7 @@
 #include <QSqlDatabase>
 #include <QSettings>
 #include <QKeyEvent>
+#include <QDialogButtonBox>
 
 #include "settings_connection.h"
 
@@ -24,6 +25,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
+    Settings_connection();
+    db_connection *con = db_connection::instance();
+
+    //db_connection *r = db_connection::instance();
+    if( !con->db_connect() )
+    {
+        qCritical()<<"Error"<<con->db().lastError();
+    }
+
+
+    RefreshTab();
     auto tabbar = ui->tabWidget->tabBar();
     tabbar->tabButton(0,QTabBar::RightSide)->deleteLater();
     tabbar->setTabButton(0, QTabBar::RightSide, nullptr);
@@ -40,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFixedSize( QApplication::desktop()->screenGeometry().width(), height);
     ///---
 
-    RefreshTab();
     ui->tableView->selectRow(0);
     on_tableView_clicked(index_tab1);
     //set_fonts();
@@ -110,8 +122,11 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //�
        if (!ot_model->mark_rows.isEmpty()) //Чищу список подсвечивания
            ot_model->mark_rows.clear();
 
+            CheckState local_state = crud_model->actcrudlist.at(index_tab1.row())->checkState_;
+
            if(Owners_tel::selectZkTelForAdd(crud_model->actcrudlist.at(index_tab1.row())->owt(), crud_model->actcrudlist.at(index_tab1.row())->zk_id))
            {
+
                ot_model->setOTList(crud_model->actcrudlist.at(index_tab1.row())->owt());
                if(!num.isNull())
                {
@@ -140,6 +155,7 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //�
         }
 
         contacts_model->reset_ContactModel();
+        crud_model->actcrudlist.at(index_tab1.row())->checkState_ = local_state;
     }
     else
     {
@@ -618,31 +634,68 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
 void MainWindow::testing_opening(QString filename, QString password, bool folder)
 {
     ///Класс для импорта
-    Import_Form *import_form = new Import_Form; //необходим доступ для
-    connect(import_form,SIGNAL(Refresh_tab()),this,SLOT(RefreshTab()));
+
     if(folder)
     {
         QDir direcotry(filename);
         QStringList filelist = direcotry.entryList(QStringList("*"), QDir::Files);
         foreach (QString file, filelist )
         {
-            filename += "/" + file;
-            if (import_form->Testing_open_db( filename,password)) //Если есть совпадение, то
+            QString filename2 = filename;
+            filename2 += "/" + file;
+            Import_Form *import_form = new Import_Form; //необходим доступ для
+            connect(import_form,SIGNAL(Refresh_tab()),this,SLOT(RefreshTab()));
+
+
+            if (import_form->Testing_open_db( filename2,password)) //Если есть совпадение, то
             {
                 ///Идем сравнивать выгруженный в список дамп с БД
                 /// Метод алгоритма сравнения и импорта
                 if(import_form->begin_import())
                    {
-                    import_form->show(); //открываем форму
-                    import_form->showMaximized();
-                   }
+                    //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
+
+                    QDialog *d = new QDialog(this);
+                    QVBoxLayout *l = new QVBoxLayout(d);
+                    QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+                    dbb->button(QDialogButtonBox::Ok)->setVisible(false);
+                    dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
+                    l->addWidget(import_form);
+                    l->addWidget(dbb);
+                    d->showMaximized();
+                    QSize sz = d->size();
+                    d->setFixedSize(sz);
+                    //передаю уровнем ниже указатель на кнопки
+                    //для имитации accept и rejected
+                    import_form->ddb = dbb;
+
+
+                    connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
+                    connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
+                    switch (d->exec())
+                    {
+                    case QDialog::Rejected:
+                        QMessageBox::critical(this,"Внимание","Импорт из папки был прерван");
+                        delete l;
+                        d->close();
+                        delete d;
+                        return;
+                   case QDialog::Accepted:
+                        QMessageBox::information(this,"Успех","Импорт прошел успешно");
+                        delete l;
+                        d->close();
+                        delete d;
+                        continue;
+                    }
+               }
             }
         }
-        delete import_form;
-
+    RefreshTab();
     }
     else
     {
+        Import_Form *import_form = new Import_Form; //необходим доступ для
+
         if (import_form->Testing_open_db( filename,password)) //Если есть совпадение, то
         {
             ///Идем сравнивать выгруженный в список дамп с БД
