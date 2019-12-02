@@ -660,7 +660,7 @@ void For_analysis::long_tel_analysis(Crud *cr, QList<Crud*> *crudlist)
 
                  for (int i = 0; i< temp_crudlist1->size(); i++ )
                  {
-                     analysis_res += temp_crudlist1->at(i)->lastname +" "+temp_crudlist1->at(i)->name +" " +temp_crudlist1->at(i)->mid_name+", "+
+                     analysis_res += "ЗК № " +QString::number(temp_crudlist1->at(i)->zk_id) + " "+ temp_crudlist1->at(i)->lastname +" "+temp_crudlist1->at(i)->name +" " +temp_crudlist1->at(i)->mid_name+", "+
                     temp_crudlist1->at(i)->birth_date+", адрес регистрации "+
                     temp_crudlist1->at(i)->reg_city+", "+temp_crudlist1->at(i)->reg_street+", "+ temp_crudlist1->at(i)->reg_home +"/"+
                     temp_crudlist1->at(i)->reg_corp+ ", " + temp_crudlist1->at(i)->reg_home + ", адрес проживания: " +
@@ -704,7 +704,7 @@ void For_analysis::long_tel_analysis(Crud *cr, QList<Crud*> *crudlist)
 
            for (int i = 0; i< temp_crudlist2->size(); i++ )
            {
-               analysis_res += temp_crudlist2->at(i)->lastname +" "+temp_crudlist2->at(i)->name +" " +temp_crudlist2->at(i)->mid_name+", "+
+              analysis_res += "ЗК № " +QString::number(temp_crudlist2->at(i)->zk_id) + " "+temp_crudlist2->at(i)->lastname +" "+temp_crudlist2->at(i)->name +" " +temp_crudlist2->at(i)->mid_name+", "+
               temp_crudlist2->at(i)->birth_date+", адрес регистрации "+
               temp_crudlist2->at(i)->reg_city+", "+temp_crudlist2->at(i)->reg_street+", "+ temp_crudlist2->at(i)->reg_home +"/"+
               temp_crudlist2->at(i)->reg_corp+ ", " + temp_crudlist2->at(i)->reg_home + ", адрес проживания: " +
@@ -753,7 +753,7 @@ if(!temp_crudlist3->isEmpty())
 
     for (int i = 0; i< temp_crudlist3->size(); i++ )
     {
-        analysis_res += temp_crudlist3->at(i)->lastname +" "+temp_crudlist3->at(i)->name +" " +temp_crudlist3->at(i)->mid_name+", "+
+       analysis_res += "ЗК № " +QString::number(temp_crudlist3->at(i)->zk_id) + " "+temp_crudlist3->at(i)->lastname +" "+temp_crudlist3->at(i)->name +" " +temp_crudlist3->at(i)->mid_name+", "+
        temp_crudlist3->at(i)->birth_date+", адрес регистрации "+
        temp_crudlist3->at(i)->reg_city+", "+temp_crudlist3->at(i)->reg_street+", "+ temp_crudlist3->at(i)->reg_home +"/"+
        temp_crudlist3->at(i)->reg_corp+ ", " + temp_crudlist3->at(i)->reg_home + ", адрес проживания: " +

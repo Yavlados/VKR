@@ -160,11 +160,28 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //�
 
         contacts_model->reset_ContactModel();
         crud_model->actcrudlist.at(index_tab1.row())->checkState_ = local_state;
+
+        while(ui->hl_label_contact->count())
+        {
+            QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+            delete item->widget();
+        }
+
+        while(ui->hl_label_owt->count())
+        {
+            QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+            delete item->widget();
+        }
+
+        QLabel *lb = new QLabel;
+        QString str = "Всего записей: "+QString::number(ot_model->actotlist.size());
+        lb->setText(str);
+        ui->hl_label_owt->addWidget(lb);
     }
     else
     {
         ui->action_delete->setEnabled(false);
-        ui->action_update->setEnabled(false); //включаю кнопку редактировать
+        ui->action_update->setEnabled(false); //выключаю кнопку редактировать
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -192,6 +209,19 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
         ui->tableView_3->resizeColumnToContents(2);
         ui->tableView_3->setWordWrap(false);
        ui->tableView_3->horizontalHeader()->setStretchLastSection(true);
+
+
+
+       while(ui->hl_label_contact->count())
+       {
+           QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+           delete item->widget();
+       }
+
+       QLabel *lb = new QLabel;
+       QString str = "Всего записей: "+QString::number(contacts_model->actlist.size());
+       lb->setText(str);
+       ui->hl_label_contact->addWidget(lb);
 
         //ui->tableView_3->setColumnWidth(0,250);
        // ui->tableView_3->setColumnWidth(1,250);
@@ -270,6 +300,17 @@ void MainWindow::RefreshTab()
     ui->tableView->resizeColumnToContents(1);
     ui->tableView->resizeColumnToContents(2);
     ui->tableView->setWordWrap(false);
+
+    while(ui->hl_label_crud->count())
+    {
+        QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+        delete item->widget();
+    }
+
+    QLabel *lb = new QLabel;
+    QString str = "Всего записей: "+QString::number(crudlist->size());
+    lb->setText(str);
+    ui->hl_label_crud->addWidget(lb);
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
@@ -396,6 +437,22 @@ void MainWindow::on_pushButton_clicked()
             crud_model->setOneCrud(cr);
             ui->tableView->setModel(crud_model);
             ui->tabWidget->setCurrentIndex(0);
+
+            ot_model->reset_OTModel();
+            contacts_model->reset_ContactModel();
+
+            while(ui->hl_label_contact->count())
+            {
+                QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+                delete item->widget();
+            }
+
+            while(ui->hl_label_owt->count())
+            {
+                QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+                delete item->widget();
+            }
+
             MainWindow::add_cancel_button();
         }
     }
@@ -750,6 +807,19 @@ void MainWindow::next_page()
     Add_pagination_buttons();
     ot_model->reset_OTModel();
     contacts_model->reset_ContactModel();
+
+    while(ui->hl_label_contact->count())
+    {
+        QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+        delete item->widget();
+    }
+
+    while(ui->hl_label_owt->count())
+    {
+        QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+        delete item->widget();
+    }
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::previous_page()
@@ -759,6 +829,19 @@ void MainWindow::previous_page()
     Add_pagination_buttons();
     ot_model->reset_OTModel();
     contacts_model->reset_ContactModel();
+
+    while(ui->hl_label_contact->count())
+    {
+        QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+        delete item->widget();
+    }
+
+    while(ui->hl_label_owt->count())
+    {
+        QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+        delete item->widget();
+    }
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::set_fonts()

@@ -281,6 +281,9 @@
              <item row="1" column="0">
               <layout class="QHBoxLayout" name="horizontalLayout_2">
                <item>
+                <layout class="QHBoxLayout" name="hl_label_crud"/>
+               </item>
+               <item>
                 <spacer name="horizontalSpacer">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -382,6 +385,9 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="2" column="0">
+                  <layout class="QHBoxLayout" name="hl_label_owt"/>
+                 </item>
                 </layout>
                </widget>
                <widget class="QFrame" name="frame_4">
@@ -438,6 +444,9 @@
                     <enum>QAbstractItemView::SelectRows</enum>
                    </property>
                   </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="hl_label_contact"/>
                  </item>
                 </layout>
                </widget>
