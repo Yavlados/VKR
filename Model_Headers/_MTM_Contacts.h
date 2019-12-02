@@ -50,7 +50,7 @@ public:
 
     virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 
-    QList<Contacts*> *clist;    ///< исходный список
+    QList<Contacts*> *clist = nullptr;    ///< исходный список
     QList<Contacts*> actlist;  ///<  отображаемый список
 public slots:
     void addRow_contact(Contacts *cnt);                      /// Добавление ячейки контакта

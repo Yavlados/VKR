@@ -48,6 +48,7 @@ class Crud          ///Класс сущности "Записная книга"
 public:
     Crud();
     Crud(int id);
+    ~Crud();
 
     QList<Owners_tel*> *owt();  ///Инициализация пустого списка телефонов
     QString row_id = nullptr;

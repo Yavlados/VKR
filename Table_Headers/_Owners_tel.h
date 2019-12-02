@@ -11,6 +11,7 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDate>
+
 /**
  * \file _Owners_tel.h
  * \brief Класс сущности "Телефон"
@@ -48,9 +49,13 @@ Owners_tel(QString t_n, int t_id, int zk, bool i_m = false, bool o_n = false, Db
      int insert_tel(bool setState=true, int zk_id = 0);
      bool update_tel(bool setState=true);
      bool remove_tel();
-///////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
     static QList<int> compare_nums(QList<Owners_tel*> *owt1, QList<Owners_tel*> *owt2);
-///////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
+    static bool delete_all(QList<Owners_tel*> list);
+    static bool delete_all(QList<Owners_tel*> *list);
+    ///////////////////////////////////////////////////
+
 
 private:
 

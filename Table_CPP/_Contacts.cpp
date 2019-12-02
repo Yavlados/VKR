@@ -19,6 +19,7 @@ Contacts::Contacts(int cont_id, QString tel, QString mark, int ot_id, bool i_n, 
 
 Contacts::~Contacts()
 {
+
     qDebug()<<"delete contact"<<contact_id;
 }
 
@@ -262,4 +263,23 @@ bool Contacts::remove()
 void Contacts::check() const
 {
     qDebug() << QString::number(contact_id)+" " +contact_tel_num+ " " +mark +" " +QString::number(parent_OT_id);
+}
+
+bool Contacts::delete_all(QList<Contacts *> *list)
+{
+    if(list != nullptr)
+    {
+        if(!list->isEmpty())
+        {
+            for(QList<Contacts*>::const_iterator it = list->begin(); it != list->end(); it++)
+            {
+
+
+                delete *it;
+            }
+
+        }
+        delete list;
+        list = nullptr;
+    }
 }

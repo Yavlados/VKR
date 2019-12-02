@@ -42,8 +42,8 @@ public:
     Import_type imprt_t;
     QMessageBox msgbx;
 
-    MTM_OwTel *ot_model = new MTM_OwTel;
-    MTM_Contacts *contacts_model =  new MTM_Contacts;
+    MTM_OwTel *ot_model = nullptr;
+    MTM_Contacts *contacts_model =  nullptr;
     List_master *list = nullptr;
 
     Crud *new_cr; //Новая зк

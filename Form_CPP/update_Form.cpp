@@ -29,11 +29,75 @@ Update::Update(QWidget *parent) :
     new_cr = nullptr;
     set_splitter_lines();
     set_delegates_and_connections();
+    contacts_model = new MTM_Contacts;
+    ot_model = new MTM_OwTel;
 }
 
 Update::~Update()
 {
     delete ui;
+//    if(contacts_model != nullptr)
+//    {
+//       Contacts::delete_all(contacts_model->clist);
+//       delete contacts_model;
+//       //contacts_model = nullptr;
+//    }
+//    if(ot_model != nullptr)
+//    {
+//        //Owners_tel::delete_all(ot_model->otlist);
+//        delete ot_model;
+//        //ot_model = nullptr;
+//    }
+//    if(list != nullptr)
+//    {
+//        delete list;
+//        list = nullptr;
+//    }
+
+//    if (main_cr == new_cr)
+//    {
+//        if(main_cr != nullptr)
+//        {
+//            delete main_cr;
+//            main_cr = nullptr;
+//        }
+//    }
+//    else
+//    {
+//        if(main_cr != nullptr)
+//        {
+//            delete main_cr;
+//            main_cr = nullptr;
+//        }
+
+//        if(new_cr != nullptr)
+//        {
+//            delete new_cr;
+//            new_cr = nullptr;
+//        }
+//    }
+
+//    if(added_cr != nullptr)
+//    {
+//        delete added_cr;
+//        added_cr = nullptr;
+//    }
+//    if(linked_crud_id != nullptr)
+//    {
+//        delete linked_crud_id;
+//        linked_crud_id = nullptr;
+//    }
+//    if(list_for_destroy != nullptr)
+//    {
+//        delete list_for_destroy;
+//        list_for_destroy = nullptr;
+//    }
+
+//    if(_linked_crud != nullptr)
+//    {
+//        delete _linked_crud;
+//        _linked_crud = nullptr;
+//    }
 }
 //-----------------------------------------------------------------------------------//
 void Update::Recieve_data(Crud *cr)
@@ -42,6 +106,8 @@ void Update::Recieve_data(Crud *cr)
     clear_Vl();
     Fill_fields_update(new_cr);//заполнение полей
     //Уже есть главная ЗК
+
+
 
     //сначала очистка имеющегося списка
     if (!ot_model->mark_rows.isEmpty())

@@ -20,7 +20,12 @@ QList<Owners_tel *> *Crud::owt()
 Crud::Crud(int id): zk_id(id)
 {
     _owt = nullptr;
-   checkState_ = Unchecked;
+    checkState_ = Unchecked;
+}
+
+Crud::~Crud()
+{
+    Owners_tel::delete_all(_owt);
 }
 
 Crud::Crud()

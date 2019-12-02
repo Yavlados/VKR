@@ -1,6 +1,7 @@
 #include "_MTM_Contacts.h"
 #include <QPushButton>
 
+
 void MTM_Contacts::up_flag()
 {
     linked_flg = true;

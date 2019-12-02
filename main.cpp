@@ -1,9 +1,10 @@
 #include "mainwindow_Form.h"
+#include "dialog_settings.h"
 #include <QTextCodec>
 #include <QApplication>
 #include <QtGlobal>
-#include "Settings_connection.h"
-
+#include <QtGlobal>
+#include <QVBoxLayout>
 #include <QMessageBox>
 
 /**
@@ -31,16 +32,16 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
     QString txt;
     switch (type) {
     case QtDebugMsg:
-        txt = QString("Debug: %1").arg(msg);
+        txt = QString("Debug: %1").arg(msg) + "\n \r";
         break;
     case QtWarningMsg:
-        txt = QString("Warning: %1").arg(msg);
+        txt = QString("Warning: %1").arg(msg)+ "\n \r";
     break;
     case QtCriticalMsg:
-        txt = QString("Critical: %1").arg(msg);
+        txt = QString("Critical: %1").arg(msg)+ "\n \r";
     break;
     case QtFatalMsg:
-        txt = QString("Fatal: %1").arg(msg);
+        txt = QString("Fatal: %1").arg(msg)+ "\n \r";
     break;
     }
     QFile outFile("log");
@@ -51,6 +52,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(myMessageHandler);
     QApplication a(argc, argv);
     QStringList paths = QCoreApplication::libraryPaths();
     paths.append(".");
@@ -69,10 +71,19 @@ int main(int argc, char *argv[])
 
 
 
-    MainWindow *w = new MainWindow();
-    w->show();
+    Dialog_settings *set = new Dialog_settings;
 
-    int rez =  a.exec();
+    int s = set->exec();
 
-    return rez;
+    switch (s)
+    {
+    case QDialog::Rejected :
+        return 0;
+     case QDialog::Accepted :
+        MainWindow *w = new MainWindow();
+        w->show();
+        int rez =  a.exec();
+        return rez;
+    }
+
 }

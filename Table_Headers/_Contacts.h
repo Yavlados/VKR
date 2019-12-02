@@ -46,6 +46,8 @@ public:
     bool remove();
 
     void check() const;
+
+    static bool delete_all(QList<Contacts*> *list);
 };
 
 

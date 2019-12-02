@@ -46,7 +46,7 @@ public:
     ///TESTING
     virtual QList<Owners_tel*> recall_list();
 
-    QList<Owners_tel*> *otlist;    ///< исходный список
+    QList<Owners_tel*> *otlist = nullptr;    ///< исходный список
     QList<Owners_tel*> actotlist;  ///<  отображаемый список
 private:
 

@@ -23,7 +23,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-CONFIG += c++11
+ CONFIG += c++11
+
+# CONFIG += release
 
 SOURCES += \
         main.cpp \
@@ -55,7 +57,8 @@ SOURCES += \
     olddbservice.cpp \
     dialog_conflict.cpp \
     table_show_delegate.cpp \
-    component.cpp
+    component.cpp \
+    dialog_settings.cpp
 
 HEADERS += \
     db_connection.h \
@@ -86,7 +89,8 @@ HEADERS += \
     olddbservice.h \
     dialog_conflict.h \
     table_show_delegate.h \
-    component.h
+    component.h \
+    dialog_settings.h
 
 FORMS += \
         mainwindow.ui \
@@ -100,7 +104,8 @@ FORMS += \
     master_import_form.ui \
     settings_form.ui \
     dialog_conflict.ui \
-    component.ui
+    component.ui \
+    dialog_settings.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

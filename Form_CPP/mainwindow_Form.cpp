@@ -32,7 +32,11 @@ MainWindow::MainWindow(QWidget *parent) :
     //db_connection *r = db_connection::instance();
     if( !con->db_connect() )
     {
-        qCritical()<<"Error"<<con->db().lastError();
+        qDebug() << con->db().lastError();
+        QMessageBox msg;
+        msg.setText(con->db().lastError().text());
+        msg.exec();
+
     }
 
 
@@ -486,6 +490,7 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
                     if(updlist->at(i)->new_cr->zk_id == zk_id_local)
                     {
                         delete  updlist->at(i);
+                        //delete upd;
                         updlist->removeAt(i);
                         if (updlist->isEmpty())
                         {

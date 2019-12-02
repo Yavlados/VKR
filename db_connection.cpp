@@ -40,12 +40,12 @@ bool db_connection::db_connect()
         //db().setDatabaseName("zk");
         //db().setPassword("ipqo");
         //db().setPort(5433);
-        _dbpg.setHostName("localhost");
-        _dbpg.setDatabaseName("postgres");
-       _dbpg.setUserName("postgres");
-        _dbpg.setPassword("23Xeromant23");
-        //_dbpg.setPassword("123");
-       _dbpg.setPort(5432);
+        _dbpg.setHostName(Settings_connection::instance()->HostName);
+        _dbpg.setDatabaseName(Settings_connection::instance()->DatabaseName);
+       _dbpg.setUserName(Settings_connection::instance()->User);
+        _dbpg.setPassword(Settings_connection::instance()->Password);
+       //_dbpg.setPassword("123");
+       _dbpg.setPort(Settings_connection::instance()->Port);
         ok = _dbpg.open();
         if (ok == true)
             qDebug() <<"ok";

@@ -32,6 +32,7 @@ Owners_tel::Owners_tel(QString t_n, int t_id, int zk, bool i_m, bool o_n, DbStat
 
 Owners_tel::~Owners_tel()
 {
+    Contacts::delete_all(_cont);
     qDebug()<<"delete telephone"<<tel_id;
 }
 
@@ -270,5 +271,38 @@ QList<int> Owners_tel::compare_nums(QList<Owners_tel*> *owt1, QList<Owners_tel*>
         }
     return templist;
 }
+
 //////////////////////////////////////////////////////////////////////
 
+bool Owners_tel::delete_all(QList<Owners_tel *> list)
+{
+    if(!list.isEmpty())
+        {
+            for(QList<Owners_tel*>::const_iterator it = list.begin(); it != list.end(); it++)
+            {
+                delete *it;
+            }
+
+        }
+}
+//////////////////////////////////////////////////////////////////////
+
+bool Owners_tel::delete_all(QList<Owners_tel *> *list)
+{
+    if(list != nullptr)
+    {
+        if(!list->isEmpty())
+        {
+            for(QList<Owners_tel*>::const_iterator it = list->begin(); it != list->end(); it++)
+            {
+
+
+                delete *it;
+
+            }
+
+        }
+        delete list;
+        list = nullptr;
+    }
+}

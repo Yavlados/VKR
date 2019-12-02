@@ -13,7 +13,5 @@
         <file>png/005-export.png</file>
         <file>png/file.png</file>
     </qresource>
-    <qresource prefix="/config">
-        <file>CONFIG/test.ini</file>
-    </qresource>
+    <qresource prefix="/config"/>
 </RCC>

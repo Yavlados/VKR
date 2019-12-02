@@ -6,7 +6,6 @@ Settings_connection *Settings_connection::_instance = nullptr;
 Settings_connection::Settings_connection()
 {
     Set_settings();
-    Set_pg_settings();
 }
 
 void Settings_connection::Set_settings()
@@ -31,19 +30,26 @@ void Settings_connection::Set_settings()
    showing_count = settings->value("PAGE_COUNT").toInt();
    settings->endGroup();
 
-}
+   settings->beginGroup("HOSTNAME");
+   HostName = settings->value("HOSTNAME").toString();
+   settings->endGroup();
 
-void Settings_connection::Set_pg_settings()
-{
-    settings = new QSettings("testing.ini",QSettings::IniFormat);
-    settings->beginReadArray("PG_ARRAY");
+   settings->beginGroup("DATABASE");
+   DatabaseName = settings->value("DATABASE").toString();
+   settings->endGroup();
 
-                HostName  = settings->value("HostName").toString();
-                DatabaseName  = settings->value("DatabaseName").toString();
-                setUserName  = settings->value("setUserName").toString();
-                setPassword  = settings->value("setPassword").toString();
-                Port  = settings->value("Port").toInt();
-    settings->endArray();
+   settings->beginGroup("USER");
+   User = settings->value("USER").toString();
+   settings->endGroup();
+
+   settings->beginGroup("PASSWORD");
+   Password = settings->value("PASSWORD").toString();
+   settings->endGroup();
+
+   settings->beginGroup("PORT");
+   Port = settings->value("PORT").toInt();
+   settings->endGroup();
+
 }
 
 Settings_connection *Settings_connection::instance()
