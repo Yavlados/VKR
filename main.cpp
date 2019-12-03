@@ -79,11 +79,26 @@ int main(int argc, char *argv[])
     {
     case QDialog::Rejected :
         return 0;
+
      case QDialog::Accepted :
-        MainWindow *w = new MainWindow();
-        w->show();
-        int rez =  a.exec();
-        return rez;
+        Settings_connection();
+        db_connection *con = db_connection::instance();
+
+        if( !con->db_connect() )
+        {
+            qDebug() << con->db().lastError();
+            QMessageBox msg;
+            msg.setWindowTitle("Ошибка!");
+            msg.setText("Произошла ошибка при подключении к базе данных: "+con->db().lastError().text());
+            msg.exec();
+            return 0;
+        }else
+        {
+            MainWindow *w = new MainWindow();
+            w->show();
+            int rez =  a.exec();
+            return rez;
+        }
     }
 
 }

@@ -12,6 +12,8 @@ Dialog_settings::Dialog_settings(QWidget *parent) :
     QSize size = this->size();
     setFixedSize(size);
     setModal(true);
+    ui->label_2->setVisible(false);
+    ui->comboBox->setVisible(false);
 }
 
 Dialog_settings::~Dialog_settings()

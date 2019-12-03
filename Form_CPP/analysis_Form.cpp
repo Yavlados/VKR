@@ -18,6 +18,7 @@ Analysis::Analysis(QWidget *parent) :
     Analysis::clear_rb_3(false);
 
     actual_size = this->size();
+    ui->pushButton_2->setVisible(false);
 }
 
 Analysis::~Analysis()

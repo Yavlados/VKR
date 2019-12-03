@@ -26,18 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
 
-    Settings_connection();
-    db_connection *con = db_connection::instance();
 
-    //db_connection *r = db_connection::instance();
-    if( !con->db_connect() )
-    {
-        qDebug() << con->db().lastError();
-        QMessageBox msg;
-        msg.setText(con->db().lastError().text());
-        msg.exec();
-
-    }
 
 
     RefreshTab();

@@ -170,11 +170,11 @@ void Update::Fill_fields_update(Crud *new_cr)
     ui->le_liv_corp->setText(new_cr->liv_corp);
     ui->le_liv_flat->setText(new_cr->liv_flat);
 
-    QLabel *lb = new QLabel("<font size = 5>  <div align=\"left\"> Добавлен: "+new_cr->date_add+" "+new_cr->time_add+" </div>  </font>");
+    QLabel *lb = new QLabel("<font size = 3>  <div align=\"left\"> Добавлен: "+new_cr->date_add+" "+new_cr->time_add+" </div>  </font>");
         ui->vl_for_date_add->addWidget(lb);
         if(!new_cr->date_upd.isEmpty())
         {
-            QLabel *lb2 = new QLabel("<font size = 5> <div align=\"right\"> Изменен: "+new_cr->date_upd+" </div> </font>");
+            QLabel *lb2 = new QLabel("<font size = 3> <div align=\"right\"> Изменен: "+new_cr->date_upd+" </div> </font>");
             ui->vl_for_date_upd->addWidget(lb2);
         }
 
@@ -555,6 +555,16 @@ void Update::set_splitter_lines()
     line_3->setFrameShape(QFrame::HLine);
     line_3->setFrameShadow(QFrame::Sunken);
     layout_3->addWidget(line_3);
+
+    QSplitterHandle *handle_4 = ui->splitter_5->handle(1);
+    QVBoxLayout *layout_4 = new QVBoxLayout(handle_4);
+    layout_4->setSpacing(0);
+    layout_4->setMargin(0);
+
+    QFrame *line_4 = new QFrame(handle_4);
+    line_4->setFrameShape(QFrame::HLine);
+    line_4->setFrameShadow(QFrame::Sunken);
+    layout_4->addWidget(line_4);
 }
 //-----------------------------------------------------------------------------------//
 bool Update::compare_tel_num()
