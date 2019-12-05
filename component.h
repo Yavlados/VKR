@@ -31,6 +31,7 @@ public:
 
     component_content *content = nullptr;
 
+    QString str;
 public slots:
     void set_input_mask();
 

@@ -11,8 +11,6 @@ Component::Component(QWidget *parent) :
     setFixedSize(this->size());
     setModal(true);
     set_input_mask();
-    ui->le_1->setCursorPosition(0);
-
 }
 
 Component::~Component()
@@ -139,6 +137,20 @@ void Component::change_layouts()
     }
     else if(ui->cb_oldnum->checkState() == Qt::Checked && ui->cb_m_n->checkState() == Qt::Unchecked)
     {//Вкл сплошную
+        content->tel_num.clear();
+
+        for(int a = 0; a< ui->hl_for_normal_n->count(); a++)
+        {
+            QWidget *w = ui->hl_for_normal_n->itemAt(a)->widget();
+           QString name = w->objectName();
+           if(name.startsWith("le"))
+           {
+               QLineEdit *le = dynamic_cast<QLineEdit*>(w); //Приведение типа от виджета к классу
+               content->tel_num.append(le->text());
+           }
+            w->setVisible(false);
+        }
+
         ui->lineEdit->setVisible(true);
         ui->lineEdit->setText(content->tel_num);
         ui->lineEdit->setInputMask("99999999");
@@ -149,11 +161,6 @@ void Component::change_layouts()
             //ui->lineEdit_7->setText(content->mark);
         }
 
-        for(int a = 0; a< ui->hl_for_normal_n->count(); a++)
-        {
-            QWidget *w = ui->hl_for_normal_n->itemAt(a)->widget();
-            w->setVisible(false);
-        }
     }
     else if (ui->cb_oldnum->checkState() == Qt::Unchecked && ui->cb_m_n->checkState() == Qt::Checked)
     {

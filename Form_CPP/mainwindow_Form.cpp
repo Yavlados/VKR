@@ -300,6 +300,12 @@ void MainWindow::RefreshTab()
                 p_b_counter--;
             }
         }
+    while(ui->hl_label_owt->count())
+    {
+        QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+        delete item->widget();
+    }
+
     ui->lineEdit->clear();
     set_validators();
 
