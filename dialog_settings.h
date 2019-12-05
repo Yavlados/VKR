@@ -26,8 +26,11 @@ private slots:
     void on_pushButton_2_clicked();
 
     void closeEvent(QCloseEvent *event);
+
+    void set_settings_from_ini();
 private:
     Ui::Dialog_settings *ui;
+    QSettings *settings;
 };
 
 #endif // DIALOG_SETTINGS_H

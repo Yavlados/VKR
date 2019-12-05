@@ -37,7 +37,11 @@ public:
     void set_counters();
     void fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt);
     bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = nullptr, QVector<QVector<int> > *vector = nullptr,QVector<QVector<QString>> *vector_str = nullptr, bool old_db = false);//Лист удобно использовать при добавлении, при импорте - вектор
+
+    bool insert_off_tel_in_db(QList<Off_tels *> *offtel);
+
     bool del_zk_from_pg(QList<int> del_list);
+    bool del_offt_from_pg(QList<int> del_list);
 
     void fill_links(QVector<QVector <QString> > *vector);
 

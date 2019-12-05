@@ -45,16 +45,14 @@ public slots:
 
 private slots:
 
-
-    void on_le_1_editingFinished();
-
-    void on_le_2_editingFinished();
-
-    void on_le_3_editingFinished();
-
-    void on_le_4_editingFinished();
-
     void on_le_1_textEdited(const QString &arg1);
+
+    void on_le_2_textEdited(const QString &arg1);
+
+    void on_le_3_textEdited(const QString &arg1);
+
+    void on_le_4_textEdited(const QString &arg1);
+
 
     void on_cb_m_n_toggled(bool checked);
 

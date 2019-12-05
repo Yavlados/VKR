@@ -27,6 +27,7 @@ public:
 private:
     Ui::OfficialTelephones *ui;
     QSortFilterProxyModel *m1;
+    void set_label(QList<Off_tels *> list);
 private slots:
     void Fill_table();
     void on_pb_add_clicked();

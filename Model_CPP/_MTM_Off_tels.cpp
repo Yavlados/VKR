@@ -66,7 +66,14 @@ QVariant MTM_Off_Tels::data(const QModelIndex &index, int role) const
             return actofflist.at(row)->tel_num;
             }
         }
-      return QVariant();
+    return QVariant();
+}
+
+void MTM_Off_Tels::reset_off_t_Model()
+{
+    beginResetModel();
+        actofflist.clear();
+     endResetModel();
 }
 
 QVariant MTM_Off_Tels::headerData(int section, Qt::Orientation orientation, int role) const

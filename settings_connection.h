@@ -16,17 +16,19 @@ public:
 
     Settings_connection();
 
-    int showing_count;
+    int showing_count = 50;
     int columns_count;
 
     QString HostName,
             DatabaseName,
             User,
             Password;
-     int    Port;
+     int    Port = 0;
 
 
     QSettings *settings = nullptr;
+
+    QSettings *ret_settings();
 
     void    Set_settings();
 

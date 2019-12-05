@@ -27,7 +27,12 @@
 enum Import_state { Password_incorrect = 0,
                     Import_succesful = 1,
                     Import_abort = 2,
-                    Import_in_progress = 3};
+                    Import_in_progress = 3,
+                    Import_conflict};
+enum Import_form_state {    official_tel,
+                            zk
+                    };
+
 namespace Ui {
 class Import_Form;
 }
@@ -39,6 +44,10 @@ class Import_Form : public QWidget ///Форма импорта
 public:
     QWidget *parent_win;
     bool old_db = false;
+    bool skip_all = false;
+
+    Import_form_state form_state;
+
     explicit Import_Form(QWidget *parent = nullptr);
     ~Import_Form();
 
@@ -61,11 +70,14 @@ public:
     MTM_OwTel *tel_model;
 
     MTM_Off_Tels *off_model;
+    MTM_Off_Tels *off_model_pg;
     SqlType type;
 
     bool Testing_open_db(QString filename, QString password);
 
     bool begin_import();
+
+    bool begin_import_of_t();
 
     bool folder = false;
     QSize actual_size;
@@ -80,6 +92,8 @@ private slots:
     void switch_zk_to_crud(QList<Crud*> *crud_list, OldDbZk *zk);
 
     bool compare_dump_db();
+
+    Import_state compare_of_t();
 
     void on_pb_save_import_slot(QString str);
 
@@ -145,6 +159,7 @@ private:
     QList<Off_tels*>    *offtel;    ///С данными из SQLite
     QList<zk_links*>    *links;
     Crud *crud_from_pg;             ///Локальный круд из БД
+    QList<Off_tels*>    *offtel_pg = nullptr;
     QString Local_filename ;
     Ui::Import_Form *ui;
 };

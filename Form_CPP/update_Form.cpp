@@ -186,6 +186,8 @@ void Update::Fill_fields_update(Crud *new_cr)
       ot_model->setOTList(new_cr->owt());
 
     ui->tableView->setModel(ot_model);
+    QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+    ui->label_tels->setText(temp);
 
     ui->tableView->resizeColumnToContents(0);
     ui->tableView->resizeColumnToContents(1);
@@ -238,6 +240,8 @@ void Update::on_pb_Update_clicked()
 
    // msgbx.setGeometry(0,0, 900,210);
     msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
+    msgbx.setWindowTitle("Выберите действие");
+
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     int ret = msgbx.exec();
 
@@ -399,6 +403,9 @@ void Update::on_tableView_clicked(const QModelIndex &index)
     ui->tableView_2->setWordWrap(false);
     ui->tableView_2->horizontalHeader()->setStretchLastSection(true);
 
+    QString temp = "Номера контактов("+QString::number(contacts_model->clist->count())+")";
+    ui->label_cont->setText(temp);
+
     qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
 }
 //-----------------------------------------------------------------------------------//
@@ -425,8 +432,15 @@ void Update::on_pb_del_line_telephone_clicked()
                  ot_model->reset_OTModel();
 
              }
+
+             ui->tableView->setModel(ot_model);
+             QString temp1 = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+             ui->label_tels->setText(temp1);
+
+             contacts_model->reset_ContactModel();
+             QString temp = "Номера контактов";
+             ui->label_cont->setText(temp);
     }
-    contacts_model->reset_ContactModel();
 }
 //-----------------------------------------------------------------------------------//
 void Update::on_pb_del_contact_line_clicked()
@@ -435,6 +449,8 @@ void Update::on_pb_del_contact_line_clicked()
     if( ind.isValid())
     {
         contacts_model->delRow_contact(ind);
+        QString temp = "Номера контактов("+QString::number(contacts_model->clist->count())+")";
+        ui->label_cont->setText(temp);
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -460,9 +476,12 @@ void Update::on_pb_add_contact_line_clicked()
                cnt->contact_tel_num= comp->content->tel_num;
                cnt->mark = comp->content->mark;
                contacts_model->addRow_contact(cnt);
-               //owt->state = IsChanged;
-               //ot_model->setOTList(new_cr->owt());
+
                ui->tableView_2->setModel(contacts_model);
+
+               QString temp = "Номера контактов("+QString::number(contacts_model->clist->count())+")";
+               ui->label_cont->setText(temp);
+
                ui->tableView_2->resizeColumnToContents(2);
                break;
            }
@@ -802,6 +821,9 @@ void Update::Fill_table_in_add()
        //ot_model->state = Edit_Ot; ///меняю флаги для изменения
        ui->tableView->setModel(ot_model);
 
+       QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+       ui->label_tels->setText(temp);
+
        ui->tableView->resizeColumnToContents(0);
        ui->tableView->resizeColumnToContents(1);
        ui->tableView->resizeColumnToContents(2);
@@ -836,6 +858,7 @@ void Update::Add_zk()
 
 
     msgbx.setText("<font size = '5'><h1> Подтверждение </h1> <br>Вы готовы завершить добавление записной книги?</font>");
+    msgbx.setWindowTitle("Подтверждение");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     msgbx.setButtonText(QMessageBox::Ok,"Подтвердить");
     msgbx.setButtonText(QMessageBox::Cancel,"Отмена");
@@ -1248,6 +1271,7 @@ void Update::msg_before_confluence(Crud *cr)
     msgbx.setText("<font size = '5'> Вы собираетесь объеденить две записи в одну. <br> Какую выбрать в качестве основной?</font>");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
     msgbx.setButtonText(QMessageBox::Ok,"Совпавшую ЗК № "+ QString::number(cr->zk_id));
+    msgbx.setWindowTitle("Выберите действие");
 
     if(new_cr->zk_id != 0)
         msgbx.setButtonText(QMessageBox::Open,"Текущую ЗК № " + QString::number(new_cr->zk_id));
@@ -1400,6 +1424,9 @@ void Update::on_tableView_doubleClicked(const QModelIndex &index)
 
         //ot_model->setOTList(new_cr->owt());
         ui->tableView->setModel(ot_model);
+
+        QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+        ui->label_tels->setText(temp);
         break;
     }
     delete comp;
@@ -1486,6 +1513,9 @@ void Update::on_pb_add_line_telephone_clicked()
         //owt->state = IsChanged;
         //ot_model->setOTList(new_cr->owt());
         ui->tableView->setModel(ot_model);
+
+        QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+        ui->label_tels->setText(temp);
         break;
     }
     delete comp;
@@ -1512,6 +1542,8 @@ void Update::on_tableView_2_doubleClicked(const QModelIndex &index)
         //ot_model->setOTList(new_cr->owt());
         ui->tableView_2->setModel(contacts_model);
         ui->tableView_2->resizeColumnToContents(2);
+        QString temp = "Номера контактов("+QString::number(contacts_model->clist->count())+")";
+        ui->label_cont->setText(temp);
         break;
     }
     delete comp;

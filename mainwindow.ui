@@ -94,7 +94,7 @@
               <property name="font">
                <font>
                 <family>Arial</family>
-                <pointsize>12</pointsize>
+                <pointsize>11</pointsize>
                </font>
               </property>
               <property name="text">
@@ -159,7 +159,7 @@
               </property>
               <property name="font">
                <font>
-                <pointsize>12</pointsize>
+                <pointsize>11</pointsize>
                </font>
               </property>
               <property name="layoutDirection">
@@ -218,7 +218,7 @@
        <property name="font">
         <font>
          <family>Arial</family>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
         </font>
        </property>
        <property name="autoFillBackground">
@@ -356,7 +356,7 @@
                    <property name="font">
                     <font>
                      <family>Arial</family>
-                     <pointsize>15</pointsize>
+                     <pointsize>11</pointsize>
                     </font>
                    </property>
                    <property name="text">
@@ -411,7 +411,7 @@
                      <property name="font">
                       <font>
                        <family>Arial</family>
-                       <pointsize>15</pointsize>
+                       <pointsize>11</pointsize>
                       </font>
                      </property>
                      <property name="text">

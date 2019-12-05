@@ -31,9 +31,17 @@ private slots:
 
     void on_groupBox_clicked();
 
+    void on_pushButton_clicked();
+
+    void set_settings_from_ini();
 private:
     void closeEvent(QCloseEvent *event);
     Ui::Settings_Form *ui;
+
+private slots:
+   void on_groupBox_4_toggled(bool arg1);
+   void on_groupBox_3_toggled(bool arg1);
+
 signals:
     void Update_main();
 };

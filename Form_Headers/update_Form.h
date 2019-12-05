@@ -13,6 +13,8 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QSqlTableModel>
+#include <QString>
+
 /**
  * \file update_Form.h
  * \brief Форма редактирования/добавления записных книг

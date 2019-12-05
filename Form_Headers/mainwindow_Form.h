@@ -174,7 +174,7 @@ private slots:
 
     void testing_export(QString, QString, bool, bool, bool);
 
-    void testing_opening(QString, QString, bool);
+    void testing_opening(QString, QString, bool, bool of_t);
 
     void on_action_import_triggered();
 

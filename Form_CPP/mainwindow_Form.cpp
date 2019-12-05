@@ -297,7 +297,7 @@ void MainWindow::RefreshTab()
     }
 
     QLabel *lb = new QLabel;
-    QString str = "Всего записей: "+QString::number(crudlist->size());
+    QString str = "Всего записей: "+QString::number(crud_model->crudlist->size());
     lb->setText(str);
     ui->hl_label_crud->addWidget(lb);
 }
@@ -328,6 +328,7 @@ void MainWindow::on_action_delete_triggered()
     if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
     {
         msgbx.setText("Удаление");
+        msgbx.setWindowTitle("Удаление");
         msgbx.setInformativeText("Вы действительно хотите удалить выбранную записную книгу № "+QString::number(crud_model->actcrudlist.at(index_tab1.row())->zk_id));
         msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         int ret = msgbx.exec();
@@ -408,6 +409,18 @@ void MainWindow::Search_result(QList<Crud*> *crudlist)
     ui->tableView->setModel(crud_model);
     Add_pagination_buttons();
     MainWindow::add_cancel_button();
+
+    while(ui->hl_label_crud->count())
+    {
+        QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+        delete item->widget();
+    }
+
+    QLabel *lb = new QLabel;
+    QString str = "Найдено записей: "+QString::number(crudlist->size());
+    lb->setText(str);
+    ui->hl_label_crud->addWidget(lb);
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_pushButton_clicked()
@@ -443,6 +456,16 @@ void MainWindow::on_pushButton_clicked()
             }
 
             MainWindow::add_cancel_button();
+            while(ui->hl_label_crud->count())
+            {
+                QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+                delete item->widget();
+            }
+
+            QLabel *lb = new QLabel;
+            QString str = "Найдено записей: "+QString::number(crud_model->actcrudlist.size());
+            lb->setText(str);
+            ui->hl_label_crud->addWidget(lb);
         }
     }
 }
@@ -668,8 +691,17 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
 
         if(!crud->isEmpty() || !offtel->isEmpty())
         {
-            if( form_exprt->Do_export(filename,crud, password, cb_off_tels, cb_set_password, offtel, links_for_export))
-                QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 .").arg(filename)); ///Хвалимся
+            if( form_exprt->Do_export(filename, crud, password, cb_off_tels, cb_set_password, offtel, links_for_export))
+            {
+                if(!crud->isEmpty())
+                    QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
+                                                                                    " ЗК экспортировано: %2 .").arg(filename).arg(QString::number(crud->size()))); ///Хвалимся
+                else
+                    if(!offtel->isEmpty())
+                    QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
+                                                                                    " Служебных телефонов экспортировано: %2 .").arg(filename).arg(QString::number(offtel->size()))); ///Хвалимся
+
+            }
             else
                 QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Во время экспорта данных что-то пошло не так!")); ///Хвалимся
         }
@@ -682,7 +714,7 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
     }
 }
 //-----------------------------------------------------------------------------------//
-void MainWindow::testing_opening(QString filename, QString password, bool folder)
+void MainWindow::testing_opening(QString filename, QString password, bool folder, bool of_t)
 {
     ///Класс для импорта
 
@@ -707,6 +739,7 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
                     //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
 
                     QDialog *d = new QDialog(this);
+                    d->setWindowTitle("Мастер импорта");
                     QVBoxLayout *l = new QVBoxLayout(d);
                     QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
                     dbb->button(QDialogButtonBox::Ok)->setVisible(false);
@@ -751,19 +784,92 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
         {
             ///Идем сравнивать выгруженный в список дамп с БД
             /// Метод алгоритма сравнения и импорта
-            if(import_form->begin_import())
+           if(!of_t)
+           {
+               if(import_form->begin_import())
                {
-                import_form->show(); //открываем форму
-                import_form->showMaximized();
+                   //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
+
+                   QDialog *d = new QDialog(this);
+                   d->setWindowTitle("Мастер импорта");
+                   QVBoxLayout *l = new QVBoxLayout(d);
+                   QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+                   dbb->button(QDialogButtonBox::Ok)->setVisible(false);
+                   dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
+                   l->addWidget(import_form);
+                   l->addWidget(dbb);
+                   d->showMaximized();
+                   QSize sz = d->size();
+                   d->setFixedSize(sz);
+                   //передаю уровнем ниже указатель на кнопки
+                   //для имитации accept и rejected
+                   import_form->ddb = dbb;
+
+
+                   connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
+                   connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
+                   switch (d->exec())
+                   {
+                   case QDialog::Rejected:
+                       delete l;
+                       RefreshTab();
+                       d->close();
+                       delete d;
+                       return;
+                   case QDialog::Accepted:
+                       RefreshTab();
+                       delete l;
+                       d->close();
+                       delete d;
+                   }
                }
+
+           }
+           else {
+               if(import_form->begin_import_of_t())
+               {
+                   //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
+
+                   QDialog *d = new QDialog(this);
+                   d->setWindowTitle("Мастер импорта");
+                   QVBoxLayout *l = new QVBoxLayout(d);
+                   QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+                   dbb->button(QDialogButtonBox::Ok)->setVisible(false);
+                   dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
+                   l->addWidget(import_form);
+                   l->addWidget(dbb);
+                   d->showMaximized();
+                   QSize sz = d->size();
+                   d->setFixedSize(sz);
+                   //передаю уровнем ниже указатель на кнопки
+                   //для имитации accept и rejected
+                   import_form->ddb = dbb;
+
+
+                   connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
+                   connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
+                   switch (d->exec())
+                   {
+                   case QDialog::Rejected:
+                       delete l;
+                       RefreshTab();
+                       d->close();
+                       delete d;
+                       return;
+                   case QDialog::Accepted:
+                       RefreshTab();
+                       delete l;
+                       d->close();
+                       delete d;
+                   }
+               }
+
+           }
         }
-        else
-            delete import_form;
     }
-
-
-
 }
+
+
 //-----------------------------------------------------------------------------------//
 
 //-----------------------------------------------------------------------------------//
@@ -774,7 +880,7 @@ void MainWindow::on_action_import_triggered()
         imprt = new Master_import_form(this);
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,imprt,"Импорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
-        connect(imprt, SIGNAL(TESTING_open(QString,QString, bool)), this, SLOT(testing_opening(QString, QString, bool)));
+        connect(imprt, SIGNAL(TESTING_open(QString,QString, bool, bool)), this, SLOT(testing_opening(QString, QString, bool, bool)));
     }
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(imprt));
@@ -809,6 +915,7 @@ void MainWindow::next_page()
         delete item->widget();
     }
 
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::previous_page()
@@ -830,6 +937,7 @@ void MainWindow::previous_page()
         QLayoutItem *item = ui->hl_label_owt->takeAt(0);
         delete item->widget();
     }
+
 
 }
 //-----------------------------------------------------------------------------------//

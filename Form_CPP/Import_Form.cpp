@@ -29,6 +29,7 @@ Import_Form::Import_Form(QWidget *parent) :
 
 Import_Form::~Import_Form()
 {
+    setWindowTitle("Мастер импорта");
     delete ui;
 }
 
@@ -160,15 +161,21 @@ void Import_Form::make_link_clicked()
 bool Import_Form::add_to_db()
 {
   if(!del_list.isEmpty())
-    list->del_zk_from_pg(del_list);
-
-  if (crud->isEmpty())
   {
-      QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("При сравнении не осталось ни одной записи для импорта")); ///Хвалимся
-      if(ddb != nullptr)
-          ddb->rejected();
-      return false;
+    switch(form_state)
+    {
+        case zk:
+        list->del_zk_from_pg(del_list);
+        break;
+    case official_tel:
+        list->del_offt_from_pg(del_list);
+        break;
+    }
   }
+
+  if (!crud->isEmpty())
+  {
+
     QList<int> *templist = nullptr;
     if(list->insert_crud_in_db(crud,templist,links_vector,vector, old_db))
     {
@@ -178,7 +185,7 @@ bool Import_Form::add_to_db()
 //                list->fill_links(vector);
 //            }
 
-        QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно!")); ///Хвалимся
+        QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно! Импортировано %1 записных книг").arg(QString::number(crud->size()))); ///Хвалимся
         emit Refresh_tab();
 
         if(ddb != nullptr)
@@ -192,6 +199,32 @@ bool Import_Form::add_to_db()
 
         return false; //Если нет совпадениий, необходимо начинать импорт
     }
+  } else if(!offtel->isEmpty())
+  {
+     bool isOk = list->insert_off_tel_in_db(offtel);
+     if(!isOk)
+     {
+         QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("При импорте возникли неполадки!")); ///Хвалимся
+         if(ddb != nullptr)
+             ddb->rejected();
+         return false;
+     } else
+     {
+         QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно! Импортировано %1 служебных телефонов").arg(QString::number(offtel->size()))); ///Хвалимся
+         emit Refresh_tab();
+
+         if(ddb != nullptr)
+             ddb->accepted();
+         return true;
+     }
+  }
+  else
+  {
+      QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("При сравнении не осталось ни одной записи для импорта")); ///Хвалимся
+      if(ddb != nullptr)
+          ddb->rejected();
+      return false;
+  }
 }
 
 void Import_Form::prepare_main_to_add(Crud *main_crud, Crud *added_crud)
@@ -222,6 +255,7 @@ void Import_Form::prepare_main_to_add(Crud *main_crud, Crud *added_crud)
     }
 
     Update *upd = new Update;
+    upd->setWindowTitle("Слияние ЗК");
     upd->frm_t=Add_form;
     upd->imprt_t = Add_import_data;
     connect(this,SIGNAL(Send_data(Crud*)), upd, SLOT(recieve_import_data(Crud*)));
@@ -450,7 +484,6 @@ bool Import_Form::compare_dump_db()
                     connect(pb,SIGNAL(clicked()), this, SLOT(make_link_clicked()));
                }
 
-
                ui->tableView_owt_pg->setModel(tel_mod_pg);
                delete temp; delete temp2;
 
@@ -462,6 +495,74 @@ bool Import_Form::compare_dump_db()
     else
         return false;
     return false;
+}
+
+Import_state Import_Form::compare_of_t()
+{
+    if (offtel_pg != nullptr)
+    {
+        Off_tels::clear_list(offtel_pg);
+        delete offtel_pg;
+        offtel_pg = nullptr;
+    }
+
+    if(a<offtel->size())
+        while (a<offtel->size())
+        {
+            ///проверка
+            QString query = " tel_num = '"+offtel->at(a)->tel_num+"' "
+                    " OR service_name = '"+offtel->at(a)->service_name+"'";
+            QList<Off_tels *> *matches = Off_tels::compare_with_base(query);
+            if(matches == nullptr)
+            {
+                return Import_abort;        //ошибка при заполнении
+            } else
+                if(!matches->isEmpty())     //нашлись совпадения
+                {
+                    QLabel *lb;
+                    if(matches->size() > 1)
+                    lb = new QLabel("<font size = 6>  <div align=\"left\"> Служебный телефон  <b>"+offtel->at(a)->tel_num+"</b>"+
+                                            " совпадает со следующими номерами служб: ");
+                    else
+                        lb = new QLabel("<font size = 6>  <div align=\"left\"> Служебный телефон  <b>"+offtel->at(a)->tel_num+"</b>"+
+                                                " совпадает с номером службы:"+ matches->at(0)->service_name);
+                    ui->vl_for_label->addWidget(lb);
+
+                    off_model = new MTM_Off_Tels;
+                    off_model_pg = new MTM_Off_Tels;
+
+                    QList<Off_tels *> *templist = new QList<Off_tels *>;
+                    templist->append(offtel->at(a));
+                    off_model->setOffTList(templist);
+
+                    off_model_pg->setOffTList(matches);
+
+                    ui->tableView_crud->setModel(off_model);
+                    ui->tableView_crud_pg->setModel(off_model_pg);
+                    ui->tableView_crud->resizeColumnsToContents();
+                             ui->tableView_crud->horizontalHeader()->setStretchLastSection(true);
+                    ui->tableView_crud_pg->resizeColumnsToContents();
+                             ui->tableView_crud_pg->horizontalHeader()->setStretchLastSection(true);
+
+                    ui->tableView_owt->setVisible(false);
+                    ui->tableView_owt_pg->setVisible(false);
+                    ui->pb_update_pg->setVisible(false);
+                    ui->pb_update_import_zk->setVisible(false);
+                    ui->pushButton->setVisible(false);
+                    ui->pb_skip_All->setVisible(false);
+                    offtel_pg = matches;
+
+                    return Import_conflict;
+                }
+                else
+                    if(matches->isEmpty())
+                    {
+                        a++;
+                        return Import_in_progress;  //совпадений нет
+                    }
+        }
+    return Import_succesful;    //Все проверили
+
 }
 
 
@@ -511,42 +612,96 @@ void Import_Form::on_pb_save_import_clicked()
 {
     /// Сохранение ЗК из дампа = удаление из БД (записываем номер)
     /// и удаление из локального списка
-    del_list.append(crud_from_pg->zk_id);
-    if(a<crud->size()-1)
-    {
-        a++;  //Смещаю итератор на следующую ЗК
-        clear_models();
-        clear_label();
-        if (!begin_import()) //
-            closeEvent(event);;//снова иду на импорт
-    }
-    else
-    {//Список кончился,проверим еще раз и пора делать импорт
-        if (!add_to_db()) //
-            delete this;
-        else
-            delete this;
-    }
+   if(!crud->isEmpty())
+   {
+       del_list.append(crud_from_pg->zk_id);
+       form_state = zk;
+       if(a<crud->size()-1)
+       {
+           a++;  //Смещаю итератор на следующую ЗК
+           clear_models();
+           clear_label();
+           if (!begin_import()) //
+               closeEvent(event);;//снова иду на импорт
+       }
+       else
+       {//Список кончился,проверим еще раз и пора делать импорт
+           if (!add_to_db()) //
+               delete this;
+           else
+               delete this;
+       }
+   } else if(!offtel->isEmpty())
+   {
+       for (int i =0; i < offtel_pg->size(); i++)
+       {
+
+           del_list.append(offtel_pg->at(i)->of_t_id);
+       }
+       form_state = official_tel;
+
+       if(a<offtel->size()-1)
+       {
+           a++;  //Смещаю итератор на следующую ЗК
+
+           off_model->reset_off_t_Model();
+           off_model_pg->reset_off_t_Model();
+
+           clear_label();
+           if (!begin_import_of_t()) //
+               closeEvent(event);;//снова иду на импорт
+       }
+       else
+       {//Список кончился,проверим еще раз и пора делать импорт
+           if (!add_to_db()) //
+               delete this;
+           else
+               delete this;
+       }
+   }
 }
 
 void Import_Form::on_pb_save_main_clicked()
 {
-    ///Сохранение ЗК из БД = удаление из списка дампа
-    crud->removeAt(crud->indexOf(crud_model->actcrudlist.at(0)));
-    if(a<crud->size())
+    if(!crud->isEmpty())
     {
-        clear_models();
-        clear_label();
-       if(!begin_import())//снова иду на импорт
-           delete this;
-    }
-    else
-    {//Список кончился,проверим еще раз и пора делать импорт
-        if (!add_to_db()) //
-            delete this;
+        ///Сохранение ЗК из БД = удаление из списка дампа
+        crud->removeAt(crud->indexOf(crud_model->actcrudlist.at(0)));
+        if(a<crud->size())
+        {
+            clear_models();
+            clear_label();
+            if(!begin_import())//снова иду на импорт
+                delete this;
+        }
         else
-            delete this;
-    }
+        {//Список кончился,проверим еще раз и пора делать импорт
+            if (!add_to_db()) //
+                delete this;
+            else
+                delete this;
+        }
+    } else
+        if(!offtel->isEmpty())
+        {
+            ///Сохранение ЗК из БД = удаление из списка дампа
+            offtel->removeAt(offtel->indexOf(off_model->actofflist.at(0)));
+            if(a<offtel->size())
+            {
+                off_model->reset_off_t_Model();
+                off_model_pg->reset_off_t_Model();
+                clear_label();
+                if(!begin_import_of_t())//снова иду на импорт
+                    delete this;
+            }
+            else
+            {//Список кончился,проверим еще раз и пора делать импорт
+                if (!add_to_db()) //
+                    delete this;
+                else
+                    delete this;
+            }
+        }
 }
 
 void Import_Form::on_pb_skip_import_clicked()
@@ -561,26 +716,26 @@ void Import_Form::on_pb_skip_All_clicked()
     /// Сделать рекурсию на метод compare_dump_db
     /// и пока false чистить локальный список как в методе
     /// on_pb_save_main_clicked()
-    crud->removeAt(crud->indexOf(crud_model->actcrudlist.at(0)));
-    if(a<crud->size())
-    {
-        clear_models();
-        clear_label();
-        //Если нашлось совпадение, вызываем этот метод снова
-        if(begin_import())
-            on_pb_skip_All_clicked();
+     crud->removeAt(crud->indexOf(crud_model->actcrudlist.at(0)));
+        if(a<crud->size())
+        {
+            clear_models();
+            clear_label();
+            //Если нашлось совпадение, вызываем этот метод снова
+            if(begin_import())
+                on_pb_skip_All_clicked();
+            else
+                delete this;
+        }
         else
-            delete this;
-    }
-    else
-    {//Список кончился,проверим еще раз и пора делать импорт
-        if (!add_to_db()) //
-            delete this;
-        else
-            delete this;
-    }
-}
+        {//Список кончился,проверим еще раз и пора делать импорт
+            if (!add_to_db()) //
+                delete this;
+            else
+                delete this;
+        }
 
+}
 
 bool Import_Form::Testing_open_db(QString filename, QString password)
 { //true - признак открытия формы импорта, с выбором совпадений
@@ -625,7 +780,6 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
             db_file.close();
             db->db().close();
             db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
-            qDebug() << db->db_connect()<<db->db().lastError();
 
             ///Перед операцией слияния дампа и основной бд необходимо проверить
             /// оба списка на повторы
@@ -696,7 +850,6 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
         }
 }
 
-
 bool Import_Form::begin_import()
 {
 
@@ -713,6 +866,31 @@ bool Import_Form::begin_import()
         {
             return false;
         }
+    }
+}
+
+bool Import_Form::begin_import_of_t()
+{
+  mark:
+    Import_state state = compare_of_t();//возвращает true если есть совпадение
+    switch (state) {
+    case Import_abort :
+        return false;
+    case Import_succesful :
+        QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Сравнение прошло успешно!")); ///Хвалимся
+            if(add_to_db())//Начинаем импорт
+            {//В любом случае - закрываем
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        case Import_in_progress :
+        goto mark;
+        break;
+    case Import_conflict :
+        return true;
     }
 }
 
@@ -976,6 +1154,7 @@ void Import_Form::on_pb_save_import_slot(QString str)
 void Import_Form::on_pb_update_import_zk_clicked()
 {
     Update *upd = new Update;
+    upd->setWindowTitle("Редактирование ЗК");
     upd->frm_t=Add_form;
     upd->imprt_t = Update_import_data;
     connect(this,SIGNAL(Send_data(Crud*)), upd, SLOT(recieve_import_data(Crud*)));
@@ -987,6 +1166,7 @@ void Import_Form::on_pb_update_import_zk_clicked()
 void Import_Form::on_pb_update_pg_clicked()
 {
      Update *upd = new Update;
+     upd->setWindowTitle("Редактирование ЗК");
      upd->frm_t= Update_form; //Подгрузка из бд при клике
      upd->imprt_t = Update_pg_data_import;
      connect(this,SIGNAL(Send_data(Crud*)), upd, SLOT(recieve_import_data(Crud*)));
@@ -1000,6 +1180,7 @@ void Import_Form::on_pushButton_clicked()
 {
     QMessageBox msgbx;
     msgbx.setText("<font size = '5'> Вы собираетесь объеденить две записи в одну. <br> Какую выбрать в качестве основной?</font>");
+    msgbx.setWindowTitle("Выберите действие");
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Open | QMessageBox::Cancel);
     msgbx.setButtonText(QMessageBox::Ok,"Импортируемую ЗК №"+ QString::number(crud_model->actcrudlist.at(0)->zk_id));
     msgbx.setButtonText(QMessageBox::Open,"Основную ЗК №"+ QString::number(crud_model_pg->actcrudlist.at(0)->zk_id));
@@ -1025,6 +1206,7 @@ void Import_Form::begin_work_with_links()
 {
     QMessageBox msgbx;
     msgbx.setText("<div align=\"center\"><font size = '10'> Работа со списками </font></div>");
+    msgbx.setWindowTitle("Выберите действие");
     msgbx.setStandardButtons(QMessageBox::Ok |  QMessageBox::Yes  | QMessageBox::Cancel);
     msgbx.setButtonText(QMessageBox::Ok,"Добавить список со связью к старому");
     msgbx.setButtonText(QMessageBox::Yes,"Отменить добавление цепочки");

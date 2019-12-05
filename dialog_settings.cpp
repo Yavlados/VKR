@@ -3,6 +3,8 @@
 
 
 #include <QSettings>
+#include <QFile>
+
 
 Dialog_settings::Dialog_settings(QWidget *parent) :
     QDialog(parent),
@@ -14,6 +16,8 @@ Dialog_settings::Dialog_settings(QWidget *parent) :
     setModal(true);
     ui->label_2->setVisible(false);
     ui->comboBox->setVisible(false);
+    Settings_connection::instance()->Set_settings();
+    set_settings_from_ini();
 }
 
 Dialog_settings::~Dialog_settings()
@@ -58,7 +62,7 @@ void Dialog_settings::on_groupBox_4_toggled(bool arg1)
 
 void Dialog_settings::on_pushButton_clicked()
 {
-    QSettings *settings = new QSettings("testing.ini",QSettings::IniFormat);;
+    settings = Settings_connection::instance()->ret_settings();
     int i = 0;
     settings->beginWriteArray("COLUMNS_ARRAY");
     settings->remove("");
@@ -278,9 +282,12 @@ void Dialog_settings::on_pushButton_clicked()
    settings->setValue("USER", ui->le_user->text());
    settings->endGroup();
 
-   settings->beginGroup("PASSWORD");
-   settings->setValue("PASSWORD", ui->le_pass->text());
-   settings->endGroup();
+    if(ui->checkBox->checkState() == Qt::Checked)
+    {
+        settings->beginGroup("PASSWORD");
+        settings->setValue("PASSWORD", ui->le_pass->text());
+        settings->endGroup();
+    }
 
    settings->sync();
 
@@ -297,4 +304,33 @@ void Dialog_settings::on_pushButton_2_clicked()
 void Dialog_settings::closeEvent(QCloseEvent *event)
 {
     emit reject();
+}
+
+void Dialog_settings::set_settings_from_ini()
+{
+    if(Settings_connection::instance()->Port != 0)
+    {
+        ui->le_port->setText(QString::number(Settings_connection::instance()->Port));
+    }
+    if(!Settings_connection::instance()->HostName.isEmpty())
+    {
+        ui->le_host->setText(Settings_connection::instance()->HostName);
+    }
+    if(!Settings_connection::instance()->DatabaseName.isEmpty())
+    {
+        ui->le_db->setText(Settings_connection::instance()->DatabaseName);
+    }
+    if(!Settings_connection::instance()->User.isEmpty())
+    {
+        ui->le_user->setText(Settings_connection::instance()->User);
+    }
+    if(!Settings_connection::instance()->Password.isEmpty())
+    {
+        ui->le_pass->setText(Settings_connection::instance()->Password);
+
+    }
+    if(Settings_connection::instance()->showing_count != 0)
+    {
+        ui->lineEdit_2->setText(QString::number(Settings_connection::instance()->showing_count));
+    }
 }

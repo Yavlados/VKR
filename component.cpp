@@ -175,34 +175,28 @@ void Component::change_layouts()
     }
 }
 
-void Component::on_le_1_editingFinished()
-{
-}
-
-void Component::on_le_2_editingFinished()
-{
-    ui->le_3->setCursorPosition(0);
-
-}
-
-void Component::on_le_3_editingFinished()
-{
-    ui->le_4->setCursorPosition(0);
-
-}
-
-void Component::on_le_4_editingFinished()
-{
-    ui->le_5->setCursorPosition(0);
-}
-
 void Component::on_le_1_textEdited(const QString &arg1)
 {
+    if (arg1.length() == 1)
+        ui->le_2->setFocus();
+}
 
-    qDebug() << ui->le_1->cursorPosition() <<  ui->le_2->cursorPosition();
-    if (ui->le_1->text().size() == 1)
-        setShortcutEnabled(Qt::Key::Key_Tab);
-    qDebug() << ui->le_1->cursorPosition() <<  ui->le_2->cursorPosition();
+void Component::on_le_2_textEdited(const QString &arg1)
+{
+    if (arg1.length() == 3)
+        ui->le_3->setFocus();
+}
+
+void Component::on_le_3_textEdited(const QString &arg1)
+{
+    if (arg1.length() == 3)
+        ui->le_4->setFocus();
+}
+
+void Component::on_le_4_textEdited(const QString &arg1)
+{
+    if (arg1.length() == 2)
+        ui->le_5->setFocus();
 }
 
 void Component::on_cb_m_n_toggled(bool checked)

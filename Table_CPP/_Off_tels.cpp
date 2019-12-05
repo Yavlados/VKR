@@ -170,3 +170,68 @@ bool Off_tels::update(QList<Off_tels *> *list)
 
     return true;
 }
+
+QList<Off_tels *> *Off_tels::compare_with_base(QString query)
+{
+    QList<Off_tels *> *list = nullptr;
+    QSqlQuery querry(db_connection::instance()->db());
+    querry.prepare("SELECT tel_num, service_name, of_t_id from official_tel "
+                   "WHERE "+ query);
+
+    if (!querry.exec())
+    {
+        qDebug() << querry.lastError();
+        return list;
+    }
+    else {
+        list = new QList<Off_tels *>;
+    }
+    while (querry.next())
+    {
+        Off_tels *of_t = new Off_tels;
+        of_t->state = Readed;
+        of_t->tel_num = querry.value(0).toString();
+        of_t->service_name = querry.value(1).toString();
+        of_t->of_t_id = querry.value(2).toInt();
+
+        list->append(of_t);
+    }
+    return list;
+}
+
+void Off_tels::clear_list(QList<Off_tels *> *list)
+{
+
+    if(list != nullptr)
+    {
+        if(!list->isEmpty())
+        {
+            for(QList<Off_tels *>::const_iterator it = list->begin(); it != list->end(); it++)
+            {
+
+
+                delete *it;
+
+            }
+
+        }
+    }
+}
+
+bool Off_tels::del_off_tel_by_id(int id)
+{
+
+    QSqlQuery querry(db_connection::instance()->db());
+    querry.prepare("DELETE FROM official_tel "
+                   " WHERE official_tel.of_t_id = (:id)");
+
+    querry.bindValue(":id",id);
+
+    if (!querry.exec())
+    {
+        qDebug() << querry.lastError();
+        return false;
+    }
+
+    return true;
+}

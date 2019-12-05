@@ -28,7 +28,9 @@ public:
    static bool add_off_tel(Off_tels * of_t);
    static bool del_off_tel (Off_tels * of_t);
    static bool update(QList<Off_tels*> *list);
-
+   static QList<Off_tels *> *compare_with_base(QString query);
+   static void clear_list(QList<Off_tels *> *list);
+   static bool  del_off_tel_by_id(int id);
 };
 
 #endif // _OFF_TELS_H

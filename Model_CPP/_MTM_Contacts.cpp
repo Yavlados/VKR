@@ -152,9 +152,6 @@ QVariant MTM_Contacts::headerData(int section, Qt::Orientation orientation, int 
             case 3:
                 return QString("Пометка");
           }
-        else {
-            return QString("%1").arg(section+1);
-        }
 
     return QVariant();
 

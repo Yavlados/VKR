@@ -34,7 +34,7 @@ public:
     /// Заполнение модели данными из списка
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-    void reset_ContactModel();
+    void reset_off_t_Model();
 
     /// Переопределяем заголовки таблицам
     virtual QVariant headerData(int section, Qt::Orientation orientation,int role = Qt::DisplayRole) const;

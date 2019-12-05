@@ -16,6 +16,20 @@ OfficialTelephones::~OfficialTelephones()
     delete ui;
 }
 
+void OfficialTelephones::set_label(QList<Off_tels *> list)
+{
+    while (ui->vl_for_label->count())
+    {
+        QLayoutItem *item = ui->vl_for_label->takeAt(0);
+        delete item->widget();
+    }
+
+    QLabel *lb = new QLabel;
+    QString str = "Всего записей: "+QString::number(list.size());
+    lb->setText(str);
+    ui->vl_for_label->addWidget(lb);
+}
+
 void OfficialTelephones::Fill_table()
 {
     of_model = new MTM_Off_Tels;
@@ -33,6 +47,7 @@ void OfficialTelephones::Fill_table()
        ui->tableView->resizeColumnToContents(0);
        ui->tableView->setWordWrap(false);
        ui->tableView->horizontalHeader()->setStretchLastSection(true);
+       set_label(of_model->actofflist);
 }
 
 void OfficialTelephones::on_pb_add_clicked()
@@ -54,6 +69,8 @@ void OfficialTelephones::on_pb_add_clicked()
 
          m1->setSourceModel(of_model);
          ui->tableView->setModel(m1);
+         set_label(of_model->actofflist);
+
     }
     else {
         QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось добавить служебный телефон!")); ///Хвалимся
@@ -64,22 +81,44 @@ void OfficialTelephones::on_pb_del_clicked()
 {
    QModelIndex index = ui->tableView->currentIndex();
    QModelIndex index1 = m1->mapToSource(index);
-   if ( index1.isValid())
-   {
-       Off_tels *oft = of_model->actofflist.at(index1.row());
-      if (Off_tels::del_off_tel(oft))
-      {
-          ofTlist->removeAt(ofTlist->indexOf(oft));
-           of_model->setOffTList(ofTlist);
 
-           m1->setSourceModel(of_model);
-           ui->tableView->setModel(m1);
+   QMessageBox msg;
+   msg.setWindowTitle("Подтверждение");
+   msg.setText("Вы действительно хотите удалить выбранный служебный номер?");
+   msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+   msg.setButtonText(QMessageBox::Ok, "Да");
+   msg.setButtonText(QMessageBox::Cancel, "Нет");
+
+   QString filename;
+   int ret = msg.exec();
+
+  switch(ret)
+  {
+    case QMessageBox::Ok :
+
+      if ( index1.isValid())
+      {
+          Off_tels *oft = of_model->actofflist.at(index1.row());
+         if (Off_tels::del_off_tel(oft))
+         {
+             ofTlist->removeAt(ofTlist->indexOf(oft));
+              of_model->setOffTList(ofTlist);
+
+              m1->setSourceModel(of_model);
+              ui->tableView->setModel(m1);
+                     set_label(of_model->actofflist);
+         }
+         else
+             {
+             QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось удалить служебный телефон!")); ///Хвалимся
+             };
       }
-      else
-          {
-          QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось удалить служебный телефон!")); ///Хвалимся
-          };
-   }
+      return;
+
+  case QMessageBox::Cancel :
+      return;
+  }
+
 }
 
 void OfficialTelephones::on_pushButton_clicked()
@@ -98,6 +137,7 @@ void OfficialTelephones::on_pushButton_clicked()
 
      m1->setSourceModel(of_model);
      ui->tableView->setModel(m1);
+     set_label(of_model->actofflist);
 }
 
 void OfficialTelephones::on_pushButton_2_clicked()
@@ -112,6 +152,7 @@ void OfficialTelephones::on_pushButton_2_clicked()
 
      m1->setSourceModel(of_model);
      ui->tableView->setModel(m1);
+     set_label(of_model->actofflist);
 
 }
 

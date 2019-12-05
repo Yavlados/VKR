@@ -844,7 +844,7 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label_8">
+                   <widget class="QLabel" name="label_tels">
                     <property name="font">
                      <font>
                       <family>Arial</family>
@@ -958,7 +958,7 @@
                    </spacer>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label_10">
+                   <widget class="QLabel" name="label_cont">
                     <property name="font">
                      <font>
                       <family>Arial</family>
@@ -1061,8 +1061,8 @@
        <property name="font">
         <font>
          <pointsize>15</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">

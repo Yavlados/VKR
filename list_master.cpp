@@ -411,6 +411,7 @@ void List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt)
     while (query.next())
     {
         Off_tels *cnt = new Off_tels(query.value(0).toInt(), query.value(1).toString(), query.value(2).toString());
+        cnt->state = Readed;
         offtel->append(cnt);
     }
     db->db().close();
@@ -667,6 +668,34 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
     return true;
 }
 
+bool List_master::insert_off_tel_in_db(QList<Off_tels *> *offtel)
+{
+    if(offtel == nullptr || !db_connection::instance()->db_connect())
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+
+    for (int a = 0; a < offtel->size(); a++)
+    {
+        isOk = Off_tels::add_off_tel(offtel->at(a));
+        if (!isOk)
+            break;
+    }
+    if(isOk)
+    {
+        db_connection::instance()->db().database(cname).commit();
+        return true;
+    }
+    else
+        {
+            db_connection::instance()->db().database(cname).rollback();
+            return false;
+        }
+
+}
+
 bool List_master::del_zk_from_pg(QList<int> del_list)
 {
     if(del_list.isEmpty() || !db_connection::instance()->db_connect())
@@ -677,6 +706,20 @@ bool List_master::del_zk_from_pg(QList<int> del_list)
         Crud::del_zk(del_list.at(i));
     }
     return true;
+}
+
+bool List_master::del_offt_from_pg(QList<int> del_list)
+{
+    if(del_list.isEmpty() || !db_connection::instance()->db_connect())
+        return false;
+    for (int i =0; i < del_list.size(); i++)
+    {
+      bool is_ok = Off_tels::del_off_tel_by_id(del_list.at(i));
+      if (!is_ok)
+          return false;
+    }
+    return true;
+
 }
 
 void List_master::fill_links(QVector<QVector <QString> > *vector)
