@@ -1139,7 +1139,7 @@ void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
     {
         while(ui->vl_for_search_contact->count())
         {
-            QLayoutItem *item = ui->hl_for_pagination_button_next->takeAt(0);
+            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
             delete item->widget();
         }
     }
