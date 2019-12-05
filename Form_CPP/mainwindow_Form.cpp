@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     on_tableView_clicked(index_tab1);
     //set_fonts();
     add_splitter_lines();
-    Settings_connection::instance();
+    //Settings_connection::instance();
 
     size_list = ui->splitter->sizes();
 
@@ -262,11 +262,29 @@ void MainWindow::RefreshTab()
     //QHeaderView *header =crud_model->headerData();
     QList<Crud*> *crudlist = new QList<Crud*>;
     if(Crud::selectAll(crudlist)) ///Вызов статичной функции
+    {
         crud_model->setCrudlist(crudlist);
 
-    Add_pagination_buttons();
+        Add_pagination_buttons();
 
-    ui->tableView->setModel(crud_model);
+        ui->tableView->setModel(crud_model);
+        ui->tabWidget->setCurrentIndex(0);
+        ui->tableView->resizeColumnToContents(0);
+        ui->tableView->resizeColumnToContents(1);
+        ui->tableView->resizeColumnToContents(2);
+        ui->tableView->setWordWrap(false);
+
+        while(ui->hl_label_crud->count())
+        {
+            QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+            delete item->widget();
+        }
+
+        QLabel *lb = new QLabel;
+        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size());
+        lb->setText(str);
+        ui->hl_label_crud->addWidget(lb);
+    }
 
     m_c_s = All_unchecked;
     ot_model->reset_OTModel();
@@ -284,22 +302,8 @@ void MainWindow::RefreshTab()
         }
     ui->lineEdit->clear();
     set_validators();
-    ui->tabWidget->setCurrentIndex(0);
-    ui->tableView->resizeColumnToContents(0);
-    ui->tableView->resizeColumnToContents(1);
-    ui->tableView->resizeColumnToContents(2);
-    ui->tableView->setWordWrap(false);
 
-    while(ui->hl_label_crud->count())
-    {
-        QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-        delete item->widget();
-    }
 
-    QLabel *lb = new QLabel;
-    QString str = "Всего записей: "+QString::number(crud_model->crudlist->size());
-    lb->setText(str);
-    ui->hl_label_crud->addWidget(lb);
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
@@ -514,7 +518,11 @@ void MainWindow::open_upd_tab(Crud *cr)
         //Загрузка ВСЕХ данных выбранной ЗК
         list->fill_crud_list(crudlist,cr->zk_id, PSQLtype);
         //emit Send_data(crudlist->at(0), updlist->size()-1);
-
+        if(crudlist->isEmpty())
+        {
+            QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Возможно выбранной записи нет в базе. Попробуйте обновить таблицы")); ///Хвалимся
+            return;
+        }
         updlist->append(upd);
         upd->Recieve_data(crudlist->at(0));
         upd->take_linked_zk(crudlist->at(0));
@@ -527,8 +535,8 @@ void MainWindow::open_upd_tab(Crud *cr)
 //-----------------------------------------------------------------------------------//
 void MainWindow::set_validators()
 {
-    qDebug() << crud_model->crudlist->first()->zk_id << crud_model->crudlist->last()->zk_id;
-    ui->lineEdit->setValidator(new QIntValidator(crud_model->crudlist->first()->zk_id,crud_model->crudlist->last()->zk_id));
+//    qDebug() << crud_model->crudlist->first()->zk_id << crud_model->crudlist->last()->zk_id;
+//    ui->lineEdit->setValidator(new QIntValidator(crud_model->crudlist->first()->zk_id,crud_model->crudlist->last()->zk_id));
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_tabCloseRequested(int index)
@@ -812,17 +820,16 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
                    {
                    case QDialog::Rejected:
                        delete l;
-                       RefreshTab();
                        d->close();
                        delete d;
                        return;
                    case QDialog::Accepted:
-                       RefreshTab();
                        delete l;
                        d->close();
                        delete d;
                    }
                }
+               RefreshTab();
 
            }
            else {
@@ -863,7 +870,7 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
                        delete d;
                    }
                }
-
+               RefreshTab();
            }
         }
     }
@@ -1177,4 +1184,9 @@ void MainWindow::find_linked_zk()
                 QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
                 delete item->widget();
             }
+}
+
+void MainWindow::on_pb_refresh_clicked()
+{
+    RefreshTab();
 }

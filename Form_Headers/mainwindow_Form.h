@@ -226,6 +226,8 @@ private slots:
 
     void find_linked_zk();
 
+    void on_pb_refresh_clicked();
+
 signals:
     void Send_data(Crud *cr, int index);
 

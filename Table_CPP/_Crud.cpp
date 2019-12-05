@@ -109,6 +109,9 @@ bool Crud:: selectAll(QList<Crud *> *list)
         list->append(cr);
     }
 
+    if(list->isEmpty())
+        return false;
+
     return true;
 }
 //-----------------------------------------------------------------------------------//

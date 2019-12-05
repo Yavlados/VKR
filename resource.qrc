@@ -12,6 +12,7 @@
         <file>png/004-import.png</file>
         <file>png/005-export.png</file>
         <file>png/file.png</file>
+        <file>png/refresh.png</file>
     </qresource>
     <qresource prefix="/config"/>
 </RCC>
