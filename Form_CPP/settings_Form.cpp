@@ -138,7 +138,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_CITY"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_CITY"))
     {
         if(cb->isChecked())
         {
@@ -148,7 +148,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_STREET"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_STREET"))
     {
         if(cb->isChecked())
         {
@@ -158,7 +158,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_HOME"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_HOME"))
     {
         if(cb->isChecked())
         {
@@ -168,7 +168,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_CORP"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_CORP"))
     {
         if(cb->isChecked())
         {
@@ -178,7 +178,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LIV_FLAT"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_FLAT"))
     {
         if(cb->isChecked())
         {
@@ -188,7 +188,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_CITY"))
+    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_CITY"))
     {
         if(cb->isChecked())
         {
@@ -198,7 +198,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_STREET"))
+    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_STREET"))
     {
         if(cb->isChecked())
         {
@@ -208,7 +208,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_HOME"))
+    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_HOME"))
     {
         if(cb->isChecked())
         {
@@ -218,7 +218,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_CORP"))
+    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_CORP"))
     {
         if(cb->isChecked())
         {
@@ -228,7 +228,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("REG_FLAT"))
+    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_FLAT"))
     {
         if(cb->isChecked())
         {
@@ -238,6 +238,7 @@ void Settings_Form::on_pb_save_settings_clicked()
             i++;
         }
     }
+
 
    settings->endArray();
    settings->beginGroup("PAGE_COUNT");
