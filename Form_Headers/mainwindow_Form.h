@@ -85,8 +85,8 @@ public:
      MTM_OwTel *ot_model = new MTM_OwTel;
      MTM_Crud *crud_model = nullptr;
 
-     int *zk_id = nullptr;
-     QString *cont_num = nullptr;
+     int zk_id = 0;
+     QString cont_num = nullptr;
      QList<Contacts*> *contactList = new QList<Contacts*>;
      QList<Owners_tel*> *otList = new QList<Owners_tel*>;
 
@@ -227,6 +227,8 @@ private slots:
     void find_linked_zk();
 
     void on_pb_refresh_clicked();
+
+    void on_tableView_doubleClicked(const QModelIndex &index);
 
 signals:
     void Send_data(Crud *cr, int index);

@@ -1,6 +1,6 @@
 #include "an_result_Form.h"
 #include "ui_an_result.h"
-
+#include <QTextCodec>
 
 An_result::An_result(QWidget *parent) :
     QWidget(parent),
@@ -131,6 +131,10 @@ void An_result::on_pb_to_txt_clicked()
                if(file.open(QIODevice::WriteOnly))
                {
                    QTextStream in(&file);
+                   QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
+                   if(codec != nullptr)
+                     in.setCodec(codec);
+
                    in <<  Text;
                    file.close();
                   QMessageBox::information(this, "Information", "Текстовый файл сформирован и находится по следующему пути: \n"+filename); //выводим сообщение с числом

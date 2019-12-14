@@ -125,6 +125,8 @@ public:
     ///Методы rowid
     static QList<int> *take_links(QString row_id, SqlType sqltype, QString filename = nullptr);
 
+
+    static bool delete_all(QList<Crud*> *list);
 private:
     QList<Owners_tel*> *_owt; ///У ЗК есть список телефонов
 signals:

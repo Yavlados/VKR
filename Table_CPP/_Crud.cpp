@@ -3,6 +3,7 @@
 #include <QDialogButtonBox>
 
 #include <QMetaObject>
+#include <QFile>
 
 QList<Owners_tel *> *Crud::owt()
 {
@@ -261,14 +262,15 @@ bool Crud::update_zk(QList<int> *list_id)
     querry.bindValue(":id", zk_id);
     if (!querry.exec())
     {
+        qDebug() << birth_date;
         qDebug() << querry.lastError();
-        return false;
+        qDebug() << querry.executedQuery();
+        isOk = false;
     }else
     {
-        qDebug() << querry.executedQuery();
         //вызвать метод добавления в линкед намс
 
-        if(list_id != nullptr)
+        if(list_id != nullptr && isOk)
             while(querry.next())
             {
                 //Сначла проверка
@@ -279,8 +281,8 @@ bool Crud::update_zk(QList<int> *list_id)
                         query2.prepare("SELECT *"
                                        " FROM zk_links"
                                        " WHERE (row_id2 = '"+querry.value(0).toString()+ "' AND row_id1 = (SELECT row_id FROM zk WHERE zk_id = "+QString::number(list_id->at(i))+"))"
-                                                                                                                                                                                 " OR"
-                                                                                                                                                                                 " (row_id1 = '"+querry.value(0).toString()+ "' AND row_id2 = (SELECT row_id FROM zk WHERE zk_id = "+QString::number(list_id->at(i))+"))");
+                                        " OR"
+                                        " (row_id1 = '"+querry.value(0).toString()+ "' AND row_id2 = (SELECT row_id FROM zk WHERE zk_id = "+QString::number(list_id->at(i))+"))");
 
                         if(query2.exec())
                         {
@@ -293,6 +295,7 @@ bool Crud::update_zk(QList<int> *list_id)
                                 if(!query1.exec())
                                 {
                                     qDebug() << query1.lastError();
+                                    qDebug() << query1.executedQuery();
                                     isOk = false;
                                     break;
                                 }
@@ -363,6 +366,7 @@ bool Crud::add_zk()
 
     if (!querry.exec())
     {
+        qDebug() << birth_date;
         qDebug() << querry.lastError() << querry.value(1).toString();
         return false;
     }
@@ -577,56 +581,59 @@ Crud* Crud::operator+ (Crud *old_crud)
 //-----------------------------------------------------------------------------------//
 QList<CompareResult>* Crud::compare_cruds(Crud *cmp_cr)
 {
-    QList<CompareResult> *list = new QList<CompareResult>;
+    if(cmp_cr != nullptr)
+    {
+        QList<CompareResult> *list = new QList<CompareResult>;
 
-    if(lastname == cmp_cr->lastname)
-        list->append(lastname_CR);
+        if(lastname == cmp_cr->lastname)
+            list->append(lastname_CR);
 
-    if(name == cmp_cr->name)
-        list->append(name_CR);
+        if(name == cmp_cr->name)
+            list->append(name_CR);
 
-    if(mid_name == cmp_cr->mid_name)
-        list->append(mid_name_CR);
+        if(mid_name == cmp_cr->mid_name)
+            list->append(mid_name_CR);
 
-    if(birth_date == cmp_cr->birth_date)
-        list->append(birth_date_CR);
+        if(birth_date == cmp_cr->birth_date)
+            list->append(birth_date_CR);
 
-    if(check_for == cmp_cr->check_for)
-        list->append(check_for_CR);
+        if(check_for == cmp_cr->check_for)
+            list->append(check_for_CR);
 
-    if(dop_info == cmp_cr->dop_info)
-        list->append(dop_info_CR);
+        if(dop_info == cmp_cr->dop_info)
+            list->append(dop_info_CR);
 
-    if(reg_city == cmp_cr->reg_city)
-        list->append(reg_city_CR);
+        if(reg_city == cmp_cr->reg_city)
+            list->append(reg_city_CR);
 
-    if(reg_street == cmp_cr->reg_street)
-        list->append(reg_street_CR);
+        if(reg_street == cmp_cr->reg_street)
+            list->append(reg_street_CR);
 
-    if(reg_home == cmp_cr->reg_home)
-        list->append(reg_home_CR);
+        if(reg_home == cmp_cr->reg_home)
+            list->append(reg_home_CR);
 
-    if(reg_corp == cmp_cr->reg_corp)
-        list->append(reg_corp_CR);
+        if(reg_corp == cmp_cr->reg_corp)
+            list->append(reg_corp_CR);
 
-    if(reg_flat == cmp_cr->reg_flat)
-        list->append(reg_flat_CR);
+        if(reg_flat == cmp_cr->reg_flat)
+            list->append(reg_flat_CR);
 
-    if(liv_city == cmp_cr->liv_city)
-        list->append(liv_city_CR);
+        if(liv_city == cmp_cr->liv_city)
+            list->append(liv_city_CR);
 
-    if(liv_street == cmp_cr->liv_street)
-        list->append(liv_street_CR);
+        if(liv_street == cmp_cr->liv_street)
+            list->append(liv_street_CR);
 
-    if(liv_home == cmp_cr->liv_home)
-         list->append(liv_home_CR);
+        if(liv_home == cmp_cr->liv_home)
+            list->append(liv_home_CR);
 
-    if(liv_corp == cmp_cr->liv_corp)
-        list->append(liv_corp_CR);
+        if(liv_corp == cmp_cr->liv_corp)
+            list->append(liv_corp_CR);
 
-    if(liv_flat == cmp_cr->liv_flat)
-        list->append(liv_flat_CR);
-    return list;
+        if(liv_flat == cmp_cr->liv_flat)
+            list->append(liv_flat_CR);
+        return list;
+    }
 }
 //-----------------------------------------------------------------------------------//
 void Crud::Change_linked_in_db(bool state, int id, QString linked)
@@ -757,7 +764,7 @@ QList<int> Crud::string_parsing(QString linked_nums_string)
         QList<int> temp;
         while (t  < linked_nums_string.size() )
         {
-           if (linked_nums_string.at(t) != ",")
+           if (linked_nums_string.at(t) != ',')
            {
               a.append(linked_nums_string.at(t));
               t++;
@@ -817,4 +824,16 @@ QList<int> *Crud::take_links(QString row_id, SqlType sqltype, QString filename)
        }
         return temp;
     }
+}
+
+bool Crud::delete_all(QList<Crud*> *list)
+{
+    if(!list->isEmpty())
+        {
+            for(QList<Crud*>::const_iterator it = list->begin(); it != list->end(); it++)
+            {
+                delete *it;
+            }
+
+        }
 }

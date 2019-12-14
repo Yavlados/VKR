@@ -251,7 +251,7 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
 //-----------------------------------------------------------------------------------//
 void MainWindow::RefreshTab()
 {
-    Settings_connection::instance()->Set_settings();
+   // Settings_connection::instance()->Set_settings();
     if (crud_model != nullptr)
     {
         delete crud_model;
@@ -777,12 +777,14 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
                         delete l;
                         d->close();
                         delete d;
+                        //delete import_form;
                         return;
                    case QDialog::Accepted:
                         QMessageBox::information(this,"Успех","Импорт прошел успешно");
                         delete l;
                         d->close();
                         delete d;
+                        //delete import_form;
                         continue;
                     }
                }
@@ -984,7 +986,7 @@ void MainWindow::add_splitter_lines()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_tabBarClicked(int index)
 {
-    qDebug() << ui->tabWidget->tabBar()->accessibleTabName(index);
+   // qDebug() << ui->tabWidget->tabBar()->accessibleTabName(index);
 }
 
 //-----------------------------------------------------------------------------------//
@@ -1135,11 +1137,11 @@ void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
         }
 
         QPushButton *pb = new QPushButton();
-        zk_id = &contacts_model->actlist.at(index.row())->linked_id;
-        pb->setText("Перейти к ЗК №" + QString::number(*zk_id));
+        zk_id = contacts_model->actlist.at(index.row())->linked_id;
+        pb->setText("Перейти к ЗК №" + QString::number(zk_id));
         ui->vl_for_search_contact->addWidget(pb);
         connect(pb, SIGNAL(clicked()), this, SLOT(find_linked_zk()));
-        cont_num = &contacts_model->actlist.at(index.row())->contact_tel_num;
+        cont_num = contacts_model->actlist.at(index.row())->contact_tel_num;
   }
     else
     {
@@ -1153,14 +1155,15 @@ void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
 
 void MainWindow::find_linked_zk()
 {
-            while (*zk_id > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
+    RefreshTab();
+            while (zk_id > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
             {
                 crud_model->next_page_crud();
                 ui->tableView->setModel(crud_model);
                 Add_pagination_buttons();
             }
 
-            while (*zk_id < crud_model->actcrudlist.at(0)->zk_id)
+            while (zk_id < crud_model->actcrudlist.at(0)->zk_id)
             {
                 crud_model->previous_page_crud();
                 ui->tableView->setModel(crud_model);
@@ -1169,22 +1172,17 @@ void MainWindow::find_linked_zk()
 
             for (int i = 0; i < crud_model->actcrudlist.size(); i++)
             {
-                if(crud_model->actcrudlist.at(i)->zk_id == *zk_id)
+                if(crud_model->actcrudlist.at(i)->zk_id == zk_id)
                 {
-                    zk_id = &i;
+                    zk_id = i;
                     break;
                 }
             }
 
-            index_tab1 = crud_model->index(*zk_id,0);
+            index_tab1 = crud_model->index(zk_id,0);
             ui->tableView->setCurrentIndex(index_tab1);
-            on_tableView_clicked(index_tab1, *cont_num);
+            on_tableView_clicked(index_tab1, cont_num);
             //Delete
-            delete zk_id;
-            delete cont_num;
-            zk_id = nullptr;
-            cont_num = nullptr;
-
             if(ui->vl_for_search_contact->count())
             {
                 QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
@@ -1195,4 +1193,10 @@ void MainWindow::find_linked_zk()
 void MainWindow::on_pb_refresh_clicked()
 {
     RefreshTab();
+}
+
+void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
+{
+    index_tab1 = index;
+    on_action_update_triggered();
 }

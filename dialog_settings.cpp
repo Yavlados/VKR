@@ -303,6 +303,7 @@ void Dialog_settings::on_pushButton_2_clicked()
 
 void Dialog_settings::closeEvent(QCloseEvent *event)
 {
+    (void)event;
     emit reject();
 }
 

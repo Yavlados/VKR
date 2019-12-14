@@ -30,6 +30,9 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
          db->db().setDatabaseName(db_file.fileName());
 
          QTextStream in(&export_report);
+         QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
+         if(codec != nullptr)
+           in.setCodec(codec);
 
          in << info_text;
 

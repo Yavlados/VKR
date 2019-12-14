@@ -78,6 +78,7 @@ private:
     QList<Crud*> * _linked_crud = nullptr;
     int index = 0;
     Ui::Update *ui;
+    QPushButton *p_b = nullptr;
 
 signals:
 
@@ -91,6 +92,8 @@ signals:
 
 private slots:
 
+
+    void keyPressEvent(QKeyEvent *event);
     void closeEvent(QCloseEvent *event);
     void clear_ALL();
     void clear_Vl();

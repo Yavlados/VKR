@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>536</width>
-    <height>497</height>
+    <width>593</width>
+    <height>509</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -1613,18 +1613,6 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
-       <property name="font">
-        <font>
-         <pointsize>11</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Отмена</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="pushButton">
        <property name="font">
         <font>
@@ -1633,6 +1621,18 @@
        </property>
        <property name="text">
         <string>Подтвердить</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Отмена</string>
        </property>
       </widget>
      </item>

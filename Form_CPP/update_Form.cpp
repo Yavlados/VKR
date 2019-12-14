@@ -31,6 +31,18 @@ Update::Update(QWidget *parent) :
     set_delegates_and_connections();
     contacts_model = new MTM_Contacts;
     ot_model = new MTM_OwTel;
+
+    ui->label_22->setVisible(false);
+    ui->label_23->setVisible(false);
+    ui->label_24->setVisible(false);
+    ui->le_birth_date_day->setVisible(false);
+    ui->le_birth_date_month->setVisible(false);
+    ui->le_birth_date_year->setVisible(false);
+
+    QRegExp reDate("[0-9]{0,4}-[0-9]{0,2}-[0-9]{0,2}");
+    QRegExpValidator *validator = new QRegExpValidator(reDate, this);
+    ui->lineEdit->setValidator(validator);
+
 }
 
 Update::~Update()
@@ -132,7 +144,7 @@ void Update::Recieve_data(Crud *cr)
         ui->vl_for_label->addWidget(lb);
     }
 
-     QPushButton *p_b = new QPushButton;
+     p_b = new QPushButton;
      p_b->setText("Редактировать");
 
      ui->vl_for_button->addWidget(p_b);
@@ -148,11 +160,14 @@ void Update::Fill_fields_update(Crud *new_cr)
 
     if(!new_cr->birth_date.isEmpty())
     {
+        ///НОВАЯ
+        ui->lineEdit->setText(new_cr->birth_date);
+        /*
         auto list = new_cr->birth_date.split("-");
 
         ui->le_birth_date_day->setText(list.at(2));
         ui->le_birth_date_month->setText(list.at(1));
-        ui->le_birth_date_year->setText(list.at(0));
+        ui->le_birth_date_year->setText(list.at(0));*/
     }
 
     ui->le_check_for->setText(new_cr->check_for);
@@ -236,7 +251,25 @@ void Update::on_pb_Update_clicked()
     new_cr->name = ui->le_name->text();
     new_cr->mid_name= ui->le_mid_name->text();
 
-    get_birthdate();
+    //get_birthdate();
+    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
+    {
+        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
+        msgbx.setStandardButtons(QMessageBox::Ok);
+        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+
+        int ret = msgbx.exec();
+
+        switch (ret) {
+        case QMessageBox::Ok:
+            return;
+        }
+    }
+        else
+        new_cr->birth_date = ui->lineEdit->text();
+
+    if(new_cr->birth_date.isEmpty())
+        new_cr->birth_date = nullptr  ;
 
    // msgbx.setGeometry(0,0, 900,210);
     msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
@@ -403,7 +436,7 @@ void Update::on_tableView_clicked(const QModelIndex &index)
     ui->tableView_2->setWordWrap(false);
     ui->tableView_2->horizontalHeader()->setStretchLastSection(true);
 
-    QString temp = "Номера контактов("+QString::number(contacts_model->clist->count())+")";
+    QString temp = "Номера контактов("+QString::number(contacts_model->actlist.count())+")";
     ui->label_cont->setText(temp);
 
     qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
@@ -414,7 +447,15 @@ void Update::on_pb_del_line_telephone_clicked()
     QModelIndex ind = ui->tableView->currentIndex();
     if( ind.isValid())
         {
+        QMessageBox msg;
+        msg.setWindowTitle("Подтверждение");
+        msg.setText("Вы действительно хотите удалить выбранный телефон?");
+        msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
 
+        int a = msg.exec();
+        switch (a)
+        {
+            case QMessageBox::Ok :
             contacts_model->delBindedContacts(new_cr->owt()->at(ind.row())->tel_id);
             ot_model->delRow_owner_tel(ind);
             if(imprt_t == Update_import_data) //взаимодействие с моделью
@@ -424,22 +465,23 @@ void Update::on_pb_del_line_telephone_clicked()
                  temp_owt = nullptr;
                  new_cr->owt()->removeAt(ind.row());
             }
-             if (new_cr->owt()->count() == 0)
-             {
-                 Owners_tel *owt = new Owners_tel(ot_model->otlist->count(),0,false,IsNewing);
-                 owt->oldnum = false;
-                 ot_model->addRow_owner_tel(owt);
-                 ot_model->reset_OTModel();
+            if (new_cr->owt()->count() == 0)
+            {
+                Owners_tel *owt = new Owners_tel(ot_model->otlist->count(),0,false,IsNewing);
+                owt->oldnum = false;
+                ot_model->addRow_owner_tel(owt);
+                ot_model->reset_OTModel();
 
-             }
-
-             ui->tableView->setModel(ot_model);
-             QString temp1 = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
-             ui->label_tels->setText(temp1);
-
-             contacts_model->reset_ContactModel();
-             QString temp = "Номера контактов";
-             ui->label_cont->setText(temp);
+            }
+            ui->tableView->setModel(ot_model);
+            //QString temp1 = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+            ui->label_tels->setText("Номера телефонов("+QString::number(new_cr->owt()->size())+")");
+            contacts_model->reset_ContactModel();
+            ui->label_cont->setText("Номера контактов");
+        return;
+        case QMessageBox::Cancel :
+        return;
+        }
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -448,9 +490,22 @@ void Update::on_pb_del_contact_line_clicked()
     QModelIndex ind = ui->tableView_2->currentIndex();
     if( ind.isValid())
     {
+        QMessageBox msg;
+        msg.setWindowTitle("Подтверждение");
+        msg.setText("Вы действительно хотите удалить выбранный телефон?");
+        msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+
+        int a = msg.exec();
+        switch (a)
+        {
+            case QMessageBox::Ok :
+
         contacts_model->delRow_contact(ind);
-        QString temp = "Номера контактов("+QString::number(contacts_model->clist->count())+")";
-        ui->label_cont->setText(temp);
+        ui->label_cont->setText("Номера контактов("+QString::number(contacts_model->actlist.count())+")");
+            return;
+            case QMessageBox::Cancel :
+            return;
+        }
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -479,7 +534,7 @@ void Update::on_pb_add_contact_line_clicked()
 
                ui->tableView_2->setModel(contacts_model);
 
-               QString temp = "Номера контактов("+QString::number(contacts_model->clist->count())+")";
+               QString temp = "Номера контактов("+QString::number(contacts_model->actlist.count())+")";
                ui->label_cont->setText(temp);
 
                ui->tableView_2->resizeColumnToContents(2);
@@ -600,7 +655,7 @@ bool Update::compare_tel_num()
         if (!new_cr->owt()->at(i)->tel_num.isEmpty() && new_cr->owt()->at(i)->state != IsRemoved)
         //Составление запроса для проверки телефонов
         {
-            if(new_cr->owt()->at(i)->tel_num.at(0) == "+")
+            if(new_cr->owt()->at(i)->tel_num.at(0) == '+')
             {
                 if(new_cr->owt()->at(i)->tel_num.count() < 16)
                 {
@@ -794,7 +849,7 @@ QString Update::get_birthdate()
 
         if(year.toInt()  <  1900)
         {
-            msgbx.setText("<font size = '5'> Вы ввели не корректную дату рождения </font>");
+            msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
             msgbx.setStandardButtons(QMessageBox::Ok);
             msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
 
@@ -838,7 +893,7 @@ void Update::Fill_table_in_add()
        ui->vl_for_label->addWidget(lb);
 
 
-       QPushButton *p_b = new QPushButton;
+       p_b = new QPushButton;
        p_b->setText("Добавить новую записную книжку");
        ui->vl_for_button->addWidget(p_b);
 
@@ -850,7 +905,26 @@ void Update::Add_zk()
     /// СНАЧАЛА  СОБИРАЕМ НУЖНЫЕ ПОЛЯ, А ПОТОМ
     /// ПРОВЕРЯЕМ ВВЕДЕННЫЕ НОМЕРА
 
-    get_birthdate();
+    //get_birthdate();
+    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
+    {
+        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
+        msgbx.setStandardButtons(QMessageBox::Ok);
+        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+
+        int ret = msgbx.exec();
+
+        switch (ret) {
+        case QMessageBox::Ok:
+            return;
+        }
+    }
+        else
+        new_cr->birth_date = ui->lineEdit->text();
+
+
+    if(new_cr->birth_date.isEmpty())
+        new_cr->birth_date = nullptr  ;
 
     new_cr->lastname = ui->le_last_name->text();
     new_cr->name=ui->le_name->text();
@@ -956,7 +1030,7 @@ void Update::recieve_import_data(Crud *cr)
 
     QLabel *lb = new QLabel();
 
-    QPushButton *p_b = new QPushButton;
+    p_b = new QPushButton;
 
     QPushButton *p_b_back = new QPushButton;
     switch (imprt_t)
@@ -1006,7 +1080,25 @@ void Update::update_import_data()
     new_cr->reg_corp = ui->le_reg_corp ->text();
     new_cr->reg_flat = ui->le_reg_flat->text();
 
-    get_birthdate();
+    //get_birthdate();
+    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
+    {
+        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
+        msgbx.setStandardButtons(QMessageBox::Ok);
+        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+
+        int ret = msgbx.exec();
+
+        switch (ret) {
+        case QMessageBox::Ok:
+            return;
+        }
+    }
+        else
+        new_cr->birth_date = ui->lineEdit->text();
+
+    if(new_cr->birth_date.isEmpty())
+        new_cr->birth_date = nullptr  ;
 
     new_cr->liv_city = ui->le_liv_city->text();
     new_cr->liv_street = ui->le_liv_street->text();
@@ -1387,6 +1479,20 @@ void Update::start_confluence(Crud *confl_cr, Crud *m_cr, Crud *a_cr)
     added_cr = a_cr;
     Recieve_data(confl_cr);
 }
+
+void Update::keyPressEvent(QKeyEvent *event)
+{
+        switch(event->key())
+        {
+        case Qt::Key::Key_Enter:
+            p_b->click();
+            return;
+        case Qt::Key::Key_Escape:
+            on_pb_Back_to_Main_clicked();
+            return;
+        }
+
+}
 //-----------------------------------------------------------------------------------//
 void Update::closeEvent(QCloseEvent *event)
 {
@@ -1459,12 +1565,31 @@ void Update::on_cb_adres_clicked()
 
 void Update::upload_main_cr()
 {
-    get_birthdate();
+    //get_birthdate();
 
     main_cr->lastname = ui->le_last_name->text();
     main_cr->name=ui->le_name->text();
     main_cr->mid_name = ui->le_mid_name->text();
-    get_birthdate();
+//    get_birthdate();
+
+    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
+    {
+        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
+        msgbx.setStandardButtons(QMessageBox::Ok);
+        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+
+        int ret = msgbx.exec();
+
+        switch (ret) {
+        case QMessageBox::Ok:
+            return;
+        }
+    }
+        else
+        main_cr->birth_date = ui->lineEdit->text();
+
+    if(new_cr->birth_date.isEmpty())
+        main_cr->birth_date = nullptr  ;
 
     main_cr->check_for = ui->le_check_for->text();
     main_cr->dop_info = ui->le_dop_info->toPlainText();
@@ -1542,7 +1667,7 @@ void Update::on_tableView_2_doubleClicked(const QModelIndex &index)
         //ot_model->setOTList(new_cr->owt());
         ui->tableView_2->setModel(contacts_model);
         ui->tableView_2->resizeColumnToContents(2);
-        QString temp = "Номера контактов("+QString::number(contacts_model->clist->count())+")";
+        QString temp = "Номера контактов("+QString::number(contacts_model->actlist.count())+")";
         ui->label_cont->setText(temp);
         break;
     }

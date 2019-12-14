@@ -10,6 +10,8 @@ Master_import_form::Master_import_form(QWidget *parent) :
     ui->setupUi(this);
     ui->le_password_2->setEchoMode(QLineEdit::Password);
     actual_size = this->size();
+    ui->label_6->setVisible(false);
+    ui->le_password_2->setVisible(false);
 }
 
 Master_import_form::~Master_import_form()
@@ -87,6 +89,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                                     tr("Dump database (*)"), nullptr, QFileDialog::DontUseNativeDialog  );
                         int x = filename.lastIndexOf("/");
                         file_path = filename.left(x);
+                        folder = false;
                         if( !filename.isNull() )
                             ui->le_file_path_2->setText(filename);
                         return;
@@ -100,6 +103,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                                     tr("Dump database (*)"), nullptr, QFileDialog::DontUseNativeDialog  );
                         int x = filename.lastIndexOf("/");
                         file_path = filename.left(x);
+                        folder = false;
 
                         if( !filename.isNull() )
                         {
@@ -124,6 +128,8 @@ void Master_import_form::on_pb_directory_2_clicked()
                           tr("Dump database (*.db)"), nullptr, QFileDialog::DontUseNativeDialog  );
               int x = filename.lastIndexOf("/");
               file_path = filename.left(x);
+              folder = false;
+
               if( !filename.isNull() )
                   ui->le_file_path_2->setText(filename);
               if(ret == QMessageBox::Yes)
@@ -140,6 +146,8 @@ void Master_import_form::on_pb_directory_2_clicked()
                           tr("Dump database (*.db)"), nullptr, QFileDialog::DontUseNativeDialog  );
               int x = filename.lastIndexOf("/");
               file_path = filename.left(x);
+              folder = false;
+
               if( !filename.isNull() )
                   ui->le_file_path_2->setText(filename);
               if(ret == QMessageBox::Yes)

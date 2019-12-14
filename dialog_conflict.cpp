@@ -9,6 +9,7 @@ Dialog_conflict::Dialog_conflict(QWidget *parent) :
     setModal(true);
     ui->setupUi(this);
     ui->label->setWordWrap(true);
+    ui->pb_merge->setVisible(false);
 }
 
 Dialog_conflict::~Dialog_conflict()

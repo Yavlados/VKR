@@ -30,23 +30,31 @@
 void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString & msg)
 {
     QString txt;
+    QString date = QDate::currentDate().toString(Qt::ISODate);
+    QString time = QTime::currentTime().toString();
+
     switch (type) {
     case QtDebugMsg:
-        txt = QString("Debug: %1").arg(msg) + "\n \r";
+        txt = date+"_"+time+" "+QString("Debug: %1").arg(msg) + "\n \r";
         break;
     case QtWarningMsg:
-        txt = QString("Warning: %1").arg(msg)+ "\n \r";
+        txt = date+"_"+time+" "+QString("Warning: %1").arg(msg)+ "\n \r";
     break;
     case QtCriticalMsg:
-        txt = QString("Critical: %1").arg(msg)+ "\n \r";
+        txt = date+"_"+time+" "+QString("Critical: %1").arg(msg)+ "\n \r";
     break;
     case QtFatalMsg:
-        txt = QString("Fatal: %1").arg(msg)+ "\n \r";
+        txt = date+"_"+time+" "+QString("Fatal: %1").arg(msg)+ "\n \r";
     break;
     }
-    QFile outFile("log");
+    QFile outFile("_log.txt");
     outFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream ts(&outFile);
+
+    QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
+    if(codec != nullptr)
+      ts.setCodec(codec);
+
     ts << txt << endl;
 }
 
@@ -54,6 +62,7 @@ int main(int argc, char *argv[])
 {
     qInstallMessageHandler(myMessageHandler);
     QApplication a(argc, argv);
+    qDebug()<<"test";
     QStringList paths = QCoreApplication::libraryPaths();
     paths.append(".");
     paths.append("imageformats");

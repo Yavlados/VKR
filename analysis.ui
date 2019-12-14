@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
+    <width>333</width>
     <height>581</height>
    </rect>
   </property>
@@ -44,11 +44,14 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <layout class="QVBoxLayout" name="vl_for_new_le"/>
-      </item>
       <item row="4" column="0" colspan="2">
        <widget class="QPushButton" name="pb_add_le">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="font">
          <font>
           <pointsize>11</pointsize>
@@ -76,6 +79,12 @@
         </item>
         <item>
          <widget class="QLineEdit" name="le_some_new_zk">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="font">
            <font>
             <pointsize>11</pointsize>
@@ -84,9 +93,6 @@
          </widget>
         </item>
        </layout>
-      </item>
-      <item row="2" column="0">
-       <layout class="QVBoxLayout" name="vl_for_buttons"/>
       </item>
       <item row="5" column="0" colspan="2">
        <widget class="QRadioButton" name="rb_date">
@@ -101,10 +107,10 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="6" column="0" colspan="2">
        <widget class="QFrame" name="frame">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -241,6 +247,12 @@
         </layout>
        </widget>
       </item>
+      <item row="2" column="0" colspan="2">
+       <layout class="QVBoxLayout" name="vl_for_buttons"/>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <layout class="QVBoxLayout" name="vl_for_new_le"/>
+      </item>
      </layout>
     </widget>
    </item>
@@ -261,6 +273,12 @@
      </item>
      <item>
       <widget class="QLineEdit" name="le_an_zk">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="font">
         <font>
          <pointsize>11</pointsize>

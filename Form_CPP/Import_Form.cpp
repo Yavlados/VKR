@@ -25,11 +25,13 @@ Import_Form::Import_Form(QWidget *parent) :
     ui->tableView_crud_pg->setColumnHidden(1,true);
     ui->pb_update_pg->setVisible(false);
         actual_size = this->size();
+        setWindowTitle("Мастер импорта");
 }
 
 Import_Form::~Import_Form()
 {
-    setWindowTitle("Мастер импорта");
+    if(crud != nullptr)
+        Crud::delete_all(crud);
     delete ui;
 }
 
@@ -276,7 +278,7 @@ bool Import_Form::compare_dump_db()
         while (a<crud->size())
         {
     ///Проверка по ююид
-    if (crud->at(a)->row_id != 1)
+    if (crud->at(a)->row_id != QString::number(1) )
     {
         //Сперва проверим по роу айди
         QSqlQuery temp(db_connection::instance()->db());
@@ -382,7 +384,7 @@ bool Import_Form::compare_dump_db()
         if (!cr->compare_with_base(query_for_nums,query_for_fio))
         {
             //После проверки на совпадения необходимо убедится - связана ли импортируемая ЗК
-            if(crud->at(a)->row_id != 1)
+            if(crud->at(a)->row_id != QString::number(1) )
             {
                 QList<int> *import_crud_links = Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
                if(import_crud_links != nullptr)
@@ -919,14 +921,20 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
         owt->tel_num = zk->person.tel1;
         owt->state = IsNewing;
 
-        if (zk->person.tel1.size() < 8)
+        if (zk->person.tel1.size() == 7)
+        {
             owt->oldnum = true;
-        else if (zk->person.tel1.size() < 25)
-            owt->internum = true;
+            owt->internum = false;
+        }
+        else if (zk->person.tel1.size()  == 11)
+        {
+            owt->internum = false;
+            owt->oldnum = false;
+        }
         else
         {
             owt->oldnum = false;
-            owt->internum = false;
+            owt->internum = true;
         }
 
         person->owt()->append(owt);
@@ -938,14 +946,21 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
         owt->tel_num = zk->person.tel2;
         owt->state = IsNewing;
 
-        if (zk->person.tel2.size() < 8)
+
+        if (zk->person.tel2.size() == 7)
+        {
             owt->oldnum = true;
-        else if (zk->person.tel2.size() < 25)
-            owt->internum = true;
+            owt->internum = false;
+        }
+        else if (zk->person.tel2.size()  == 11)
+        {
+            owt->internum = false;
+            owt->oldnum = false;
+        }
         else
         {
             owt->oldnum = false;
-            owt->internum = false;
+            owt->internum = true;
         }
 
         person->owt()->append(owt);
@@ -958,14 +973,21 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
         owt->tel_num = zk->person.tel3;
         owt->state = IsNewing;
 
-        if (zk->person.tel3.size() < 8)
+
+        if (zk->person.tel3.size() == 7)
+        {
             owt->oldnum = true;
-        else if (zk->person.tel3.size() < 25)
-            owt->internum = true;
+            owt->internum = false;
+        }
+        else if (zk->person.tel3.size()  == 11)
+        {
+            owt->internum = false;
+            owt->oldnum = false;
+        }
         else
         {
             owt->oldnum = false;
-            owt->internum = false;
+            owt->internum = true;
         }
         person->owt()->append(owt);
     }
@@ -976,14 +998,20 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
         owt->tel_num = zk->person.tel4;
         owt->state = IsNewing;
 
-        if (zk->person.tel4.size() < 8)
+        if (zk->person.tel4.size() == 7)
+        {
             owt->oldnum = true;
-        else if (zk->person.tel4.size() < 25)
-            owt->internum = true;
+            owt->internum = false;
+        }
+        else if (zk->person.tel4.size()  == 11)
+        {
+            owt->internum = false;
+            owt->oldnum = false;
+        }
         else
         {
             owt->oldnum = false;
-            owt->internum = false;
+            owt->internum = true;
         }
         person->owt()->append(owt);
     }
@@ -994,14 +1022,21 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
         owt->tel_num = zk->person.tel5;
         owt->state = IsNewing;
 
-        if (zk->person.tel5.size() < 8)
+
+        if (zk->person.tel5.size() == 7)
+        {
             owt->oldnum = true;
-        else if (zk->person.tel5.size() < 25)
-            owt->internum = true;
+            owt->internum = false;
+        }
+        else if (zk->person.tel5.size()  == 11)
+        {
+            owt->internum = false;
+            owt->oldnum = false;
+        }
         else
         {
             owt->oldnum = false;
-            owt->internum = false;
+            owt->internum = true;
         }
         person->owt()->append(owt);
     }
@@ -1044,14 +1079,21 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             {
                 Owners_tel *owt = new Owners_tel;
 
-                if (zk->contacts.at(a)->tel1.size() < 8)
+
+                if (zk->contacts.at(a)->tel1.size() == 7)
+                {
                     owt->oldnum = true;
-                else if (zk->contacts.at(a)->tel1.size() < 25)
-                    owt->internum = true;
+                    owt->internum = false;
+                }
+                else if (zk->person.tel1.size()  == 11)
+                {
+                    owt->internum = false;
+                    owt->oldnum = false;
+                }
                 else
                 {
                     owt->oldnum = false;
-                    owt->internum = false;
+                    owt->internum = true;
                 }
 
                 owt->tel_num = zk->contacts.at(a)->tel1;
@@ -1060,16 +1102,21 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             if(zk->contacts.at(a)->tel2 != "")
             {Owners_tel *owt = new Owners_tel;
 
-                if (zk->contacts.at(a)->tel2.size() < 8)
+                if (zk->contacts.at(a)->tel2.size() == 7)
+                {
                     owt->oldnum = true;
-                else if (zk->contacts.at(a)->tel2.size() < 25)
-                    owt->internum = true;
+                    owt->internum = false;
+                }
+                else if (zk->person.tel2.size()  == 11)
+                {
+                    owt->internum = false;
+                    owt->oldnum = false;
+                }
                 else
                 {
                     owt->oldnum = false;
-                    owt->internum = false;
+                    owt->internum = true;
                 }
-
                 owt->tel_num = zk->contacts.at(a)->tel2;
                 cr->owt()->append(owt);
             }
@@ -1077,14 +1124,20 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             {
                 Owners_tel *owt = new Owners_tel;
 
-                if (zk->contacts.at(a)->tel3.size() < 8)
+                if (zk->contacts.at(a)->tel3.size() == 7)
+                {
                     owt->oldnum = true;
-                else if (zk->contacts.at(a)->tel3.size() < 25)
-                    owt->internum = true;
+                    owt->internum = false;
+                }
+                else if (zk->person.tel3.size()  == 11)
+                {
+                    owt->internum = false;
+                    owt->oldnum = false;
+                }
                 else
                 {
                     owt->oldnum = false;
-                    owt->internum = false;
+                    owt->internum = true;
                 }
 
                 owt->tel_num = zk->contacts.at(a)->tel3;
@@ -1094,16 +1147,21 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             {
                 Owners_tel *owt = new Owners_tel;
 
-                if (zk->contacts.at(a)->tel4.size() < 8)
+                if (zk->contacts.at(a)->tel4.size() == 7)
+                {
                     owt->oldnum = true;
-                else if (zk->contacts.at(a)->tel4.size() < 25)
-                    owt->internum = true;
+                    owt->internum = false;
+                }
+                else if (zk->person.tel4.size()  == 11)
+                {
+                    owt->internum = false;
+                    owt->oldnum = false;
+                }
                 else
                 {
                     owt->oldnum = false;
-                    owt->internum = false;
+                    owt->internum = true;
                 }
-
                 owt->tel_num = zk->contacts.at(a)->tel4;
                 cr->owt()->append(owt);
             }
@@ -1111,16 +1169,21 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             {
                 Owners_tel *owt = new Owners_tel;
 
-                if (zk->contacts.at(a)->tel5.size() < 8)
+                if (zk->contacts.at(a)->tel5.size() == 7)
+                {
                     owt->oldnum = true;
-                else if (zk->contacts.at(a)->tel5.size() < 25)
-                    owt->internum = true;
+                    owt->internum = false;
+                }
+                else if (zk->person.tel5.size()  == 11)
+                {
+                    owt->internum = false;
+                    owt->oldnum = false;
+                }
                 else
                 {
                     owt->oldnum = false;
-                    owt->internum = false;
+                    owt->internum = true;
                 }
-
                 owt->tel_num = zk->contacts.at(a)->tel5;
                 cr->owt()->append(owt);
             }
@@ -1139,7 +1202,22 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
                  vector = new QVector<QVector<QString>   >;
 
             vector->append(local_vector);
+            //NEW
+            QList<Contacts*> *list = new QList<Contacts*>;
+            for(int a = 0; a<cr->owt()->size(); a++)
+            {
+                Contacts *cnt = new Contacts;
+                cnt->contact_tel_num = cr->owt()->at(a)->tel_num;
+                cnt->oldnum = cr->owt()->at(a)->oldnum;
+                cnt->internum = cr->owt()->at(a)->internum;
+                cnt->mark = cr->lastname+" "+cr->name+" "+cr->mid_name+" "+cr->dop_info;
+                list->append(cnt);
+            }
 
+
+
+            if(!person->owt()->isEmpty())
+                person->owt()->at(0)->cont()->append(*list);
            crud_list->append(cr);
         }
     }

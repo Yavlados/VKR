@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QDate>
 #include <QFileInfo>
+#include <QTextCodec>
 
 
 /**

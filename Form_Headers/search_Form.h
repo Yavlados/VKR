@@ -32,6 +32,9 @@ signals:
     void Cancel_search();
 
 private slots:
+    void keyPressEvent(QKeyEvent *event);
+    void set_tab_orders();
+    QString create_new_date(QString str);
 
     void Create_search_report(QList<Crud*> *crudlist);
 

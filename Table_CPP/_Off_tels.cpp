@@ -36,9 +36,9 @@ bool Off_tels::search(QList<Off_tels *> *list, QString tel_num, QString name)
     if(!name.isEmpty())
     {
         if(where_condition.isEmpty())
-            where_condition += " WHERE official_tel.service_name LIKE ('"+name+"')";
+            where_condition += " WHERE LOWER(official_tel.service_name) LIKE LOWER('"+name+"')";
         else
-            where_condition += "AND official_tel.service_name LIKE ('"+name+"')";
+            where_condition += "AND LOWER(official_tel.service_name) LIKE LOWER('"+name+"')";
     }
     temp_query+= where_condition;
     temp.prepare(temp_query);

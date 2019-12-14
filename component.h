@@ -65,6 +65,8 @@ private slots:
 
     void on_le_1_inputRejected();
 
+    void setTelNum();
+
 private:
     Ui::Component *ui;
 

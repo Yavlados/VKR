@@ -187,7 +187,7 @@ int Owners_tel::insert_tel(bool setState, int zk_id)
     temp.bindValue(":tel_num",tel_num);
     temp.bindValue(":fk_id",zk_id);
     temp.bindValue(":i_n",internum);
-    temp.bindValue("o_n", oldnum);
+    temp.bindValue(":o_n", oldnum);
     if (!temp.exec())
     {
         qDebug() << temp.lastError();

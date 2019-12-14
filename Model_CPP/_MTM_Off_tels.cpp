@@ -56,7 +56,7 @@ QVariant MTM_Off_Tels::data(const QModelIndex &index, int role) const
     if( row>actofflist.size() || row<0 )
         return QVariant();
 
-    if (role == Qt::DisplayRole)
+    if (role == Qt::DisplayRole || role == Qt::EditRole )
         {
         switch(col)
             {
