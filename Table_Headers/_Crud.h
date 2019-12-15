@@ -123,7 +123,7 @@ public:
     QList<Cl_in_db_struct> *compare_result = nullptr;
 
     ///Методы rowid
-    static QList<int> *take_links(QString row_id, SqlType sqltype, QString filename = nullptr);
+    static QList<int> *take_links(QString row_id, SqlType sqltype, QString filename = nullptr, QString password = nullptr   );
 
 
     static bool delete_all(QList<Crud*> *list);

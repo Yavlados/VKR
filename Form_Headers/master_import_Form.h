@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QKeyEvent>
 /**
  * \file master_import_Form.h
  * \brief Форма импорта данных
@@ -24,9 +25,12 @@ public:
     bool folder = false;
     bool of_t = false;
 
+    void keyPressEvent(QKeyEvent *event);
+
 private slots:
     void on_pushButton_clicked();
     void on_pb_directory_2_clicked();
+
 private:
     QWidget *parent_win;
     Ui::Master_import_form *ui;

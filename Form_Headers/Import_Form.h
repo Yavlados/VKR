@@ -162,6 +162,7 @@ private:
     QList<Off_tels*>    *offtel_pg = nullptr;
     QString Local_filename ;
     Ui::Import_Form *ui;
+    QString pass = nullptr;
 };
 
 #endif // IMPORT_FORM_H

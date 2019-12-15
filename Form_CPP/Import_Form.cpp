@@ -294,9 +294,15 @@ bool Import_Form::compare_dump_db()
                                         "<b>"+QString::number(temp.value(0).toInt())+"</b> </div>  </font>");
                 ui->vl_for_label->addWidget(lb);
 
-                QList<int> *import_crud_links = Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
+               QList<int> *import_crud_links = nullptr;
 
-                if(!import_crud_links->isEmpty())
+                if(pass != nullptr )
+                    import_crud_links =  Crud::take_links(crud->at(a)->row_id, SQLlitechipher, Local_filename, pass);
+                else
+                   import_crud_links =  Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
+
+
+                if(import_crud_links != nullptr && !import_crud_links->isEmpty())
                 {
                     if(linked_id_list != nullptr)
                         delete linked_id_list;
@@ -747,6 +753,8 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
     db_file.setFileName(filename);
         if(filename.endsWith(".db"))
         {
+            if (password != nullptr && !password.isEmpty())
+                    pass = password;
 
             /// В зависимости от наличия пароля меняем драйвер
             crud = new QList <Crud*>;   /// Инициализируем списки
@@ -769,13 +777,41 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
                     QMessageBox::critical(this,
                                           QObject::tr("Внимание"),
                                           QObject::tr("НЕВЕРНЫЙ ПАРОЛЬ"));
+                    ///Закрываем файл и БД
+                    db_file.close();
+                    db->db().close();
+                    db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
                     return false;
                 }
             }
 
             db->db().setDatabaseName(db_file.fileName());
 
-            list->fill_all_crud_list(crud, type); /// Заполняю списки из дампа
+            switch(list->fill_all_crud_list(crud, type,password,filename))
+            {
+                case Password_abort:
+                QMessageBox::critical(this,
+                                      QObject::tr("Внимание"),
+                                      QObject::tr("НЕВЕРНЫЙ ПАРОЛЬ"));
+                ///Закрываем файл и БД
+                db_file.close();
+                db->db().close();
+                db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
+                return false;
+
+            case Connection_trouble:
+                QMessageBox::critical(this,
+                                      QObject::tr("Внимание"),
+                                      QObject::tr("Не удалось получить доступ к данным. Попробуйте использовать пароль"));
+                ///Закрываем файл и БД
+                db_file.close();
+                db->db().close();
+                db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
+                return false;
+            case Success:
+                break;
+            }
+
             list->fill_off_tels(offtel,type);
 
             ///Закрываем файл и БД

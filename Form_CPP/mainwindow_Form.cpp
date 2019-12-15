@@ -780,7 +780,7 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
                         //delete import_form;
                         return;
                    case QDialog::Accepted:
-                        QMessageBox::information(this,"Успех","Импорт прошел успешно");
+                        //QMessageBox::information(this,"Успех","Импорт прошел успешно");
                         delete l;
                         d->close();
                         delete d;

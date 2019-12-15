@@ -11,6 +11,11 @@ enum Form_state { Export = 0,
                   Analysis = 2,
                   Main_window_for_Update = 3};
 
+enum export_state { Password_abort,
+                    Connection_trouble,
+                    Success
+                    };
+
 /**
 * \file list_master.h
 * \brief Класс работы со списками
@@ -33,7 +38,7 @@ public:
      void fill_owners_tel_list(QList<Owners_tel*> *owner_telLIST, int zk_id, int new_zk, SqlType);
      void fill_contacts_list(QList<Contacts*> *contactLIST, int tel_id, int new_tel_id, SqlType);
 
-    bool fill_all_crud_list(QList<Crud*> *crud, SqlType);
+    export_state fill_all_crud_list(QList<Crud*> *crud, SqlType sqltype, QString password = nullptr, QString filename = nullptr);
     void set_counters();
     void fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt);
     bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = nullptr, QVector<QVector<int> > *vector = nullptr,QVector<QVector<QString>> *vector_str = nullptr, bool old_db = false);//Лист удобно использовать при добавлении, при импорте - вектор

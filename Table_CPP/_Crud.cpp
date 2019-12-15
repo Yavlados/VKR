@@ -781,17 +781,31 @@ QList<int> Crud::string_parsing(QString linked_nums_string)
 }
 
 //-----------------------------------------------------------------------------------//
-QList<int> *Crud::take_links(QString row_id, SqlType sqltype, QString filename)
+QList<int> *Crud::take_links(QString row_id, SqlType sqltype, QString filename, QString password)
 {
-    QFile db_file;
     db_connection *db = db_connection::instance();
-    if(sqltype == SQLliteType)
-    {
-        db_file.setFileName(filename); //Установка имени файлу дб
-        db->db().setDatabaseName(db_file.fileName());
-    }
 
     db_connection::instance()->set_Sql_type(sqltype);
+    QFile db_file;
+
+    if(filename != nullptr && !filename.isEmpty())
+    {
+
+        if(sqltype == SQLliteType)
+        {
+            db_file.setFileName(filename); //Установка имени файлу дб
+            db->db().setDatabaseName(db_file.fileName());
+        }
+        else if(sqltype == SQLlitechipher)
+        {
+            db_file.setFileName(filename);
+            if (db->db().open("user",password) )
+            {
+                db->db().setDatabaseName(db_file.fileName());
+            }
+        }
+    }
+
     QSqlQuery querry(db_connection::instance()->db());
     qDebug() << db->db_connect()<<db->db().lastError();
 

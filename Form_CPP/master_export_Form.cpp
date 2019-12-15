@@ -12,9 +12,9 @@ Master_export_Form::Master_export_Form(QWidget *parent) :
     on_cb_set_password_clicked();
     ui->le_password->setEchoMode(QLineEdit::Password);
         actual_size = this->size();
-        ui->le_password->setVisible(false);
-        ui->label->setVisible(false);
-        ui->cb_set_password->setVisible(false);
+//        ui->le_password->setVisible(false);
+//        ui->label->setVisible(false);
+//        ui->cb_set_password->setVisible(false);
 }
 
 Master_export_Form::~Master_export_Form()

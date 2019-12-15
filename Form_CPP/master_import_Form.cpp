@@ -10,8 +10,9 @@ Master_import_form::Master_import_form(QWidget *parent) :
     ui->setupUi(this);
     ui->le_password_2->setEchoMode(QLineEdit::Password);
     actual_size = this->size();
-    ui->label_6->setVisible(false);
-    ui->le_password_2->setVisible(false);
+//    ui->label_6->setVisible(false);
+//    ui->le_password_2->setVisible(false);
+    setTabOrder(ui->le_file_path_2, ui->le_password_2);
 }
 
 Master_import_form::~Master_import_form()
@@ -156,4 +157,14 @@ void Master_import_form::on_pb_directory_2_clicked()
           }
     }
 
+}
+
+void Master_import_form::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+ {
+  case Qt::Key::Key_Enter:
+     on_pushButton_clicked();
+     return;
+ }
 }

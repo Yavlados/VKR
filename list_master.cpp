@@ -221,12 +221,32 @@ void List_master::fill_contacts_list(QList<Contacts *> *contactLIST, int tel_id,
 }
 
 /// В отличии от fill_crud_list собирает список всех ЗК и соответствующих телефонов
-bool List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
+export_state List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqltype, QString password, QString filename)
 {
+
     db_connection *db = db_connection::instance();
-      db->set_Sql_type(sqlt);
-    QSqlQuery query(db->db());
+    QFile db_file;
+    db_connection::instance()->set_Sql_type(sqltype);
+
+    if(sqltype == SQLliteType)
+    {
+        db_file.setFileName(filename); //Установка имени файлу дб
+        db->db().setDatabaseName(db_file.fileName());
+    }
+    else if(sqltype == SQLlitechipher)
+    {
+        db_file.setFileName(filename);
+        if (db->db().open("user",password) )
+        {
+              db->db().setDatabaseName(db_file.fileName());
+        }else
+        {
+            return Password_abort;
+        }
+    }
+
     qDebug() << db->db_connect()<<db->db().lastError();
+    QSqlQuery query(db->db());
     query.prepare("SELECT "
                    "zk.zk_id,"
                    "zk.lastname,"
@@ -258,7 +278,7 @@ bool List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
     if(!query.exec())
     {
       qDebug() << query.lastError() << query.lastError().text() << query.lastError().number();
-        return false;
+        return Connection_trouble;
     }
     //qDebug() << query.executedQuery();
     while (query.next())
@@ -289,7 +309,7 @@ bool List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
         cr->date_upd = query.value(19).toString();
         cr->row_id = query.value(20).toString();
         cr->state = IsReaded;
-        switch (sqlt)
+        switch (sqltype)
         {
             case PSQLtype:
                 fill_owners_tel_list(cr->owt(), cr->zk_id, counter_crud, PSQLtype);
@@ -303,7 +323,7 @@ bool List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqlt)
         }
         crud->append(cr);
     }
-    return  true;
+    return  Success;
 }
 
 void List_master::set_counters()
