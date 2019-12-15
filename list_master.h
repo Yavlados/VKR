@@ -27,30 +27,41 @@ public:
     List_master();
     List_master(Form_state st);
 
-
-    ///
-    /// Методы переехали из экспорта
-    ///
-
+    ///Достает только список всех ЗК
     void fill_crud_list(QList<Crud*> *crud, int crud_id, SqlType);
 
+    ///Достает одну ЗК
      Crud* get_crud(int id);
+
+     ///Достает список всех телефонов, привязанных к ЗК
      void fill_owners_tel_list(QList<Owners_tel*> *owner_telLIST, int zk_id, int new_zk, SqlType);
+
+     ///Достает список всех контактов, привязанных к телефону
      void fill_contacts_list(QList<Contacts*> *contactLIST, int tel_id, int new_tel_id, SqlType);
 
+    /// Достает список ЗК, а также связанных с ними объектов (телефоны и контакты)
     export_state fill_all_crud_list(QList<Crud*> *crud, SqlType sqltype, QString password = nullptr, QString filename = nullptr);
-    void set_counters();
-    void fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt);
-    bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = nullptr, QVector<QVector<int> > *vector = nullptr,QVector<QVector<QString>> *vector_str = nullptr, bool old_db = false);//Лист удобно использовать при добавлении, при импорте - вектор
 
+    ///Достает список всех служебных телефонов
+    void fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt);
+
+    ///Добавляет в базу список ЗК
+    bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = nullptr, QVector<QVector<int> > *vector = nullptr,QVector<QVector<QString>> *vector_str = nullptr, bool old_db = false);
+
+    ///Добавляет в базу список служебных телефонов
     bool insert_off_tel_in_db(QList<Off_tels *> *offtel);
 
+    ///Удаляет ЗК из базы
     bool del_zk_from_pg(QList<int> del_list);
+
+    ///Удаляет список список служебных телефонов из базы
     bool del_offt_from_pg(QList<int> del_list);
 
-    void fill_links(QVector<QVector <QString> > *vector);
-
+    ///Выполняет поиск по условиям
     static QList<Crud*>* search(QString search_query);
+
+    void fill_links(QVector<QVector <QString> > *vector);
+    void set_counters();
 private:
     Form_state         frm_st;
     int counter_crud; ///будем передавать в качестве id
