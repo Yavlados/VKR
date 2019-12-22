@@ -127,7 +127,8 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QList<int> size_list;
-
+    QPushButton *p_b_forward = nullptr;
+    QPushButton *p_b_back = nullptr;
 private slots:
     ///Добавление кнопок пагинации
     /**
@@ -229,6 +230,17 @@ private slots:
     void on_pb_refresh_clicked();
 
     void on_tableView_doubleClicked(const QModelIndex &index);
+
+    void set_shortcuts();
+
+    void next_tab();
+
+    void prev_tab();
+
+    void next_tab_tab2();
+
+    void prev_tab_tab2();
+
 
 signals:
     void Send_data(Crud *cr, int index);

@@ -3,6 +3,7 @@
 #include "settings_connection.h"
 
 #include <QDialog>
+#include <QKeyEvent>
 
 namespace Ui {
 class Dialog_settings;
@@ -28,6 +29,11 @@ private slots:
     void closeEvent(QCloseEvent *event);
 
     void set_settings_from_ini();
+    void set_tab_orders_pg_0();
+    void set_tab_orders_pg_1();
+    void on_tabWidget_currentChanged(int index);
+    void keyPressEvent(QKeyEvent *event);
+
 private:
     Ui::Dialog_settings *ui;
     QSettings *settings;

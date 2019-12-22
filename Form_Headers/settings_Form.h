@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QSettings>
+#include <QKeyEvent>
+#include <QCloseEvent>
 #include "settings_connection.h"
 
 /**
@@ -34,8 +36,13 @@ private slots:
     void on_pushButton_clicked();
 
     void set_settings_from_ini();
+
+    void keyPressEvent(QKeyEvent *event);
+
 private:
     void closeEvent(QCloseEvent *event);
+    void set_tab_orders();
+
     Ui::Settings_Form *ui;
 
 private slots:

@@ -234,7 +234,7 @@ QVariant MTM_Crud::headerData(int section, Qt::Orientation orientation, int role
             switch (section)
           {
             case 0:
-                return "Выбрать все";
+                return "Все";
             case 1:
                 return Recieve_column_name(0);
             case 2:

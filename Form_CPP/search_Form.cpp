@@ -29,7 +29,7 @@ Search::Search(QWidget *parent) :
 
 
          set_tab_orders();
-         ui->le_zk_id->setFocus();
+
          ui->le_zk_id->setCursorPosition(0);
 
 }
@@ -56,6 +56,7 @@ void Search::keyPressEvent(QKeyEvent *event)
 
 void Search::set_tab_orders()
 {
+    ui->le_zk_id->setFocus();
     setTabOrder(ui->le_zk_id, ui->le_tel_num);
     setTabOrder( ui->le_tel_num, ui->le_last_name);
     setTabOrder( ui->le_last_name, ui->le_name);
@@ -69,6 +70,8 @@ void Search::set_tab_orders()
     setTabOrder(ui->le_reg_flat, ui->le_form_date);
     setTabOrder(ui->le_form_date, ui->le_from);
     setTabOrder(ui->le_from, ui->le_to);
+    setTabOrder(ui->pb_search, ui->le_zk_id );
+
 
 }
 

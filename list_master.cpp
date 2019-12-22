@@ -220,10 +220,9 @@ void List_master::fill_contacts_list(QList<Contacts *> *contactLIST, int tel_id,
     }
 }
 
-/// В отличии от fill_crud_list собирает список всех ЗК и соответствующих телефонов
+
 export_state List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqltype, QString password, QString filename)
 {
-
     db_connection *db = db_connection::instance();
     QFile db_file;
     db_connection::instance()->set_Sql_type(sqltype);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>388</width>
-    <height>873</height>
+    <width>306</width>
+    <height>899</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -59,7 +59,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Дата формирования</string>
+         <string>Создана</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -429,7 +429,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Корпус/строение:</string>
+         <string>Корпус/стр.:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -663,6 +663,12 @@
       </item>
       <item row="9" column="0" colspan="2">
        <widget class="QFrame" name="frame_6">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -677,13 +683,19 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QRadioButton" name="rb_reg">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <pointsize>11</pointsize>
             </font>
            </property>
            <property name="text">
-            <string>Адрес регистрации</string>
+            <string>Регистрации</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -692,13 +704,19 @@
          </item>
          <item>
           <widget class="QRadioButton" name="rb_liv">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <pointsize>11</pointsize>
             </font>
            </property>
            <property name="text">
-            <string>Адрес проживания</string>
+            <string>Проживания</string>
            </property>
           </widget>
          </item>
@@ -951,8 +969,17 @@
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetNoConstraint</enum>
+           </property>
            <item>
             <widget class="QRadioButton" name="rb_starts">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>11</pointsize>
@@ -965,6 +992,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="rb_ends">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>11</pointsize>
@@ -977,6 +1010,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="rb_mid">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>11</pointsize>
@@ -989,6 +1028,12 @@
            </item>
            <item>
             <widget class="QRadioButton" name="rb_all">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>11</pointsize>
@@ -1006,8 +1051,17 @@
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetNoConstraint</enum>
+           </property>
            <item>
             <widget class="QLabel" name="label_7">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="font">
               <font>
                <pointsize>11</pointsize>
@@ -1040,6 +1094,12 @@
          </item>
          <item>
           <widget class="QCheckBox" name="cb_old_num">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
             <string>Старый</string>
            </property>

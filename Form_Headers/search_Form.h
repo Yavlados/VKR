@@ -23,6 +23,9 @@ public:
     QString Date_From, Date_To, Birth_date, Add_date;
 
     QSize actual_size;
+
+    void set_tab_orders();
+
 signals:
 
     void Show_search_result(QList<Crud*> *crudlist);
@@ -33,7 +36,6 @@ signals:
 
 private slots:
     void keyPressEvent(QKeyEvent *event);
-    void set_tab_orders();
     QString create_new_date(QString str);
 
     void Create_search_report(QList<Crud*> *crudlist);

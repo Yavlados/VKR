@@ -24,6 +24,8 @@ public:
 
     QList<Off_tels*> *ofTlist = nullptr;
 
+    void set_tab_orders();
+
 private:
     Ui::OfficialTelephones *ui;
     QSortFilterProxyModel *m1;

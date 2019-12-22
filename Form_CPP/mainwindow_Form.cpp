@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QKeyEvent>
 #include <QDialogButtonBox>
+#include <QShortcut>
 
 #include "settings_connection.h"
 
@@ -24,10 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-
-
-
+    //ui->tableView->setFocus();
+    set_shortcuts();
 
     RefreshTab();
     auto tabbar = ui->tabWidget->tabBar();
@@ -76,18 +75,21 @@ void MainWindow::Add_pagination_buttons()
     {
         QLayoutItem *item = ui->hl_for_pagination_button_back->takeAt(0);
         delete item->widget();
+        p_b_back = nullptr;
     }
     while(ui->hl_for_pagination_button_next->count() != 0)
     {
         QLayoutItem *item = ui->hl_for_pagination_button_next->takeAt(0);
         delete item->widget();
+        p_b_forward = nullptr;
     }
+
 
      if(crud_model->actcrudlist.size() < crud_model->crudlist->size())
     {
         if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(0)) != 0)
         {
-            QPushButton *p_b_back = new QPushButton;
+            p_b_back = new QPushButton;
             p_b_back->setText("<<");
             ui->hl_for_pagination_button_back->addWidget(p_b_back);
             connect(p_b_back,SIGNAL(clicked()),this,SLOT(previous_page()));
@@ -95,7 +97,7 @@ void MainWindow::Add_pagination_buttons()
 
         if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)) < crud_model->crudlist->size()-1)
         {
-            QPushButton *p_b_forward = new QPushButton;
+            p_b_forward = new QPushButton;
             p_b_forward->setText(">>");
             ui->hl_for_pagination_button_next->addWidget(p_b_forward);
             connect(p_b_forward,SIGNAL(clicked()),this,SLOT(next_page()));
@@ -281,7 +283,8 @@ void MainWindow::RefreshTab()
         }
 
         QLabel *lb = new QLabel;
-        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size());
+        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
+                QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
         lb->setText(str);
         ui->hl_label_crud->addWidget(lb);
     }
@@ -404,10 +407,12 @@ void MainWindow::on_action_search_triggered()
      ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
      connect(sr, SIGNAL(Show_search_result(QList<Crud*>*)),this, SLOT(Search_result(QList<Crud*>*)));
      connect(sr,SIGNAL(Cancel_search()),this, SLOT(RefreshTab()));
+     sr->set_tab_orders();
     }
     else
     {
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(sr));
+        sr->set_tab_orders();
     }
 
     set_normal_width(sr->actual_size.width());
@@ -641,9 +646,13 @@ void MainWindow::on_action_official_tel_triggered()
         ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
         connect(this,SIGNAL(Fill_table_of()), of, SLOT(Fill_table()));
         emit Fill_table_of();
+        of->set_tab_orders();
         }
     else
+    {
         ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(of));
+        of->set_tab_orders();
+    }
 
 }
 //-----------------------------------------------------------------------------------//
@@ -929,6 +938,17 @@ void MainWindow::next_page()
         QLayoutItem *item = ui->hl_label_owt->takeAt(0);
         delete item->widget();
     }
+    while(ui->hl_label_crud->count())
+    {
+        QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+        delete item->widget();
+    }
+
+    QLabel *lb = new QLabel;
+    QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
+            QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
+    lb->setText(str);
+    ui->hl_label_crud->addWidget(lb);
 
 
 }
@@ -952,7 +972,17 @@ void MainWindow::previous_page()
         QLayoutItem *item = ui->hl_label_owt->takeAt(0);
         delete item->widget();
     }
+    while(ui->hl_label_crud->count())
+    {
+        QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+        delete item->widget();
+    }
 
+    QLabel *lb = new QLabel;
+    QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
+            QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
+    lb->setText(str);
+    ui->hl_label_crud->addWidget(lb);
 
 }
 //-----------------------------------------------------------------------------------//
@@ -1112,16 +1142,24 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     case Qt::Key::Key_F7:
         on_action_search_triggered();
         return;
-    case Qt::Key::Key_F1:
-        on_action_official_tel_triggered();
-        return;
     case Qt::Key::Key_F2:
         on_action_update_triggered();
         return;
     case Qt::Key::Key_F6:
         on_action_analysis_triggered();
         return;
-
+    case Qt::Key::Key_Enter:
+        if(index_tab1.isValid())
+            on_action_update_triggered();
+        return;
+     case Qt::Key::Key_PageUp:
+        if(p_b_forward != nullptr)
+            p_b_forward->click();
+        return;
+    case Qt::Key::Key_PageDown:
+       if(p_b_back != nullptr)
+           p_b_back->click();
+       return;
     }
 
 }
@@ -1199,4 +1237,41 @@ void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
 {
     index_tab1 = index;
     on_action_update_triggered();
+}
+
+void MainWindow::set_shortcuts()
+{
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this, SLOT(next_tab()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this, SLOT(prev_tab()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this, SLOT(next_tab_tab2()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_A), this, SLOT(prev_tab_tab2()));
+     new QShortcut(QKeySequence(Qt::Key_F1), this, SLOT(on_action_official_tel_triggered()));
+    new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(on_action_add_triggered()));
+    new QShortcut(QKeySequence(Qt::Key_F4), this, SLOT(on_action_6_triggered()));
+    new QShortcut(QKeySequence(Qt::Key_F5), this, SLOT(on_action_analysis_triggered()));
+            new QShortcut(QKeySequence(Qt::Key_F8), this, SLOT(on_action_delete_triggered()));
+            new QShortcut(QKeySequence(Qt::Key_F7), this, SLOT(on_action_search_triggered()));
+            new QShortcut(QKeySequence(Qt::Key_F2), this, SLOT(on_action_update_triggered()));
+            new QShortcut(QKeySequence(Qt::Key_F6), this, SLOT(on_action_analysis_triggered()));
+    new QShortcut(QKeySequence(Qt::Key_F12), this, SLOT(on_action_Settings_triggered()));
+}
+
+void MainWindow::next_tab()
+{
+    ui->tabWidget->setCurrentIndex(ui->tabWidget->currentIndex() + 1);
+}
+
+void MainWindow::prev_tab()
+{
+    ui->tabWidget->setCurrentIndex(ui->tabWidget->currentIndex() - 1);
+}
+
+void MainWindow::next_tab_tab2()
+{
+    ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->currentIndex() + 1);
+}
+
+void MainWindow::prev_tab_tab2()
+{
+    ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->currentIndex() - 1);
 }

@@ -16,6 +16,19 @@ OfficialTelephones::~OfficialTelephones()
     delete ui;
 }
 
+void OfficialTelephones::set_tab_orders()
+{
+    ui->le_search_num->setFocus();
+    setTabOrder(ui->le_search_num, ui->le_search_name);
+    setTabOrder(ui->le_search_name, ui->pushButton);
+    setTabOrder(ui->pushButton, ui->pushButton_2);
+    setTabOrder(ui->pushButton_2, ui->le_set_num);
+    setTabOrder(ui->le_set_num, ui->le_set_name);
+    setTabOrder(ui->le_set_name, ui->pb_add);
+    setTabOrder(ui->pb_add, ui->pb_del);
+    //setTabOrder(ui->pushButton_3, ui->le_search_num);
+}
+
 void OfficialTelephones::set_label(QList<Off_tels *> list)
 {
     while (ui->vl_for_label->count())
