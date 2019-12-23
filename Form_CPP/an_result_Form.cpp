@@ -142,3 +142,10 @@ void An_result::on_pb_to_txt_clicked()
            }
 }
 
+void An_result::import_report(QString text)
+{
+    An_result *an = new An_result();
+    an->ui->textEdit->setText(text);
+    an->show();
+}
+

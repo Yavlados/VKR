@@ -43,7 +43,7 @@ public:
     export_state fill_all_crud_list(QList<Crud*> *crud, SqlType sqltype, QString password = nullptr, QString filename = nullptr);
 
     ///Достает список всех служебных телефонов
-    void fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt);
+    export_state fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt, QString password = nullptr, QString filename = nullptr);
 
     ///Добавляет в базу список ЗК
     bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = nullptr, QVector<QVector<int> > *vector = nullptr,QVector<QVector<QString>> *vector_str = nullptr, bool old_db = false);

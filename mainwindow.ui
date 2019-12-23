@@ -738,7 +738,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>15</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
   </action>
@@ -752,7 +752,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>15</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
   </action>
@@ -766,7 +766,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>15</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
   </action>
@@ -783,7 +783,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>15</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
   </action>
@@ -826,7 +826,7 @@
      <normaloff>:/new/prefix1/png/004-import.png</normaloff>:/new/prefix1/png/004-import.png</iconset>
    </property>
    <property name="text">
-    <string>Экспорт</string>
+    <string>Экспорт (F10)</string>
    </property>
    <property name="toolTip">
     <string>Открыть меню экспорта</string>
@@ -838,7 +838,7 @@
      <normaloff>:/new/prefix1/png/005-export.png</normaloff>:/new/prefix1/png/005-export.png</iconset>
    </property>
    <property name="text">
-    <string>Импорт</string>
+    <string>Импорт (F11)</string>
    </property>
   </action>
   <action name="action_import">
@@ -880,7 +880,7 @@
      <normaloff>:/new/prefix1/png/002-settings-work-tool.png</normaloff>:/new/prefix1/png/002-settings-work-tool.png</iconset>
    </property>
    <property name="text">
-    <string>Открыть меню настроек</string>
+    <string>Открыть меню настроек (F12)</string>
    </property>
   </action>
  </widget>

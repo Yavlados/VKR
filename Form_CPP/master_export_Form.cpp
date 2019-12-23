@@ -8,9 +8,8 @@ Master_export_Form::Master_export_Form(QWidget *parent) :
     ui(new Ui::master_export_Form)
 {
     ui->setupUi(this);
-    on_cb_zk_clicked();
-    on_cb_set_password_clicked();
     ui->le_password->setEchoMode(QLineEdit::Password);
+    on_cb_set_password_clicked();
         actual_size = this->size();
 //        ui->le_password->setVisible(false);
 //        ui->label->setVisible(false);
@@ -24,15 +23,14 @@ Master_export_Form::~Master_export_Form()
 
 void Master_export_Form::on_cb_zk_clicked()
 {
-    if(ui->cb_zk->isChecked())
-     {
-        ui->rb_check->setVisible(true);
-    }
-    else
-    {
-        ui->rb_check->setVisible(false);
-    }
+    ui->rb_check->setVisible(true);
 }
+void Master_export_Form::on_cb_off_tel_clicked()
+{
+    ui->rb_check->setVisible(false);
+
+}
+
 
 void Master_export_Form::on_rb_check_clicked()
 {
@@ -91,3 +89,4 @@ void Master_export_Form::add_file_path(QString path_from_main)
 {
     file_path = path_from_main;
 }
+

@@ -11,6 +11,7 @@
 #include "_MTM_OwTel.h"
 #include "_MTM_Contacts.h"
 #include "_MTM_Off_tels.h"
+#include "text_handler.h"
 
 #include <QWidget>
 #include <QCloseEvent>
@@ -73,7 +74,7 @@ public:
     MTM_Off_Tels *off_model_pg;
     SqlType type;
 
-    bool Testing_open_db(QString filename, QString password);
+    bool Testing_open_db(QString filename, QString password, bool off_tels = false);
 
     bool begin_import();
 
@@ -110,18 +111,16 @@ private slots:
     void prepare_main_to_add(Crud *main_crud, Crud  *added_crud);
     ////// Слоты формы ////////
 
-    void on_tableView_crud_pg_clicked(const QModelIndex &index);
-
     void clear_models();
 
     void clear_label();
-
+    //handler
     void on_pb_save_import_clicked();
-
+    //handler
     void on_pb_save_main_clicked();
-
+    //handler
     void on_pb_skip_import_clicked();
-
+    //handler
     void on_pb_skip_All_clicked();
 
     void on_pb_update_import_zk_clicked();
@@ -129,9 +128,9 @@ private slots:
     void on_pb_update_pg_clicked();
 
     void on_pushButton_clicked();
-
+    //handler
     void make_link_clicked();
-
+    //handler
     void begin_work_with_links();
 
     void abort_link_import();

@@ -58,7 +58,8 @@ SOURCES += \
     dialog_conflict.cpp \
     table_show_delegate.cpp \
     component.cpp \
-    dialog_settings.cpp
+    dialog_settings.cpp \
+    text_handler.cpp
 
 HEADERS += \
     db_connection.h \
@@ -90,7 +91,8 @@ HEADERS += \
     dialog_conflict.h \
     table_show_delegate.h \
     component.h \
-    dialog_settings.h
+    dialog_settings.h \
+    text_handler.h
 
 FORMS += \
         mainwindow.ui \

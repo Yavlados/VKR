@@ -24,11 +24,6 @@ int MTM_Off_Tels::rowCount(const QModelIndex &parent) const
 
 }
 
-void MTM_Off_Tels::setContactList(QList<Off_tels *> *offtlist)
-{
-
-}
-
 void MTM_Off_Tels::setOffTList(QList<Off_tels *> *offtlist)
 {
     beginResetModel();
@@ -73,7 +68,12 @@ void MTM_Off_Tels::reset_off_t_Model()
 {
     beginResetModel();
         actofflist.clear();
-     endResetModel();
+        endResetModel();
+}
+
+void MTM_Off_Tels::set_state()
+{
+    state = Show_mode;
 }
 
 QVariant MTM_Off_Tels::headerData(int section, Qt::Orientation orientation, int role) const
@@ -98,10 +98,12 @@ QVariant MTM_Off_Tels::headerData(int section, Qt::Orientation orientation, int 
 
 Qt::ItemFlags MTM_Off_Tels::flags(const QModelIndex &index) const
 {
-    if( !index.isValid() || offlist==nullptr)
+    if(!index.isValid() || offlist==nullptr)
         return Qt::NoItemFlags;
-    else
+    else if(state == Edit_mode)
         return Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsEditable ;
+    else if(state == Show_mode)
+        return Qt::ItemIsSelectable | Qt::ItemIsEnabled ;
 }
 
 bool MTM_Off_Tels::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -114,6 +116,7 @@ bool MTM_Off_Tels::setData(const QModelIndex &index, const QVariant &value, int 
     if( row>actofflist.size() || row<0 )
         return false;
 
+if(state == Edit_mode)
     if (role == Qt::EditRole)
     {
         switch(col)

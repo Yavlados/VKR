@@ -22,6 +22,7 @@ public:
     ~An_result();
 
         //Search *sr = new Search();
+    static void import_report(QString text);
 
 private slots:
     void on_pb_back_clicked();
@@ -56,6 +57,7 @@ private slots:
     void Recieve_search_result(QString);
 
     void on_pb_to_txt_clicked();
+
 
 private:
     Ui::An_result *ui;

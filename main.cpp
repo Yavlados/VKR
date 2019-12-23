@@ -60,7 +60,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
 
 int main(int argc, char *argv[])
 {
-    qInstallMessageHandler(myMessageHandler);
+    //qInstallMessageHandler(myMessageHandler);
     QApplication a(argc, argv);
     qDebug()<<"test";
     QStringList paths = QCoreApplication::libraryPaths();

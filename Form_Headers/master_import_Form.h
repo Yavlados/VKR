@@ -26,6 +26,7 @@ public:
     bool of_t = false;
 
     void keyPressEvent(QKeyEvent *event);
+    void set_tab_orders();
 
 private slots:
     void on_pushButton_clicked();

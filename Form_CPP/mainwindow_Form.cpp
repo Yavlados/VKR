@@ -740,11 +740,13 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
 void MainWindow::testing_opening(QString filename, QString password, bool folder, bool of_t)
 {
     ///Класс для импорта
+    Text_handler::instance()->clear_text();
 
     if(folder)
     {
         QDir direcotry(filename);
         QStringList filelist = direcotry.entryList(QStringList("*"), QDir::Files);
+        Text_handler::instance()->set_mode(zk_report);
         foreach (QString file, filelist )
         {
             QString filename2 = filename;
@@ -752,8 +754,8 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
             Import_Form *import_form = new Import_Form; //необходим доступ для
             connect(import_form,SIGNAL(Refresh_tab()),this,SLOT(RefreshTab()));
 
-
-            if (import_form->Testing_open_db( filename2,password)) //Если есть совпадение, то
+        Text_handler::instance()->set_zk_folder_line();
+            if (import_form->Testing_open_db( filename2,password, of_t)) //Если есть совпадение, то
             {
                 ///Идем сравнивать выгруженный в список дамп с БД
                 /// Метод алгоритма сравнения и импорта
@@ -799,18 +801,21 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
                }
             }
         }
+        An_result::import_report(Text_handler::instance()->get_text());
     RefreshTab();
     }
     else
     {
         Import_Form *import_form = new Import_Form; //необходим доступ для
 
-        if (import_form->Testing_open_db( filename,password)) //Если есть совпадение, то
+        if (import_form->Testing_open_db( filename,password, of_t)) //Если есть совпадение, то
         {
             ///Идем сравнивать выгруженный в список дамп с БД
             /// Метод алгоритма сравнения и импорта
            if(!of_t)
            {
+               Text_handler::instance()->set_mode(zk_report);
+
                if(import_form->begin_import())
                {
                    //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
@@ -846,10 +851,13 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
                        delete d;
                    }
                }
+
+               An_result::import_report(Text_handler::instance()->get_text());
                RefreshTab();
 
            }
            else {
+               Text_handler::instance()->set_mode(off_report);
                if(import_form->begin_import_of_t())
                {
                    //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
@@ -887,6 +895,7 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
                        delete d;
                    }
                }
+               An_result::import_report(Text_handler::instance()->get_text());
                RefreshTab();
            }
         }
@@ -908,6 +917,8 @@ void MainWindow::on_action_import_triggered()
     }
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(imprt));
+
+    imprt->set_tab_orders();
 
     set_normal_width(imprt->actual_size.width());
 }
@@ -1127,27 +1138,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
     {
-     case Qt::Key::Key_F3:
-        on_action_add_triggered();
-        return;
-    case Qt::Key::Key_F4:
-        on_action_6_triggered();
-       return;
-    case Qt::Key::Key_F5:
-       on_action_analysis_triggered();
-       return;
-    case Qt::Key::Key_F8:
-        on_action_delete_triggered();
-        return;
-    case Qt::Key::Key_F7:
-        on_action_search_triggered();
-        return;
-    case Qt::Key::Key_F2:
-        on_action_update_triggered();
-        return;
-    case Qt::Key::Key_F6:
-        on_action_analysis_triggered();
-        return;
+
     case Qt::Key::Key_Enter:
         if(index_tab1.isValid())
             on_action_update_triggered();
@@ -1246,13 +1237,17 @@ void MainWindow::set_shortcuts()
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this, SLOT(next_tab_tab2()));
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_A), this, SLOT(prev_tab_tab2()));
      new QShortcut(QKeySequence(Qt::Key_F1), this, SLOT(on_action_official_tel_triggered()));
+    new QShortcut(QKeySequence(Qt::Key_F2), this, SLOT(on_action_update_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(on_action_add_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F4), this, SLOT(on_action_6_triggered()));
-    new QShortcut(QKeySequence(Qt::Key_F5), this, SLOT(on_action_analysis_triggered()));
-            new QShortcut(QKeySequence(Qt::Key_F8), this, SLOT(on_action_delete_triggered()));
-            new QShortcut(QKeySequence(Qt::Key_F7), this, SLOT(on_action_search_triggered()));
-            new QShortcut(QKeySequence(Qt::Key_F2), this, SLOT(on_action_update_triggered()));
-            new QShortcut(QKeySequence(Qt::Key_F6), this, SLOT(on_action_analysis_triggered()));
+    //new QShortcut(QKeySequence(Qt::Key_F5), this, SLOT());
+    ///???????????????????????????????????
+    new QShortcut(QKeySequence(Qt::Key_F6), this, SLOT(on_action_analysis_triggered()));
+    new QShortcut(QKeySequence(Qt::Key_F7), this, SLOT(on_action_search_triggered()));
+    new QShortcut(QKeySequence(Qt::Key_F8), this, SLOT(on_action_delete_triggered()));
+    //new QShortcut(QKeySequence(Qt::Key_F9), this, SLOT(()));
+    new QShortcut(QKeySequence(Qt::Key_F10), this, SLOT(on_actionexport_triggered()));
+    new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(on_action_import_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F12), this, SLOT(on_action_Settings_triggered()));
 }
 

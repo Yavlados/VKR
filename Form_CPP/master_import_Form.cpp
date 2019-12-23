@@ -20,7 +20,7 @@ Master_import_form::~Master_import_form()
     delete ui;
 }
 void Master_import_form::on_pushButton_clicked()
-{///Пытаюсь открыть зашифрованную бд
+{
     emit TESTING_open(ui->le_file_path_2->text(), ui->le_password_2->text(), folder, of_t );
 }
 
@@ -29,16 +29,18 @@ void Master_import_form::on_pb_directory_2_clicked()
     QMessageBox msgbx;
     msgbx.setWindowTitle("Сделайте выбор");
     msgbx.setText("Выберите, откуда будет производиться импорт");
-    msgbx.setStandardButtons(QMessageBox::Yes | QMessageBox::Ok | QMessageBox::Cancel);
+    msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Yes  |  QMessageBox::Save |  QMessageBox::Cancel);
 
     msgbx.setButtonText(QMessageBox::Yes, "Импорт служебных телефонов");
-    msgbx.setButtonText(QMessageBox::Ok, "Импорт из старой ЗК");
-    msgbx.setButtonText(QMessageBox::Cancel, "Импорт ЗК");
+    msgbx.setButtonText(QMessageBox::Save, "Импорт из старой ЗК");
+    msgbx.setButtonText(QMessageBox::Ok, "Импорт ЗК");
+    msgbx.setButtonText(QMessageBox::Cancel, "Отмена");
+
 
     QString filename;
     int ret = msgbx.exec();
     
-    if(ret == QMessageBox::Ok)
+    if(ret == QMessageBox::Save)
     {
                 QMessageBox temp;
                 temp.setWindowTitle("Сделайте выбор");
@@ -118,7 +120,7 @@ void Master_import_form::on_pb_directory_2_clicked()
 
     }
     else
-    if(ret == QMessageBox::Cancel || ret == QMessageBox::Yes)
+    if(ret == QMessageBox::Ok || ret == QMessageBox::Yes)
         {
           if(file_path == nullptr)
           {
@@ -135,6 +137,8 @@ void Master_import_form::on_pb_directory_2_clicked()
                   ui->le_file_path_2->setText(filename);
               if(ret == QMessageBox::Yes)
                   of_t = true;
+              else
+                  of_t = false;
               return;
           }
           else
@@ -153,6 +157,8 @@ void Master_import_form::on_pb_directory_2_clicked()
                   ui->le_file_path_2->setText(filename);
               if(ret == QMessageBox::Yes)
                   of_t = true;
+              else
+                  of_t = false;
               return;
           }
     }
@@ -166,5 +172,13 @@ void Master_import_form::keyPressEvent(QKeyEvent *event)
   case Qt::Key::Key_Enter:
      on_pushButton_clicked();
      return;
- }
+    }
+}
+
+void Master_import_form::set_tab_orders()
+{
+    ui->pb_directory_2->setFocus();
+    setTabOrder(ui->pb_directory_2, ui->le_password_2);
+    setTabOrder(ui->le_password_2, ui->pushButton);
+
 }

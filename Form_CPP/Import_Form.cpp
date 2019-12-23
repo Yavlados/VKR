@@ -1,5 +1,6 @@
 #include "Import_Form.h"
 #include "ui_import_form.h"
+#include "an_result_Form.h"
 
 Import_Form::Import_Form(QWidget *parent) :
     QWidget(parent),
@@ -61,6 +62,7 @@ void Import_Form::abort_link_import()
         {
             if(crud->at(v)->zk_id == linked_id_list->at(r))
             {
+                Text_handler::instance()->set_skip_All_text(crud->at(v));
                 crud->removeOne(crud->at(v)); //Удаляю связанные с ней ЗК
                 break;
             }
@@ -90,12 +92,13 @@ void Import_Form::import_list_with_link()
         for (int z = 0; z < crud->size(); z++)
         {
             if (crud->at(z)->zk_id == linked_id_list->at(v))
-        {
-            new_crudlist->append(crud->at(z));
-            crud->removeAt(z);
-            z--;
-            break;
-        }
+            {
+                Text_handler::instance()->set_successful_add_text(crud->at(z));
+                new_crudlist->append(crud->at(z));
+                crud->removeAt(z);
+                z--;
+                break;
+            }
         }
         QVector<int> temp_vector;
         temp_vector.append(linked_id_list->at(v));
@@ -145,7 +148,7 @@ void Import_Form::make_link_clicked()
     //Сохранить со связью
     if(vector == nullptr)
         vector = new QVector<QVector<QString>   >;
-
+    Text_handler::instance()->set_make_link_text(crud_model->actcrudlist.at(0), crud_model_pg->actcrudlist.at(0));
     QString row_id1 = crud_model->actcrudlist.at(0)->row_id;
     QString row_id2 = crud_model_pg->actcrudlist.at(0)->row_id;
     QVector<QString> local_vector;
@@ -187,7 +190,7 @@ bool Import_Form::add_to_db()
 //                list->fill_links(vector);
 //            }
 
-        QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно! Импортировано %1 записных книг").arg(QString::number(crud->size()))); ///Хвалимся
+      //  QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно! Импортировано %1 записных книг").arg(QString::number(crud->size()))); ///Хвалимся
         emit Refresh_tab();
 
         if(ddb != nullptr)
@@ -212,7 +215,7 @@ bool Import_Form::add_to_db()
          return false;
      } else
      {
-         QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно! Импортировано %1 служебных телефонов").arg(QString::number(offtel->size()))); ///Хвалимся
+        // QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно! Импортировано %1 служебных телефонов").arg(QString::number(offtel->size()))); ///Хвалимся
          emit Refresh_tab();
 
          if(ddb != nullptr)
@@ -498,7 +501,8 @@ bool Import_Form::compare_dump_db()
             return true;
         }
             //qDebug() << cr->zk_id << cr->owt()->at(0)->parentZK_id;
-    a++;
+    Text_handler::instance()->set_successful_add_text(crud->at(a));
+     a++;
     }
     else
         return false;
@@ -539,6 +543,9 @@ Import_state Import_Form::compare_of_t()
                     off_model = new MTM_Off_Tels;
                     off_model_pg = new MTM_Off_Tels;
 
+                    off_model->set_state();
+                    off_model_pg->set_state();
+
                     QList<Off_tels *> *templist = new QList<Off_tels *>;
                     templist->append(offtel->at(a));
                     off_model->setOffTList(templist);
@@ -565,19 +572,13 @@ Import_state Import_Form::compare_of_t()
                 else
                     if(matches->isEmpty())
                     {
+                        Text_handler::instance()->set_successful_add_text(offtel->at(a));
                         a++;
                         return Import_in_progress;  //совпадений нет
                     }
         }
     return Import_succesful;    //Все проверили
 
-}
-
-
-void Import_Form::on_tableView_crud_pg_clicked(const QModelIndex &index)
-{
-    crud_model_pg->actcrudlist.at(0)->check();
-    //qDebug() << crud_pg_local->indexOf(crud_model_pg->actcrudlist.at(0));
 }
 
 void Import_Form::clear_models()
@@ -622,6 +623,7 @@ void Import_Form::on_pb_save_import_clicked()
     /// и удаление из локального списка
    if(!crud->isEmpty())
    {
+       Text_handler::instance()->set_save_import_text(crud->at(a), crud_from_pg);
        del_list.append(crud_from_pg->zk_id);
        form_state = zk;
        if(a<crud->size()-1)
@@ -643,10 +645,12 @@ void Import_Form::on_pb_save_import_clicked()
    {
        for (int i =0; i < offtel_pg->size(); i++)
        {
-
+           Text_handler::instance()->set_off_t_del_import(offtel_pg->at(i));
            del_list.append(offtel_pg->at(i)->of_t_id);
        }
        form_state = official_tel;
+
+       Text_handler::instance()->set_off_t_add_import(offtel->at(a));
 
        if(a<offtel->size()-1)
        {
@@ -674,6 +678,7 @@ void Import_Form::on_pb_save_main_clicked()
     if(!crud->isEmpty())
     {
         ///Сохранение ЗК из БД = удаление из списка дампа
+        Text_handler::instance()->set_save_main_text(crud->at(a),crud_from_pg);
         crud->removeAt(crud->indexOf(crud_model->actcrudlist.at(0)));
         if(a<crud->size())
         {
@@ -724,6 +729,7 @@ void Import_Form::on_pb_skip_All_clicked()
     /// Сделать рекурсию на метод compare_dump_db
     /// и пока false чистить локальный список как в методе
     /// on_pb_save_main_clicked()
+    Text_handler::instance()->set_skip_All_text(crud->at(a));
      crud->removeAt(crud->indexOf(crud_model->actcrudlist.at(0)));
         if(a<crud->size())
         {
@@ -745,11 +751,10 @@ void Import_Form::on_pb_skip_All_clicked()
 
 }
 
-bool Import_Form::Testing_open_db(QString filename, QString password)
+bool Import_Form::Testing_open_db(QString filename, QString password, bool off_tels)
 { //true - признак открытия формы импорта, с выбором совпадений
   //false - либо успешный импорт, либо нет необходимости открывать
   //пустую форму, а достаточно вывести сообщение об ошибке
-
     db_file.setFileName(filename);
         if(filename.endsWith(".db"))
         {
@@ -786,33 +791,60 @@ bool Import_Form::Testing_open_db(QString filename, QString password)
             }
 
             db->db().setDatabaseName(db_file.fileName());
-
-            switch(list->fill_all_crud_list(crud, type,password,filename))
+            if(!off_tels)
             {
+                switch(list->fill_all_crud_list(crud, type,password,filename))
+                {
                 case Password_abort:
-                QMessageBox::critical(this,
-                                      QObject::tr("Внимание"),
-                                      QObject::tr("НЕВЕРНЫЙ ПАРОЛЬ"));
-                ///Закрываем файл и БД
-                db_file.close();
-                db->db().close();
-                db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
-                return false;
+                    QMessageBox::critical(this,
+                                          QObject::tr("Внимание"),
+                                          QObject::tr("НЕВЕРНЫЙ ПАРОЛЬ"));
+                    ///Закрываем файл и БД
+                    db_file.close();
+                    db->db().close();
+                    db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
+                    return false;
 
-            case Connection_trouble:
-                QMessageBox::critical(this,
-                                      QObject::tr("Внимание"),
-                                      QObject::tr("Не удалось получить доступ к данным. Попробуйте использовать пароль"));
-                ///Закрываем файл и БД
-                db_file.close();
-                db->db().close();
-                db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
-                return false;
-            case Success:
-                break;
+                case Connection_trouble:
+                    QMessageBox::critical(this,
+                                          QObject::tr("Внимание"),
+                                          QObject::tr("Не удалось получить доступ к данным. Попробуйте использовать пароль"));
+                    ///Закрываем файл и БД
+                    db_file.close();
+                    db->db().close();
+                    db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
+                    return false;
+                case Success:
+                    break;
+                }
             }
+            else
+            {
+                switch(list->fill_off_tels(offtel,type, password, filename))
+                {
+                case Password_abort:
+                    QMessageBox::critical(this,
+                                          QObject::tr("Внимание"),
+                                          QObject::tr("НЕВЕРНЫЙ ПАРОЛЬ"));
+                    ///Закрываем файл и БД
+                    db_file.close();
+                    db->db().close();
+                    db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
+                    return false;
 
-            list->fill_off_tels(offtel,type);
+                case Connection_trouble:
+                    QMessageBox::critical(this,
+                                          QObject::tr("Внимание"),
+                                          QObject::tr("Не удалось получить доступ к данным. Попробуйте использовать пароль"));
+                    ///Закрываем файл и БД
+                    db_file.close();
+                    db->db().close();
+                    db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
+                    return false;
+                case Success:
+                    break;
+                }
+            }
 
             ///Закрываем файл и БД
             db_file.close();
@@ -895,7 +927,7 @@ bool Import_Form::begin_import()
         return true;
     else
     {
-    QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Сравнение прошло успешно!")); ///Хвалимся
+    //QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Сравнение прошло успешно!")); ///Хвалимся
         if(add_to_db())//Начинаем импорт
         {//В любом случае - закрываем
             return false;
@@ -915,7 +947,7 @@ bool Import_Form::begin_import_of_t()
     case Import_abort :
         return false;
     case Import_succesful :
-        QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Сравнение прошло успешно!")); ///Хвалимся
+       // QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Сравнение прошло успешно!")); ///Хвалимся
             if(add_to_db())//Начинаем импорт
             {//В любом случае - закрываем
                 return false;

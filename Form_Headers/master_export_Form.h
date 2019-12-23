@@ -42,6 +42,8 @@ private slots:
     void on_cb_set_password_clicked();
 
 
+    void on_cb_off_tel_clicked();
+
 private:
     Ui::master_export_Form *ui;
     QString file_path = nullptr;

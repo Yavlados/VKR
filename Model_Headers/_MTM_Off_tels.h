@@ -11,6 +11,8 @@
  * \file _MTM_Off_tels.h
  * \brief Модель отображения данных о служебных телефонах
 */
+enum offt_m_state { Edit_mode,
+                    Show_mode};
 
 class MTM_Off_Tels: public QAbstractTableModel      ///Модель отображения данных о служебных телефонах
 {
@@ -25,9 +27,6 @@ public:
     /// Переопределение кол-ва строк модели
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-    /// Получение списка КОНТАКТОВ моделью
-    virtual void setContactList(QList<Off_tels*> *offtlist);
-
     /// Получение списка СЛУЖЕБНЫХ ТЕЛЕФОНОВ моделью
    virtual void setOffTList(QList<Off_tels*> *offtlist);
 
@@ -35,6 +34,8 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     void reset_off_t_Model();
+
+    void set_state();
 
     /// Переопределяем заголовки таблицам
     virtual QVariant headerData(int section, Qt::Orientation orientation,int role = Qt::DisplayRole) const;
@@ -47,7 +48,7 @@ public:
     QList<Off_tels*> actofflist;  ///<  отображаемый список
 
 private:
-
+    offt_m_state state = Edit_mode;
 };
 
 #endif // _MTM_OFF_TELS_H

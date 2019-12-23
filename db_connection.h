@@ -7,8 +7,6 @@
 #include "settings_connection.h"
 #include "dialog_settings.h"
 
-/* в перспективе сделать класс подключения, если появится необходимость
-        в диалоговом окне подключения. Пока реализована функция*/
 
 enum SqlType {SQLlitechipher = 0,
               PSQLtype = 1,

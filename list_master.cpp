@@ -409,15 +409,30 @@ else {
 
 }
 
-void List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt)
+export_state List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt, QString password, QString filename)
 {
-   if (offtel != nullptr)
-        offtel->clear();
-
     db_connection *db = db_connection::instance();
-    db->set_Sql_type(sqlt);
-    QSqlQuery query(db->db());
+    QFile db_file;
+    db_connection::instance()->set_Sql_type(sqlt);
 
+    if(sqlt == SQLliteType)
+    {
+        db_file.setFileName(filename); //Установка имени файлу дб
+        db->db().setDatabaseName(db_file.fileName());
+    }
+    else if(sqlt == SQLlitechipher)
+    {
+        db_file.setFileName(filename);
+        if (db->db().open("user",password) )
+        {
+              db->db().setDatabaseName(db_file.fileName());
+        }else
+        {
+            return Password_abort;
+        }
+    }
+    qDebug() << db->db_connect()<<db->db().lastError();
+    QSqlQuery query(db->db());
     query.prepare("SELECT official_tel.of_t_id,"
                   "official_tel.tel_num,"
                   "official_tel.service_name"
@@ -425,7 +440,7 @@ void List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt)
     if (!query.exec())
     {
         qDebug() << query.lastError();
-        return;
+            return Connection_trouble;
     }
     while (query.next())
     {
@@ -433,7 +448,7 @@ void List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt)
         cnt->state = Readed;
         offtel->append(cnt);
     }
-    db->db().close();
+    return  Success;
 }
 
 bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QVector<QVector<int> > *vector, QVector<QVector<QString> > *vector_str, bool old_db)
