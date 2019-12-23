@@ -55,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->tableView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(header_clicked(int)));
 
+    ui->tabWidget->setAttribute(Qt::WA_StyledBackground, true);
 }
 //-----------------------------------------------------------------------------------//
 MainWindow::~MainWindow()
@@ -1269,4 +1270,9 @@ void MainWindow::next_tab_tab2()
 void MainWindow::prev_tab_tab2()
 {
     ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->currentIndex() - 1);
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+
 }

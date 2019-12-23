@@ -58,6 +58,7 @@ public:
     QList<Crud*> *list_for_destroy = nullptr;
 
     explicit Update(QWidget *parent = nullptr);
+    void set_tab_orders();
     ~Update();
 public slots:
 

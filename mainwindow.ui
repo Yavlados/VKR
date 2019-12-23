@@ -253,6 +253,11 @@
        <property name="autoFillBackground">
         <bool>true</bool>
        </property>
+       <property name="styleSheet">
+        <string notr="true">QTabBar::tab:selected {
+    background: rgb(170, 255, 127);
+}</string>
+       </property>
        <property name="tabShape">
         <enum>QTabWidget::Rounded</enum>
        </property>
@@ -339,6 +344,9 @@
                 <font>
                  <pointsize>11</pointsize>
                 </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true"/>
                </property>
                <property name="selectionBehavior">
                 <enum>QAbstractItemView::SelectRows</enum>
@@ -885,6 +893,16 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>tabWidget_2</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>pb_refresh</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>tableView</tabstop>
+  <tabstop>tableView_2</tabstop>
+  <tabstop>tableView_3</tabstop>
+ </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>

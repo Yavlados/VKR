@@ -42,7 +42,29 @@ Update::Update(QWidget *parent) :
     QRegExp reDate("[0-9]{0,4}-[0-9]{0,2}-[0-9]{0,2}");
     QRegExpValidator *validator = new QRegExpValidator(reDate, this);
     ui->lineEdit->setValidator(validator);
+    set_tab_orders();
+}
 
+void Update::set_tab_orders()
+{
+    ui->le_last_name->setFocus();
+    setTabOrder( ui->le_last_name, ui->le_name);
+    setTabOrder( ui->le_name, ui->le_mid_name);
+    setTabOrder( ui->le_mid_name, ui->le_check_for);
+    setTabOrder(ui->le_check_for, ui->cb_adres);
+    setTabOrder( ui->cb_adres, ui->le_reg_city);
+
+    setTabOrder(ui->le_reg_city, ui->le_reg_street);
+    setTabOrder(ui->le_reg_street, ui->le_reg_house);
+    setTabOrder(ui->le_reg_house, ui->le_reg_corp);
+    setTabOrder(ui->le_reg_corp, ui->le_reg_flat);
+
+    setTabOrder(ui->le_reg_flat, ui->le_liv_city);
+
+    setTabOrder(ui->le_liv_city, ui->le_liv_street);
+    setTabOrder(ui->le_liv_street, ui->le_liv_house);
+    setTabOrder(ui->le_liv_house, ui->le_liv_corp);
+    setTabOrder(ui->le_liv_corp, ui->le_liv_flat);
 }
 
 Update::~Update()

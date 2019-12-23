@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1659</width>
-    <height>799</height>
+    <height>805</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1101,6 +1101,35 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>le_last_name</tabstop>
+  <tabstop>le_name</tabstop>
+  <tabstop>le_mid_name</tabstop>
+  <tabstop>le_check_for</tabstop>
+  <tabstop>cb_adres</tabstop>
+  <tabstop>le_reg_city</tabstop>
+  <tabstop>le_reg_street</tabstop>
+  <tabstop>le_reg_house</tabstop>
+  <tabstop>le_reg_corp</tabstop>
+  <tabstop>le_reg_flat</tabstop>
+  <tabstop>le_liv_city</tabstop>
+  <tabstop>le_liv_street</tabstop>
+  <tabstop>le_liv_house</tabstop>
+  <tabstop>le_liv_corp</tabstop>
+  <tabstop>pb_add_contact_line</tabstop>
+  <tabstop>pb_del_contact_line</tabstop>
+  <tabstop>le_liv_flat</tabstop>
+  <tabstop>pb_add_line_telephone</tabstop>
+  <tabstop>pb_del_line_telephone</tabstop>
+  <tabstop>le_birth_date_year</tabstop>
+  <tabstop>le_birth_date_month</tabstop>
+  <tabstop>le_birth_date_day</tabstop>
+  <tabstop>le_dop_info</tabstop>
+  <tabstop>pb_Back_to_Main</tabstop>
+  <tabstop>tableView</tabstop>
+  <tabstop>tableView_2</tabstop>
+  <tabstop>lineEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

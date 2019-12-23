@@ -29,6 +29,7 @@
 #include <QMessageBox>
 #include <QSqlQueryModel>
 #include <QFileDialog>
+#include <QStyle>
 /** \file mainwindow_form.h
     \brief Заголовочный файл класса MainWindow
 */
@@ -244,6 +245,8 @@ private slots:
 
     void prev_tab_tab2();
 
+
+    void on_tabWidget_currentChanged(int index);
 
 signals:
     void Send_data(Crud *cr, int index);
