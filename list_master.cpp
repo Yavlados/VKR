@@ -511,6 +511,8 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
        if(old_db)
        {
            query.bindValue(":r_i",crud->at(i)->row_id);
+           QString date = QDate::currentDate().toString(Qt::ISODate);
+           query.bindValue(":d_a",date);
        }
        else
        {

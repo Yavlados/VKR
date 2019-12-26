@@ -4,6 +4,7 @@
 #include "list_master.h"
 #include <QRegExpValidator>
 
+
 Search::Search(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Search)
@@ -14,21 +15,13 @@ Search::Search(QWidget *parent) :
         ui->frame_3->setVisible(false);
         ui->frame_4->setVisible(false);
         ui->frame_5->setVisible(false);
+
         //
-        QRegExp reDate("[0-9]{0,4}-[0-9]{0,2}-[0-9]{0,2}");
-        QRegExpValidator *validator = new QRegExpValidator(reDate, this);
 
-
-
-         ui->le_birthday->setValidator(validator);
-         ui->le_form_date->setValidator(validator);
-         ui->le_from->setValidator(validator);
-         ui->le_to->setValidator(validator);
-
-
-
+      //  ui->frame_widg->setLayout(layout);
 
          set_tab_orders();
+         set_date_forms();
 
          ui->le_zk_id->setCursorPosition(0);
 
@@ -57,20 +50,24 @@ void Search::keyPressEvent(QKeyEvent *event)
 void Search::set_tab_orders()
 {
     ui->le_zk_id->setFocus();
-    setTabOrder(ui->le_zk_id, ui->le_tel_num);
-    setTabOrder( ui->le_tel_num, ui->le_last_name);
-    setTabOrder( ui->le_last_name, ui->le_name);
-    setTabOrder( ui->le_name, ui->le_mid_name);
-    setTabOrder( ui->le_mid_name, ui->le_birthday);
-    setTabOrder( ui->le_birthday, ui->le_reg_city);
-    setTabOrder(ui->le_reg_city, ui->le_reg_street);
-    setTabOrder(ui->le_reg_street, ui->le_reg_house);
-    setTabOrder(ui->le_reg_house, ui->le_reg_corp);
-    setTabOrder(ui->le_reg_corp, ui->le_reg_flat);
-    setTabOrder(ui->le_reg_flat, ui->le_form_date);
-    setTabOrder(ui->le_form_date, ui->le_from);
-    setTabOrder(ui->le_from, ui->le_to);
-    setTabOrder(ui->pb_search, ui->le_zk_id );
+//    setTabOrder(ui->le_zk_id, ui->le_tel_num);
+//    setTabOrder( ui->le_tel_num, ui->le_last_name);
+//    setTabOrder( ui->le_last_name, ui->le_name);
+//    setTabOrder( ui->le_name, ui->le_mid_name);
+
+//    setTabOrder( ui->le_mid_name, ui->vl_for_bd->widget());
+//    //      setTabOrder(bd->year(), ui->rb_reg);
+//    //setTabOrder(ui->vl_for_bd->widget(), ui->rb_reg);
+//    //  setTabOrder( ui->le_mid_name, ui->le_birthday);
+////    setTabOrder( ui->le_birthday, ui->le_reg_city);
+//    setTabOrder(ui->le_reg_city, ui->le_reg_street);
+//    setTabOrder(ui->le_reg_street, ui->le_reg_house);
+//    setTabOrder(ui->le_reg_house, ui->le_reg_corp);
+//    setTabOrder(ui->le_reg_corp, ui->le_reg_flat);
+// //   setTabOrder(ui->le_reg_flat, ui->le_form_date);
+//  //  setTabOrder(ui->le_form_date, ui->le_from);
+////    setTabOrder(ui->le_from, ui->le_to);
+//    setTabOrder(ui->pb_search, ui->le_zk_id );
 
 
 }
@@ -113,7 +110,7 @@ void Search::on_pb_search_clicked()
     o_t->mid_name = ui->le_mid_name->text();
     ///ДАТА ДОБАВЛЕНИЯ И РОЖДЕНИЯ ПЕРЕДЕЛАТЬ
 
-    o_t->birth_date = create_new_date(ui->le_birthday->text());
+    //o_t->birth_date = create_new_date(ui->le_birthday->text());
 
     //o_t->birth_date = get_date(ui->le_birth_year->text(),ui->le_birth_month->text(), ui->le_birth_day->text());
     o_t->reg_city = ui->le_reg_city->text();
@@ -122,7 +119,7 @@ void Search::on_pb_search_clicked()
     o_t->reg_corp = ui->le_reg_corp->text();
     o_t->reg_flat = ui->le_reg_flat->text();
 
-   o_t->date_add = create_new_date(ui->le_form_date->text());
+   //o_t->date_add = create_new_date(ui->le_form_date->text());
 
     //o_t->date_add = get_date(ui->le_form_year->text(),ui->le_form_month->text(), ui->le_form_day->text());
 
@@ -217,6 +214,12 @@ void Search::on_pushButton_clicked()
     {
         l->clear();
     }
+
+    bd->refresh();
+    form_d->refresh();
+    d_from->refresh();
+    d_to->refresh();
+
     emit Cancel_search();
 }
 
@@ -274,9 +277,11 @@ QString Search::create_search_query(Crud *search_crud)
         qry += " AND LOWER(zk.Mid_name) LIKE LOWER('"+search_crud->mid_name+"')";
     }
     //////////////////////////////////////////
-    if(!search_crud->birth_date.isEmpty())
+    QString Bday = get_date(bd->get_year(), bd->get_month(), bd->get_day());
+    if(!Bday.isEmpty())
     {
-        qry += " AND zk.Birth_date = ('"+ search_crud->birth_date+"')";
+        qry += get_date_query(Bday, 1);
+        //qry += " AND zk.Birth_date = ('"+ search_crud->birth_date+"')";
       ///НОВЫЙ
         //qry += get_date_query(search_crud->birth_date, 1);
     }
@@ -330,33 +335,27 @@ QString Search::create_search_query(Crud *search_crud)
     }
 
 /////////////////////////////////////////////////////////
-    if(!search_crud->date_add.isEmpty())
+    QString Date_add = get_date(d_from->get_year(), d_from->get_month(), d_from->get_day());
+    if(!Date_add.isEmpty())
     {
-       qry += " AND zk.Birth_date = ('"+ search_crud->date_add+"')";
+        qry += get_date_query(Date_add, 2);
+      // qry += " AND zk.Birth_date = ('"+ search_crud->date_add+"')";
         ///НОВЫЙ
           //qry += get_date_query(search_crud->date_add, 2);
     }
 /////////////////////////////////////////////////////
     ///СТАРЫЙ ВВОД ДАТЫ
-//        if(!get_date_from().isEmpty())
-//        {
-//            qry += " AND zk.date_add >= ('"+ Date_From+"')";
-//        }
-//        if(!get_date_to().isEmpty())
-//        {
-//            qry += " AND zk.date_add <= ('"+ Date_To+"')";
-//        }
-    ///НОВЫЙ ВВОД ДАТЫ
-   QString date_from, date_to;
-
-  date_from = create_new_date(ui->le_from->text());
-  date_to = create_new_date(ui->le_to->text());
-    if(!date_from.isEmpty())
-   qry += " AND zk.date_add >= ('"+ date_from+"')";
-
-    if(!date_to.isEmpty())
-   qry += " AND zk.date_add <= ('"+ date_to+"')";
-
+    Date_From = get_date(d_from->get_year(), d_from->get_month(), d_from->get_day());
+        if(!Date_From.isEmpty())
+        {
+            qry += get_date_query(Date_From, 2);
+            //qry += " AND zk.date_add >= ('"+ Date_From+"')";
+        }
+        Date_To = get_date(d_to->get_year(), d_to->get_month(), d_to->get_day());
+        if(!Date_To.isEmpty())
+        {
+            qry +=get_date_query(Date_To, 2);
+        }
     return  qry;
 }
 
@@ -365,23 +364,23 @@ QString Search::get_date_from()
        ///Сначала собираю DateFrom
        ///
    ///Если указан день, месяц, год
-   if (!ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
+   if (!d_from->get_day().isEmpty() && !d_from->get_month().isEmpty() && !d_from->get_year().isEmpty())
    {
-       Date_From = ui->le_year_from->text() +"-"+ui->le_month_from->text() +"-"+ui->le_day_from->text();
+       Date_From = d_from->get_year() +"-"+d_from->get_month() +"-"+d_from->get_day();
     return Date_From;
    }
 
    /// Если не указан день, но есть месяц и год
-   if (ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
+   if (d_from->get_day().isEmpty() && !d_from->get_month().isEmpty() && !d_from->get_year().isEmpty())
    {///За день тогда берем первое число
-   Date_From = ui->le_year_from->text() +"-"+ui->le_month_from->text() +"-01";
+   Date_From = d_from->get_year() +"-"+d_from->get_month() +"-01";
     return Date_From;
    }
 
    /// Если только год
-   if (ui->le_day_from->text().isEmpty() && ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
+   if (d_from->get_day().isEmpty() && d_from->get_month().isEmpty() && !d_from->get_year().isEmpty())
    {/// Беру начало года (1 января)
-   Date_From = ui->le_year_from->text() +"-01-01";
+   Date_From = d_from->get_year() +"-01-01";
     return Date_From;
    }
    return nullptr;
@@ -433,7 +432,7 @@ QString Search::get_date(QString year, QString month, QString day )
         date = "F  "; //Префикс полной даты (3 символа)
         date += year +"-"+ month +"-"+day;
         return date;
-    }
+    } else
 
     /// Если не указан день, но есть месяц и год
     if (day.isEmpty() && !month.isEmpty() && !year.isEmpty())
@@ -442,7 +441,7 @@ QString Search::get_date(QString year, QString month, QString day )
     date += month +"-"+year;
     return date;
 
-    }
+    } else
 
     /// Если только год
     if (day.isEmpty() && month.isEmpty() && !year.isEmpty())
@@ -450,7 +449,7 @@ QString Search::get_date(QString year, QString month, QString day )
     date = "Y  "; //Префикс года (3 символа)
     date +=year;
     return date;
-    }
+    } else
 
     /// Если только месяц
     if (day.isEmpty() && !month.isEmpty() && year.isEmpty())
@@ -458,7 +457,7 @@ QString Search::get_date(QString year, QString month, QString day )
     date = "M  "; //Префикс месяца (3 символа)
     date += month;
     return date;
-    }
+    } else
 
     /// Если только день
     if (!day.isEmpty() && month.isEmpty() &&year.isEmpty())
@@ -466,7 +465,7 @@ QString Search::get_date(QString year, QString month, QString day )
     date = "D  "; //Префикс дня (3 символа)
     date += day;
     return date;
-    }
+    } else
 
     /// Если только день и месяц
     if (!day.isEmpty() && !month.isEmpty() &&year.isEmpty())
@@ -474,7 +473,7 @@ QString Search::get_date(QString year, QString month, QString day )
     date = "DM "; //Префикс дня (3 символа)
     date += day+"-"+month;
     return date;
-    }
+    } else
 
     /// Если только день и год
     if (!day.isEmpty() && month.isEmpty() && !year.isEmpty())
@@ -482,8 +481,7 @@ QString Search::get_date(QString year, QString month, QString day )
     date = "DY "; //Префикс дня (3 символа)
     date += day+"-"+year;
     return date;
-    }
-
+    } else
    if(date.isEmpty())
        return nullptr;
 }
@@ -579,4 +577,20 @@ QString Search::get_date_query(QString date, int flag)
         }
     }
     return query;
+}
+
+void Search::set_date_forms()
+{
+    bd = new Date_form();
+    ui->vl_for_bd->addWidget(bd);
+
+    form_d = new Date_form();
+    ui->vl_form->addWidget(form_d);
+
+    d_from = new Date_form();
+    ui->vl_from->addWidget(d_from);
+
+    d_to = new Date_form();
+    ui->vl_to->addWidget(d_to);
+
 }

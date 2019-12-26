@@ -93,3 +93,10 @@ void Text_handler::set_off_t_add_import(Off_tels *off_t)
             " успешно добавлен \r\n";
 }
 
+void Text_handler::set_merge_text(Crud *cr_imp, Crud *cr_pg)
+{
+    report_text += "СЛИЯНИЕ #"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
+            "(основная) с #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
+            "\r\n";
+}
+

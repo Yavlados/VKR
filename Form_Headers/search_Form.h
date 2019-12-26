@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QSqlQueryModel>
 #include "an_result_Form.h"
+#include "date_form.h"
 /**
  * \file search_Form.h
  * \brief Форма поиска
@@ -56,8 +57,14 @@ private slots:
 
     QString get_date_query(QString date, int flag);
 
+    void set_date_forms();
+
 private:
     Ui::Search *ui;
+     Date_form *bd;
+     Date_form *form_d;
+     Date_form *d_from;
+     Date_form *d_to;
 };
 
 #endif // SEARCH_H

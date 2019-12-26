@@ -59,7 +59,8 @@ SOURCES += \
     table_show_delegate.cpp \
     component.cpp \
     dialog_settings.cpp \
-    text_handler.cpp
+    text_handler.cpp \
+    date_form.cpp
 
 HEADERS += \
     db_connection.h \
@@ -92,7 +93,8 @@ HEADERS += \
     table_show_delegate.h \
     component.h \
     dialog_settings.h \
-    text_handler.h
+    text_handler.h \
+    date_form.h
 
 FORMS += \
         mainwindow.ui \
@@ -107,7 +109,8 @@ FORMS += \
     settings_form.ui \
     dialog_conflict.ui \
     component.ui \
-    dialog_settings.ui
+    dialog_settings.ui \
+    date_form.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

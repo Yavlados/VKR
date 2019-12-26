@@ -20,7 +20,6 @@ class For_analysis          /// Класс методов анализа
 {
 public:
     For_analysis();
-
     QString temp_str_for_num;
 
     QString temp_str_for_cont_num;

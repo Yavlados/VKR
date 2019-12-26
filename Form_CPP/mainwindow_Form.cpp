@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tableView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(header_clicked(int)));
 
     ui->tabWidget->setAttribute(Qt::WA_StyledBackground, true);
+        ui->tabWidget_2->setAttribute(Qt::WA_StyledBackground, true);
 }
 //-----------------------------------------------------------------------------------//
 MainWindow::~MainWindow()
@@ -698,20 +699,23 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
             {
                 if (crud_model->crudlist->at(i)->checkState_ == Checked)
                 {
-                    form_exprt->exported_zk_id.append( crud_model->crudlist->at(i)->zk_id);
-                    form_exprt->list->fill_crud_list(crud, crud_model->crudlist->at(i)->zk_id, PSQLtype);
+                    //form_exprt->exported_zk_id.append( crud_model->crudlist->at(i)->zk_id);
+                    //form_exprt->list->fill_crud_list(crud, crud_model->crudlist->at(i)->zk_id, PSQLtype);
                     exported_id->append(crud_model->crudlist->at(i)->zk_id);
                 }
             }
+        else if (cb_off_tels)
+            form_exprt->list->fill_off_tels(offtel,PSQLtype);
 
         if(!exported_id->isEmpty())
         {
+            for (int i=0; i<exported_id->size();i++)
+                form_exprt->list->fill_crud_list(crud, exported_id->at(i), PSQLtype);
+
             links_for_export->take_links(exported_id);
             delete exported_id;
         }
 
-        if(cb_off_tels)
-            form_exprt->list->fill_off_tels(offtel,PSQLtype);
 
         if(!crud->isEmpty() || !offtel->isEmpty())
         {
@@ -753,6 +757,7 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
             QString filename2 = filename;
             filename2 += "/" + file;
             Import_Form *import_form = new Import_Form; //необходим доступ для
+            import_form->form_state = zk;
             connect(import_form,SIGNAL(Refresh_tab()),this,SLOT(RefreshTab()));
 
         Text_handler::instance()->set_zk_folder_line();
@@ -815,6 +820,7 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
             /// Метод алгоритма сравнения и импорта
            if(!of_t)
            {
+               import_form->form_state = zk;
                Text_handler::instance()->set_mode(zk_report);
 
                if(import_form->begin_import())
@@ -858,6 +864,7 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
 
            }
            else {
+               import_form->form_state = official_tel;
                Text_handler::instance()->set_mode(off_report);
                if(import_form->begin_import_of_t())
                {

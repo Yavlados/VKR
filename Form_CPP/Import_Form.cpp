@@ -234,6 +234,7 @@ bool Import_Form::add_to_db()
 
 void Import_Form::prepare_main_to_add(Crud *main_crud, Crud *added_crud)
 {
+    Text_handler::instance()->set_merge_text( main_crud, added_crud);
     Crud *new_cr = new Crud;        //Новая запись
 
     new_cr->operator+(main_crud); //Скопировал все поля ЗК

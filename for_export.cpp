@@ -93,8 +93,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " CONSTRAINT FK_Telephone_ZK FOREIGN KEY (fk_telephone_zk)"
                         "  REFERENCES zk (zk_id) MATCH SIMPLE"
                         " ON UPDATE CASCADE ON DELETE CASCADE,"
-                        " CONSTRAINT Owners_tel_Telephone_id_key UNIQUE (telephone_id),"
-                        " CONSTRAINT Owners_tel_Telephone_num_key UNIQUE (telephone_num)"
+                        " CONSTRAINT Owners_tel_Telephone_id_key UNIQUE (telephone_id)"
                         " ); "))
              qDebug() << query.lastError();
 
@@ -115,6 +114,10 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
              qDebug() << query.lastError();
 
          ///Заполнение созданных таблиц
+
+
+
+
          for(int i = 0; i < crud->size(); i++)
          {
             query.prepare("INSERT INTO zk "
@@ -171,7 +174,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
         else
         {
           query.clear();
-          qDebug() << crud->at(i)->owt()->size();
+
             for (int a = 0; a < crud->at(i)->owt()->size(); a++)
             {
                 query.prepare("INSERT INTO owners_tel( Telephone_num, FK_Telephone_Zk, internum, oldnum) "
@@ -183,7 +186,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
 
                 if (!query.exec())
                 {
-                    qDebug() << query.lastError();
+                    qDebug() << query.lastError() << query.executedQuery() << crud->at(i)->owt()->at(a)->tel_num << crud->at(i)->owt()->at(a)->parentZK_id << crud->at(i)->owt()->at(a)->internum << crud->at(i)->owt()->at(a)->oldnum;
                 }
                 else
                 {

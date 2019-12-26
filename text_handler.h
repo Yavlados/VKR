@@ -29,6 +29,7 @@ public:
      void set_zk_folder_line();
      void set_off_t_del_import(Off_tels *off_t);
      void set_off_t_add_import(Off_tels *off_t);
+     void set_merge_text(Crud *cr_imp, Crud *cr_pg);
 private:
     Text_handler();
     static int counter;
