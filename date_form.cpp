@@ -10,7 +10,7 @@ Date_form::Date_form(QWidget *parent) :
 {
     ui->setupUi(this);
     focusPolicy();
-    setFocusPolicy(Qt::StrongFocus);
+    setFocusPolicy(Qt::TabFocus);
 }
 
 Date_form::~Date_form()
@@ -41,6 +41,21 @@ QString Date_form::get_month()
 QString Date_form::get_year()
 {
     return ui->year->text();
+}
+
+void Date_form::set_day(QString t)
+{
+    ui->day->setText(t);
+}
+
+void Date_form::set_month(QString t)
+{
+    ui->month->setText(t);
+}
+
+void Date_form::set_year(QString t)
+{
+    ui->year->setText(t);
 }
 
 QLineEdit *Date_form::day()
@@ -91,6 +106,6 @@ void Date_form::on_year_textEdited(const QString &arg1)
 {
     if(arg1.length() == 4)
     {
-
+        emit year_edited();
     }
 }

@@ -25,6 +25,10 @@ Update::Update(QWidget *parent) :
     ui(new Ui::Update)
 {
     ui->setupUi(this);
+    bd = new Date_form();
+    ui->hl_for_bd->addWidget(bd);
+    connect(bd, SIGNAL(year_edited()), this, SLOT(set_focus()));
+
     set_validators();
     new_cr = nullptr;
     set_splitter_lines();
@@ -39,9 +43,6 @@ Update::Update(QWidget *parent) :
     ui->le_birth_date_month->setVisible(false);
     ui->le_birth_date_year->setVisible(false);
 
-    QRegExp reDate("[0-9]{0,4}-[0-9]{0,2}-[0-9]{0,2}");
-    QRegExpValidator *validator = new QRegExpValidator(reDate, this);
-    ui->lineEdit->setValidator(validator);
     set_tab_orders();
 }
 
@@ -182,14 +183,11 @@ void Update::Fill_fields_update(Crud *new_cr)
 
     if(!new_cr->birth_date.isEmpty())
     {
-        ///НОВАЯ
-        ui->lineEdit->setText(new_cr->birth_date);
-        /*
         auto list = new_cr->birth_date.split("-");
 
-        ui->le_birth_date_day->setText(list.at(2));
-        ui->le_birth_date_month->setText(list.at(1));
-        ui->le_birth_date_year->setText(list.at(0));*/
+        bd->set_day(list.at(2));
+        bd->set_month(list.at(1));
+        bd->set_year(list.at(0));
     }
 
     ui->le_check_for->setText(new_cr->check_for);
@@ -273,25 +271,25 @@ void Update::on_pb_Update_clicked()
     new_cr->name = ui->le_name->text();
     new_cr->mid_name= ui->le_mid_name->text();
 
-    //get_birthdate();
-    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
-    {
-        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
-        msgbx.setStandardButtons(QMessageBox::Ok);
-        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+     get_birthdate();
+//    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
+//    {
+//        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
+//        msgbx.setStandardButtons(QMessageBox::Ok);
+//        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
 
-        int ret = msgbx.exec();
+//        int ret = msgbx.exec();
 
-        switch (ret) {
-        case QMessageBox::Ok:
-            return;
-        }
-    }
-        else
-        new_cr->birth_date = ui->lineEdit->text();
+//        switch (ret) {
+//        case QMessageBox::Ok:
+//            return;
+//        }
+//    }
+//        else
+//        new_cr->birth_date = ui->lineEdit->text();
 
-    if(new_cr->birth_date.isEmpty())
-        new_cr->birth_date = nullptr  ;
+//    if(new_cr->birth_date.isEmpty())
+//        new_cr->birth_date = nullptr  ;
 
    // msgbx.setGeometry(0,0, 900,210);
     msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
@@ -604,6 +602,7 @@ void Update::clear_Vl()
       QLayoutItem *item = ui->vl_for_date_upd->takeAt(0);
       delete item->widget();
     }
+    bd->refresh();
 }
 //-----------------------------------------------------------------------------------//
 void Update::set_validators()
@@ -855,13 +854,13 @@ bool Update::compare_tel_num()
 //-----------------------------------------------------------------------------------//
 QString Update::get_birthdate()
 {
-    if (!ui->le_birth_date_day->text().isEmpty() && !ui->le_birth_date_month->text().isEmpty() && !ui->le_birth_date_year->text().isEmpty())
+    if (!bd->get_day().isEmpty() && !bd->get_month().isEmpty() && !bd->get_year().isEmpty())
     {
         QString day,month,year;
 
-        day = ui->le_birth_date_day->text();
-        month = ui->le_birth_date_month->text();
-        year=ui->le_birth_date_year->text();
+        day = bd->get_day();
+        month = bd->get_month();
+        year = bd->get_year();
 
         if (day.count() == 1)
               day.insert(0,"0");
@@ -927,22 +926,22 @@ void Update::Add_zk()
     /// СНАЧАЛА  СОБИРАЕМ НУЖНЫЕ ПОЛЯ, А ПОТОМ
     /// ПРОВЕРЯЕМ ВВЕДЕННЫЕ НОМЕРА
 
-    //get_birthdate();
-    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
-    {
-        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
-        msgbx.setStandardButtons(QMessageBox::Ok);
-        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+    get_birthdate();
+//    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
+//    {
+//        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
+//        msgbx.setStandardButtons(QMessageBox::Ok);
+//        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
 
-        int ret = msgbx.exec();
+//        int ret = msgbx.exec();
 
-        switch (ret) {
-        case QMessageBox::Ok:
-            return;
-        }
-    }
-        else
-        new_cr->birth_date = ui->lineEdit->text();
+//        switch (ret) {
+//        case QMessageBox::Ok:
+//            return;
+//        }
+//    }
+//        else
+//        new_cr->birth_date = ui->lineEdit->text();
 
 
     if(new_cr->birth_date.isEmpty())
@@ -1102,22 +1101,22 @@ void Update::update_import_data()
     new_cr->reg_corp = ui->le_reg_corp ->text();
     new_cr->reg_flat = ui->le_reg_flat->text();
 
-    //get_birthdate();
-    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
-    {
-        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
-        msgbx.setStandardButtons(QMessageBox::Ok);
-        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+    get_birthdate();
+//    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
+//    {
+//        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
+//        msgbx.setStandardButtons(QMessageBox::Ok);
+//        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
 
-        int ret = msgbx.exec();
+//        int ret = msgbx.exec();
 
-        switch (ret) {
-        case QMessageBox::Ok:
-            return;
-        }
-    }
-        else
-        new_cr->birth_date = ui->lineEdit->text();
+//        switch (ret) {
+//        case QMessageBox::Ok:
+//            return;
+//        }
+//    }
+//        else
+//        new_cr->birth_date = ui->lineEdit->text();
 
     if(new_cr->birth_date.isEmpty())
         new_cr->birth_date = nullptr  ;
@@ -1502,6 +1501,11 @@ void Update::start_confluence(Crud *confl_cr, Crud *m_cr, Crud *a_cr)
     Recieve_data(confl_cr);
 }
 
+void Update::set_focus()
+{
+    ui->le_check_for->setFocus();
+}
+
 void Update::keyPressEvent(QKeyEvent *event)
 {
         switch(event->key())
@@ -1587,31 +1591,31 @@ void Update::on_cb_adres_clicked()
 
 void Update::upload_main_cr()
 {
-    //get_birthdate();
+    get_birthdate();
 
     main_cr->lastname = ui->le_last_name->text();
     main_cr->name=ui->le_name->text();
     main_cr->mid_name = ui->le_mid_name->text();
 //    get_birthdate();
 
-    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
-    {
-        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
-        msgbx.setStandardButtons(QMessageBox::Ok);
-        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
+//    if(!ui->lineEdit->text().isEmpty() && ui->lineEdit->text().size() < 10)
+//    {
+//        msgbx.setText("<font size = '5'> Вы ввели некорректную дату рождения </font>");
+//        msgbx.setStandardButtons(QMessageBox::Ok);
+//        msgbx.setButtonText(QMessageBox::Ok,"Вернуться обратно");
 
-        int ret = msgbx.exec();
+//        int ret = msgbx.exec();
 
-        switch (ret) {
-        case QMessageBox::Ok:
-            return;
-        }
-    }
-        else
-        main_cr->birth_date = ui->lineEdit->text();
+//        switch (ret) {
+//        case QMessageBox::Ok:
+//            return;
+//        }
+//    }
+//        else
+//        main_cr->birth_date = ui->lineEdit->text();
 
-    if(new_cr->birth_date.isEmpty())
-        main_cr->birth_date = nullptr  ;
+//    if(new_cr->birth_date.isEmpty())
+//        main_cr->birth_date = nullptr  ;
 
     main_cr->check_for = ui->le_check_for->text();
     main_cr->dop_info = ui->le_dop_info->toPlainText();

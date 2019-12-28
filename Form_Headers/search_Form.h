@@ -58,6 +58,8 @@ private slots:
     QString get_date_query(QString date, int flag);
 
     void set_date_forms();
+    ///СЛОТЫ ДЛЯ ФОКУСА
+    void bd_edited();
 
 private:
     Ui::Search *ui;

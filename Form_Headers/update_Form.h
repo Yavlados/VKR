@@ -6,6 +6,7 @@
 #include "list_master.h"
 //#include "table_line_delegate.h"
 #include "component.h"
+#include "date_form.h"
 
 #include <QWidget>
 #include <QDebug>
@@ -80,7 +81,7 @@ private:
     int index = 0;
     Ui::Update *ui;
     QPushButton *p_b = nullptr;
-
+    Date_form *bd;
 signals:
 
     void Ready_for_update(int);
@@ -94,6 +95,7 @@ signals:
 private slots:
 
 
+    void set_focus();
     void keyPressEvent(QKeyEvent *event);
     void closeEvent(QCloseEvent *event);
     void clear_ALL();

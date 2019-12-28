@@ -20,9 +20,9 @@ Search::Search(QWidget *parent) :
 
       //  ui->frame_widg->setLayout(layout);
 
-         set_tab_orders();
          set_date_forms();
 
+         set_tab_orders();
          ui->le_zk_id->setCursorPosition(0);
 
 }
@@ -50,24 +50,27 @@ void Search::keyPressEvent(QKeyEvent *event)
 void Search::set_tab_orders()
 {
     ui->le_zk_id->setFocus();
-//    setTabOrder(ui->le_zk_id, ui->le_tel_num);
-//    setTabOrder( ui->le_tel_num, ui->le_last_name);
-//    setTabOrder( ui->le_last_name, ui->le_name);
-//    setTabOrder( ui->le_name, ui->le_mid_name);
+    setTabOrder(ui->le_zk_id, ui->le_tel_num);
+    setTabOrder( ui->le_tel_num, ui->le_last_name);
+    setTabOrder( ui->le_last_name, ui->le_name);
+    setTabOrder( ui->le_name, ui->le_mid_name);
 
-//    setTabOrder( ui->le_mid_name, ui->vl_for_bd->widget());
-//    //      setTabOrder(bd->year(), ui->rb_reg);
-//    //setTabOrder(ui->vl_for_bd->widget(), ui->rb_reg);
-//    //  setTabOrder( ui->le_mid_name, ui->le_birthday);
-////    setTabOrder( ui->le_birthday, ui->le_reg_city);
-//    setTabOrder(ui->le_reg_city, ui->le_reg_street);
-//    setTabOrder(ui->le_reg_street, ui->le_reg_house);
-//    setTabOrder(ui->le_reg_house, ui->le_reg_corp);
-//    setTabOrder(ui->le_reg_corp, ui->le_reg_flat);
-// //   setTabOrder(ui->le_reg_flat, ui->le_form_date);
-//  //  setTabOrder(ui->le_form_date, ui->le_from);
-////    setTabOrder(ui->le_from, ui->le_to);
-//    setTabOrder(ui->pb_search, ui->le_zk_id );
+    setTabOrder( ui->le_mid_name, bd->day()->focusProxy());
+//    setTabOrder(bd->day()->focusProxy(),  bd->month()->focusProxy());
+//    setTabOrder(bd->month()->focusProxy(), bd->year()->focusProxy());
+    setTabOrder(bd->year()->focusProxy(), ui->le_reg_city );
+    //      setTabOrder(bd->year(), ui->rb_reg);
+    //setTabOrder(bd->focusProxy(), ui->rb_reg);
+    //  setTabOrder( ui->le_mid_name, ui->le_birthday);
+//    setTabOrder( ui->le_birthday, ui->le_reg_city);
+    setTabOrder(ui->le_reg_city, ui->le_reg_street);
+    setTabOrder(ui->le_reg_street, ui->le_reg_house);
+    setTabOrder(ui->le_reg_house, ui->le_reg_corp);
+    setTabOrder(ui->le_reg_corp, ui->le_reg_flat);
+ //   setTabOrder(ui->le_reg_flat, ui->le_form_date);
+  //  setTabOrder(ui->le_form_date, ui->le_from);
+//    setTabOrder(ui->le_from, ui->le_to);
+    setTabOrder(ui->pb_search, ui->le_zk_id );
 
 
 }
@@ -583,6 +586,7 @@ void Search::set_date_forms()
 {
     bd = new Date_form();
     ui->vl_for_bd->addWidget(bd);
+    connect(bd,SIGNAL(year_edited()), this, SLOT(bd_edited()));
 
     form_d = new Date_form();
     ui->vl_form->addWidget(form_d);
@@ -593,4 +597,9 @@ void Search::set_date_forms()
     d_to = new Date_form();
     ui->vl_to->addWidget(d_to);
 
+}
+
+void Search::bd_edited()
+{
+    ui->le_reg_city->setFocus();
 }

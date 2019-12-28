@@ -332,6 +332,7 @@ void MainWindow::on_action_add_triggered()
         connect (addlist->at(0), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
         connect(addlist->at(0), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
         connect(addlist->at(0), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
+        add->set_tab_orders();
     }
     else
         ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(addlist->at(0)));
@@ -414,7 +415,7 @@ void MainWindow::on_action_search_triggered()
     else
     {
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(sr));
-        sr->set_tab_orders();
+       // sr->set_tab_orders();
     }
 
     set_normal_width(sr->actual_size.width());

@@ -27,18 +27,26 @@ public:
     QString get_month();
     QString get_year();
 
+    void set_day(QString t);
+    void set_month(QString t);
+    void set_year(QString t);
+
     QLineEdit *day();
     QLineEdit *month();
     QLineEdit *year();
 
-void refresh();
+    void refresh();
+
+signals:
+    void year_edited();
+
 
 private slots:
     void on_day_textEdited(const QString &arg1);
 
     void on_month_textEdited(const QString &arg1);
 
-    void on_year_textEdited(const QString &arg1);
+    void  on_year_textEdited(const QString &arg1);
 
 private:
     date_form_type mode;
