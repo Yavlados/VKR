@@ -44,6 +44,7 @@ Update::Update(QWidget *parent) :
     ui->le_birth_date_year->setVisible(false);
 
     set_tab_orders();
+    ui->le_dop_info->setTabChangesFocus(true);
 }
 
 void Update::set_tab_orders()
@@ -51,7 +52,12 @@ void Update::set_tab_orders()
     ui->le_last_name->setFocus();
     setTabOrder( ui->le_last_name, ui->le_name);
     setTabOrder( ui->le_name, ui->le_mid_name);
-    setTabOrder( ui->le_mid_name, ui->le_check_for);
+
+    setTabOrder(ui->le_mid_name, bd->day);
+    setTabOrder(bd->day, bd->month);
+    setTabOrder(bd->month, bd->year);
+
+    setTabOrder( bd->year, ui->le_check_for);
     setTabOrder(ui->le_check_for, ui->cb_adres);
     setTabOrder( ui->cb_adres, ui->le_reg_city);
 
@@ -66,6 +72,8 @@ void Update::set_tab_orders()
     setTabOrder(ui->le_liv_street, ui->le_liv_house);
     setTabOrder(ui->le_liv_house, ui->le_liv_corp);
     setTabOrder(ui->le_liv_corp, ui->le_liv_flat);
+
+    setTabOrder(ui->pb_Back_to_Main, p_b);
 }
 
 Update::~Update()
@@ -1515,6 +1523,10 @@ void Update::keyPressEvent(QKeyEvent *event)
             return;
         case Qt::Key::Key_Escape:
             on_pb_Back_to_Main_clicked();
+            return;
+            case Qt::Key::Key_Space:
+                if(ui->tableView->currentIndex().isValid())
+                    on_tableView_clicked(ui->tableView->currentIndex());
             return;
         }
 

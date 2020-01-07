@@ -57,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tabWidget->setAttribute(Qt::WA_StyledBackground, true);
         ui->tabWidget_2->setAttribute(Qt::WA_StyledBackground, true);
+
+        set_label();
 }
 //-----------------------------------------------------------------------------------//
 MainWindow::~MainWindow()
@@ -1243,8 +1245,8 @@ void MainWindow::set_shortcuts()
 {
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this, SLOT(next_tab()));
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this, SLOT(prev_tab()));
-    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this, SLOT(next_tab_tab2()));
-    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_A), this, SLOT(prev_tab_tab2()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_D), this, SLOT(next_tab_tab2()));
+    new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this, SLOT(prev_tab_tab2()));
      new QShortcut(QKeySequence(Qt::Key_F1), this, SLOT(on_action_official_tel_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F2), this, SLOT(on_action_update_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(on_action_add_triggered()));
@@ -1284,3 +1286,11 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 {
 
 }
+
+void MainWindow::set_label()
+{
+    QLabel *lb = new QLabel("<p><b>(CTRL+Q) и (CTRL+W)</b> для переключения вкладок правого окна</p>"
+                            "<p><b>(CTRL+S) и (CTRL+D)</b> для преключения вкладок левого окна</p>");
+    ui->vl_shortcut_info->addWidget(lb);
+}
+

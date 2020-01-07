@@ -247,6 +247,8 @@ private slots:
 
 
     void on_tabWidget_currentChanged(int index);
+    //NEW
+    void set_label();//инфо о шорткатах
 
 signals:
     void Send_data(Crud *cr, int index);

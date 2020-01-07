@@ -22,8 +22,8 @@ Search::Search(QWidget *parent) :
 
          set_date_forms();
 
-         set_tab_orders();
-         ui->le_zk_id->setCursorPosition(0);
+         // set_tab_orders();
+         //ui->le_zk_id->setCursorPosition(0);
 
 }
 
@@ -50,29 +50,53 @@ void Search::keyPressEvent(QKeyEvent *event)
 void Search::set_tab_orders()
 {
     ui->le_zk_id->setFocus();
-    setTabOrder(ui->le_zk_id, ui->le_tel_num);
+    ui->le_zk_id->setCursorPosition(0);
+    ui->hided_le->setFocusProxy(ui->le_zk_id);
+
+    setTabOrder( ui->le_zk_id, ui->rb_starts);
+    setTabOrder(ui->rb_starts, ui->rb_ends);
+
+    setTabOrder(ui->rb_ends, ui->rb_mid);
+    setTabOrder(ui->rb_mid, ui->rb_all);
+    setTabOrder(ui->rb_all, ui->cb_old_num);
+    setTabOrder( ui->cb_old_num, ui->le_tel_num);
+
     setTabOrder( ui->le_tel_num, ui->le_last_name);
     setTabOrder( ui->le_last_name, ui->le_name);
     setTabOrder( ui->le_name, ui->le_mid_name);
 
-    setTabOrder( ui->le_mid_name, bd->day()->focusProxy());
-//    setTabOrder(bd->day()->focusProxy(),  bd->month()->focusProxy());
-//    setTabOrder(bd->month()->focusProxy(), bd->year()->focusProxy());
-    setTabOrder(bd->year()->focusProxy(), ui->le_reg_city );
-    //      setTabOrder(bd->year(), ui->rb_reg);
-    //setTabOrder(bd->focusProxy(), ui->rb_reg);
-    //  setTabOrder( ui->le_mid_name, ui->le_birthday);
-//    setTabOrder( ui->le_birthday, ui->le_reg_city);
-    setTabOrder(ui->le_reg_city, ui->le_reg_street);
-    setTabOrder(ui->le_reg_street, ui->le_reg_house);
-    setTabOrder(ui->le_reg_house, ui->le_reg_corp);
-    setTabOrder(ui->le_reg_corp, ui->le_reg_flat);
- //   setTabOrder(ui->le_reg_flat, ui->le_form_date);
-  //  setTabOrder(ui->le_form_date, ui->le_from);
-//    setTabOrder(ui->le_from, ui->le_to);
-    setTabOrder(ui->pb_search, ui->le_zk_id );
+    setTabOrder( ui->le_mid_name, bd->day);
+    setTabOrder( bd->day, bd->month);
+    setTabOrder( bd->month, bd->year);
 
+    setTabOrder( bd->year, ui->rb_reg);
+    setTabOrder( ui->rb_reg, ui->rb_liv);
 
+    setTabOrder( ui->rb_liv, ui->le_reg_city);
+
+    setTabOrder( ui->le_reg_city, ui->le_reg_street);
+    setTabOrder( ui->le_reg_street, ui->le_reg_house);
+    setTabOrder( ui->le_reg_house, ui->le_reg_corp);
+    setTabOrder( ui->le_reg_corp, ui->le_reg_flat);
+
+    setTabOrder( ui->le_reg_flat, form_d->day);
+    setTabOrder( form_d->day, form_d->month);
+    setTabOrder( form_d->month, form_d->year);
+    setTabOrder( form_d->year, d_from->day);
+
+    setTabOrder( d_from->day, d_from->month);
+    setTabOrder( d_from->month, d_from->year);
+
+    setTabOrder( d_from->year, d_to->day);
+    setTabOrder( d_to->day, d_to->month);
+    setTabOrder( d_to->month, d_to->year);
+
+    setTabOrder( d_to->month, d_to->year);
+
+    setTabOrder( d_to->year, ui->pushButton);
+
+    setTabOrder( ui->pushButton, ui->pb_search );
+    setTabOrder( ui->pb_search, ui->hided_le);
 }
 
 QString Search::create_new_date(QString str)

@@ -46,11 +46,12 @@ bool db_connection::db_connect()
         _dbpg.setPassword(Settings_connection::instance()->Password);
        //_dbpg.setPassword("123");
        _dbpg.setPort(Settings_connection::instance()->Port);
+
+       _dbpg.setConnectOptions("client_encoding='UTF8'");
+
         ok = _dbpg.open();
         if (ok == true)
             qDebug() <<"ok";
-        else
-            qDebug() << _dbpg.lastError().text();
         break;
     case (SQLliteType):
         ok = _dbsql.open();

@@ -33,7 +33,7 @@ public:
 
     QString str;
 public slots:
-    void set_input_mask();
+    void set_focus();
 
     void set_type(component_type c_t);
 

@@ -26,7 +26,6 @@ Component::Component(QWidget *parent) :
 
     setFixedSize(this->size());
     setModal(true);
-    set_input_mask();
 }
 
 Component::~Component()
@@ -37,19 +36,12 @@ Component::~Component()
     delete ui;
 }
 
-void Component::set_input_mask()
+void Component::set_focus()
 {
-//    QString ipregx("9");
-//    ui->le_1->setInputMask(ipregx);
-
-//    ui->le_1->validator();
-//    ui->le_1->setInputMask("9");
-
-//    ui->le_2->setInputMask("999");
-//    ui->le_3->setInputMask("999");
-
-//    ui->le_4->setInputMask("99");
-    //    ui->le_5->setInputMask("99");
+    if(ui->lineEdit->isVisible())
+        ui->lineEdit->setFocus();
+    else if(ui->le_1->isVisible())
+         ui->le_1->setFocus();
 }
 
 void Component::set_type(component_type c_t)
@@ -150,6 +142,7 @@ void Component::set_index_data(Owners_tel *ow_t, Contacts *cnt)
         if(cnt->internum == true)
             ui->cb_m_n->setCheckState(Qt::Checked);
     }
+    // set_focus();
 }
 
 void Component::closeEvent(QCloseEvent *event)
@@ -175,12 +168,15 @@ void Component::change_layouts()
         {
             ui->lineEdit_7->setVisible(true);
             //ui->lineEdit_7->setText(content->mark);
-        }        
-        ui->le_1->setText(content->tel_num.at(0));
-        ui->le_2->setText(content->tel_num.mid(1,3));
-        ui->le_3->setText(content->tel_num.mid(4,3));
-        ui->le_4->setText(content->tel_num.mid(7,2));
-        ui->le_5->setText(content->tel_num.mid(9,-1));
+        }
+        if(!content->tel_num.isEmpty())
+        {
+            ui->le_1->setText(content->tel_num.at(0));
+            ui->le_2->setText(content->tel_num.mid(1,3));
+            ui->le_3->setText(content->tel_num.mid(4,3));
+            ui->le_4->setText(content->tel_num.mid(7,2));
+            ui->le_5->setText(content->tel_num.mid(9,-1));
+        }
 
         content->Oldnum = false;
         content->Internum = false;
@@ -253,6 +249,7 @@ void Component::change_layouts()
         }
 
     }
+    //set_focus();
 }
 
 void Component::on_le_1_textEdited(const QString &arg1)

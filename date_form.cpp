@@ -11,6 +11,14 @@ Date_form::Date_form(QWidget *parent) :
     ui->setupUi(this);
     focusPolicy();
     setFocusPolicy(Qt::TabFocus);
+    ui->year->setValidator(new QIntValidator(1000,9999));
+    ui->month->setValidator(new QIntValidator(1,12));
+    ui->day->setValidator(new QIntValidator(1,31));
+
+    day = ui->day;
+    month = ui->month;
+    year = ui->year;
+
 }
 
 Date_form::~Date_form()
@@ -58,21 +66,6 @@ void Date_form::set_year(QString t)
     ui->year->setText(t);
 }
 
-QLineEdit *Date_form::day()
-{
-    return ui->day;
-}
-
-QLineEdit *Date_form::month()
-{
-    return ui->month;
-}
-
-QLineEdit *Date_form::year()
-{
-    return ui->year;
-}
-
 void Date_form::refresh()
 {
     foreach(QLineEdit *l, this->findChildren<QLineEdit*>())
@@ -90,6 +83,7 @@ void Date_form::on_day_textEdited(const QString &arg1)
          ui->month->selectAll();
     }
 }
+
 
 void Date_form::on_month_textEdited(const QString &arg1)
 {

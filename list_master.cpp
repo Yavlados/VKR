@@ -767,42 +767,45 @@ void List_master::fill_links(QVector<QVector <QString> > *vector)
 QList<Crud *> *List_master::search(QString search_query)
 {
     QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("SELECT  DISTINCT "        //стринг для модели
-                 "zk.Zk_id,"
-                 "zk.Lastname,"
-                 "zk.Name,"
-                 "zk.Mid_name,"
-                 "zk.Birth_date,"
-                 ""
-                 "zk.Reg_city,"
-                 "zk.Reg_street,"
-                 "zk.Reg_home,"
-                 "zk.Reg_corp,"
-                 "zk.Reg_flat,"
-                 ""
-                 "zk.Liv_city,"
-                 "zk.Liv_street,"
-                 "zk.Liv_home,"
-                 "zk.Liv_corp,"
-                 "zk.Liv_flat,"
-                 ""
-                 "zk.Check_for,"
-                 "zk.Dop_info,"
-                 "zk.Date_add,"
-                 "zk.Time_add,"
-                 "zk.date_upd"
-                 " FROM "
-                 "zk,owners_tel"
-                 " WHERE"
-                 " zk.Zk_id>0 " + search_query + " ORDER BY zk.Zk_id");
+    QString temp_str = "SELECT  DISTINCT "        //стринг для модели
+            "zk.Zk_id,"
+            "zk.Lastname,"
+            "zk.Name,"
+            "zk.Mid_name,"
+            "zk.Birth_date,"
+            ""
+            "zk.Reg_city,"
+            "zk.Reg_street,"
+            "zk.Reg_home,"
+            "zk.Reg_corp,"
+            "zk.Reg_flat,"
+            ""
+            "zk.Liv_city,"
+            "zk.Liv_street,"
+            "zk.Liv_home,"
+            "zk.Liv_corp,"
+            "zk.Liv_flat,"
+            ""
+            "zk.Check_for,"
+            "zk.Dop_info,"
+            "zk.Date_add,"
+            "zk.Time_add,"
+            "zk.date_upd"
+            " FROM "
+            "zk,owners_tel"
+            " WHERE"
+            " zk.Zk_id>0 " + search_query + " ORDER BY zk.Zk_id" ;
+
+    temp.prepare(temp_str);
     if (!temp.exec())
     {
         qDebug() << temp.lastError();
         qDebug() << "select_search";
         qDebug() << temp.executedQuery();
         return nullptr;
-    }
-    qDebug() << temp.executedQuery();
+    }else
+        qDebug() << "QString: " << temp_str << "executedQuery: " << temp.executedQuery() << "lastQuery: " << temp.lastQuery();
+
     QList<Crud*> *crudlist = new QList<Crud*>;
 
     while (temp.next())

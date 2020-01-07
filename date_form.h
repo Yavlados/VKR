@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <QLineEdit>
+#include <QKeyEvent>
+#include <QValidator>
+
 enum date_form_type {
     search_date,
     update_date
@@ -31,9 +34,9 @@ public:
     void set_month(QString t);
     void set_year(QString t);
 
-    QLineEdit *day();
-    QLineEdit *month();
-    QLineEdit *year();
+    QLineEdit *day = nullptr;
+    QLineEdit *month = nullptr;
+    QLineEdit *year = nullptr;
 
     void refresh();
 
