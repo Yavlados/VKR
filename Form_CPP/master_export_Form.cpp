@@ -90,3 +90,8 @@ void Master_export_Form::add_file_path(QString path_from_main)
     file_path = path_from_main;
 }
 
+void Master_export_Form::focus_on_widget()
+{
+    ui->cb_off_tel->setFocus();
+}
+

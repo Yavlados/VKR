@@ -43,6 +43,11 @@ void OfficialTelephones::set_label(QList<Off_tels *> list)
     ui->vl_for_label->addWidget(lb);
 }
 
+void OfficialTelephones::focus_on_widget()
+{
+    ui->le_search_num->setFocus();
+}
+
 void OfficialTelephones::Fill_table()
 {
     of_model = new MTM_Off_Tels;

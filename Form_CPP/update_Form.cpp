@@ -1509,6 +1509,11 @@ void Update::start_confluence(Crud *confl_cr, Crud *m_cr, Crud *a_cr)
     Recieve_data(confl_cr);
 }
 
+void Update::focus_on_widget()
+{
+    ui->le_last_name->setFocus();
+}
+
 void Update::set_focus()
 {
     ui->le_check_for->setFocus();

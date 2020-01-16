@@ -339,6 +339,8 @@ void MainWindow::on_action_add_triggered()
     else
         ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(addlist->at(0)));
 
+    addlist->at(0)->focus_on_widget();
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_delete_triggered()
@@ -384,6 +386,7 @@ void MainWindow::on_action_update_triggered()
     else {
         QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для изменения!")); ///Хвалимся
     }
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_analysis_triggered()
@@ -400,6 +403,7 @@ void MainWindow::on_action_analysis_triggered()
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(an));
 
     set_normal_width(an->actual_size.width());
+    an->focus_on_widget();
 
 }
 //-----------------------------------------------------------------------------------//
@@ -534,11 +538,13 @@ void MainWindow::open_upd_tab(Crud *cr)
         //Загрузка ВСЕХ данных выбранной ЗК
         list->fill_crud_list(crudlist,cr->zk_id, PSQLtype);
         //emit Send_data(crudlist->at(0), updlist->size()-1);
+
         if(crudlist->isEmpty())
         {
             QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Возможно выбранной записи нет в базе. Попробуйте обновить таблицы")); ///Хвалимся
             return;
         }
+
         updlist->append(upd);
         upd->Recieve_data(crudlist->at(0));
         upd->take_linked_zk(crudlist->at(0));
@@ -547,6 +553,7 @@ void MainWindow::open_upd_tab(Crud *cr)
         connect(updlist->at(updlist->size()-1), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
         ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,updlist->at(updlist->size()-1),"Редактировать ЗК № "+QString::number(updlist->at(updlist->size()-1)->new_cr->zk_id));
         ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+        upd->focus_on_widget();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::set_validators()
@@ -658,7 +665,7 @@ void MainWindow::on_action_official_tel_triggered()
         ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(of));
         of->set_tab_orders();
     }
-
+    of->focus_on_widget();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_actionexport_triggered()
@@ -677,6 +684,8 @@ void MainWindow::on_actionexport_triggered()
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(exprt));
 
     set_normal_width(exprt->actual_size.width());
+    exprt->focus_on_widget();
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk)
@@ -915,8 +924,6 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
 
 
 //-----------------------------------------------------------------------------------//
-
-//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_import_triggered()
 {
     if(imprt == nullptr)
@@ -930,6 +937,7 @@ void MainWindow::on_action_import_triggered()
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(imprt));
 
     imprt->set_tab_orders();
+    imprt->focus_on_widget();
 
     set_normal_width(imprt->actual_size.width());
 }

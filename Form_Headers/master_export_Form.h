@@ -28,6 +28,9 @@ public:
     void add_file_path(QString path_from_main);
 
     QSize actual_size;
+
+    void focus_on_widget();
+
 private slots:
     void on_cb_zk_clicked();
 
@@ -40,6 +43,7 @@ private slots:
     void on_pb_Export_clicked();
 
     void on_cb_set_password_clicked();
+
 
 
     void on_cb_off_tel_clicked();

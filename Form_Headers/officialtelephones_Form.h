@@ -26,6 +26,9 @@ public:
 
     void set_tab_orders();
 
+    void focus_on_widget();
+
+
 private:
     Ui::OfficialTelephones *ui;
     QSortFilterProxyModel *m1;

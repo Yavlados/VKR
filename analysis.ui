@@ -445,6 +445,26 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>le_an_zk</tabstop>
+  <tabstop>rb_all_base</tabstop>
+  <tabstop>rb_some_zk</tabstop>
+  <tabstop>le_some_new_zk</tabstop>
+  <tabstop>pb_add_le</tabstop>
+  <tabstop>rb_date</tabstop>
+  <tabstop>le_day_from</tabstop>
+  <tabstop>le_month_from</tabstop>
+  <tabstop>le_year_from</tabstop>
+  <tabstop>le_day_to</tabstop>
+  <tabstop>le_month_to</tabstop>
+  <tabstop>le_year_to</tabstop>
+  <tabstop>rb_short</tabstop>
+  <tabstop>rb_long</tabstop>
+  <tabstop>rb_to_face</tabstop>
+  <tabstop>rb_to_num</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>pushButton_2</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

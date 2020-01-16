@@ -15,6 +15,7 @@
 #include <QMessageBox>
 #include <QSqlTableModel>
 #include <QString>
+#include <QShortcut>
 
 /**
  * \file update_Form.h
@@ -75,6 +76,8 @@ public slots:
     ///-----Методы для слияния-----///
     /// метод начала слияния
     void start_confluence(Crud *confl_cr, Crud *m_cr, Crud *a_cr);
+
+    void focus_on_widget();
 
 private:
     QList<Crud*> * _linked_crud = nullptr;

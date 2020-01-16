@@ -182,3 +182,8 @@ void Master_import_form::set_tab_orders()
     setTabOrder(ui->le_password_2, ui->pushButton);
 
 }
+
+void Master_import_form::focus_on_widget()
+{
+    ui->pb_directory_2->setFocus();
+}

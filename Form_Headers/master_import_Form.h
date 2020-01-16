@@ -28,6 +28,8 @@ public:
     void keyPressEvent(QKeyEvent *event);
     void set_tab_orders();
 
+    void focus_on_widget();
+
 private slots:
     void on_pushButton_clicked();
     void on_pb_directory_2_clicked();
