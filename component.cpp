@@ -26,6 +26,7 @@ Component::Component(QWidget *parent) :
 
     setFixedSize(this->size());
     setModal(true);
+    setFocus();
 }
 
 Component::~Component()
@@ -250,6 +251,27 @@ void Component::change_layouts()
 
     }
     //set_focus();
+}
+
+void Component::setFocus()
+{
+    ui->cb_oldnum->setFocus();
+    set_Tab_Order();
+}
+
+void Component::set_Tab_Order()
+{
+//    setTabOrder( ui->cb_oldnum, ui->cb_m_n );
+//        setTabOrder( ui->cb_m_n, ui->le_1);
+//        setTabOrder( ui->le_1, ui->le_2);
+//        setTabOrder( ui->le_2, ui->le_3);
+//        setTabOrder( ui->le_3, ui->le_4);
+//        setTabOrder( ui->le_4, ui->le_5);
+//        setTabOrder( ui->le_5, ui->lineEdit);
+//        setTabOrder( ui->le_5, ui->lineEdit_7);
+//        setTabOrder( ui->lineEdit, ui->lineEdit_7);
+//        setTabOrder( ui->lineEdit, ui->pb_ok);
+//        setTabOrder( ui->pb_ok, ui->pb_cancel);
 }
 
 void Component::on_le_1_textEdited(const QString &arg1)

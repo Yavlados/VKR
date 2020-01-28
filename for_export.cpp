@@ -62,6 +62,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " dop_info character varying(50), "
                         " check_for character varying(25),"
                         " date_upd character varying(20),"
+                        " nickname character varying,"
                         " row_id uuid UNIQUE,"
                         " CONSTRAINT PK_Zk_id PRIMARY KEY (zk_id),"
                         " CONSTRAINT Zk_Zk_id_key UNIQUE (zk_id)"
@@ -127,12 +128,12 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                                 "Liv_city,Liv_street,Liv_home,Liv_corp,"
                                 "Liv_flat,"
                                 "Check_for, Dop_info,"
-                                "Date_add, Time_add, date_upd, row_id) "
+                                "Date_add, Time_add, date_upd, row_id, nickname) "
                                 " VALUES ((:lastname),(:name),(:mid_name), (:b_d),"
                                 "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                                 "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                                 "(:c_f),(:d_i),"
-                                "(:d_a), (:t_a), (:d_u), (:r_i))");
+                                "(:d_a), (:t_a), (:d_u), (:r_i), (:n_n))");
             query.bindValue(":lastname",crud->at(i)->lastname);
             query.bindValue(":name",crud->at(i)->name);
             query.bindValue(":mid_name",crud->at(i)->mid_name);
@@ -158,6 +159,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
             query.bindValue(":d_u",crud->at(i)->date_upd);
 
             query.bindValue(":r_i",crud->at(i)->row_id);
+            query.bindValue(":n_n",crud->at(i)->nickname);
 
             in << "\r\n";
             in << crud->at(i)->row_id;

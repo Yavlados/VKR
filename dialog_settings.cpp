@@ -300,6 +300,18 @@ void Dialog_settings::on_pushButton_clicked()
         }else
             Settings_connection::instance()->instance()->content.reg_flat = false;
     }
+    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("NICKNAME"))
+    {
+        if(cb->isChecked())
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("ColumnName",cb->objectName());
+            settings->setValue("ColumnIndex", i);
+            Settings_connection::instance()->instance()->content.nickname = true;
+            i++;
+        }else
+            Settings_connection::instance()->instance()->content.nickname = false;
+    }
 
    settings->endArray();
    settings->beginGroup("PAGE_COUNT");
@@ -394,6 +406,8 @@ void Dialog_settings::set_settings_from_ini()
     Settings_connection::instance()->up_checkboxes(ui->LIV_FLAT);
     Settings_connection::instance()->up_checkboxes(ui->ADD_DATE);
     Settings_connection::instance()->up_checkboxes(ui->ADD_TIME);
+    Settings_connection::instance()->up_checkboxes(ui->NICKNAME);
+
 
     if(ui->REG_CITY->isChecked() == false && ui->REG_STREET->isChecked() == false &&
             ui->REG_HOME->isChecked() == false && ui->REG_CORP->isChecked() == false &&
@@ -420,7 +434,8 @@ void Dialog_settings::set_tab_orders_pg_0()
     setTabOrder(ui->BIRTH_DATE, ui->CHECK_FOR);
     setTabOrder(ui->CHECK_FOR, ui->DOP_INFO);
     setTabOrder(ui->DOP_INFO, ui->ADD_DATE);
-    setTabOrder(ui->ADD_DATE, ui->ADD_TIME);
+    setTabOrder(ui->ADD_DATE, ui->NICKNAME);
+    setTabOrder(ui->NICKNAME, ui->ADD_TIME);
     setTabOrder(ui->ADD_TIME, ui->groupBox_3);
      if(ui->groupBox_3->isChecked())
      {

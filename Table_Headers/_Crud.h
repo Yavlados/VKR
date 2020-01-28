@@ -88,6 +88,8 @@ public:
     QString time_add = nullptr;
     //Дата и время для редактирования
     QString date_upd = nullptr;
+    //новое поле - кличка
+    QString nickname = nullptr;
  /////////////////////////////////////////////////////////////
     static bool selectAll(QList<Crud*> *list);
  /////////////////////////////////////////////////////////////

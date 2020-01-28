@@ -1125,8 +1125,7 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             zk->kem_zad+"; Прич:"+zk->povod_zad+";";
 
     person->state = IsNewing;
-    person->dop_info.append(", Кличка:" + zk->person.klichka);
-
+    person->nickname = zk->person.klichka;
     ///Временно
     person->zk_id = 1;
     crud_list->append(person);
@@ -1141,7 +1140,7 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             cr->lastname = zk->contacts.at(a)->famil;
             cr->name = zk->contacts.at(a)->imya;
             cr->mid_name = zk->contacts.at(a)->otchestvo;
-            cr->dop_info  = "Кличка: "+zk->contacts.at(a)->klichka;
+            cr->nickname  = zk->contacts.at(a)->klichka;
             cr->state = IsNewing;
 
             if(zk->contacts.at(a)->tel1 != "")

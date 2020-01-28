@@ -38,7 +38,8 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
                    "zk.date_add,"
                    "zk.time_add,"
                    "zk.date_upd,"
-                   "zk.row_id "
+                   "zk.row_id,"
+                   "zk.nickname "
                    " FROM "
                    " zk "
                    " WHERE zk . Zk_id =(:id)"
@@ -73,6 +74,7 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
         cr->time_add = query.value(18).toString();
         cr->date_upd = query.value(19).toString();
         cr->row_id = query.value(20).toString();
+        cr->nickname = query.value(21).toString();
         cr->state = IsReaded;
         switch (sqlt)
         {
@@ -270,7 +272,8 @@ export_state List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqltyp
                    "zk.date_add,"
                    "zk.time_add,"
                    "zk.date_upd,"
-                   " zk.row_id "
+                   " zk.row_id,"
+                   "zk.nickname "
                    " FROM "
                    " zk "
                    " ORDER BY zk.zk_id");
@@ -307,6 +310,7 @@ export_state List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqltyp
         cr->time_add = query.value(18).toString();
         cr->date_upd = query.value(19).toString();
         cr->row_id = query.value(20).toString();
+        cr->nickname = query.value(21).toString();
         cr->state = IsReaded;
         switch (sqltype)
         {
@@ -360,7 +364,8 @@ querry.prepare("SELECT "
                "zk.date_add,"
                "zk.time_add,"
                "zk.date_upd,"
-               "zk.row_id "
+               "zk.row_id,"
+               "zk.nickname "
                " FROM "
                " zk "
                " WHERE zk.zk_id = (:id)");
@@ -397,6 +402,7 @@ if (querry.next())
     cr->time_add = querry.value(18).toString();
     cr->date_upd = querry.value(19).toString();
     cr->row_id = querry.value(20).toString();
+    cr->nickname = querry.value(21).toString();
     cr->state = IsReaded;
 
     fill_owners_tel_list(cr->owt(), cr->zk_id, counter_tel, PSQLtype);
@@ -477,12 +483,12 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                            "Liv_city,Liv_street,Liv_home,Liv_corp,"
                            "Liv_flat,"
                            "Check_for, Dop_info,"
-                           "Date_add, Time_add, Row_id) "
+                           "Date_add, Time_add, Row_id, Nickname) "
                            " VALUES ((:lastname),(:name),(:mid_name), (:b_d),"
                            "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                            "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                            "(:c_f),(:d_i),"
-                           "(:d_a), (:t_a), (:r_i)) RETURNING zk_id, row_id");
+                           "(:d_a), (:t_a), (:r_i), (:n_n)) RETURNING zk_id, row_id");
        query.bindValue(":lastname",crud->at(i)->lastname);
        query.bindValue(":name",crud->at(i)->name);
        query.bindValue(":mid_name",crud->at(i)->mid_name);
@@ -506,6 +512,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
        query.bindValue(":d_a",crud->at(i)->date_add);
        query.bindValue(":t_a",crud->at(i)->time_add);
 
+       query.bindValue(":n_n",crud->at(i)->nickname);
        //////////////////////////////////////////////
 
        if(old_db)

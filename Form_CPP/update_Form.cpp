@@ -212,6 +212,7 @@ void Update::Fill_fields_update(Crud *new_cr)
     ui->le_liv_house->setText(new_cr->liv_home);
     ui->le_liv_corp->setText(new_cr->liv_corp);
     ui->le_liv_flat->setText(new_cr->liv_flat);
+    ui->le_nickname->setText(new_cr->nickname);
 
     QLabel *lb = new QLabel("<font size = 3>  <div align=\"left\"> Добавлен: "+new_cr->date_add+" "+new_cr->time_add+" </div>  </font>");
         ui->vl_for_date_add->addWidget(lb);
@@ -342,7 +343,7 @@ void Update::on_pb_Update_clicked()
     new_cr->reg_home = ui->le_reg_house->text();
     new_cr->reg_corp = ui->le_reg_corp ->text();
     new_cr->reg_flat = ui->le_reg_flat->text();
-
+    new_cr->nickname = ui->le_nickname->text();
     if (ui->cb_adres->checkState() == Qt::Checked)
     {
         new_cr->liv_city = new_cr->reg_city;
@@ -551,6 +552,7 @@ void Update::on_pb_add_contact_line_clicked()
            cnt->oldnum = false;
            comp->set_index_data(nullptr,cnt);
            int st = comp->exec();
+           comp->setFocus();
            switch(st)
            {
            case 1:
@@ -958,6 +960,7 @@ void Update::Add_zk()
     new_cr->lastname = ui->le_last_name->text();
     new_cr->name=ui->le_name->text();
     new_cr->mid_name = ui->le_mid_name->text();
+    new_cr->nickname = ui->le_nickname->text();
 
 
     msgbx.setText("<font size = '5'><h1> Подтверждение </h1> <br>Вы готовы завершить добавление записной книги?</font>");
@@ -1561,6 +1564,7 @@ void Update::on_tableView_doubleClicked(const QModelIndex &index)
     Owners_tel *owt =ot_model->actotlist.at(index.row());
     comp->set_index_data(owt, nullptr);
     int st = comp->exec();
+               comp->setFocus();
     switch(st)
     {
         case 1:
@@ -1671,6 +1675,7 @@ void Update::on_pb_add_line_telephone_clicked()
     owt->oldnum = false;
     comp->set_index_data(owt);
     int st = comp->exec();
+               comp->setFocus();
     switch(st)
     {
         case 1:
@@ -1696,6 +1701,7 @@ void Update::on_tableView_2_doubleClicked(const QModelIndex &index)
     Contacts *cnt = contacts_model->actlist.at(index.row());
     comp->set_index_data(nullptr,cnt);
     int st = comp->exec();
+               comp->setFocus();
     switch(st)
     {
         case 1:

@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Добавление нового телефона</string>
   </property>
   <property name="modal">
    <bool>false</bool>
@@ -298,6 +298,19 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cb_oldnum</tabstop>
+  <tabstop>cb_m_n</tabstop>
+  <tabstop>le_1</tabstop>
+  <tabstop>le_2</tabstop>
+  <tabstop>le_3</tabstop>
+  <tabstop>le_4</tabstop>
+  <tabstop>le_5</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>lineEdit_7</tabstop>
+  <tabstop>pb_ok</tabstop>
+  <tabstop>pb_cancel</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

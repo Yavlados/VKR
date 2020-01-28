@@ -109,6 +109,8 @@ void Settings_connection::up_checkboxes(QCheckBox *cb)
         cb->setChecked(content.date_add);
     else if (cb->objectName() == "ADD_TIME")
         cb->setChecked(content.time_add);
+    else if (cb->objectName() == "NICKNAME")
+        cb->setChecked(content.nickname);
 }
 
 void Settings_connection::set_content(QString col_name)
@@ -151,6 +153,8 @@ void Settings_connection::set_content(QString col_name)
         content.date_add = true;
     else if (col_name == "ADD_TIME")
         content.time_add = true;
+    else if (col_name == "NICKNAME")
+        content.nickname = true;
 }
 
 Settings_connection *Settings_connection::instance()

@@ -37,6 +37,8 @@ struct Col_contents //последние настройки - подкачка
     bool date_add = false;
     bool time_add = false;
 
+    // new
+    bool nickname = false;
 };
 
 class Settings_connection         ///Класс настроек

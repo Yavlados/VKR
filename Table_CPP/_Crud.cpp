@@ -70,7 +70,8 @@ bool Crud:: selectAll(QList<Crud *> *list)
                  "zk.dop_info,"
                  "zk.date_add,"
                  "zk.time_add, "
-                 "zk.date_upd"
+                 "zk.date_upd,"
+                 "zk.nickname "
                  " FROM "
                  " zk "
                  " ORDER BY zk.zk_id");
@@ -106,6 +107,7 @@ bool Crud:: selectAll(QList<Crud *> *list)
         cr->date_add = temp.value(17).toString();
         cr->time_add = temp.value(18).toString();
         cr->date_upd = temp.value(19).toString();
+        cr->nickname = temp.value(20).toString();
         cr->state = IsReaded;
         list->append(cr);
     }
@@ -233,7 +235,8 @@ bool Crud::update_zk(QList<int> *list_id)
                    ""
                    "Check_for = (:c_f),"
                    "Dop_info = (:d_i),"
-                   "Date_upd = (:d_u)"
+                   "Date_upd = (:d_u),"
+                   "Nickname = (:n_n)"
                    " WHERE zk.Zk_id = (:id) "
                    " RETURNING zk.row_id");
 
@@ -258,6 +261,7 @@ bool Crud::update_zk(QList<int> *list_id)
     querry.bindValue(":d_i",dop_info);
 
     querry.bindValue(":d_u",date_upd);
+    querry.bindValue(":n_n", nickname);
 
     querry.bindValue(":id", zk_id);
     if (!querry.exec())
@@ -333,12 +337,12 @@ bool Crud::add_zk()
                    "Liv_city, Liv_street, Liv_home, Liv_corp,"
                    "Liv_flat,"
                    "Check_for, Dop_info,"
-                   "Date_add, Time_add) "
+                   "Date_add, Time_add, Nickname) "
                    " VALUES ((:lastname),(:name),(:mid_name), (:b_d),"
                    "(:r_c),(:r_s),(:r_h),(:r_corp),(:r_f),"
                    "(:l_c),(:l_s),(:l_h),(:l_corp),(:l_f),"
                    "(:c_f),(:d_i),"
-                   "(:d_a), (:t_a))) "
+                   "(:d_a), (:t_a), (:n_n)) "
                    " RETURNING zk.Zk_id, zk.row_id");
 
     querry.bindValue(":lastname",lastname);
@@ -363,6 +367,7 @@ bool Crud::add_zk()
 
     querry.bindValue(":d_a",date_add);
     querry.bindValue(":t_a",time_add);
+    querry.bindValue(":n_n", nickname);
 
     if (!querry.exec())
     {

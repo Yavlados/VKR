@@ -154,6 +154,8 @@ QVariant MTM_Crud::data(const QModelIndex &index, int role) const
                return Recieve_column(17,row);
            case 19:
                return Recieve_column(18,row);
+           case 20:
+               return Recieve_column(19,row);
           }
 
         }
@@ -273,7 +275,8 @@ QVariant MTM_Crud::headerData(int section, Qt::Orientation orientation, int role
                 return Recieve_column_name(17);
             case 19:
                 return Recieve_column_name(18);
-
+             case 20:
+                return Recieve_column_name(19);
           }
 
         return QVariant(); /// вот сюда внимание в случае краша
@@ -373,6 +376,9 @@ QString MTM_Crud::Recieve_column(int column, int row) const
 
     if (settings_str == "ADD_TIME")
         return actcrudlist.at(row)->time_add;
+
+    if (settings_str == "NICKNAME")
+        return actcrudlist.at(row)->nickname;
 }
 
 QString MTM_Crud::Recieve_column_name(int column) const
@@ -435,4 +441,7 @@ QString MTM_Crud::Recieve_column_name(int column) const
 
     if (settings_str == "ADD_TIME")
          return QString("Время доб.");
+
+    if (settings_str == "NICKNAME")
+         return QString("Кличка");
 }

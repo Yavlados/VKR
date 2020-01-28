@@ -26,6 +26,11 @@ Analysis::~Analysis()
     delete ui;
 }
 
+void Analysis::focus_on_widget()
+{
+    ui->le_an_zk->setFocus();
+}
+
 void Analysis::closeEvent(QCloseEvent *event)
 {
     (void)event;

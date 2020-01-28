@@ -43,6 +43,8 @@ public slots:
 
     void change_layouts();
 
+    void setFocus();
+    void set_Tab_Order();
 
 private slots:
 

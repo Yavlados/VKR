@@ -32,6 +32,9 @@ public:
 
     QSize actual_size;
 
+    void focus_on_widget();
+
+
 private slots:
 
     void closeEvent(QCloseEvent *event);
