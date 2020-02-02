@@ -45,6 +45,18 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>344</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>344</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="font">
         <font>
          <family>Arial</family>
@@ -551,7 +563,7 @@
      <x>0</x>
      <y>0</y>
      <width>1233</width>
-     <height>29</height>
+     <height>28</height>
     </rect>
    </property>
    <property name="font">

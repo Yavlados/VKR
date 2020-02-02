@@ -23,8 +23,11 @@ public:
 
         //Search *sr = new Search();
     static void import_report(QString text);
+    For_analysis *an = nullptr;
 
-private slots:
+    void Set_final_result();
+
+public slots:
     void on_pb_back_clicked();
 
     void closeEvent(QCloseEvent *event);
@@ -61,6 +64,7 @@ private slots:
 
 private:
     Ui::An_result *ui;
+    QString FinalResult;
 };
 
 #endif // AN_RESULT_H

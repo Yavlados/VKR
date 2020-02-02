@@ -15,10 +15,19 @@ Analysis::Analysis(QWidget *parent) :
     ui->pb_add_le->setVisible(false);
     ui->le_some_new_zk->setVisible(false);
     //Analysis::set_validators();
-    Analysis::clear_rb_3(false);
-
+    ui->le_an_zk->setValidator( new QIntValidator(0, 2147483647 , this) );
     actual_size = this->size();
     ui->pushButton_2->setVisible(false);
+    hlForZkHandler();
+
+    //set date forms
+    d_from = new Date_form();
+    d_to = new Date_form();
+    ui->hl_FROM->addWidget(d_from);
+    ui->hl_TO->addWidget(d_to);
+    Analysis::clear_rb_3(false);
+//    set_tab_orders();
+
 }
 
 Analysis::~Analysis()
@@ -124,96 +133,95 @@ void Analysis::clear_rb_2()
 
 void Analysis::clear_rb_3(bool stat)
 {
-    ui->lab_for->setVisible(stat);
-    ui->le_day_to->setVisible(stat);
-     ui->le_day_to->clear();
-    ui->le_month_to->setVisible(stat);
-     ui->le_month_to->clear();
-    ui->le_year_to->setVisible(stat);
-     ui->le_year_to->clear();
-
-    ui->lab_from->setVisible(stat);
-    ui->le_day_from->setVisible(stat);
-     ui->le_day_from->clear();
-    ui->le_month_from->setVisible(stat);
-     ui->le_month_from->clear();
-    ui->le_year_from->setVisible(stat);
-    ui->le_year_from->clear();
+    ui->frame->setVisible(stat);
+    d_from->refresh();
+    d_to->refresh();
 }
-
+//КНОПКА АНАЛИЗА
 void Analysis::on_pushButton_clicked()
 {
-    qDebug() << this->size().width();
+    QList<int> local_list_id;
+    local_list_id.append(ui->le_an_zk->text().toInt());
+    //Обработчик результатов
+    An_result *ar = new An_result();
 
+    if(linelist_zk_for_analysis!= nullptr && linelist_zk_for_analysis->size() > 0)
+    {
+        for(int le =0; le < linelist_zk_for_analysis->size(); le++)
+        {
+            if(linelist_zk_for_analysis->at(le)->text().size() > 0)
+                local_list_id.append(linelist_zk_for_analysis->at(le)->text().toInt());
+        }
+    }
 
     ///Проверка на валидность номера
 
     QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("SELECT zk.zk_id"
-                   " FROM  zk"
-                   " WHERE "
-                   "zk.zk_id= (:z_id)");
-    querry.bindValue(":z_id", ui->le_an_zk->text());
-
-    if (querry.exec() )
-    {
-        if(!querry.next())
-        {
-            if (querry.value(0).isNull() || !querry.value(0).isValid())
+    QString query = "SELECT zk.zk_id"
+                    " FROM  zk"
+                    " WHERE ";
+                //Сбор строки поиска
+            for(int le =0; le < local_list_id.size(); le++)
             {
-                qDebug() << querry.value(0).toString() << querry.executedQuery();
-                QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("ЗК под таким номером не существует"));
-                return;
+                if(le ==0)
+                    query += " zk.zk_id="+QString::number(local_list_id.at(le));
+                else
+                    query +=" OR zk.zk_id="+ QString::number(local_list_id.at(le));
             }
+
+
+    if (querry.exec(query) )
+    {
+        //Обработка ошибки
+        if(querry.size() != local_list_id.size()) //НЕ ВСЕ ЗК НАЙДЕНЫ В БАЗЕ
+        {
+            QString reportResult = "ЗК ";
+
+            while(querry.next())
+            {//Убираю из списка те номера ЗК, которые нашел, оставляю ненайденные
+                local_list_id.removeAt(local_list_id.indexOf(querry.value(0).toInt()));
+            }
+            foreach(int lostNum, local_list_id)
+            {//Собираю репорт по ненайденным
+                reportResult+="#"+QString::number(lostNum)+" ";
+            }
+            reportResult+= " нет в базе!";
+            QMessageBox::critical(this,QObject::tr("Ошибка"),reportResult);
+            return;
         }
-        else {
+
+        qDebug() << querry.executedQuery();
+
+        while(querry.next())
+        {
+           int zk_id_num = querry.value(0).toInt();
+           qDebug() << zk_id_num;
         //////////////////     1     //////////////////
         if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
         {
-        An_result *ar = new An_result();
-        ar->setWindowModality(Qt::WindowModal);
-        ar->show();
-
-        connect(this, SIGNAL(Send_short_face_analysis_all_db(int)), ar, SLOT(Recieve_short_face_analysis_all_db(int)));
-
-        emit Send_short_face_analysis_all_db(ui->le_an_zk->text().toInt());
+            ar->Recieve_short_face_analysis_all_db(zk_id_num);
         }
 
         //////////////////     2     //////////////////
-        if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
+        else if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
         {
-        An_result *ar = new An_result();
-        ar->show();
-
-        connect(this, SIGNAL(Send_short_tel_analysis_all_db(int)), ar, SLOT(Recieve_short_tel_analysis_all_db(int)));
-
-        emit Send_short_tel_analysis_all_db(ui->le_an_zk->text().toInt());
+            ar->Recieve_short_tel_analysis_all_db(zk_id_num);
         }
 
         //////////////////     3     //////////////////
-        if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
+        else if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
         {
-        An_result *ar = new An_result();
-        ar->show();
-
-        connect(this, SIGNAL(Send_long_face_analysis_all_db(int)), ar, SLOT(Recieve_long_face_analysis_all_db(int)));
-
-        emit Send_long_face_analysis_all_db(ui->le_an_zk->text().toInt());
+            ar->Recieve_long_face_analysis_all_db(zk_id_num);
         }
 
         //////////////////     4     //////////////////
-       if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
+        else if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
        {
-       An_result *ar = new An_result();
-       ar->show();
-
-       connect(this, SIGNAL(Send_long_tel_analysis_all_db(int)), ar, SLOT(Recieve_long_tel_analysis_all_db(int)));
-
-       emit Send_long_tel_analysis_all_db(ui->le_an_zk->text().toInt());
+            ar->Recieve_long_tel_analysis_all_db(zk_id_num);
        }
 
         //////////////////     5     //////////////////
-       if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
+        else if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
        {
 
             foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
@@ -221,21 +229,14 @@ void Analysis::on_pushButton_clicked()
                 if(!l->text().isEmpty())
                     vector.append(l->text().toInt());
             }
-
             Analysis::uniq_array();
 
-            An_result *ar = new An_result();
-            ar->show();
-
-            connect(this, SIGNAL(Send_short_face_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_short_face_analysis_all_db(QVector<int>, int)));
-
-            emit Send_short_face_analysis_all_db(vector,ui->le_an_zk->text().toInt());
-
+            ar->Recieve_short_face_analysis_all_db(vector,zk_id_num);
             vector.clear();
        }
 
         //////////////////     6     //////////////////
-      if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
+        else if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
       {
        foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
        {
@@ -245,18 +246,12 @@ void Analysis::on_pushButton_clicked()
 
        Analysis::uniq_array();
 
-       An_result *ar = new An_result();
-       ar->show();
-
-       connect(this, SIGNAL(Send_short_tel_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_short_tel_analysis_all_db(QVector<int>, int)));
-
-       emit Send_short_tel_analysis_all_db(vector,ui->le_an_zk->text().toInt());
-
+       ar->Recieve_short_tel_analysis_all_db(vector,zk_id_num);
        vector.clear();
       }
 
         //////////////////     7     //////////////////
-     if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
+        else if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
      {
       foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
       {
@@ -266,18 +261,12 @@ void Analysis::on_pushButton_clicked()
 
       Analysis::uniq_array();
 
-      An_result *ar = new An_result();
-      ar->show();
-
-      connect(this, SIGNAL(Send_long_face_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_long_face_analysis_all_db(QVector<int>, int)));
-
-      emit Send_long_face_analysis_all_db(vector,ui->le_an_zk->text().toInt());
-
+      ar->Recieve_long_face_analysis_all_db(vector,zk_id_num);
       vector.clear();
      }
 
         //////////////////     8     //////////////////
-     if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
+        else if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
      {
       foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
       {
@@ -287,98 +276,62 @@ void Analysis::on_pushButton_clicked()
 
       Analysis::uniq_array();
 
-      An_result *ar = new An_result();
-      ar->show();
-
-      connect(this, SIGNAL(Send_long_tel_analysis_all_db(QVector<int>, int)), ar, SLOT(Recieve_long_tel_analysis_all_db(QVector<int>, int)));
-
-      emit Send_long_tel_analysis_all_db(vector,ui->le_an_zk->text().toInt());
-
+      ar->Recieve_long_tel_analysis_all_db(vector,zk_id_num);
       vector.clear();
+
      }
 
         //////////////////     9     //////////////////
-     if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
+        else if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
      {
         if(get_date_from() < get_date_to())
         {
-            An_result *ar = new An_result();
-            ar->show();
-
-            connect(this, SIGNAL(Send_short_face_analysis_all_db(QString, QString, int)), ar, SLOT(Recieve_short_face_analysis_all_db(QString, QString, int)));
-
-            emit Send_short_face_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
-
+            ar->Recieve_short_face_analysis_all_db(Date_From, Date_To, zk_id_num);
         }
         else {
-            qDebug() << "DATE TO < DATE FOR";
+            QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
         }
      }
 
         //////////////////     10     //////////////////
-    if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
+        else if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
     {
         if(!get_date_from().isEmpty() || !get_date_to().isEmpty())
         {
-           An_result *ar = new An_result();
-           ar->show();
-
-           connect(this, SIGNAL(Send_short_tel_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_short_tel_analysis_all_db(QDate, QDate, int)));
-
-           emit Send_short_tel_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
+           ar->Recieve_short_tel_analysis_all_db(Date_From, Date_To, zk_id_num);
        }
        else {
-           qDebug() << "DATE TO < DATE FOR";
+            QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
        }
     }
 
         //////////////////     11     //////////////////
-    if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
+        else if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
     {
       if(get_date_from() < get_date_to())
         {
-           An_result *ar = new An_result();
-           ar->show();
-
-           connect(this, SIGNAL(Send_long_face_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_long_face_analysis_all_db(QDate, QDate, int)));
-
-           emit Send_long_face_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
+           ar->Recieve_long_face_analysis_all_db(Date_From, Date_To, zk_id_num);
         }
         else {
-           qDebug() << "DATE TO < DATE FOR";
+            QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
         }
     }
 
         //////////////////     12      //////////////////
-    if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
+    else if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
     {
         if(get_date_from() < get_date_to())
           {
-                   An_result *ar = new An_result();
-                   ar->show();
-
-                   connect(this, SIGNAL(Send_long_tel_analysis_all_db(QDate, QDate, int)), ar, SLOT(Recieve_long_tel_analysis_all_db(QDate, QDate, int)));
-
-                   emit Send_long_tel_analysis_all_db(Date_From, Date_To, ui->le_an_zk->text().toInt());
-                }
-                else {
-                   qDebug() << "DATE TO < DATE FOR";
-                }
+               ar->Recieve_long_tel_analysis_all_db(Date_From, Date_To, zk_id_num);
+          }
+          else {
+            QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
+          }
         }
      }
+        ar->Set_final_result();
+        ar->show();
     }
-}
-
-void Analysis::set_validators()
-{
-    ui->le_day_to->setValidator(new QIntValidator(1,31));
-    ui->le_day_from->setValidator(new QIntValidator(1,31));
-
-    ui->le_month_to->setValidator(new QIntValidator(1,12));
-    ui->le_month_from->setValidator(new QIntValidator(1,12));
-
-    ui->le_year_from->setValidator(new QIntValidator(1960,2100));
-    ui->le_year_to->setValidator(new QIntValidator(1960,2100));
 }
 
 void Analysis::uniq_array()
@@ -397,54 +350,141 @@ QString Analysis::get_date_from()
     //Сначала собираю DateFrom
     //
 
-///Если указан день, месяц, год
-if (!ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
-{
-    Date_From = ui->le_year_from->text() +"-"+ui->le_month_from->text() +"-"+ui->le_day_from->text();
- return Date_From;
-}
+    ///Если указан день, месяц, год
+    if (!d_from->get_day().isEmpty() && !d_from->get_month().isEmpty() && !d_from->get_year().isEmpty())
+    {
+        Date_From = d_from->get_year() +"-"+d_from->get_month() +"-"+d_from->get_day();
+     return Date_From;
+    }
 
-// Если не указан день, но есть месяц и год
-if (ui->le_day_from->text().isEmpty() && !ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
-{///За день тогда берем первое число
-Date_From = ui->le_year_from->text() +"-"+ui->le_month_from->text() +"-01";
- return Date_From;
-}
+    // Если не указан день, но есть месяц и год
+    if (d_from->get_day().isEmpty() && !d_from->get_month().isEmpty() && !d_from->get_year().isEmpty())
+    {///За день тогда берем первое число
+        Date_From = d_from->get_year() +"-"+d_from->get_month() +"-01";
+         return Date_From;
+    }
 
-// Если только год
-if (ui->le_day_from->text().isEmpty() && ui->le_month_from->text().isEmpty() && !ui->le_year_from->text().isEmpty())
-{/// Беру начало года (1 января)
-Date_From = ui->le_year_from->text() +"-01-01";
- return Date_From;
-}
+    // Если только год
+    if (d_from->get_day().isEmpty() && d_from->get_month().isEmpty() && !d_from->get_year().isEmpty())
+    {/// Беру начало года (1 января)
+        Date_From = d_from->get_year() +"-01-01";
+         return Date_From;
+    }
+    return "";
 }
 
 QString Analysis::get_date_to()
 {
-    //
- //Теперь собираю DateTo
- //
-//Если указан день, месяц, год
-if (!ui->le_day_to->text().isEmpty() && !ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
-{
-    Date_To = ui->le_year_to->text() +"-"+ ui->le_month_to->text() +"-"+ui->le_day_to->text();
- return Date_To;
+        //
+     //Теперь собираю DateTo
+     //
+    //Если указан день, месяц, год
+    if (!d_to->get_day().isEmpty() && !d_to->get_month().isEmpty() && !d_to->get_year().isEmpty())
+    {
+        Date_To = d_to->get_year() +"-"+ d_to->get_month() +"-"+d_to->get_day();
+     return Date_To;
+    }
+
+    // Если не указан день, но есть месяц и год
+    if (d_to->get_day().isEmpty() && !d_to->get_month().isEmpty() && !d_to->get_year().isEmpty())
+    {
+        QDate date_to_local;
+        int day; // локальная переменная для определения кол-ва дней в месяце
+        date_to_local.setDate(d_to->get_year().toInt(),d_to->get_month().toInt(),1);
+        day = date_to_local.daysInMonth();
+        Date_To = d_to->get_year() +"-"+d_to->get_month() +"-"+QString::number(day);
+     return Date_To;
+    }
+    // Если только год
+    if (d_to->get_day().isEmpty() && d_to->get_month().isEmpty() && !d_to->get_year().isEmpty())
+    {// Беру конец года (31 декабря)
+    Date_To=d_to->get_year()+"-12-31";
+     return Date_To;
+    }
+   return "";
 }
 
-// Если не указан день, но есть месяц и год
-if (ui->le_day_to->text().isEmpty() && !ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
+void Analysis::hlForZkHandler()
 {
-    QDate date_to_local;
-    int day; // локальная переменная для определения кол-ва дней в месяце
-    date_to_local.setDate(ui->le_year_to->text().toInt(),ui->le_month_to->text().toInt(),1);
-    day = date_to_local.daysInMonth();
-    Date_To = ui->le_year_to->text() +"-"+ui->le_month_to->text() +"-"+QString::number(day);
- return Date_To;
+    if(ui->hl_for_new_zk->count() > 0)
+        ui->pb_del_zk->setVisible(true);
+    else
+        ui->pb_del_zk->setVisible(false);
 }
-// Если только год
-if (ui->le_day_to->text().isEmpty() && ui->le_month_to->text().isEmpty() && !ui->le_year_to->text().isEmpty())
-{// Беру конец года (31 декабря)
-Date_To=ui->le_year_to->text()+"-12-31";
- return Date_To;
+
+void Analysis::on_pb_add_zk_clicked()
+{
+    QLineEdit* line = new QLineEdit(this);
+    line->setFont(*DefaultLEFont);
+//    line->setInputMask("99999999999999999999999999999999999999999");
+    line->setValidator( new QIntValidator(0, 2147483647 , this) );
+    ui->hl_for_new_zk->addWidget(line);
+    line->setObjectName("new_zk_for_analysis");
+    line->show();
+
+    if(linelist_zk_for_analysis == nullptr)
+        linelist_zk_for_analysis = new QList<QLineEdit*>;
+
+    linelist_zk_for_analysis->append(line);
+
+    hlForZkHandler();
+    change_tab_order();
 }
+
+void Analysis::on_pb_del_zk_clicked()
+{
+    if(linelist_zk_for_analysis->size() > 0)
+    {
+        QLayout *layout = ui->hl_for_new_zk;
+        QLayoutItem *item = layout->takeAt(layout->count()-1);
+        delete item->widget();
+        linelist_zk_for_analysis->removeAt(linelist_zk_for_analysis->size()-1);
+        if(linelist_zk_for_analysis->size() == 0)
+        {
+            delete linelist_zk_for_analysis;
+            linelist_zk_for_analysis = nullptr;
+        }
+    }
+    hlForZkHandler();
+}
+
+void Analysis::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+        case Qt::Key::Key_Enter:
+            on_pushButton_clicked();
+            return ;
+    }
+}
+
+void Analysis::set_tab_orders()
+{
+    ui->le_an_zk->setFocus();
+    ui->le_hided->setFocusProxy(ui->le_an_zk);
+
+      setTabOrder(ui->le_an_zk, ui->pb_add_zk);
+       setTabOrder( ui->pb_add_zk, ui->rb_all_base);
+       setTabOrder( ui->rb_all_base, ui->rb_short);
+       setTabOrder(ui->rb_short, ui->rb_to_face);
+       setTabOrder( ui->rb_to_face, ui->pushButton);
+       setTabOrder( ui->pushButton, ui->le_hided);
+
+}
+
+void Analysis::change_tab_order()
+{
+    for( int a = 0; a < linelist_zk_for_analysis->size();   a++)
+    {
+        if(a == linelist_zk_for_analysis->size())
+            continue;
+
+     if(a == 0)
+        setTabOrder( ui->pb_add_zk, linelist_zk_for_analysis->at(a));
+     else
+        setTabOrder(linelist_zk_for_analysis->at(a-1), linelist_zk_for_analysis->at(a));
+
+     if(a+1 == linelist_zk_for_analysis->size())
+         setTabOrder(linelist_zk_for_analysis->at(a), ui->pb_del_zk);
+    }
 }

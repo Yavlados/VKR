@@ -39,8 +39,6 @@ QList<Crud *> *For_analysis::get_crud(Crud *cr, QString added_SQL)
     QList<int> temp_zk_id;//лист для избежания повторов
 
     QList<Crud*> *crudlist = new QList <Crud*>; //Список для результатов анализа
-    qDebug() << temp_str_for_cont_num;
-    qDebug() << temp_str_for_num;
     ///Делаю 3 запроса, согласно с вариантами знакомства
    crudlist = get_1_var(cr, crudlist, added_SQL);
    crudlist = get_2_var(cr, crudlist, added_SQL);
@@ -350,7 +348,7 @@ void For_analysis::short_face_analysis(Crud *cr, QList<Crud*> *crudlist)
 {
  if(!crudlist->isEmpty())
     {
-     analysis_res +="\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n";
+     analysis_res +="\t КРАТКАЯ СПРАВКА ПРИВЯЗКА К ЛИЦАМ ЗК #"+QString::number(cr->zk_id)+" \r\n \r\n";
      analysis_res +=  "Владелец записной книжки " +
      cr->lastname+" "+cr->name+" "+cr->mid_name+" возможно знаком ";
         if(crudlist->size()>1)
@@ -370,7 +368,7 @@ void For_analysis::short_tel_analysis(Crud *cr, QList<Crud*> *crudlist)
 {
  if(!crudlist->isEmpty())
     {
-      analysis_res +="\t ФОРМИРОВАНИЕ КРАТКОЙ СПРАВКИ С ПРИВЯЗКОЙ К ТЕЛЕФОНАМ \r\n \r\n";
+      analysis_res +="\t КРАТКАЯ СПРАВКА ПРИВЯЗКА К ТЕЛЕФОНАМ ЗК #"+QString::number(cr->zk_id)+" \r\n \r\n";
 
       QList<Crud*> *temp_crudlist1 = new QList<Crud*>;
       QList<Crud*> *temp_crudlist2 = new QList<Crud*>;
@@ -508,7 +506,7 @@ void For_analysis::long_face_analysis(Crud *cr, QList<Crud*> *crudlist)
 {
  if(!crudlist->isEmpty())
     {
-     analysis_res +="\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К ЛИЦАМ \r\n \r\n";
+     analysis_res +="\t ПОЛНАЯ СПРАВКА ПРИВЯЗКА К ЛИЦАМ ДЛЯ ЗК #"+QString::number(cr->zk_id)+" \r\n \r\n";
      analysis_res +=  "Владелец записной книжки " +
      cr->lastname+" "+cr->name+" "+cr->mid_name+" возможно знаком ";
      if(crudlist->size()>1)
@@ -603,7 +601,7 @@ void For_analysis::long_tel_analysis(Crud *cr, QList<Crud*> *crudlist)
       QList<Crud*> *temp_crudlist2 = new QList<Crud*>;
       QList<Crud*> *temp_crudlist3 = new QList<Crud*>;
 
-      analysis_res +="\t ФОРМИРОВАНИЕ ПОЛНОЙ СПРАВКИ С ПРИВЯЗКОЙ К ТЕЛЕФОНАМ \n\r \n\r";
+      analysis_res +="\t ПОЛНАЯ СПРАВКА ПРИВЯЗКА К ТЕЛЕФОНАМ ДЛЯ ЗК #"+QString::number(cr->zk_id)+" \n\r \n\r";
     ///Новый вариант
 ///Раннее работало неправильно - буду трижды писать тот же код
        for(int a = 0; a < crudlist->size(); a++)
@@ -968,4 +966,15 @@ void For_analysis::long_tel_analysis_all_db(QString DateFrom, QString DateTo, in
         QList<Crud*> *crudlist = For_analysis::get_crud(cr, tempSQL);
     long_tel_analysis(cr, crudlist);
     }
+}
+
+void For_analysis::ClearAll()
+{
+    temp_str_for_num.clear();
+
+    temp_str_for_cont_num.clear();
+
+    analysis_res.clear();
+
+    match_counter.clear();
 }

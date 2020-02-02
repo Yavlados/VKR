@@ -60,6 +60,7 @@ public:
     void long_tel_analysis_all_db(QString DateFrom, QString DateTo, int);
 
     QSqlQueryModel *model = new QSqlQueryModel();
+    void ClearAll();
 };
 
 #endif // FOR_ANALYSIS_H

@@ -5,7 +5,9 @@
 #include <QLineEdit>
 #include <QVector>
 #include <QDate>
-
+#include <QFont>
+#include "date_form.h"
+#include <QKeyEvent>
 
 /**
  * @file analysis_Form.h
@@ -25,6 +27,8 @@ public:
     ~Analysis();
 
    QList<QLineEdit*> linelist_zk_id;
+   QList<QLineEdit*> *linelist_zk_for_analysis = nullptr;
+
     int p_b_counter = 0;
 
     QVector<int> vector;
@@ -33,7 +37,8 @@ public:
     QSize actual_size;
 
     void focus_on_widget();
-
+    void set_tab_orders();
+    void change_tab_order();
 
 private slots:
 
@@ -56,8 +61,6 @@ private slots:
 
     void clear_rb_3(bool);
 
-    void set_validators();
-
     void uniq_array();
 
     void on_pushButton_2_clicked();
@@ -65,6 +68,14 @@ private slots:
     QString get_date_from();
 
     QString get_date_to();
+
+    void hlForZkHandler();
+
+    void on_pb_add_zk_clicked();
+
+    void on_pb_del_zk_clicked();
+
+    void keyPressEvent(QKeyEvent *event);
 
 signals:
 
@@ -94,6 +105,9 @@ signals:
 
 private:
     Ui::Analysis *ui;
+     QFont *DefaultLEFont = new QFont("MS Shell Dlg 2",11 );
+     Date_form *d_from;
+     Date_form *d_to;
 };
 
 

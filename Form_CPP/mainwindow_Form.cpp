@@ -39,10 +39,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QDesktopWidget* widget = qApp->desktop();
 
     ///---Фиксирую размер окна
-    showMaximized();
-    int difference = this->frameGeometry().height() - this->geometry().height();
-    int height = QApplication::desktop()->availableGeometry().height() - difference;
-    this->setFixedSize( QApplication::desktop()->screenGeometry().width(), height);
+        showMaximized();
+        int difference = this->frameGeometry().height() - this->geometry().height();
+        int height = QApplication::desktop()->availableGeometry().height() - difference;
+        this->setFixedSize( QApplication::desktop()->screenGeometry().width(), height);
     ///---
 
     ui->tableView->selectRow(0);
@@ -396,14 +396,13 @@ void MainWindow::on_action_analysis_triggered()
         an = new class Analysis;
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,an,"Анализ");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
-        connect(this, SIGNAL(Set_validators_an()), an, SLOT(set_validators()));
-        emit Set_validators_an();
     }
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(an));
 
     set_normal_width(an->actual_size.width());
     an->focus_on_widget();
+    an->set_tab_orders();
 
 }
 //-----------------------------------------------------------------------------------//

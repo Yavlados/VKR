@@ -7,6 +7,7 @@ An_result::An_result(QWidget *parent) :
     ui(new Ui::An_result)
 {
     ui->setupUi(this);
+    an = new For_analysis();
 }
 
 An_result::~An_result()
@@ -27,86 +28,86 @@ void An_result::closeEvent(QCloseEvent *event)
 
 void An_result::Recieve_short_face_analysis_all_db(int zk_id)
 {
-    For_analysis *an = new For_analysis();
     an->short_face_analysis_all_db(zk_id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_short_tel_analysis_all_db(int zk_id)
 {
-    For_analysis *an = new For_analysis();
     an->short_tel_analysis_all_db(zk_id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_long_face_analysis_all_db(int zk_id)
 {
-    For_analysis *an = new For_analysis();
     an->long_face_analysis_all_db(zk_id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_long_tel_analysis_all_db(int zk_id)
 {
-    For_analysis *an = new For_analysis();
     an->long_tel_analysis_all_db(zk_id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_short_face_analysis_all_db(QVector<int> vector, int zk_id)
 {
-    For_analysis *an = new For_analysis();
     an->short_face_analysis_all_db(vector, zk_id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_short_tel_analysis_all_db(QVector<int>vector, int zk_id)
 {
-    For_analysis *an = new For_analysis();
     an->short_tel_analysis_all_db(vector, zk_id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_long_face_analysis_all_db(QVector<int> vector, int zk_id)
 {
-    For_analysis *an = new For_analysis();
     an->long_face_analysis_all_db(vector, zk_id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_long_tel_analysis_all_db(QVector<int> vector, int zk_id)
 {
-    For_analysis *an = new For_analysis();
     an->long_tel_analysis_all_db(vector, zk_id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_short_face_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
-    For_analysis *an = new For_analysis();
     an->short_face_analysis_all_db(DateFrom, DateTo, id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_short_tel_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
-    For_analysis *an = new For_analysis();
     an->short_tel_analysis_all_db(DateFrom, DateTo, id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_long_face_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
-    For_analysis *an = new For_analysis();
     an->long_face_analysis_all_db(DateFrom, DateTo, id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_long_tel_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
-    For_analysis *an = new For_analysis();
     an->long_tel_analysis_all_db(DateFrom, DateTo, id);
-    ui->textEdit->setText(an->analysis_res);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
 void An_result::Recieve_search_result(QString Search_res)
@@ -147,5 +148,10 @@ void An_result::import_report(QString text)
     An_result *an = new An_result();
     an->ui->textEdit->setText(text);
     an->show();
+}
+
+void An_result::Set_final_result()
+{
+    ui->textEdit->setText(FinalResult);
 }
 

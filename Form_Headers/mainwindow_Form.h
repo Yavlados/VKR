@@ -30,6 +30,11 @@
 #include <QSqlQueryModel>
 #include <QFileDialog>
 #include <QStyle>
+
+#include <QScrollArea>
+#include <QVBoxLayout>
+#include <QSpinBox>
+
 /** \file mainwindow_form.h
     \brief Заголовочный файл класса MainWindow
 */
@@ -133,6 +138,8 @@ private:
     QList<int> size_list;
     QPushButton *p_b_forward = nullptr;
     QPushButton *p_b_back = nullptr;
+
+
 private slots:
     ///Добавление кнопок пагинации
     /**
