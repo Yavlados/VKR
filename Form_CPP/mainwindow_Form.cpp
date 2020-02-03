@@ -1296,8 +1296,8 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
 void MainWindow::set_label()
 {
-    QLabel *lb = new QLabel("<p><b>(CTRL+Q) и (CTRL+W)</b> для переключения вкладок правого окна</p>"
-                            "<p><b>(CTRL+S) и (CTRL+D)</b> для преключения вкладок левого окна</p>");
-    ui->vl_shortcut_info->addWidget(lb);
+//    QLabel *lb = new QLabel("<p><b>(CTRL+Q) и (CTRL+W)</b> для переключения вкладок правого окна</p>"
+//                            "<p><b>(CTRL+S) и (CTRL+D)</b> для преключения вкладок левого окна</p>");
+//    ui->vl_shortcut_info->addWidget(lb);
 }
 

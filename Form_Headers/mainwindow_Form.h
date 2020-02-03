@@ -31,13 +31,14 @@
 #include <QFileDialog>
 #include <QStyle>
 
-#include <QScrollArea>
-#include <QVBoxLayout>
-#include <QSpinBox>
-
+#include <QIcon>
 /** \file mainwindow_form.h
     \brief Заголовочный файл класса MainWindow
 */
+
+//struct TabIcons {
+//    QIcon *offtel = new QIcon(":/png/006-info.png");
+//};
 
 namespace Ui {
 class MainWindow;
@@ -138,7 +139,7 @@ private:
     QList<int> size_list;
     QPushButton *p_b_forward = nullptr;
     QPushButton *p_b_back = nullptr;
-
+//    TabIcons icons;
 
 private slots:
     ///Добавление кнопок пагинации

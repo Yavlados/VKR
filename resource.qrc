@@ -13,6 +13,8 @@
         <file>png/005-export.png</file>
         <file>png/file.png</file>
         <file>png/refresh.png</file>
+        <file>png/MainPic.png</file>
+        <file>png/MainPic.ico</file>
     </qresource>
     <qresource prefix="/config"/>
 </RCC>
