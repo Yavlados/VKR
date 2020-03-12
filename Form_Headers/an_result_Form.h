@@ -1,4 +1,4 @@
-#ifndef AN_RESULT_H
+    #ifndef AN_RESULT_H
 #define AN_RESULT_H
 #include <QFileDialog>
 #include <QWidget>

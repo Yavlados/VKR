@@ -132,12 +132,6 @@ private slots:
     void recieve_import_data(Crud *cr);
     void update_import_data();
 
-    ///Слот установки делегата и коннекта модели
-    void  set_delegates_and_connections();
-
-    void slot_for_model(QModelIndex, QModelIndex);
-
-
     ///Слот поиска совпадающих полей
     void compare_linked_cruds();
 

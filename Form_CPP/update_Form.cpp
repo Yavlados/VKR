@@ -32,7 +32,6 @@ Update::Update(QWidget *parent) :
     set_validators();
     new_cr = nullptr;
     set_splitter_lines();
-    set_delegates_and_connections();
     contacts_model = new MTM_Contacts;
     ot_model = new MTM_OwTel;
 
@@ -1157,45 +1156,7 @@ void Update::update_import_data()
     }
     close();
 }
-//-----------------------------------------------------------------------------------//
-void  Update::set_delegates_and_connections()
-{
-    connect(ot_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
-    connect(contacts_model,SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(slot_for_model(QModelIndex, QModelIndex)));
-//    delegate_ot = new Table_line_delegate(this);
-//    delegate_ot->set_type(OT);
-//    delegate_ot->set_MTM_model(ot_model, contacts_model);
-//    //ui->tableView->setItemDelegateForColumn(0,delegate_ot);
-//    ui->tableView->setItemDelegate(delegate_ot);
 
-//    delegate_cont = new Table_line_delegate(this);
-//    delegate_cont->set_type(Cont);
-//    delegate_cont->set_MTM_model(ot_model, contacts_model);
-//    /
-}
-//-----------------------------------------------------------------------------------//
-void Update::slot_for_model(QModelIndex i1, QModelIndex i2)
-{
-    (void) i2;
-    MTM_OwTel *Ot_sender_ptr = qobject_cast<MTM_OwTel*>(sender());
-    MTM_Contacts *Cont_sender_ptr = qobject_cast<MTM_Contacts*>(sender());
-
-        if (Ot_sender_ptr == nullptr)
-        {
-            qDebug() << "Mimo";
-            if (Cont_sender_ptr == nullptr)
-            {
-                return;
-            }
-            else
-                ui->tableView_2->selectRow(i1.row());
-
-        }
-        else {
-            qDebug() << "Popal";
-            ui->tableView->selectRow(i1.row());
-        }
-}
 //-----------------------------------------------------------------------------------//
 void Update::take_linked_zk(Crud *cr)
 {

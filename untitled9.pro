@@ -62,7 +62,8 @@ SOURCES += \
     component.cpp \
     dialog_settings.cpp \
     text_handler.cpp \
-    date_form.cpp
+    date_form.cpp \
+    customtableview.cpp
 
 HEADERS += \
     db_connection.h \
@@ -96,7 +97,8 @@ HEADERS += \
     component.h \
     dialog_settings.h \
     text_handler.h \
-    date_form.h
+    date_form.h \
+    customtableview.h
 
 FORMS += \
         mainwindow.ui \

@@ -23,6 +23,7 @@
 #include "text_handler.h"
 #include "an_result_Form.h"
 
+#include "customtableview.h"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -36,9 +37,10 @@
     \brief Заголовочный файл класса MainWindow
 */
 
-//struct TabIcons {
-//    QIcon *offtel = new QIcon(":/png/006-info.png");
-//};
+enum focusOnMain {
+    FocusOnLeft =0,
+    FocusOnRight
+};
 
 namespace Ui {
 class MainWindow;
@@ -114,21 +116,6 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-
-    ///Добавление кнопок пагинации
-    /**
-     * \brief Кнопки пагинации
-     * \par Добавляются PushButton в зависимости от настроек, указанных в форме
-     * \ref settings_Form.h
-     *
-     * \param a1 Атрибут1
-     * \param a2 Атрибут2
-     * \return Sum of a1 and a2
-     */
-    void Add_pagination_buttons1(int a1,
-                                 int a2
-                                 );
-
     QString file_path = nullptr;
 
 public slots:
@@ -139,7 +126,11 @@ private:
     QList<int> size_list;
     QPushButton *p_b_forward = nullptr;
     QPushButton *p_b_back = nullptr;
-//    TabIcons icons;
+    QPushButton *pb_clear_search = nullptr;
+    QPushButton *pbGetZkVar2 = nullptr;
+
+    void setFocusOnTab(QString widgetName , QWidget *widgetOnTab);
+    focusOnMain mainwindowFocus = FocusOnLeft;
 
 private slots:
     ///Добавление кнопок пагинации
@@ -253,10 +244,17 @@ private slots:
 
     void prev_tab_tab2();
 
-
     void on_tabWidget_currentChanged(int index);
     //NEW
     void set_label();//инфо о шорткатах
+
+    void set_tab_orders();
+
+    void setTableConnections();
+
+    void getOt(QModelIndex index);
+
+    void getCont(QModelIndex index);
 
 signals:
     void Send_data(Crud *cr, int index);
