@@ -184,7 +184,6 @@ void MTM_Crud::next_page_crud()
     int a;
     a = crudlist->indexOf(actcrudlist.at(actcrudlist.size()-1)); //индекс последнего элемента
     int b = a+1; //индекс добавления
-    qDebug() << a;
     actcrudlist.clear();
 
     if(crudlist!=nullptr)

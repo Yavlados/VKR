@@ -387,8 +387,6 @@ bool Import_Form::compare_dump_db()
             else
                 query_for_fio += " zk.birth_date is NULL";
 
-        qDebug() << query_for_nums << query_for_fio;
-
         Crud *cr = new Crud();
 
         if (!cr->compare_with_base(query_for_nums,query_for_fio))
@@ -501,7 +499,6 @@ bool Import_Form::compare_dump_db()
 
             return true;
         }
-            //qDebug() << cr->zk_id << cr->owt()->at(0)->parentZK_id;
     Text_handler::instance()->set_successful_add_text(crud->at(a));
      a++;
     }
@@ -897,7 +894,6 @@ bool Import_Form::Testing_open_db(QString filename, QString password, bool off_t
                  int pos = 0xC2;
                  if (service->Open_Old_db(zk,pos,arr))
                  {
-                       qDebug() << "Крутяяк";
                        crud = new QList<Crud*>;
                        switch_zk_to_crud(crud, zk);
                        old_db = true;
@@ -1293,7 +1289,6 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
 
 void Import_Form::on_pb_save_import_slot(QString str)
 {
-    qDebug() << str;
 }
 
 

@@ -7,6 +7,7 @@
 //#include "table_show_delegate.h"
 #include "list_master.h"
 #include "dialog_conflict.h"
+#include "popup.h"
 
 #include <QSqlRecord>
 #include <QStringRef>
@@ -18,32 +19,6 @@ QList<Crud *> *Update::linked_crud()
         _linked_crud = new QList<Crud *>;
     }
     return _linked_crud;
-}
-
-Update::Update(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Update)
-{
-    ui->setupUi(this);
-    bd = new Date_form();
-    ui->hl_for_bd->addWidget(bd);
-    connect(bd, SIGNAL(year_edited()), this, SLOT(set_focus()));
-
-    set_validators();
-    new_cr = nullptr;
-    set_splitter_lines();
-    contacts_model = new MTM_Contacts;
-    ot_model = new MTM_OwTel;
-
-    ui->label_22->setVisible(false);
-    ui->label_23->setVisible(false);
-    ui->label_24->setVisible(false);
-    ui->le_birth_date_day->setVisible(false);
-    ui->le_birth_date_month->setVisible(false);
-    ui->le_birth_date_year->setVisible(false);
-
-    set_tab_orders();
-    ui->le_dop_info->setTabChangesFocus(true);
 }
 
 void Update::set_tab_orders()
@@ -58,6 +33,10 @@ void Update::set_tab_orders()
 
     setTabOrder( bd->year, ui->le_check_for);
     setTabOrder(ui->le_check_for, ui->cb_adres);
+    setTabOrder(ui->le_check_for, ui->le_nickname);
+
+    setTabOrder(ui->le_nickname,  ui->cb_adres);
+
     setTabOrder( ui->cb_adres, ui->le_reg_city);
 
     setTabOrder(ui->le_reg_city, ui->le_reg_street);
@@ -74,6 +53,54 @@ void Update::set_tab_orders()
 
     setTabOrder(ui->pb_Back_to_Main, p_b);
 }
+
+
+Update::Update(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::Update)
+{
+    ui->setupUi(this);
+    bd = new Date_form();
+    ui->hl_for_bd->addWidget(bd);
+    connect(bd, SIGNAL(year_edited()), this, SLOT(set_focus()));
+
+    ui->tableView->setType(UpdateOT);
+    connect(ui->tableView, SIGNAL(getCont(QModelIndex)), this, SLOT(on_tableView_clicked(QModelIndex)));
+    connect(ui->tableView, SIGNAL(stopFocus()), ui->le_last_name, SLOT( setFocus() ) );
+    connect(ui->tableView, SIGNAL(openUpdOT(QModelIndex) ), this, SLOT(on_tableView_doubleClicked(QModelIndex)));
+    connect(ui->tableView, SIGNAL(f1Pressed() ), this, SLOT( ShowPopUp()));
+    connect(ui->tableView, SIGNAL(deleteTelephone()), this, SLOT(on_pb_del_line_telephone_clicked()));
+    connect(ui->tableView, SIGNAL(addNewTelephone()), this, SLOT(on_pb_add_line_telephone_clicked()));
+    connect(ui->tableView, SIGNAL(addNewCont()), this, SLOT(on_pb_add_contact_line_clicked()));
+
+    ui->tableView_2->setType(UpdateCont);
+    connect(ui->tableView_2, SIGNAL(backOnOt()), ui->tableView, SLOT( setFocus() ) );
+    connect(ui->tableView_2, SIGNAL(stopFocus()), ui->le_last_name, SLOT( setFocus() ));
+    connect(ui->tableView_2, SIGNAL(openUpdCont(QModelIndex) ), this, SLOT(on_tableView_2_doubleClicked(QModelIndex)));
+    connect(ui->tableView_2, SIGNAL(f1Pressed() ), this, SLOT( ShowPopUp()));
+    connect(ui->tableView_2, SIGNAL(addNewTelephone()), this, SLOT(on_pb_add_contact_line_clicked()));
+    connect(ui->tableView_2, SIGNAL(deleteTelephone()), this, SLOT(on_pb_del_contact_line_clicked()));
+    connect(ui->tableView_2, SIGNAL(addNewCont()), this, SLOT(on_pb_add_contact_line_clicked()));
+
+
+    set_validators();
+    new_cr = nullptr;
+    set_splitter_lines();
+    contacts_model = new MTM_Contacts;
+
+    ot_model = new MTM_OwTel;
+
+    ui->label_22->setVisible(false);
+    ui->label_23->setVisible(false);
+    ui->label_24->setVisible(false);
+    ui->le_birth_date_day->setVisible(false);
+    ui->le_birth_date_month->setVisible(false);
+    ui->le_birth_date_year->setVisible(false);
+
+    set_tab_orders();
+    ui->le_dop_info->setTabChangesFocus(true);
+}
+
 
 Update::~Update()
 {
@@ -453,8 +480,6 @@ void Update::on_tableView_clicked(const QModelIndex &index)
     cont_temp = ot_model->actotlist.at(index.row())->cont();
 
     contacts_model->setContactList(new_cr->owt()->at(index.row())->cont());
-    qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
-
     //contacts_model->state = Edit_cont;
 
     ui->tableView_2->setModel(contacts_model);
@@ -466,8 +491,13 @@ void Update::on_tableView_clicked(const QModelIndex &index)
 
     QString temp = "Номера контактов("+QString::number(contacts_model->actlist.count())+")";
     ui->label_cont->setText(temp);
-
-    qDebug() << new_cr->zk_id << new_cr->owt()->at(index.row())->tel_id << new_cr->owt()->at(index.row())->state;
+    if(ui->tableView_2->model()->rowCount() > 0)
+    {
+        QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+        QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
+        ui->tableView_2->selectionModel()->select(tempIndex, flags);
+        ui->tableView_2->setFocus();
+    }
 }
 //-----------------------------------------------------------------------------------//
 void Update::on_pb_del_line_telephone_clicked()
@@ -506,8 +536,12 @@ void Update::on_pb_del_line_telephone_clicked()
             ui->label_tels->setText("Номера телефонов("+QString::number(new_cr->owt()->size())+")");
             contacts_model->reset_ContactModel();
             ui->label_cont->setText("Номера контактов");
+            if(ui->tableView->model()->rowCount() > 0 ) setFocusOnTab1();
+            else set_tab_orders();
         return;
         case QMessageBox::Cancel :
+            if(ui->tableView->model()->rowCount() > 0 ) setFocusOnTab1();
+            else set_tab_orders();
         return;
         }
     }
@@ -530,9 +564,15 @@ void Update::on_pb_del_contact_line_clicked()
 
         contacts_model->delRow_contact(ind);
         ui->label_cont->setText("Номера контактов("+QString::number(contacts_model->actlist.count())+")");
-            return;
+            if(ui->tableView_2->model()->rowCount() > 0)setFocusOnTab2();
+            else if(ui->tableView->model()->rowCount() > 0 ) setFocusOnTab1();
+            else set_tab_orders();
+            return ;
             case QMessageBox::Cancel :
-            return;
+            if(ui->tableView_2->model()->rowCount() > 0)setFocusOnTab2();
+            else if(ui->tableView->model()->rowCount() > 0 ) setFocusOnTab1();
+            else set_tab_orders();
+            return ;
         }
     }
 }
@@ -624,8 +664,6 @@ void Update::set_validators()
 void Update::on_tableView_2_clicked(const QModelIndex &index)
 {
     QModelIndex indexOT = ui->tableView->currentIndex();
-    qDebug() << new_cr->owt()->at(indexOT.row())->cont()->at(index.row())->contact_id
-             << new_cr->owt()->at(indexOT.row())->cont()->at(index.row())->parent_OT_id ;
 }
 //-----------------------------------------------------------------------------------//
 void Update::set_splitter_lines()
@@ -719,8 +757,6 @@ bool Update::compare_tel_num()
         else
             query_for_fio += " zk.birth_date is NULL";
 
-    qDebug() << query_for_nums << query_for_fio;
-
     Crud *cr = new Crud();
 
      if (!cr->compare_with_base(query_for_nums,query_for_fio, new_cr->zk_id,linked_crud_id))
@@ -785,8 +821,8 @@ bool Update::compare_tel_num()
                     }
                 }
             }
-            else
-                qDebug() << query2.executedQuery();
+//            else
+//                qDebug() << query2.executedQuery();
 
 
            /*
@@ -1309,16 +1345,22 @@ void Update::fill_vl()
 //-----------------------------------------------------------------------------------//
 void Update::prev_page()
 {
-    //upload_main_cr();
-    index -= 1;
-    Recieve_data(linked_crud()->at(index));
+    if(ui->vl_for_prev_linked->count() > 0)
+    {
+        //upload_main_cr();
+        index -= 1;
+        Recieve_data(linked_crud()->at(index));
+    }
 }
 //-----------------------------------------------------------------------------------//
 void Update::next_page()
 {
-    //upload_main_cr();
-    index += 1;
-    Recieve_data(linked_crud()->at(index));
+    if(ui->vl_for_next_linked->count() > 0)
+    {
+        //upload_main_cr();
+        index += 1;
+        Recieve_data(linked_crud()->at(index));
+    }
 }
 //-----------------------------------------------------------------------------------//
 void Update::clear_vl_for_links()
@@ -1442,11 +1484,9 @@ void Update::destroy_link(Crud *m_cr, Crud *n_cr)
 
     if(!querry.exec())
     {
-       qDebug() << querry.lastError();
+       qDebug() << "Update::destroy_link" << querry.lastError();
     } else
     {
-        qDebug() << querry.executedQuery();
-
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -1478,6 +1518,24 @@ void Update::focus_on_widget()
     ui->le_last_name->setFocus();
 }
 
+void Update::ShowPopUp()
+{
+    PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне редактирования</h2>"
+                                    "<p><b>\"CTRL\"+\"PGUP\" и \"CTRL\"+\"PGDN\"</b> для переключения вкладок связанных объектов</p>"
+                                    "<p><b>\"ENTER\"</b> для сохранения изменений</p>"
+                                    "<p><b>\"ESC\"</b> для закрытия окна редактирования без сохранения</p>"
+                                    "<h2 align=\"middle\">Навигация внутри таблиц</h2>"
+                                    "<p>&rarr; для раскрытия контактов фокуса</p>"
+                                    "<p>&uarr; и &darr; для перемещения фокуса вверх и вниз в пределах таблицы</p>"
+                                    "<p>&larr; для возвращения фокуса назад</p>"
+                                    "<p><b>\"D\"</b> для удаления телефона под фокусом</p>"
+                                    "<p><b>\"A\"</b> для добавления телефона</p>"
+                                    "<p><b>\"S\"</b> для добавления контакта</p>"
+                                    "<p><b>\"ENTER\"</b> для редактирования телефона под фокусом</p>"
+                                    "<p><b>\"ESC\"</b> для перемещения фокуса обратно на форму</p>"
+                                    , leftMenu);
+}
+
 void Update::set_focus()
 {
     ui->le_check_for->setFocus();
@@ -1485,6 +1543,9 @@ void Update::set_focus()
 
 void Update::keyPressEvent(QKeyEvent *event)
 {
+    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+    QModelIndex ind1 = ui->tableView->model()->index(0, 0);
+
         switch(event->key())
         {
         case Qt::Key::Key_Enter:
@@ -1496,6 +1557,21 @@ void Update::keyPressEvent(QKeyEvent *event)
             case Qt::Key::Key_Space:
                 if(ui->tableView->currentIndex().isValid())
                     on_tableView_clicked(ui->tableView->currentIndex());
+            return;
+        case Qt::Key::Key_PageDown:
+            prev_page();
+            return;
+        case Qt::Key::Key_PageUp:
+            next_page();
+            return;
+         case Qt::Key::Key_F1:
+            ShowPopUp();
+            return;
+            case Qt::Key::Key_T:
+                ui->tableView->selectionModel()->select(ind1, flags);
+                ui->tableView->setFocus();
+            return;
+            case Qt::Key::Key_G:
             return;
         }
 
@@ -1548,7 +1624,6 @@ void Update::on_tableView_doubleClicked(const QModelIndex &index)
 
 void Update::on_tableView_entered(const QModelIndex &index)
 {
-    qDebug() << "tut";
 }
 
 void Update::on_cb_adres_clicked()
@@ -1640,16 +1715,16 @@ void Update::on_pb_add_line_telephone_clicked()
     switch(st)
     {
         case 1:
-        owt->oldnum = comp->content->Oldnum;
-        owt->internum = comp->content->Internum;
-        owt->tel_num = comp->content->tel_num;
-        ot_model->addRow_owner_tel(owt);
-        //owt->state = IsChanged;
-        //ot_model->setOTList(new_cr->owt());
-        ui->tableView->setModel(ot_model);
+            owt->oldnum = comp->content->Oldnum;
+            owt->internum = comp->content->Internum;
+            owt->tel_num = comp->content->tel_num;
+            ot_model->addRow_owner_tel(owt);
+            //owt->state = IsChanged;
+            //ot_model->setOTList(new_cr->owt());
+            ui->tableView->setModel(ot_model);
 
-        QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
-        ui->label_tels->setText(temp);
+            QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+            ui->label_tels->setText(temp);
         break;
     }
     delete comp;
@@ -1682,4 +1757,20 @@ void Update::on_tableView_2_doubleClicked(const QModelIndex &index)
         break;
     }
     delete comp;
+}
+
+void Update::setFocusOnTab1()
+{
+    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+    QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
+    ui->tableView->selectionModel()->select(tempIndex, flags);
+    ui->tableView->setFocus();
+}
+
+void Update::setFocusOnTab2()
+{
+    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+    QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
+    ui->tableView_2->selectionModel()->select(tempIndex, flags);
+    ui->tableView_2->setFocus();
 }

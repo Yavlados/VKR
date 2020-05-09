@@ -28,10 +28,18 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color:rgb(255, 243, 205);
+
+</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QScrollArea" name="scrollArea">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
@@ -40,8 +48,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1157</width>
-         <height>740</height>
+         <width>1159</width>
+         <height>742</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
@@ -67,12 +75,45 @@
             </font>
            </property>
            <property name="autoFillBackground">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="styleSheet">
             <string notr="true">QTabBar::tab:selected {
-    background: rgb(170, 255, 127);
-}</string>
+   background-color:rgb(255, 146, 107)
+}
+QTabBar::tab {
+   background-color:rgb(255, 195, 139)
+}
+
+QPushButton{
+background-color:rgb(255, 146, 107)
+}
+QLabel{
+color:rgb(77, 62, 62)
+}
+QPushButton:focus {
+background-color:  rgb(255, 195, 139)
+}
+QLineEdit:focus {
+background-color:  rgb(255, 195, 139)
+}
+QComboBox:focus {
+background-color:  rgb(255, 195, 139)
+}
+QRadioButton:focus {
+background-color:  rgb(255, 195, 139)
+}
+QCheckBox:focus {
+background-color:  rgb(255, 195, 139)
+}
+
+QCheckBox{
+color:rgb(77, 62, 62)
+}
+QRadioButton{
+color:rgb(77, 62, 62)
+}
+</string>
            </property>
            <property name="currentIndex">
             <number>0</number>
@@ -82,7 +123,7 @@
            </property>
            <widget class="QWidget" name="tab_2">
             <property name="autoFillBackground">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <attribute name="title">
              <string>Быстрый поиск</string>
@@ -90,6 +131,9 @@
             <layout class="QGridLayout" name="gridLayout">
              <item row="0" column="0">
               <widget class="QScrollArea" name="scrollArea_2">
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
                <property name="widgetResizable">
                 <bool>true</bool>
                </property>
@@ -98,8 +142,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>483</width>
-                  <height>668</height>
+                  <width>379</width>
+                  <height>672</height>
                  </rect>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_7">
@@ -112,13 +156,37 @@
                     </sizepolicy>
                    </property>
                    <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
+                    <enum>QFrame::NoFrame</enum>
                    </property>
                    <property name="frameShadow">
                     <enum>QFrame::Raised</enum>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_8">
-                    <item row="0" column="2">
+                    <item row="5" column="0" colspan="2">
+                     <widget class="QPushButton" name="pushButton">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <pointsize>11</pointsize>
+                       </font>
+                      </property>
+                      <property name="layoutDirection">
+                       <enum>Qt::LeftToRight</enum>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="text">
+                       <string>Поиск</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1">
                      <widget class="QPushButton" name="pb_refresh">
                       <property name="font">
                        <font>
@@ -134,7 +202,24 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="0" colspan="3">
+                    <item row="4" column="0" colspan="2">
+                     <widget class="QLineEdit" name="lineEdit">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <pointsize>15</pointsize>
+                        <weight>75</weight>
+                        <bold>true</bold>
+                       </font>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0" colspan="2">
                      <widget class="QLabel" name="label_short_search">
                       <property name="enabled">
                        <bool>true</bool>
@@ -161,7 +246,36 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="8" column="0" colspan="3">
+                    <item row="7" column="0" colspan="2">
+                     <layout class="QVBoxLayout" name="vl_cancel_button"/>
+                    </item>
+                    <item row="6" column="0" colspan="2">
+                     <widget class="QPushButton" name="pb_hided">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="text">
+                       <string>PushButton</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <spacer name="horizontalSpacer_2">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item row="8" column="0" colspan="2">
                      <spacer name="verticalSpacer_2">
                       <property name="orientation">
                        <enum>Qt::Vertical</enum>
@@ -174,38 +288,20 @@
                       </property>
                      </spacer>
                     </item>
-                    <item row="7" column="0" colspan="3">
-                     <layout class="QVBoxLayout" name="vl_cancel_button"/>
-                    </item>
-                    <item row="9" column="0" colspan="3">
-                     <layout class="QVBoxLayout" name="vl_shortcut_info">
-                      <item>
-                       <widget class="QLabel" name="label_4">
-                        <property name="text">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;(CTRL+Q) и (CTRL+W)&lt;/span&gt; для переключения вкладок правого окна&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;(CTRL+S) и (CTRL+D)&lt;/span&gt; для преключения вкладок левого окна&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </item>
-                    <item row="4" column="0" colspan="3">
-                     <widget class="QLineEdit" name="lineEdit">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
+                    <item row="1" column="0" colspan="2">
+                     <spacer name="verticalSpacer">
+                      <property name="orientation">
+                       <enum>Qt::Vertical</enum>
                       </property>
-                      <property name="font">
-                       <font>
-                        <pointsize>15</pointsize>
-                        <weight>75</weight>
-                        <bold>true</bold>
-                       </font>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>20</width>
+                        <height>40</height>
+                       </size>
                       </property>
-                     </widget>
+                     </spacer>
                     </item>
-                    <item row="3" column="0" colspan="3">
+                    <item row="3" column="0" colspan="2">
                      <widget class="QLabel" name="label_3">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -224,69 +320,6 @@
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="5" column="0" colspan="3">
-                     <widget class="QPushButton" name="pushButton">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <pointsize>11</pointsize>
-                       </font>
-                      </property>
-                      <property name="layoutDirection">
-                       <enum>Qt::LeftToRight</enum>
-                      </property>
-                      <property name="autoFillBackground">
-                       <bool>false</bool>
-                      </property>
-                      <property name="text">
-                       <string>Поиск</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <spacer name="horizontalSpacer_2">
-                      <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item row="1" column="0" colspan="3">
-                     <spacer name="verticalSpacer">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>20</width>
-                        <height>40</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item row="6" column="0" colspan="3">
-                     <widget class="QPushButton" name="pb_hided">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Ignored">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="text">
-                       <string>PushButton</string>
                       </property>
                      </widget>
                     </item>
@@ -314,11 +347,44 @@
             </font>
            </property>
            <property name="autoFillBackground">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
            <property name="styleSheet">
             <string notr="true">QTabBar::tab:selected {
-    background: rgb(170, 255, 127);
+   background-color:rgb(255, 146, 107)
+}
+QTabBar::tab {
+   background-color:rgb(255, 195, 139)
+}
+
+QPushButton{
+background-color:rgb(255, 146, 107)
+}
+QLabel{
+color:rgb(77, 62, 62)
+}
+QPushButton:focus {
+background-color:  rgb(255, 195, 139)
+}
+QLineEdit:focus {
+background-color:  rgb(255, 195, 139)
+}
+QComboBox:focus {
+background-color:  rgb(255, 195, 139)
+}
+QCheckBox:focus {
+background-color:  rgb(255, 195, 139)
+}
+QTableView::item:selected:active {
+                                 background: rgb(255, 146, 107);
+                                  border: 1px solid transparent;
+                                 selection-color:rgb(255, 255, 255);
+                                  }
+QCheckBox{
+color:rgb(77, 62, 62)
+}
+QRadioButton{
+color:rgb(77, 62, 62)
 }</string>
            </property>
            <property name="tabShape">
@@ -341,7 +407,7 @@
              </sizepolicy>
             </property>
             <property name="autoFillBackground">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <attribute name="title">
              <string>Записные книги</string>
@@ -349,6 +415,9 @@
             <layout class="QGridLayout" name="gridLayout_2">
              <item row="0" column="0">
               <widget class="QScrollArea" name="scrollArea_3">
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
                <property name="widgetResizable">
                 <bool>true</bool>
                </property>
@@ -357,8 +426,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>588</width>
-                  <height>668</height>
+                  <width>698</width>
+                  <height>672</height>
                  </rect>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_9">
@@ -384,10 +453,13 @@
                      </sizepolicy>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::NoFrame</enum>
                     </property>
                     <property name="frameShadow">
                      <enum>QFrame::Raised</enum>
+                    </property>
+                    <property name="lineWidth">
+                     <number>0</number>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_6">
                      <item row="1" column="0">
@@ -422,9 +494,6 @@
                         <font>
                          <pointsize>11</pointsize>
                         </font>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true"/>
                        </property>
                        <property name="selectionBehavior">
                         <enum>QAbstractItemView::SelectRows</enum>
@@ -593,6 +662,9 @@
      <pointsize>12</pointsize>
     </font>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="iconSize">
     <size>
      <width>40</width>
@@ -636,6 +708,23 @@
     <font>
      <pointsize>13</pointsize>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QMenuBar{
+	color:rgb(77, 62, 62);
+}
+
+QMenuBar::item:selected{
+	background-color: rgb(255, 195, 139)
+}
+
+QMenu::item:selected{
+	background-color: rgb(255, 195, 139)
+}
+
+QAction::item:selected{
+	background-color: rgb(255, 195, 139)
+}</string>
    </property>
    <widget class="QMenu" name="menu">
     <property name="font">
@@ -772,7 +861,7 @@
     <string>Анализ</string>
    </property>
    <property name="toolTip">
-    <string>Открыть окно анализа</string>
+    <string>Открыть окно анализа (F6)</string>
    </property>
   </action>
   <action name="action_search">
@@ -811,7 +900,7 @@
     <string>export</string>
    </property>
    <property name="toolTip">
-    <string>Открыть мастера экспорта</string>
+    <string>Экспорт (F10)</string>
    </property>
   </action>
   <action name="actionZK">
@@ -913,6 +1002,9 @@
    <property name="text">
     <string>Открыть список служебных телефонов (F1)</string>
    </property>
+   <property name="toolTip">
+    <string>Просмотреть служебные телефоны (F1)</string>
+   </property>
   </action>
   <action name="action_10">
    <property name="icon">
@@ -923,7 +1015,7 @@
     <string>Экспорт (F10)</string>
    </property>
    <property name="toolTip">
-    <string>Открыть меню экспорта</string>
+    <string>Открыть меню экспорта (F10)</string>
    </property>
   </action>
   <action name="action_12">
@@ -944,7 +1036,7 @@
     <string>import</string>
    </property>
    <property name="toolTip">
-    <string>Импорт данных</string>
+    <string>Импорт (F11)</string>
    </property>
   </action>
   <action name="action_Settings">
@@ -956,7 +1048,7 @@
     <string>Settings</string>
    </property>
    <property name="toolTip">
-    <string>Настройки отображения</string>
+    <string>Открыть меню настроек (F12)</string>
    </property>
   </action>
   <action name="action_4_analysis">

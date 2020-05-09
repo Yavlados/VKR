@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "db_connection.h"
 #include "table_show_delegate.h"
+#include "popup.h"
 
 #include <QGuiApplication>
 #include <QDesktopWidget>
@@ -396,6 +397,7 @@ void MainWindow::on_action_analysis_triggered()
         an = new class Analysis;
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,an,"Анализ");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
+        connect(an, SIGNAL(closeThis(QString)), this, SLOT(findIndexByNameTab2(QString)));
     }
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(an));
@@ -410,12 +412,14 @@ void MainWindow::on_action_search_triggered()
 {
     if(sr == nullptr)
     {
-     sr = new Search;
-     ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,sr,"Расширенный поиск");
-     ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
-     connect(sr, SIGNAL(Show_search_result(QList<Crud*>*)),this, SLOT(Search_result(QList<Crud*>*)));
-     connect(sr,SIGNAL(Cancel_search()),this, SLOT(RefreshTab()));
-     sr->set_tab_orders();
+         sr = new Search;
+         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,sr,"Расширенный поиск");
+         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
+         connect(sr, SIGNAL(Show_search_result(QList<Crud*>*)),this, SLOT(Search_result(QList<Crud*>*)));
+         connect(sr,SIGNAL(Cancel_search()),this, SLOT(RefreshTab()));
+         connect(sr, SIGNAL(closeThis(QString)), this, SLOT(findIndexByNameTab2(QString)));
+
+         sr->set_tab_orders();
     }
     else
     {
@@ -505,7 +509,6 @@ void MainWindow::add_cancel_button()
     setTabOrder(pb_clear_search , ui->pb_refresh);
 
     p_b_counter++;
-    qDebug()<<p_b_counter;
 
     connect(pb_clear_search, SIGNAL(clicked()), this ,SLOT(RefreshTab()));
     }
@@ -513,7 +516,6 @@ void MainWindow::add_cancel_button()
 //-----------------------------------------------------------------------------------//
 void MainWindow::open_upd_tab(Crud *cr)
 {
-    qDebug() << ui->tabWidget->count();
         if(updlist == nullptr)
         {
             updlist = new QList<Update*>;
@@ -561,7 +563,6 @@ void MainWindow::open_upd_tab(Crud *cr)
 //-----------------------------------------------------------------------------------//
 void MainWindow::set_validators()
 {
-//    qDebug() << crud_model->crudlist->first()->zk_id << crud_model->crudlist->last()->zk_id;
 //    ui->lineEdit->setValidator(new QIntValidator(crud_model->crudlist->first()->zk_id,crud_model->crudlist->last()->zk_id));
 }
 //-----------------------------------------------------------------------------------//
@@ -572,7 +573,6 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
     {
         ui->tabWidget->widget(index)->deleteLater();
         Update *upd = dynamic_cast<Update*>(ui->tabWidget->widget(index)); //Приведение типа от виджета к классу
-        qDebug() << upd->new_cr->zk_id;
     if (upd->frm_t == Add_form)
     {//Работа с добавлением
         if(addlist != nullptr)
@@ -610,46 +610,69 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
         ui->tabWidget->widget(index)->deleteLater();
         delete of;
         of = nullptr;
-        return;
-    }
 
+    }
+//    ui->tabWidget->setCurrentWidget(ui->tabWidget->widget(index-1));
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_2_tabCloseRequested(int index)
 {
+    ui->tabWidget_2->indexOf(an);
     if ( ui->tabWidget_2->widget(index)->objectName() == "Search")
     {
-        qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
         ui->tabWidget_2->widget(index)->deleteLater();
         delete sr;
         sr = nullptr;
         return;
-    }
+    } else
     if ( ui->tabWidget_2->widget(index)->objectName() == "Analysis")
     {
-        qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
         ui->tabWidget_2->widget(index)->deleteLater();
         delete an;
         an = nullptr;
         return;
-    }
+    } else
     if ( ui->tabWidget_2->widget(index)->objectName() == "master_export_Form")
     {
-        qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
         ui->tabWidget_2->widget(index)->deleteLater();
         delete exprt;
         exprt = nullptr;
         return;
-    }
+    } else
     if ( ui->tabWidget_2->widget(index)->objectName() == "Master_import_form")
     {
-        qDebug() <<  ui->tabWidget_2->widget(index)->objectName();
         ui->tabWidget_2->widget(index)->deleteLater();
         delete imprt;
         imprt = nullptr;
         return;
     }
 
+}
+//-----------------------------------------------------------------------------------//
+void MainWindow::findIndexByNameTab2( QString WidgetName )
+{
+    int countOfTabs = ui->tabWidget_2->count();
+    for(int a=0; a<countOfTabs; a++)
+    {
+        if(ui->tabWidget_2->widget(a)->objectName() == WidgetName)
+        {
+            on_tabWidget_2_tabCloseRequested(a);
+            break;
+        }
+    }
+}
+//-----------------------------------------------------------------------------------//
+void MainWindow::closeOF(QString WidgetName)
+{
+    int countOfTabs = ui->tabWidget->count();
+    for(int a=0; a<countOfTabs; a++)
+    {
+        if(ui->tabWidget->widget(a)->objectName() == WidgetName)
+        {
+            on_tabWidget_tabCloseRequested(a);
+            break;
+        }
+    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_official_tel_triggered()
@@ -660,6 +683,7 @@ void MainWindow::on_action_official_tel_triggered()
         ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,of,"Cлужебные телефоны");
         ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
         connect(this,SIGNAL(Fill_table_of()), of, SLOT(Fill_table()));
+        connect(of, SIGNAL(closeTab(QString)), this, SLOT(closeOF(QString)));
         emit Fill_table_of();
         of->set_tab_orders();
         }
@@ -680,8 +704,8 @@ void MainWindow::on_actionexport_triggered()
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,exprt,"Экспорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
         connect(exprt,SIGNAL(rb_zk_clicked()),this, SLOT(on_action_search_triggered()));
-        //connect(exprt,SIGNAL(rb_check_all()),this, SLOT(on_pb_check_model_clicked()));
         connect(exprt, SIGNAL(TESTING_export(QString,QString, bool, bool, bool)),this,SLOT(testing_export(QString, QString, bool, bool, bool)));
+        connect(exprt, SIGNAL(closeThis(QString)), this, SLOT(findIndexByNameTab2(QString)));
     }
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(exprt));
@@ -935,6 +959,8 @@ void MainWindow::on_action_import_triggered()
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,imprt,"Импорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
         connect(imprt, SIGNAL(TESTING_open(QString,QString, bool, bool)), this, SLOT(testing_opening(QString, QString, bool, bool)));
+        connect(imprt, SIGNAL(closeThis(QString)), this, SLOT(findIndexByNameTab2(QString)));
+
     }
     else
         ui->tabWidget_2->setCurrentIndex( ui->tabWidget_2->indexOf(imprt));
@@ -984,6 +1010,10 @@ void MainWindow::next_page()
                 QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
         lb->setText(str);
         ui->hl_label_crud->addWidget(lb);
+        QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+        QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
+        ui->tableView->selectionModel()->select(tempIndex, flags);
+        ui->tableView->setFocus();
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -1019,6 +1049,11 @@ void MainWindow::previous_page()
                QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
        lb->setText(str);
        ui->hl_label_crud->addWidget(lb);
+
+       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
+       ui->tableView->selectionModel()->select(tempIndex, flags);
+       ui->tableView->setFocus();
    }
 
 }
@@ -1180,6 +1215,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
            if(p_b_back != nullptr)
                p_b_back->click();
            return;
+
+        case Qt::Key::Key_F1:
+            openPopUp();
+        return;
+
+        case Qt::Key::Key_Escape:
+            RefreshTab();
+        return;
     }
 
 }
@@ -1248,6 +1291,9 @@ void MainWindow::find_linked_zk()
                 QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
                 delete item->widget();
             }
+       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
+       ui->tableView->selectionModel()->select(tempIndex, flags);
        ui->tableView->setFocus();
 }
 
@@ -1262,13 +1308,26 @@ void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
     on_action_update_triggered();
 }
 
+void MainWindow::openPopUp(){
+    PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в главном окне</h2>"
+                                    "<p><b>\"CTRL\"+\"Q\" и \"CTRL\"+\"W\"</b> для переключения вкладок правого окна</p>"
+                                    "<p><b>\"CTRL\"+\"S\" и \"CTRL\"+\"D\"</b> для преключения вкладок левого окна</p>"
+                                    "<p><b>\"ESC\"</b> для сброса результатов поиска</p>"
+                                    "<h2 align=\"middle\">Навигация в таблицах</h2>"
+                                    "<p>&rarr; для раскрытия телефонных номеров и контактов фокуса</p>"
+                                    "<p>&uarr; и &darr; для перемещения фокуса вверх и вниз в пределах таблицы</p>"
+                                    "<p>&larr; для возвращения фокуса назад</p>"
+                                    "<p><b>\"Z\"</b> для перемещения фокуса налево по горизонтали</p>"
+                                    "<p><b>\"X\"</b> для перемещения фокуса направо по горизонтали</p>", leftMenu);
+}
+
 void MainWindow::set_shortcuts()
 {
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this, SLOT(next_tab()));
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q), this, SLOT(prev_tab()));
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_D), this, SLOT(next_tab_tab2()));
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this, SLOT(prev_tab_tab2()));
-     new QShortcut(QKeySequence(Qt::Key_F1), this, SLOT(on_action_official_tel_triggered()));
+
     new QShortcut(QKeySequence(Qt::Key_F2), this, SLOT(on_action_update_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(on_action_add_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F4), this, SLOT(on_action_6_triggered()));
@@ -1317,13 +1376,11 @@ void MainWindow::prev_tab_tab2()
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
-    qDebug() << index;
 }
 
 void MainWindow::setFocusOnTab(QString widgetName, QWidget *widgetOnTab)
 {
     ///Ветвления от имени виджета
-    qDebug() << widgetName ;
     if(widgetName == "OfficialTelephones")
     {
         OfficialTelephones *of = dynamic_cast<OfficialTelephones*>(widgetOnTab);
@@ -1393,6 +1450,23 @@ void MainWindow::set_tab_orders()
 
 }
 
+void MainWindow::focusOnOT()
+{
+
+
+    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+    QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
+    ui->tableView_2->selectionModel()->select(tempIndex, flags);
+    ui->tableView_2->setFocus();
+}
+void MainWindow::focusOnZK()
+{
+    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+    ui->tableView->selectionModel()->select(this->index_tab1, flags);
+    ui->tableView->setFocus();
+}
+
+
 void MainWindow::setTableConnections()
 {
     connect (ui->tableView, SIGNAL(openUpdateForm(QModelIndex)), this,
@@ -1401,12 +1475,16 @@ void MainWindow::setTableConnections()
     connect (ui->tableView, SIGNAL(previousPage()), this, SLOT(previous_page()));
     connect (ui->tableView, SIGNAL(getOt(QModelIndex)), this, SLOT(getOt(QModelIndex)));
 
-    connect(ui->tableView_2, SIGNAL(backOnZk()), ui->tableView, SLOT(setFocus()));
+    connect(ui->tableView_2, SIGNAL(backOnZk()), this, SLOT(focusOnZK()));
     connect(ui->tableView_2, SIGNAL(getCont(QModelIndex)), this, SLOT(getCont(QModelIndex)));
 
-    connect(ui->tableView_3, SIGNAL(backOnOt()), ui->tableView_2, SLOT(setFocus()));
+    connect(ui->tableView_3, SIGNAL(backOnOt()), this, SLOT(focusOnOT()));
     connect(ui->tableView_3, SIGNAL(getVar2Zk()), this, SLOT(find_linked_zk()));
     connect(ui->tableView_3, SIGNAL(clickOnContact(QModelIndex)), this, SLOT(on_tableView_3_clicked(QModelIndex)));
+
+    connect(ui->tableView, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
+    connect(ui->tableView_2, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
+    connect(ui->tableView_3, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
 }
 
 void MainWindow::getOt(QModelIndex index)
@@ -1422,7 +1500,6 @@ void MainWindow::getCont(QModelIndex index)
 {
     on_tableView_2_clicked(index);
     ui->tableView_3->setFocus();
-    qDebug() << ui->tableView_3->currentIndex().row();
      if(ui->tableView_3->currentIndex().row() != -1)
      {
          QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;

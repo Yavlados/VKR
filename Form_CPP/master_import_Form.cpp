@@ -1,5 +1,6 @@
 #include "master_import_Form.h"
 #include "ui_master_import_form.h"
+#include "popup.h"
 
 Master_import_form::Master_import_form(QWidget *parent) :
     QWidget(parent),
@@ -172,14 +173,23 @@ void Master_import_form::keyPressEvent(QKeyEvent *event)
   case Qt::Key::Key_Enter:
      on_pushButton_clicked();
      return;
+    case Qt::Key::Key_Escape:
+        emit closeThis(this->objectName());
+      return;
+    case Qt::Key::Key_F1:
+      PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне мастера импорта</h2>"
+                                      "<p><b>\"ENTER\"</b> для начала импорта</p>"
+                                      "<p><b>\"ESC\"</b> для закрытия окна мастера импорта</p>", rightMenu);
     }
 }
 
 void Master_import_form::set_tab_orders()
 {
     ui->pb_directory_2->setFocus();
+    ui->hided_le->setFocusProxy(ui->pb_directory_2);
     setTabOrder(ui->pb_directory_2, ui->le_password_2);
     setTabOrder(ui->le_password_2, ui->pushButton);
+    setTabOrder(ui->pushButton,  ui->hided_le);
 
 }
 

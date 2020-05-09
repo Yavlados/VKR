@@ -40,7 +40,7 @@ private:
    QString file_path = nullptr;
 signals:
     void TESTING_open(QString filename, QString password, bool folder, bool of_t);
-
+    void closeThis(QString);
 };
 
 #endif // MASTER_IMPORT_FORM_H

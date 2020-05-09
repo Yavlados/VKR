@@ -30,6 +30,7 @@ public:
     QSize actual_size;
 
     void focus_on_widget();
+    void set_tab_orders();
 
 private slots:
     void on_cb_zk_clicked();
@@ -44,7 +45,7 @@ private slots:
 
     void on_cb_set_password_clicked();
 
-
+    void keyPressEvent(QKeyEvent *event);
 
     void on_cb_off_tel_clicked();
 
@@ -55,6 +56,7 @@ signals:
     void rb_zk_clicked();
     void rb_check_all();
     void TESTING_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk_tels);
+    void closeThis(QString);
 };
 
 #endif // MASTER_EXPORT_FORM_H

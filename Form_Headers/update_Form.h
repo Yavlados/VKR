@@ -97,7 +97,7 @@ signals:
 
 private slots:
 
-
+    void ShowPopUp();
     void set_focus();
     void keyPressEvent(QKeyEvent *event);
     void closeEvent(QCloseEvent *event);
@@ -168,6 +168,9 @@ private slots:
 
     void on_pb_add_line_telephone_clicked();
     void on_tableView_2_doubleClicked(const QModelIndex &index);
+
+    void setFocusOnTab1();
+    void setFocusOnTab2();
 };
 
 #endif // UPDATE_H

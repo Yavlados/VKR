@@ -141,6 +141,8 @@ private slots:
      */
     void Add_pagination_buttons();
 
+    void focusOnOT();
+    void focusOnZK();
 
     void on_tableView_clicked(const QModelIndex &index_tab1, QString num = nullptr);
 
@@ -256,6 +258,11 @@ private slots:
 
     void getCont(QModelIndex index);
 
+    void openPopUp();
+
+    void findIndexByNameTab2(QString);
+
+    void closeOF(QString name);
 signals:
     void Send_data(Crud *cr, int index);
 

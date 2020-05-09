@@ -79,6 +79,8 @@ private slots:
 
 signals:
 
+    void closeThis(QString);
+
     void Send_short_face_analysis_all_db(int);
 
     void Send_short_tel_analysis_all_db(int);

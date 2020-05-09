@@ -19,8 +19,6 @@ Contacts::Contacts(int cont_id, QString tel, QString mark, int ot_id, bool i_n, 
 
 Contacts::~Contacts()
 {
-
-    qDebug()<<"delete contact"<<contact_id;
 }
 
 bool Contacts::saveAll_cont(QList<Contacts*> *list, int new_tel_id)
@@ -55,7 +53,7 @@ bool Contacts::saveAll_cont(QList<Contacts*> *list, int new_tel_id)
     if(!isOk)
     {
         db_connection::instance()->db().database(cname).rollback();
-        qDebug() << "отсюда";
+        qDebug() << "Contact rollback";
         return false;
     }
     db_connection::instance()->db().database(cname).commit();
@@ -99,7 +97,7 @@ bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
     temp.bindValue(":id",tel_id);
     if (!temp.exec())
     {
-        qDebug() << temp.lastError() << temp.executedQuery();
+        qDebug() << "Contacts::selectTelContacts" <<  temp.lastError() << temp.executedQuery();
         return false;
     }
 
@@ -159,7 +157,7 @@ bool inline Contacts::var2_analysis_for_main(QList<Contacts *> *list, int tel_id
          querry.prepare(tempSQL);
 
          if (!querry.exec())
-             qDebug() << querry.lastError();
+             qDebug() << "Contacts::var2_analysis_for_main" << querry.lastError();
          while (querry.next())
          {
              for (int i = 0; i < list->size(); i++)
@@ -192,14 +190,12 @@ bool Contacts::insert(bool setState, int new_tel_id)
     if (!temp.exec())
     {
         db_connection::instance()->lastError = temp.lastError().text();
-        qDebug() << temp.lastError();
+        qDebug() << "Contacts::insert" << temp.lastError();
         return false;
     }
     if (temp.next())
     {
-        qDebug()<<temp.executedQuery();
         contact_id = temp.value(0).toInt();
-        qDebug() << " contact add" + QString::number(contact_id) << mark;
             if( setState )
                 cont_state = IsReaded;
             return true;
@@ -229,11 +225,9 @@ bool Contacts::update(bool setState)
     if (!temp.exec())
     {
         db_connection::instance()->lastError = temp.lastError().text();
-        qDebug() << temp.lastError();
+        qDebug() << "Contacts::update" << temp.lastError();
         return false;
     }
-
-    qDebug() << "update" + QString::number(contact_id);
     if(setState)
         cont_state = IsReaded;
     return true;
@@ -251,18 +245,16 @@ bool Contacts::remove()
     if (!temp.exec())
     {
         db_connection::instance()->lastError = temp.lastError().text();
-        qDebug() << temp.lastError();
+        qDebug() << "Contacts::remove" << temp.lastError();
         return false;
     }
 
-    qDebug() << "delete" + QString::number(contact_id);
     cont_state = IsRemoved;
     return true;
 }
 
 void Contacts::check() const
 {
-    qDebug() << QString::number(contact_id)+" " +contact_tel_num+ " " +mark +" " +QString::number(parent_OT_id);
 }
 
 bool Contacts::delete_all(QList<Contacts *> *list)

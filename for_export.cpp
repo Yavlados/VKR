@@ -12,7 +12,6 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
     QString newStr = Create_report_filename(filename);
     export_report.setFileName(newStr);
 
-    qDebug() << db_file.fileName() << endl << export_report.fileName();
     db_connection *db = db_connection::instance();
 
     if (cb_set_password)
@@ -36,7 +35,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
 
          in << info_text;
 
-         qDebug() << db->db_connect()<<db->db().lastError();
+         db->db_connect();
          QSqlQuery query(db->db());
 
          if(!crud->isEmpty())
@@ -67,7 +66,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " CONSTRAINT PK_Zk_id PRIMARY KEY (zk_id),"
                         " CONSTRAINT Zk_Zk_id_key UNIQUE (zk_id)"
                         " );"))
-             qDebug() << query.lastError();
+             qDebug() << " For_export::Do_export" << query.lastError();
 
 
 
@@ -82,7 +81,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
               " REFERENCES zk (row_id) MATCH SIMPLE"
               " ON UPDATE CASCADE ON DELETE CASCADE"
          ")"))
-                 qDebug() << query.lastError();
+                 qDebug() << " For_export::Do_export" << query.lastError();
 
          if(!query.exec(" CREATE TABLE owners_tel"
                         " ( telephone_id integer NOT NULL, "
@@ -96,7 +95,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " ON UPDATE CASCADE ON DELETE CASCADE,"
                         " CONSTRAINT Owners_tel_Telephone_id_key UNIQUE (telephone_id)"
                         " ); "))
-             qDebug() << query.lastError();
+             qDebug() << " For_export::Do_export"  << query.lastError();
 
          if(!query.exec(" CREATE TABLE contacts"
                         " ("
@@ -112,7 +111,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         " ON UPDATE CASCADE ON DELETE CASCADE,"
                         " CONSTRAINT Contacts_Contact_list_id_key UNIQUE (contact_list_id)"
                         " );"))
-             qDebug() << query.lastError();
+             qDebug()<< " For_export::Do_export"  << query.lastError();
 
          ///Заполнение созданных таблиц
 
@@ -171,7 +170,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
             in << crud->at(i)->mid_name;
             if(!query.exec())
              {
-             qDebug() << query.lastError();
+             qDebug()<< " For_export::Do_export"  << query.lastError();
              }
         else
         {
@@ -188,7 +187,8 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
 
                 if (!query.exec())
                 {
-                    qDebug() << query.lastError() << query.executedQuery() << crud->at(i)->owt()->at(a)->tel_num << crud->at(i)->owt()->at(a)->parentZK_id << crud->at(i)->owt()->at(a)->internum << crud->at(i)->owt()->at(a)->oldnum;
+                    qDebug()<< " For_export::Do_export"  << query.lastError() << query.executedQuery();
+
                 }
                 else
                 {
@@ -204,7 +204,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                         query.bindValue(":o_n",crud->at(i)->owt()->at(a)->cont()->at(b)->oldnum);
                         if (!query.exec())
                         {
-                            qDebug() << query.lastError();
+                            qDebug()<< " For_export::Do_export"  << query.lastError();
                         }
 
                     }
@@ -221,7 +221,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                  query.bindValue(":r_id2",linklist->links->at(a)->uuid2);
                  if (!query.exec())
                  {
-                     qDebug() << query.lastError();
+                     qDebug() << " For_export::Do_export"  << query.lastError();
                  }
 
              }
@@ -237,7 +237,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                        "  service_name character(25),"
                        "  CONSTRAINT PK_of_t_id PRIMARY KEY (of_t_id)"
                        ")"))
-               qDebug()<< query.lastError();
+               qDebug()<< " For_export::Do_export" << query.lastError();
            query.clear();
             //fill_off_tels(offtel, SQLliteType); //Заполнил список служебными телефонами
             for (int y = 0;y < offtel->size(); y++)
@@ -247,7 +247,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                 query.bindValue(":t_n", offtel->at(y)->tel_num);
                 query.bindValue(":s_n", offtel->at(y)->service_name);
                 if(!query.exec())
-                   qDebug() << query.lastError();
+                   qDebug()<< " For_export::Do_export"  << query.lastError();
                 else
                     in << "\r\n "+offtel->at(y)->service_name;
             }
@@ -258,7 +258,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
      db_file.close();
      db->db().close();
      db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
-     qDebug() << db->db_connect()<<db->db().lastError();
+     db->db_connect();
      return true;
 }
 

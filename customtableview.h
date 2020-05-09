@@ -9,7 +9,9 @@
 enum tableType{
     zkTable =0,
     otTable,
-    contactTable
+    contactTable,
+    UpdateOT,
+    UpdateCont
 };
 
 class CustomTableView : public QTableView
@@ -20,6 +22,14 @@ public:
     void keyPressEvent(QKeyEvent *event) override;
     void setType(tableType t);
 signals:
+    void openUpdOT(QModelIndex index);
+    void openUpdCont(QModelIndex index);
+
+    void deleteTelephone();
+    void addNewTelephone();
+    void addNewCont();
+
+    void f1Pressed();
     void openUpdateForm(QModelIndex index);
     void nextPage();
     void previousPage();
@@ -29,10 +39,12 @@ signals:
     void backOnOt();
     void getVar2Zk();
     void clickOnContact(QModelIndex index);
+    void stopFocus();
 
  private:
     QModelIndex newIndex;
     int currentRow;
+    int currentColumn;
     tableType type;
 };
 

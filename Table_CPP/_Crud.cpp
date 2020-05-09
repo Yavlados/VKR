@@ -35,7 +35,7 @@ Crud::Crud()
     checkState_ = Unchecked;
 }
 //-----------------------------------------------------------------------------------//
-bool Crud:: selectAll(QList<Crud *> *list)
+bool Crud::selectAll(QList<Crud *> *list)
 {
     if(list==nullptr)
         return false;
@@ -77,7 +77,7 @@ bool Crud:: selectAll(QList<Crud *> *list)
                  " ORDER BY zk.zk_id");
     if (!temp.exec())
     {
-        qDebug() << temp.lastError();
+        qDebug() << "Crud::selectAll" << temp.lastError();
         return false;
     }
 
@@ -120,29 +120,6 @@ bool Crud:: selectAll(QList<Crud *> *list)
 //-----------------------------------------------------------------------------------//
 void Crud::check() const
 {
-    qDebug() << zk_id;
-    qDebug() << lastname;
-    qDebug() << name;
-    qDebug() << mid_name;
-    qDebug() << birth_date;
-
-    qDebug() << reg_city;
-    qDebug() << reg_street;
-    qDebug() << reg_home;
-    qDebug() << reg_corp;
-    qDebug() << reg_flat;
-
-    qDebug() << liv_city;
-    qDebug() << liv_street;
-    qDebug() << liv_home;
-    qDebug() << liv_corp;
-    qDebug() << liv_flat;
-
-    qDebug() << check_for;
-    qDebug() << dop_info;
-    qDebug() << date_add;
-    qDebug() << time_add;
-
 }
 //-----------------------------------------------------------------------------------//
 void Crud::zk_search_report(QString qry)
@@ -171,7 +148,7 @@ void Crud::zk_search_report(QString qry)
                    " WHERE"
                    " zk.Zk_id>0 " + qry + " ORDER BY zk.Zk_id");
     if (!querry.exec())
-        qDebug() << querry.lastError();
+        qDebug() << "Crud::zk_search_report" << querry.lastError();
     while (querry.next())
     {
         search_res+="Записная книжка № "+querry.value(0).toString()+" \r\n Владелец: "+
@@ -186,7 +163,7 @@ void Crud::zk_search_report(QString qry)
                       " WHERE owners_tel.FK_Telephone_Zk = (:id)");
         temp.bindValue(":id", querry.value(0).toInt());
         if (!temp.exec())
-            qDebug() << temp.lastError();
+            qDebug() << "Crud::zk_search_report" << temp.lastError();
         else
             search_res +=", телефон:";
         while (temp.next())
@@ -266,9 +243,7 @@ bool Crud::update_zk(QList<int> *list_id)
     querry.bindValue(":id", zk_id);
     if (!querry.exec())
     {
-        qDebug() << birth_date;
-        qDebug() << querry.lastError();
-        qDebug() << querry.executedQuery();
+        qDebug()  << "Crud::update_zk"<< querry.lastError() << querry.executedQuery();
         isOk = false;
     }else
     {
@@ -298,18 +273,16 @@ bool Crud::update_zk(QList<int> *list_id)
                                                                                        " WHERE zk.zk_id = "+QString::number(list_id->at(i))+"))");
                                 if(!query1.exec())
                                 {
-                                    qDebug() << query1.lastError();
-                                    qDebug() << query1.executedQuery();
+                                    qDebug() << "Crud::update_zk" << query1.lastError() << query1.executedQuery();
                                     isOk = false;
                                     break;
                                 }
                                 else {
-                                    qDebug() << query1.executedQuery();
                                 }
                             }
                         }
                         else
-                            qDebug() << query2.lastError() << query2.executedQuery();
+                            qDebug()<< "Crud::update_zk" << query2.lastError() << query2.executedQuery();
                     }
                 }
             }
@@ -317,7 +290,7 @@ bool Crud::update_zk(QList<int> *list_id)
         if(!isOk)
         {
             db_connection::instance()->db().database(cname).rollback();
-            qDebug() << "отсюда";
+            qDebug() <<  "Crud::update_zk ROLLBACK";
             return false;
         }
         db_connection::instance()->db().database(cname).commit();
@@ -371,8 +344,7 @@ bool Crud::add_zk()
 
     if (!querry.exec())
     {
-        qDebug() << birth_date;
-        qDebug() << querry.lastError() << querry.value(1).toString();
+        qDebug() << "Crud::add_zk" << querry.lastError() << querry.value(1).toString();
         return false;
     }
 
@@ -399,9 +371,8 @@ void Crud::del_zk(int del_id)
     if (!querry.exec())
     {
         isOk = false;
-        qDebug() << querry.lastError();
+        qDebug()<< "Crud::del_zk" << querry.lastError();
     }else
-        qDebug() << querry.executedQuery();
 
     if(!isOk)
     {
@@ -445,8 +416,7 @@ Crud* Crud::id_zk_search(int zk_id)
                    " WHERE zk.zk_id = (:id)");
     querry.bindValue(":id", zk_id);
     if (!querry.exec())
-        qDebug() << querry.lastError();
-    qDebug() << querry.executedQuery();
+        qDebug() << "Crud::id_zk_search" << querry.lastError();
 
     if (querry.next())
     {
@@ -492,7 +462,7 @@ int Crud::get_id_from_tel(QString t_n)
                    " WHERE "
                    "owners_tel.Telephone_num = ('"+t_n+"')");
     if (!querry.exec())
-       qDebug() << querry.lastError();
+       qDebug() << " Crud::get_id_from_tel" << querry.lastError();
     while (querry.next())
     {
       zk_id = querry.value(0).toInt();
@@ -551,7 +521,7 @@ bool Crud::save_all_crud(Crud *cr)
     if(!isOk)
     {
         db_connection::instance()->db().database(cname).rollback();
-        qDebug() << "отсюда";
+        qDebug() << "Crud::save_all_crud ROLLBACK";
         return false;
     }
     db_connection::instance()->db().database(cname).commit();
@@ -702,11 +672,10 @@ bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id, Q
         if (!temp.exec())
         {
             db_connection::instance()->lastError = temp.lastError().text();
-            qDebug() << temp.lastError() << Query;
+            qDebug()<< "Crud::compare_with_base" << temp.lastError() << Query;
             return false;
         }else
         {
-            qDebug() << temp.executedQuery();
             compare_result = new QList<Cl_in_db_struct>;
         }
         QList<int> *temp_for_contains = new QList<int>;
@@ -812,7 +781,6 @@ QList<int> *Crud::take_links(QString row_id, SqlType sqltype, QString filename, 
     }
 
     QSqlQuery querry(db_connection::instance()->db());
-    qDebug() << db->db_connect()<<db->db().lastError();
 
     QList<int> *temp = nullptr ;
     querry.prepare(" Select zk.zk_id  FROM "
@@ -825,7 +793,7 @@ QList<int> *Crud::take_links(QString row_id, SqlType sqltype, QString filename, 
                    " ON zk.row_id = t.row_id1");
     if(!querry.exec())
     {
-        qDebug() << querry.lastError() << querry.executedQuery();
+        qDebug() << "Crud::take_links"<< querry.lastError() << querry.executedQuery();
         return temp;
     }else
     {
@@ -839,7 +807,6 @@ QList<int> *Crud::take_links(QString row_id, SqlType sqltype, QString filename, 
            db_file.close();
            db->db().close();
            db->set_Sql_type(PSQLtype); /// Перевожу обратно на PSQL, тк работаю в основном с ним
-           qDebug() << db->db_connect()<<db->db().lastError();
        }
         return temp;
     }

@@ -28,11 +28,14 @@ public:
 
     void focus_on_widget();
 
+signals:
+    void closeTab(QString);
 
 private:
     Ui::OfficialTelephones *ui;
     QSortFilterProxyModel *m1;
     void set_label(QList<Off_tels *> list);
+    void showPopUp();
 private slots:
     void Fill_table();
     void on_pb_add_clicked();
@@ -41,6 +44,7 @@ private slots:
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
     void on_pushButton_4_clicked();
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // OFFICIALTELEPHONES_FORM_H

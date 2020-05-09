@@ -360,7 +360,6 @@ void Component::on_pb_ok_clicked()
 
 void Component::on_le_1_inputRejected()
 {
-    qDebug() << "asd";
 }
 
 void Component::setTelNum()

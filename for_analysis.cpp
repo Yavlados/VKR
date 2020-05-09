@@ -84,7 +84,7 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
         querry.prepare(tempSQL);
 
         if (!querry.exec())
-            qDebug() << querry.lastError();
+            qDebug() << "For_analysis::get_1_var" << querry.lastError();
 
         /// 0 - id
         /// 1- номер к которому привязан
@@ -181,9 +181,7 @@ QList<Crud *> *For_analysis::get_2_var(Crud *cr, QList<Crud *> *crudlist, QStrin
               querry.bindValue(":zk_id", cr->zk_id);
 
               if (!querry.exec())
-                  qDebug() << querry.lastError();
-
-              qDebug() << querry.executedQuery();
+                  qDebug() << "For_analysis::get_2_var" << querry.lastError();
 
               /// 0 - id
               /// 1- номер анализируемого к которому привязан контакт
@@ -282,7 +280,7 @@ QList<Crud *> *For_analysis::get_3_var(Crud *cr, QList<Crud *> *crudlist, QStrin
         querry.bindValue(":zk_id", cr->zk_id);
 
         if (!querry.exec())
-            qDebug() << querry.lastError();
+            qDebug() << "For_analysis::get_3_var" << querry.lastError();
 
         ///Возвращаю 0 - id
         /// 1 - номер телефона с контактом

@@ -113,7 +113,6 @@ void An_result::Recieve_long_tel_analysis_all_db(QString DateFrom, QString DateT
 void An_result::Recieve_search_result(QString Search_res)
 {
     An_result *an_res = new An_result;
-    qDebug() << Search_res;
     an_res->ui->textEdit->setText(Search_res);
     an_res->show();
 }

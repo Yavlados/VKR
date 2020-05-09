@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
 {
 //    qInstallMessageHandler(myMessageHandler);
     QApplication a(argc, argv);
-    qDebug()<<"test";
     QStringList paths = QCoreApplication::libraryPaths();
     paths.append(".");
     paths.append("imageformats");
@@ -95,7 +94,7 @@ int main(int argc, char *argv[])
 
         if( !con->db_connect() )
         {
-            qDebug() << con->db().lastError();
+            qDebug()<< "ConnectionDB error:" << con->db().lastError();
             QMessageBox msg;
             msg.setWindowTitle("Ошибка!");
             msg.setText("Произошла ошибка при подключении к базе данных: "+con->db().lastError().text());

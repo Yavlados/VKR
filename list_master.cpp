@@ -46,7 +46,7 @@ void List_master::fill_crud_list(QList<Crud *> *crud, int crud_id, SqlType sqlt)
                    " ORDER BY zk.zk_id");
     query.bindValue(":id", crud_id);
     if(!query.exec())
-        qDebug() << query.lastError();
+        qDebug() << "List_master::fill_crud_list" << query.lastError();
     while (query.next())
     {
         Crud *cr = new Crud();
@@ -123,8 +123,7 @@ void List_master::fill_owners_tel_list(QList<Owners_tel *> *owner_telLIST, int z
     query.bindValue(":id", zk_id);
     if (!query.exec())
     {
-        qDebug() <<  "   "+ query.executedQuery();
-        qDebug() <<"selectZkTel";
+        qDebug() <<  "List_master::fill_owners_tel_list" <<  query.executedQuery();
     }
 
     while (query.next())
@@ -192,7 +191,7 @@ void List_master::fill_contacts_list(QList<Contacts *> *contactLIST, int tel_id,
     query.bindValue(":id",tel_id);
     if (!query.exec())
     {
-        qDebug() << query.lastError();
+        qDebug() << "List_master::fill_contacts_list" << query.lastError();
         return;
     }
 
@@ -246,7 +245,7 @@ export_state List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqltyp
         }
     }
 
-    qDebug() << db->db_connect()<<db->db().lastError();
+     db->db_connect();
     QSqlQuery query(db->db());
     query.prepare("SELECT "
                    "zk.zk_id,"
@@ -279,10 +278,9 @@ export_state List_master::fill_all_crud_list(QList<Crud *> *crud, SqlType sqltyp
                    " ORDER BY zk.zk_id");
     if(!query.exec())
     {
-      qDebug() << query.lastError() << query.lastError().text() << query.lastError().number();
+      qDebug() << "List_master::fill_all_crud_list" << query.lastError();
         return Connection_trouble;
     }
-    //qDebug() << query.executedQuery();
     while (query.next())
     {
         Crud *cr = new Crud();
@@ -371,8 +369,7 @@ querry.prepare("SELECT "
                " WHERE zk.zk_id = (:id)");
 querry.bindValue(":id", zk_id);
 if (!querry.exec())
-    qDebug() << querry.lastError();
-qDebug() << querry.executedQuery();
+    qDebug()<< "List_master::set_counters" << querry.lastError();
 
 if (querry.next())
 {
@@ -437,7 +434,7 @@ export_state List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt,
             return Password_abort;
         }
     }
-    qDebug() << db->db_connect()<<db->db().lastError();
+    db->db_connect();
     QSqlQuery query(db->db());
     query.prepare("SELECT official_tel.of_t_id,"
                   "official_tel.tel_num,"
@@ -445,7 +442,7 @@ export_state List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt,
                   " FROM official_tel");
     if (!query.exec())
     {
-        qDebug() << query.lastError();
+        qDebug() << "List_master::fill_off_tels" << query.lastError();
             return Connection_trouble;
     }
     while (query.next())
@@ -548,7 +545,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                 query.bindValue(":r_i",query1.value(0).toString());
            else
            {
-               qDebug() << query1.lastError() << query1.executedQuery();
+               qDebug() << "List_master::insert_crud_in_db"<< query1.lastError() << query1.executedQuery();
                    isOk = false;
                    break;
            }
@@ -556,7 +553,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
 
        if(!query.exec())
         {
-        qDebug() << query.lastError() << query.executedQuery();
+        qDebug() << "List_master::insert_crud_in_db" << query.lastError() << query.executedQuery();
             isOk = false;
             break;
         }else
@@ -568,8 +565,6 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
 
    while (query.next())
    {
-       qDebug() << query.value(0).toString() << query.value(1).toString();
-
        for (int a = 0; a < crud->at(i)->owt()->size(); a++)
        {
            if (!crud->at(i)->owt()->at(a)->tel_num.isEmpty())
@@ -583,12 +578,11 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
 
                if (!query1.exec())
                {
-                   qDebug() << query1.lastError() << query1.executedQuery();
+                   qDebug() << "List_master::insert_crud_in_db" << query1.lastError() << query1.executedQuery();
                    isOk = false;
                }
                while (query1.next())
                {
-                   qDebug()<< crud->at(i)->owt()->at(a)->cont()->size();
                    for (int b=0; b<crud->at(i)->owt()->at(a)->cont()->size();b++)
                    {
                     if(!crud->at(i)->owt()->at(a)->cont()->at(b)->contact_tel_num.isEmpty())
@@ -602,7 +596,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
 
                            if (!query2.exec())
                            {
-                               qDebug() << query2.lastError() << query2.executedQuery();
+                               qDebug() << "List_master::insert_crud_in_db" << query2.lastError() << query2.executedQuery();
                                isOk = false;
                            }
                        }
@@ -622,7 +616,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                                                   " WHERE zk.zk_id = "+QString::number(list_id->at(a))+"))");
            if(!query1.exec())
            {
-               qDebug() << query1.lastError() << query1.executedQuery();
+               qDebug() << "List_master::insert_crud_in_db" << query1.lastError() << query1.executedQuery();
                isOk = false;
                break;
            }
@@ -641,7 +635,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                                                          " WHERE zk.zk_id = "+QString::number(vector->at(u).at(1))+"))");
                    if(!query1.exec())
                    {
-                       qDebug() << query1.lastError() << query1.executedQuery();
+                       qDebug() << "List_master::insert_crud_in_db" << query1.lastError() << query1.executedQuery();
                        isOk = false;
                        break;
                    }
@@ -661,7 +655,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
     if(!isOk)
     {
         db_connection::instance()->db().database(cname).rollback();
-        qDebug() << "отсюда";
+        qDebug() << "List_master::insert_crud_in_db: ROLLBACK";
         return false;
     }
         else
@@ -679,7 +673,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                query1.bindValue(":r_id2",Local_link_list->at(i));
                if (!query1.exec())
                {
-                   qDebug() << query1.lastError();
+                   qDebug() << "List_master::insert_crud_in_db" << query1.lastError();
                    isOk = false;
                    break;
                }
@@ -694,7 +688,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                query1.bindValue(":r_id2",vector_str->at(i).at(1));
                if (!query1.exec())
                {
-                   qDebug() << query1.lastError() << query1.executedQuery();
+                   qDebug() << "List_master::insert_crud_in_db"<< query1.lastError() << query1.executedQuery();
                    isOk = false;
                    break;
                }
@@ -702,7 +696,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
     if(!isOk)
     {
         db_connection::instance()->db().database(cname).rollback();
-        qDebug() << "отсюда";
+        qDebug() << "List_master::insert_crud_in_db: ROLLBACK";
         return false;
     }
         else
@@ -806,12 +800,9 @@ QList<Crud *> *List_master::search(QString search_query)
     temp.prepare(temp_str);
     if (!temp.exec())
     {
-        qDebug() << temp.lastError();
-        qDebug() << "select_search";
-        qDebug() << temp.executedQuery();
+        qDebug() << "*List_master::search" << temp.lastError() << temp.executedQuery();
         return nullptr;
-    }else
-        qDebug() << "QString: " << temp_str << "executedQuery: " << temp.executedQuery() << "lastQuery: " << temp.lastQuery();
+    }else {}
 
     QList<Crud*> *crudlist = new QList<Crud*>;
 

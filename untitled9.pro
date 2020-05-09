@@ -63,7 +63,8 @@ SOURCES += \
     dialog_settings.cpp \
     text_handler.cpp \
     date_form.cpp \
-    customtableview.cpp
+    customtableview.cpp \
+    popup.cpp
 
 HEADERS += \
     db_connection.h \
@@ -98,7 +99,8 @@ HEADERS += \
     dialog_settings.h \
     text_handler.h \
     date_form.h \
-    customtableview.h
+    customtableview.h \
+    popup.h
 
 FORMS += \
         mainwindow.ui \
@@ -114,7 +116,8 @@ FORMS += \
     dialog_conflict.ui \
     component.ui \
     dialog_settings.ui \
-    date_form.ui
+    date_form.ui \
+    popup.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

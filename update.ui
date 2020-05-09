@@ -25,6 +25,9 @@
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="0" column="0">
     <widget class="QScrollArea" name="scrollArea">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -33,8 +36,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>727</width>
-        <height>853</height>
+        <width>729</width>
+        <height>855</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
@@ -952,7 +955,7 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QTableView" name="tableView">
+                     <widget class="CustomTableView" name="tableView">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                         <horstretch>0</horstretch>
@@ -1069,7 +1072,7 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QTableView" name="tableView_2">
+                     <widget class="CustomTableView" name="tableView_2">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                         <horstretch>0</horstretch>
@@ -1138,6 +1141,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomTableView</class>
+   <extends>QTableView</extends>
+   <header>customtableview.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>le_last_name</tabstop>
   <tabstop>le_name</tabstop>

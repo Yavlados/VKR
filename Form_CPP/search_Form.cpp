@@ -3,7 +3,7 @@
 #include "_Crud.h"
 #include "list_master.h"
 #include <QRegExpValidator>
-
+#include "popup.h"
 
 Search::Search(QWidget *parent) :
     QWidget(parent),
@@ -41,9 +41,18 @@ void Search::keyPressEvent(QKeyEvent *event)
      case Qt::Key::Key_Enter:
         on_pb_search_clicked();
         return;
-    case Qt::Key::Key_Escape:
+    case Qt::Key::Key_Equal:
         on_pushButton_clicked();
         return;
+     case Qt::Key::Key_Escape:
+         emit closeThis(this->objectName());
+        return;
+       case Qt::Key::Key_F1:
+          PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне поиска</h2>"
+            "<p><b>\"CTRL\"+\"=\"</b> для сброса результатов поиска</p>"
+            "<p><b>\"ENTER\"</b> для выполнения поиска</p>"
+            "<p><b>\"ESC\"</b> для закрытия окна поиска</p>", rightMenu);
+          return;
     }
 }
 
@@ -123,7 +132,6 @@ QString Search::create_new_date(QString str)
         else
             return "";
 }
-
 
 void Search::on_pb_search_clicked()
 {

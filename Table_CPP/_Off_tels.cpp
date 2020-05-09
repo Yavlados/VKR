@@ -44,7 +44,7 @@ bool Off_tels::search(QList<Off_tels *> *list, QString tel_num, QString name)
     temp.prepare(temp_query);
     if (!temp.exec())
     {
-        qDebug() << temp.lastError();
+        qDebug() << "Off_tels::search" << temp.lastError();
         return false;
     }
 
@@ -76,7 +76,7 @@ bool Off_tels::selectOffTel(QList<Off_tels *> *list)
                 " FROM Official_tel");
     if (!temp.exec())
     {
-        qDebug() << temp.lastError();
+        qDebug() << "Off_tels::selectOffTel" << temp.lastError();
         return false;
     }
 
@@ -105,7 +105,7 @@ bool Off_tels::add_off_tel (Off_tels *of_t)
     querry.bindValue(":s_n",of_t->service_name);
     if (!querry.exec())
     {
-        qDebug() << querry.lastError();
+        qDebug() << "Off_tels::add_off_tel" << querry.lastError();
         return false;
     }
     while (querry.next())
@@ -125,7 +125,7 @@ bool Off_tels::del_off_tel(Off_tels *of_t)
 
     if (!querry.exec())
     {
-        qDebug() << querry.lastError();
+        qDebug() << "Off_tels::del_off_tel" << querry.lastError();
         return false;
     }
 
@@ -163,7 +163,7 @@ bool Off_tels::update(QList<Off_tels *> *list)
     if(!isOk)
     {
         db_connection::instance()->db().database(cname).rollback();
-        qDebug() << "отсюда";
+        qDebug() << "Off_tels::update ROLLBACK";
         return false;
     }
     db_connection::instance()->db().database(cname).commit();
@@ -180,7 +180,7 @@ QList<Off_tels *> *Off_tels::compare_with_base(QString query)
 
     if (!querry.exec())
     {
-        qDebug() << querry.lastError();
+        qDebug() << "Off_tels::compare_with_base" << querry.lastError();
         return list;
     }
     else {
@@ -229,7 +229,7 @@ bool Off_tels::del_off_tel_by_id(int id)
 
     if (!querry.exec())
     {
-        qDebug() << querry.lastError();
+        qDebug() << "Off_tels::del_off_tel_by_id" << querry.lastError();
         return false;
     }
 

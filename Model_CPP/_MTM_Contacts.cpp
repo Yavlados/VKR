@@ -267,13 +267,9 @@ void MTM_Contacts::delBindedContacts(int tel_id)
 {
        if (clist == nullptr)
           return;
-
-       qDebug() << clist->size();
        QList<Contacts*> *temp_list = new  QList<Contacts*>;
        for (int i =0; i < clist->size(); i++)
        {
-           qDebug() << clist->at(i)->contact_id;
-
            Contacts *cnt = clist->at(i);
            if (cnt->parent_OT_id == tel_id)
            {

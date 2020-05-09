@@ -1,14 +1,13 @@
 #include "officialtelephones_Form.h"
 #include "ui_officialtelephones.h"
 #include <QMessageBox>
-
+#include "popup.h"
 
 OfficialTelephones::OfficialTelephones(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::OfficialTelephones)
 {
     ui->setupUi(this);
-
 }
 
 OfficialTelephones::~OfficialTelephones()
@@ -18,6 +17,7 @@ OfficialTelephones::~OfficialTelephones()
 
 void OfficialTelephones::set_tab_orders()
 {
+    ui->hided_le->setFocusProxy(ui->le_search_num);
     ui->le_search_num->setFocus();
     setTabOrder(ui->le_search_num, ui->le_search_name);
     setTabOrder(ui->le_search_name, ui->pushButton);
@@ -26,6 +26,9 @@ void OfficialTelephones::set_tab_orders()
     setTabOrder(ui->le_set_num, ui->le_set_name);
     setTabOrder(ui->le_set_name, ui->pb_add);
     setTabOrder(ui->pb_add, ui->pb_del);
+    setTabOrder(ui->pb_del, ui->pushButton_3);
+    setTabOrder(ui->pushButton_3, ui->pushButton_4);
+    setTabOrder( ui->pushButton_4, ui->hided_le);
     //setTabOrder(ui->pushButton_3, ui->le_search_num);
 }
 
@@ -42,6 +45,7 @@ void OfficialTelephones::set_label(QList<Off_tels *> list)
     lb->setText(str);
     ui->vl_for_label->addWidget(lb);
 }
+
 
 void OfficialTelephones::focus_on_widget()
 {
@@ -94,6 +98,7 @@ void OfficialTelephones::on_pb_add_clicked()
         QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось добавить служебный телефон!")); ///Хвалимся
     }
 }
+
 
 void OfficialTelephones::on_pb_del_clicked()
 {
@@ -182,10 +187,52 @@ void OfficialTelephones::on_pushButton_3_clicked()
         Fill_table();
     }
     else
-        qDebug()<< "ErRoR";
+        qDebug()<< "Ошибка при изменении данных. Окно служебных телефонов";
 }
 
 void OfficialTelephones::on_pushButton_4_clicked()
 {
     Fill_table();
+}
+
+void OfficialTelephones::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+    {
+    case Qt::Key::Key_F1:
+        showPopUp();
+       return;
+     case Qt::Key::Key_F:
+        on_pushButton_clicked();
+        return;
+     case Qt::Key::Key_Equal:
+        on_pushButton_4_clicked();
+        return;
+    case Qt::Key::Key_Enter:
+       on_pushButton_3_clicked();
+       return;
+    case Qt::Key::Key_Escape:
+        if(ui->tableView->hasFocus())
+            set_tab_orders();
+        else
+       emit closeTab(this->objectName());
+        return;
+    case Qt::Key::Key_T:
+        QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::SelectCurrent;
+        QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
+        ui->tableView->selectionModel()->select(tempIndex, flags);
+        ui->tableView->setFocus();
+        return;
+    }
+}
+
+void OfficialTelephones::showPopUp()
+{
+    PopUp::instance()->
+            setPopupText("<h2 align=\"middle\">Навигация в окне служебных телефонов</h2>"
+                                    "<p><b>\"CTRL\"+\"=\"</b> для сброса изменения данных</p>"
+                                    "<p><b>\"ENTER\"</b> для сохранения изменений</p>"
+                                    "<p><b>\"CTRL\"+\"F\"</b> для поиска</p>"
+                                    "<p><b>\"ESC\"</b> для закрытия окна служебных телефонов или перевода фокуса обратно на виджет</p>"
+                                    "<p><b>\"CTRL\"+\"T\"</b> для перевода фокуса</p>", rightMenu);
 }

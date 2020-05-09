@@ -30,8 +30,6 @@ bool db_connection::db_connect()
 {
     lastError.clear();
    // bool ok;
-
-    qDebug()<<"db_con" << db().connectionName();
     if( db().isOpen() )
         return true;
     switch (type)
@@ -51,21 +49,21 @@ bool db_connection::db_connect()
 
         ok = _dbpg.open();
         if (ok == true)
-            qDebug() <<"ok";
+            qDebug() << "PG: OK";
         break;
     case (SQLliteType):
         ok = _dbsql.open();
         if (ok == true)
-            qDebug() <<"ok";
+            qDebug() <<"SQLliteType: OK";
         else
-            qDebug() << _dbsql.lastError().text();
+            qDebug() << "SQLliteType" << _dbsql.lastError().text();
         break;
       case (SQLlitechipher):
         ok = _dbsqlchipher.open();
         if (ok == true)
-            qDebug() <<"ok";
+            qDebug() << "SQLlitechipher: OK";
         else
-            qDebug() << _dbsqlchipher.lastError().text();
+            qDebug() <<"SQLlitechipher" << _dbsqlchipher.lastError().text();
         break;
     }
 

@@ -6,6 +6,7 @@
 #include <QValidator>
 #include  "_Crud.h"
 #include "search.h"
+#include "popup.h"
 
 Analysis::Analysis(QWidget *parent) :
     QWidget(parent),
@@ -75,7 +76,6 @@ void Analysis::on_pb_add_le_clicked()
     if (linelist_zk_id.size()>0 && p_b_counter == 0)
     {
         p_b_counter++;
-        qDebug() << p_b_counter;
 
         QPushButton *p_b = new QPushButton;
          p_b->setText("Удалить");
@@ -190,12 +190,9 @@ void Analysis::on_pushButton_clicked()
             return;
         }
 
-        qDebug() << querry.executedQuery();
-
         while(querry.next())
         {
            int zk_id_num = querry.value(0).toInt();
-           qDebug() << zk_id_num;
         //////////////////     1     //////////////////
         if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
         {
@@ -433,7 +430,7 @@ void Analysis::on_pb_add_zk_clicked()
 
 void Analysis::on_pb_del_zk_clicked()
 {
-    if(linelist_zk_for_analysis->size() > 0)
+    if(linelist_zk_for_analysis != nullptr && linelist_zk_for_analysis->size() > 0)
     {
         QLayout *layout = ui->hl_for_new_zk;
         QLayoutItem *item = layout->takeAt(layout->count()-1);
@@ -455,6 +452,22 @@ void Analysis::keyPressEvent(QKeyEvent *event)
         case Qt::Key::Key_Enter:
             on_pushButton_clicked();
             return ;
+         case Qt::Key::Key_Escape:
+            emit closeThis(this->objectName());
+        return;
+    case Qt::Key::Key_F1:
+       PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне анализа</h2>"
+                                       "<p><b>\"CTRL\"+ \"+\"</b> для добавления строк поиска</p>"
+                                       "<p><b>\"CTRL\"+ \"-\"</b> для удаления строк поиска"
+                                       "<p><b>\"ENTER\"</b> для запуска анализа</p>"
+                                       "<p><b>\"ESC\"</b> для закрытия окна анализа</p>", rightMenu);
+       return;
+    case Qt::Key::Key_Plus:
+        on_pb_add_zk_clicked();
+        return;
+    case Qt::Key::Key_Minus:
+        on_pb_del_zk_clicked();
+        return;
     }
 }
 

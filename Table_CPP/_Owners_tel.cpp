@@ -33,7 +33,6 @@ Owners_tel::Owners_tel(QString t_n, int t_id, int zk, bool i_m, bool o_n, DbStat
 Owners_tel::~Owners_tel()
 {
     Contacts::delete_all(_cont);
-    qDebug()<<"delete telephone"<<tel_id;
 }
 
 QList<Contacts *> *Owners_tel::cont()
@@ -78,7 +77,7 @@ bool Owners_tel::saveAll(QList<Owners_tel *> *list)
     if(!isOk)
     {
         db_connection::instance()->db().database(cname).rollback();
-        qDebug() << "отсюда";
+        qDebug() << "Owners_tel::saveAll ROLLBACK";
         return false;
     }
     db_connection::instance()->db().database(cname).commit();
@@ -119,8 +118,7 @@ bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
         temp.bindValue(":id", zk);
         if (!temp.exec())
         {
-            qDebug() << temp.lastError();
-            qDebug() <<"selectZkTelForAdd";
+            qDebug() << "Owners_tel::selectZkTelForAdd" << temp.lastError();
             return false;
         }
 
@@ -163,8 +161,7 @@ QList<Owners_tel *> *Owners_tel::get_ow_list(int zk_id)
     temp.bindValue(":id", zk_id);
     if (!temp.exec())
     {
-        qDebug() << temp.lastError();
-        qDebug() <<"selectZkTelForAdd";
+        qDebug() << "Owners_tel::get_ow_list"<< temp.lastError();
         return list;
     }
 
@@ -190,14 +187,12 @@ int Owners_tel::insert_tel(bool setState, int zk_id)
     temp.bindValue(":o_n", oldnum);
     if (!temp.exec())
     {
-        qDebug() << temp.lastError();
+        qDebug() << "Owners_tel::insert_tel" << temp.lastError();
         return -1;
     }
     if (temp.next())
     {
-        qDebug()<<temp.executedQuery();
         tel_id = temp.value(0).toInt();
-        qDebug() << "OT add" + QString::number(tel_id) << tel_num;
             if( setState )
                 state = IsReaded;
             return tel_id;
@@ -225,11 +220,10 @@ bool Owners_tel::update_tel(bool setState)
     if (!temp.exec())
     {
         db_connection::instance()->lastError = temp.lastError().text();
-        qDebug() << temp.lastError();
+        qDebug() << "Owners_tel::update_tel" << temp.lastError();
         return false;
     }
 
-    qDebug() << "update" + QString::number(tel_id);
     if(setState)
         state = IsReaded;
     return true;
@@ -249,11 +243,10 @@ bool Owners_tel::remove_tel()
     if (!temp.exec())
     {
         db_connection::instance()->lastError = temp.lastError().text();
-        qDebug() << temp.lastError();
+        qDebug() << "Owners_tel::remove_tel" << temp.lastError();
         return false;
     }
 
-    qDebug() << "delete" + QString::number(tel_id);
     state = IsRemoved;
     return true;
 }

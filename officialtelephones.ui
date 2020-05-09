@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>453</width>
-    <height>320</height>
+    <width>632</width>
+    <height>689</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,19 @@
   <property name="autoFillBackground">
    <bool>true</bool>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QTableView::item:selected:active {
+                                 background: rgb(255, 146, 107);
+                                  border: 1px solid transparent;
+                                 selection-color:rgb(255, 255, 255);
+                                  }</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QScrollArea" name="scrollArea">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -27,8 +37,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>433</width>
-        <height>300</height>
+        <width>614</width>
+        <height>665</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -300,8 +310,11 @@
              <pointsize>12</pointsize>
             </font>
            </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
+            <enum>QAbstractItemView::SelectItems</enum>
            </property>
            <property name="sortingEnabled">
             <bool>true</bool>
@@ -315,6 +328,16 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLineEdit" name="hided_le">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
     </widget>
    </item>
   </layout>

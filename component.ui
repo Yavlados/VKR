@@ -10,11 +10,41 @@
     <x>0</x>
     <y>0</y>
     <width>427</width>
-    <height>274</height>
+    <height>284</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Добавление нового телефона</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog{
+background-color:rgb(255, 243, 205);
+}
+
+QLineEdit:focus {
+background-color: rgb(255, 195, 139)
+}
+
+QComboBox:focus {
+background-color: rgb(255, 195, 139)
+}
+QPushButton{
+background-color:rgb(255, 146, 107)
+}
+QLabel{
+color:rgb(77, 62, 62)
+}
+
+QCheckBox{
+color:rgb(77, 62, 62)
+}
+
+QPushButton:focus {
+background-color:  rgb(255, 195, 139)
+}
+QLineEdit:focus {
+background-color:  rgb(255, 195, 139)
+}</string>
   </property>
   <property name="modal">
    <bool>false</bool>

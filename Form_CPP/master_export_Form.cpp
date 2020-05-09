@@ -1,5 +1,6 @@
 #include "master_export_Form.h"
 #include "ui_master_export_form.h"
+#include "popup.h"
 
 #include <QLineEdit>
 
@@ -28,9 +29,7 @@ void Master_export_Form::on_cb_zk_clicked()
 void Master_export_Form::on_cb_off_tel_clicked()
 {
     ui->rb_check->setVisible(false);
-
 }
-
 
 void Master_export_Form::on_rb_check_clicked()
 {
@@ -85,6 +84,23 @@ void Master_export_Form::on_cb_set_password_clicked()
     }
 }
 
+void Master_export_Form::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key())
+ {
+  case Qt::Key::Key_Enter:
+        on_pb_Export_clicked();
+     return;
+ case Qt::Key::Key_Escape:
+        emit closeThis(this->objectName());
+     return;
+    case Qt::Key::Key_F1:
+      PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне мастера экспорта</h2>"
+                                      "<p><b>\"ENTER\"</b> для начала экспорта</p>"
+                                      "<p><b>\"ESC\"</b> для закрытия окна мастера экспорта</p>", rightMenu);
+ }
+}
+
 void Master_export_Form::add_file_path(QString path_from_main)
 {
     file_path = path_from_main;
@@ -92,6 +108,18 @@ void Master_export_Form::add_file_path(QString path_from_main)
 
 void Master_export_Form::focus_on_widget()
 {
-    ui->cb_off_tel->setFocus();
+    ui->pb_directory->setFocus();
+    set_tab_orders();
 }
 
+void Master_export_Form::set_tab_orders()
+{
+    ui->hided_le->setFocusProxy(ui->pb_directory);
+    setTabOrder(  ui->pb_directory, ui->cb_off_tel);
+     setTabOrder(  ui->cb_off_tel, ui->cb_zk);
+     setTabOrder(  ui->cb_zk, ui->rb_check);
+     setTabOrder(   ui->rb_check, ui->cb_set_password);
+     setTabOrder(  ui->cb_set_password, ui->le_password);
+     setTabOrder(  ui->le_password, ui->pb_Export);
+     setTabOrder(  ui->pb_Export,  ui->hided_le);
+}

@@ -29,6 +29,8 @@ public:
 
 signals:
 
+     void closeThis(QString);
+
     void Show_search_result(QList<Crud*> *crudlist);
 
     void Send_search_result(QString search_result);

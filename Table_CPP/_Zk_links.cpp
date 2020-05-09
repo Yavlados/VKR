@@ -47,7 +47,7 @@ void zk_links::take_links(QList<int> *exported_id)
 
       if(!querry.exec())
       {
-          qDebug() << querry.lastError() << querry.executedQuery();
+          qDebug() << " zk_links::take_links" << querry.lastError() << querry.executedQuery();
           return;
       }
       while (querry.next())
