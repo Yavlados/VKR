@@ -29,8 +29,8 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout_4">
+    <item row="0" column="0">
      <widget class="QScrollArea" name="scrollArea">
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -137,7 +137,7 @@ color:rgb(77, 62, 62)
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>380</width>
+                  <width>526</width>
                   <height>681</height>
                  </rect>
                 </property>
@@ -407,229 +407,48 @@ color:rgb(77, 62, 62)
             <attribute name="title">
              <string>События</string>
             </attribute>
-            <layout class="QGridLayout" name="gridLayout_2">
-             <item row="0" column="0">
-              <widget class="QScrollArea" name="scrollArea_3">
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QSplitter" name="splitter_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
-               <property name="widgetResizable">
-                <bool>true</bool>
-               </property>
-               <widget class="QWidget" name="scrollAreaWidgetContents_3">
-                <property name="geometry">
-                 <rect>
-                  <x>0</x>
-                  <y>0</y>
-                  <width>698</width>
-                  <height>681</height>
-                 </rect>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_9">
+               <widget class="QTableView" name="eventTable"/>
+               <widget class="QWidget" name="">
+                <layout class="QGridLayout" name="gridLayout_2">
                  <item row="0" column="0">
-                  <widget class="QSplitter" name="splitter_2">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
+                  <widget class="QLabel" name="label">
+                   <property name="font">
+                    <font>
+                     <family>Arial</family>
+                     <pointsize>16</pointsize>
+                    </font>
                    </property>
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
+                   <property name="text">
+                    <string>Фигуранты дела:</string>
                    </property>
-                   <property name="handleWidth">
-                    <number>20</number>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
                    </property>
-                   <widget class="QFrame" name="frame">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
-                    </property>
-                    <property name="lineWidth">
-                     <number>0</number>
-                    </property>
-                    <layout class="QGridLayout" name="gridLayout_6">
-                     <item row="1" column="0">
-                      <layout class="QHBoxLayout" name="horizontalLayout_2">
-                       <item>
-                        <layout class="QHBoxLayout" name="hl_label_crud"/>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="hl_for_pagination_button_back"/>
-                       </item>
-                       <item>
-                        <layout class="QHBoxLayout" name="hl_for_pagination_button_next"/>
-                       </item>
-                      </layout>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="CustomTableView" name="tableView">
-                       <property name="font">
-                        <font>
-                         <pointsize>11</pointsize>
-                        </font>
-                       </property>
-                       <property name="selectionBehavior">
-                        <enum>QAbstractItemView::SelectRows</enum>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                   <widget class="QFrame" name="frame_2">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QScrollArea" name="scrollArea_3">
+                   <property name="widgetResizable">
+                    <bool>true</bool>
+                   </property>
+                   <widget class="QWidget" name="scrollAreaWidgetContents_3">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>0</y>
+                      <width>165</width>
+                      <height>647</height>
+                     </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_5">
                      <item row="0" column="0">
-                      <widget class="QSplitter" name="splitter_3">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <widget class="QFrame" name="frame_5">
-                        <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
-                        </property>
-                        <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
-                        </property>
-                        <layout class="QGridLayout" name="gridLayout_4">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <family>Arial</family>
-                             <pointsize>11</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string>Телефонные номера</string>
-                           </property>
-                           <property name="alignment">
-                            <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="0">
-                          <widget class="CustomTableView" name="tableView_2">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                             <horstretch>20</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <pointsize>11</pointsize>
-                            </font>
-                           </property>
-                           <property name="selectionBehavior">
-                            <enum>QAbstractItemView::SelectRows</enum>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="0">
-                          <layout class="QHBoxLayout" name="hl_label_owt"/>
-                         </item>
-                        </layout>
-                       </widget>
-                       <widget class="QFrame" name="frame_4">
-                        <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
-                        </property>
-                        <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
-                        </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_2">
-                         <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_3">
-                           <item>
-                            <widget class="QLabel" name="label_2">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="font">
-                              <font>
-                               <family>Arial</family>
-                               <pointsize>11</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Список контактов</string>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <layout class="QVBoxLayout" name="vl_for_search_contact"/>
-                           </item>
-                          </layout>
-                         </item>
-                         <item>
-                          <widget class="CustomTableView" name="tableView_3">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                             <horstretch>20</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <pointsize>11</pointsize>
-                            </font>
-                           </property>
-                           <property name="selectionBehavior">
-                            <enum>QAbstractItemView::SelectRows</enum>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <layout class="QHBoxLayout" name="hl_label_contact"/>
-                         </item>
-                        </layout>
-                       </widget>
-                      </widget>
+                      <layout class="QVBoxLayout" name="cardsLayout"/>
                      </item>
                     </layout>
                    </widget>
@@ -1066,22 +885,12 @@ QAction::item:selected{
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>CustomTableView</class>
-   <extends>QTableView</extends>
-   <header>customtableview.h</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>tabWidget_2</tabstop>
   <tabstop>lineEdit</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>pb_refresh</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>tableView</tabstop>
-  <tabstop>tableView_2</tabstop>
-  <tabstop>tableView_3</tabstop>
  </tabstops>
  <resources>
   <include location="resource.qrc"/>

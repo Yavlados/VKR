@@ -24,6 +24,9 @@
 #include "an_result_Form.h"
 
 #include "customtableview.h"
+#include "_Event.h"
+#include "_MTM_Event.h"
+#include "PersonCard.h"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -91,16 +94,19 @@ public:
 
     QList<Update*> *updlist = 0;
     QList<Update*> *addlist = 0;
+    ///NEW
+    QList<EditPerson*> *editPersonList;
 
 
      MTM_Contacts *contacts_model = new MTM_Contacts;
      MTM_OwTel *ot_model = new MTM_OwTel;
      MTM_Crud *crud_model = 0;
+     MTM_Event *eventModel;
 
      int zk_id = 0;
      QString cont_num = 0;
-     QList<Contacts*> *contactList = new QList<Contacts*>;
-     QList<Owners_tel*> *otList = new QList<Owners_tel*>;
+//     QList<Contacts*> *contactList = new QList<Contacts*>;
+//     QList<Owners_tel*> *otList = new QList<Owners_tel*>;
 
 
     ///Указатель на класс для экспорта
@@ -144,9 +150,9 @@ private slots:
     void focusOnOT();
     void focusOnZK();
 
-    void on_tableView_clicked(const QModelIndex &index_tab1, QString num = 0);
+//    void on_tableView_clicked(const QModelIndex &index_tab1, QString num = 0);
 
-    void on_tableView_2_clicked(const QModelIndex &index);
+//    void on_tableView_2_clicked(const QModelIndex &index);
 
     void ShowThisTab(int);
 
@@ -228,13 +234,13 @@ private slots:
 
     void keyPressEvent(QKeyEvent *event);
 
-    void on_tableView_3_clicked(const QModelIndex &index);
+//    void on_tableView_3_clicked(const QModelIndex &index);
 
     void find_linked_zk();
 
     void on_pb_refresh_clicked();
 
-    void on_tableView_doubleClicked(const QModelIndex &index);
+//    void on_tableView_doubleClicked(const QModelIndex &index);
 
     void set_shortcuts();
 
@@ -263,6 +269,10 @@ private slots:
     void findIndexByNameTab2(QString);
 
     void closeOF(QString name);
+
+    void on_eventTable_clicked(const QModelIndex &index);
+
+    void openEditWindow(Person *p);
 signals:
     void Send_data(Crud *cr, int index);
 

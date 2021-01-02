@@ -14,17 +14,24 @@
 #include <QShortcut>
 
 #include "settings_connection.h"
-#include "_Event.h"
 /**
  * \file Mainwindow_Form.cpp
  * \brief Исполняемый файл класса MainWindow
 */
 
+void clearLayout(QLayout *layout){
+    int size = layout->count();
+    for(int i=0; i< size; i++){
+        QLayoutItem *witem = layout->itemAt(0);
+        delete witem->widget();
+    }
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    this->editPersonList = 0;
     ui->setupUi(this);
     //ui->tableView->setFocus();
     set_shortcuts();
@@ -47,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ///---
 
 //    ui->tableView->selectRow(0);
-//    on_tableView_clicked(index_tab1);
+//    on_tableView_clicked();
     //set_fonts();
     add_splitter_lines();
     //Settings_connection::instance();
@@ -76,42 +83,42 @@ MainWindow::~MainWindow()
 //-----------------------------------------------------------------------------------//
 void MainWindow::Add_pagination_buttons()
 {
-    while(ui->hl_for_pagination_button_back->count() != 0)
-    {
-        QLayoutItem *item = ui->hl_for_pagination_button_back->takeAt(0);
-        delete item->widget();
-        p_b_back = 0;
-    }
-    while(ui->hl_for_pagination_button_next->count() != 0)
-    {
-        QLayoutItem *item = ui->hl_for_pagination_button_next->takeAt(0);
-        delete item->widget();
-        p_b_forward = 0;
-    }
+//    while(ui->hl_for_pagination_button_back->count() != 0)
+//    {
+//        QLayoutItem *item = ui->hl_for_pagination_button_back->takeAt(0);
+//        delete item->widget();
+//        p_b_back = 0;
+//    }
+//    while(ui->hl_for_pagination_button_next->count() != 0)
+//    {
+//        QLayoutItem *item = ui->hl_for_pagination_button_next->takeAt(0);
+//        delete item->widget();
+//        p_b_forward = 0;
+//    }
 
 
-     if(crud_model->actcrudlist.size() < crud_model->crudlist->size())
-    {
-        if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(0)) != 0)
-        {
-            p_b_back = new QPushButton;
-            p_b_back->setText("<<");
-            ui->hl_for_pagination_button_back->addWidget(p_b_back);
-            connect(p_b_back,SIGNAL(clicked()),this,SLOT(previous_page()));
-        }
+//     if(crud_model->actcrudlist.size() < crud_model->crudlist->size())
+//    {
+//        if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(0)) != 0)
+//        {
+//            p_b_back = new QPushButton;
+//            p_b_back->setText("<<");
+//            ui->hl_for_pagination_button_back->addWidget(p_b_back);
+//            connect(p_b_back,SIGNAL(clicked()),this,SLOT(previous_page()));
+//        }
 
-        if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)) < crud_model->crudlist->size()-1)
-        {
-            p_b_forward = new QPushButton;
-            p_b_forward->setText(">>");
-            ui->hl_for_pagination_button_next->addWidget(p_b_forward);
-            connect(p_b_forward,SIGNAL(clicked()),this,SLOT(next_page()));
-        }
-    }
+//        if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)) < crud_model->crudlist->size()-1)
+//        {
+//            p_b_forward = new QPushButton;
+//            p_b_forward->setText(">>");
+//            ui->hl_for_pagination_button_next->addWidget(p_b_forward);
+//            connect(p_b_forward,SIGNAL(clicked()),this,SLOT(next_page()));
+//        }
+//    }
 }
 //-----------------------------------------------------------------------------------//
-void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //Обрабатываем клик по таблице с Владельцами номеров
-{
+//void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //Обрабатываем клик по таблице с Владельцами номеров
+//{
 //    (void)index;
 //    index_tab1 = ui->tableView->currentIndex();
 //    if(index_tab1.isValid())
@@ -179,10 +186,10 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //�
 //        ui->action_delete->setEnabled(false);
 //        ui->action_update->setEnabled(false); //выключаю кнопку редактировать
 //    }
-}
+//}
 //-----------------------------------------------------------------------------------//
-void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Номерами владельцев
-{
+//void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Номерами владельцев
+//{
 //    if (index_tab1.isValid())
 //    {
 //        if(Contacts::selectTelContacts(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
@@ -222,7 +229,7 @@ void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обраба
 //        //ui->tableView_3->setColumnWidth(0,250);
 //       // ui->tableView_3->setColumnWidth(1,250);
 //    }
-}
+//}
 //-----------------------------------------------------------------------------------//
 void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и рефреш таблиц
 {
@@ -258,9 +265,20 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
 //-----------------------------------------------------------------------------------//
 void MainWindow::RefreshTab()
 {
+    if (this->crud_model != 0)
+        {
+            delete this->crud_model;
+            this->crud_model = 0;
+        }
+    this->eventModel = new MTM_Event();
 
     QList<Event*> *list = new QList<Event*>;
-    Event::selectAll(list);
+    if(Event::selectAll(list)){
+        eventModel->setEventList(list);
+        ui->eventTable->setModel(eventModel);
+    }
+
+        ui->eventTable->resizeColumnsToContents();
 
 //   // Settings_connection::instance()->Set_settings();
 //    if (crud_model != 0)
@@ -382,15 +400,15 @@ void MainWindow::on_action_delete_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_update_triggered()
 {
-    if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
-    {
-        //index_tab1 = ui->tableView->currentIndex();
+//    if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
+//    {
+//        //index_tab1 = ui->tableView->currentIndex();
 
-        open_upd_tab(crud_model->actcrudlist.at(index_tab1.row()));
-    }
-    else {
-        QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для изменения!")); ///Хвалимся
-    }
+//        open_upd_tab(crud_model->actcrudlist.at(index_tab1.row()));
+//    }
+//    else {
+//        QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для изменения!")); ///Хвалимся
+//    }
 
 }
 //-----------------------------------------------------------------------------------//
@@ -1069,25 +1087,25 @@ void MainWindow::set_fonts()
 //-----------------------------------------------------------------------------------//
 void MainWindow::add_splitter_lines()
 {
-    QSplitterHandle *handle = ui->splitter_3->handle(1);
-    QVBoxLayout *layout = new QVBoxLayout(handle);
-    layout->setSpacing(0);
-    layout->setMargin(0);
+//    QSplitterHandle *handle = ui->splitter_3->handle(1);
+//    QVBoxLayout *layout = new QVBoxLayout(handle);
+//    layout->setSpacing(0);
+//    layout->setMargin(0);
 
-    QFrame *line = new QFrame(handle);
-    line->setFrameShape(QFrame::VLine);
-    line->setFrameShadow(QFrame::Sunken);
-    layout->addWidget(line);
+//    QFrame *line = new QFrame(handle);
+//    line->setFrameShape(QFrame::VLine);
+//    line->setFrameShadow(QFrame::Sunken);
+//    layout->addWidget(line);
 
-    QSplitterHandle *handle_2 = ui->splitter_2->handle(1);
-    QVBoxLayout *layout_2 = new QVBoxLayout(handle_2);
-    layout_2->setSpacing(0);
-    layout_2->setMargin(0);
+//    QSplitterHandle *handle_2 = ui->splitter_2->handle(1);
+//    QVBoxLayout *layout_2 = new QVBoxLayout(handle_2);
+//    layout_2->setSpacing(0);
+//    layout_2->setMargin(0);
 
-    QFrame *line_2 = new QFrame(handle_2);
-    line_2->setFrameShape(QFrame::HLine);
-    line_2->setFrameShadow(QFrame::Sunken);
-    layout_2->addWidget(line_2);
+//    QFrame *line_2 = new QFrame(handle_2);
+//    line_2->setFrameShape(QFrame::HLine);
+//    line_2->setFrameShadow(QFrame::Sunken);
+//    layout_2->addWidget(line_2);
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_tabBarClicked(int index)
@@ -1230,34 +1248,34 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 }
 
-void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
-{/*
-    if(contacts_model->actlist.at(index.row())->linked_id != 0)
-    {
-        if(ui->vl_for_search_contact->count())
-        {
-            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
-            delete item->widget();
-            pbGetZkVar2 = 0;
-        }
+//void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
+//{/*
+//    if(contacts_model->actlist.at(index.row())->linked_id != 0)
+//    {
+//        if(ui->vl_for_search_contact->count())
+//        {
+//            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
+//            delete item->widget();
+//            pbGetZkVar2 = 0;
+//        }
 
-        pbGetZkVar2 = new QPushButton();
-        zk_id = contacts_model->actlist.at(index.row())->linked_id;
-        pbGetZkVar2->setText("Перейти к ЗК №" + QString::number(zk_id));
-        ui->vl_for_search_contact->addWidget(pbGetZkVar2);
-        connect(pbGetZkVar2, SIGNAL(clicked()), this, SLOT(find_linked_zk()));
-        cont_num = contacts_model->actlist.at(index.row())->contact_tel_num;
-  }
-    else
-    {
-        while(ui->vl_for_search_contact->count())
-        {
-            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
-            delete item->widget();
-            pbGetZkVar2 = 0;
-        }
-    }*/
-}
+//        pbGetZkVar2 = new QPushButton();
+//        zk_id = contacts_model->actlist.at(index.row())->linked_id;
+//        pbGetZkVar2->setText("Перейти к ЗК №" + QString::number(zk_id));
+//        ui->vl_for_search_contact->addWidget(pbGetZkVar2);
+//        connect(pbGetZkVar2, SIGNAL(clicked()), this, SLOT(find_linked_zk()));
+//        cont_num = contacts_model->actlist.at(index.row())->contact_tel_num;
+//  }
+//    else
+//    {
+//        while(ui->vl_for_search_contact->count())
+//        {
+//            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
+//            delete item->widget();
+//            pbGetZkVar2 = 0;
+//        }
+//    }*/
+//}
 
 void MainWindow::find_linked_zk()
 {
@@ -1305,11 +1323,11 @@ void MainWindow::on_pb_refresh_clicked()
     RefreshTab();
 }
 
-void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
-{
-//    index_tab1 = index;
-//    on_action_update_triggered();
-}
+//void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
+//{
+////    index_tab1 = index;
+////    on_action_update_triggered();
+//}
 
 void MainWindow::openPopUp(){
     PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в главном окне</h2>"
@@ -1400,11 +1418,11 @@ void MainWindow::setFocusOnTab(QString widgetName, QWidget *widgetOnTab)
     {
         mainwindowFocus = FocusOnRight;
         QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-        QModelIndex tempIndex =
-                ui->tableView->model()->index( ui->tableView->currentIndex().row(),
-                                               ui->tableView->currentIndex().column());
-        ui->tableView->selectionModel()->select(tempIndex, flags);
-        ui->tableView->setFocus();
+//        QModelIndex tempIndex =
+//                ui->tableView->model()->index( ui->tableView->currentIndex().row(),
+//                                               ui->tableView->currentIndex().column());
+//        ui->tableView->selectionModel()->select(tempIndex, flags);
+//        ui->tableView->setFocus();
         return;
     }
     if(widgetName =="Analysis")
@@ -1512,3 +1530,45 @@ void MainWindow::getCont(QModelIndex index)
 //     else
 //         ui->tableView_2->setFocus();
 }
+
+void MainWindow::on_eventTable_clicked(const QModelIndex &index)
+{
+    qDebug() << index;
+    Event *localEvent = this->eventModel->actEventList.at(index.row());
+    Person::selectByEventId(localEvent->persons(), localEvent->id);
+    clearLayout(ui->cardsLayout);
+    for ( int i =0; i < localEvent->persons()->size(); i++){
+        PersonCard *card = new PersonCard();
+        card->setPerson(localEvent->persons()->at(i));
+        ui->cardsLayout->addWidget(card);
+        connect(card, SIGNAL(openEditWindow(Person*)), this, SLOT(openEditWindow(Person*)));
+
+    }
+}
+
+void MainWindow::openEditWindow(Person *p)
+{
+    if(this->editPersonList == 0)
+    {
+        this->editPersonList = new QList<EditPerson*>;
+    }
+
+    for (int i=0; i < this->editPersonList->size(); i++)
+    {
+        if(this->editPersonList->at(i)->person->id == p->id)
+        {
+            ui->tabWidget->setCurrentIndex(i+1);
+            return;
+        }
+    }
+
+    EditPerson *ep = new EditPerson;
+    ep->setPerson(p);
+    this->editPersonList->append(ep);
+
+    ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,
+                              this->editPersonList->at(this->editPersonList->size()-1),
+                              "Редактирование фигуранта "+p->name + " "+ p->lastname + " " + p->midname);
+    ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+}
+

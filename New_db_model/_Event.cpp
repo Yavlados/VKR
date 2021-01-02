@@ -2,7 +2,7 @@
 
 Event::Event()
 {
-
+    _persons = 0;
 }
 
 QList<Person *> *Event::persons()
@@ -28,7 +28,7 @@ bool Event::selectAll(QList<Event *> *eventList)
         return false;
 
     QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("SELECT category,"
+    temp.prepare("SELECT "
                  "category, "
                  "detention_date, "
                  "detention_time,"

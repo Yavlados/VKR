@@ -30,6 +30,9 @@ win32:RC_ICONS += png/MainPic.ico
 # CONFIG += release
 
 SOURCES += \
+    EditPerson.cpp \
+    Form_Headers/PersonCard.cpp \
+    New_db_MTM/_MTM_Event.cpp \
     New_db_model/_Event.cpp \
     New_db_model/_Person.cpp \
         main.cpp \
@@ -69,6 +72,9 @@ SOURCES += \
     popup.cpp
 
 HEADERS += \
+    EditPerson.h \
+    Form_Headers/PersonCard.h \
+    New_db_MTM/_MTM_Event.h \
     New_db_model/_Event.h \
     New_db_model/_Person.h \
     New_db_model/enums.h \
@@ -108,6 +114,8 @@ HEADERS += \
     popup.h
 
 FORMS += \
+    EditPerson.ui \
+    Form_Headers/PersonCard.ui \
         mainwindow.ui \
     analysis.ui \
     update.ui \
@@ -139,4 +147,5 @@ INCLUDEPATH += $$PWD\
                Table_Headers\
                Form_Headers\
                Model_Headers\
-               New_db_model
+               New_db_model\
+               New_db_MTM
