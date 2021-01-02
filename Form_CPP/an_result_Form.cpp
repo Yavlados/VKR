@@ -132,7 +132,7 @@ void An_result::on_pb_to_txt_clicked()
                {
                    QTextStream in(&file);
                    QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-                   if(codec != nullptr)
+                   if(codec != 0)
                      in.setCodec(codec);
 
                    in <<  Text;

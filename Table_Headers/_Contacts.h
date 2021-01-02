@@ -8,14 +8,12 @@
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 #include <QSqlError>
+#include "enums.h"
 /**
  * \file _Contacts.h
  * \brief Класс сущности "Контакты"
 */
-enum DbState { IsReaded = 1,        ///< считан из БД
-               IsNewing = 0,        ///< новый, еще не записан в БД
-               IsRemoved = -1 ,     ///< удален в ПО, еще не удален в БД
-               IsChanged = 2};       ///< считан из БД и изменен в ПО
+
 class Contacts          ///Класс сущности "Контакты"
 {
 private:
@@ -34,7 +32,7 @@ public:
     bool oldnum;    
     int linked_id;
     DbState cont_state;
-    db_connection *db = db_connection::instance(); ///Подключение, используется у всех Query
+    db_connection *db; ///Подключение, используется у всех Query
 
     static bool saveAll_cont(QList<Contacts*> *list, int new_tel_id);
     static bool selectTelContacts(QList<Contacts*> *list, int);

@@ -19,7 +19,7 @@ class MTM_Off_Tels: public QAbstractTableModel      ///Модель отобра
      Q_OBJECT
 public:
 
-    MTM_Off_Tels(QObject *parent = nullptr);
+    MTM_Off_Tels(QObject *parent = 0);
 
     /// Переопределение кол-ва колонок модели
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;

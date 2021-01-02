@@ -418,7 +418,7 @@ QString Search::get_date_from()
    Date_From = d_from->get_year() +"-01-01";
     return Date_From;
    }
-   return nullptr;
+   return 0;
 }
 
 QString Search::get_date_to()
@@ -449,7 +449,7 @@ QString Search::get_date_to()
     Date_To=ui->le_year_to->text()+"-12-31";
      return Date_To;
     }
-    return nullptr;
+    return 0;
 }
 
 QString Search::get_date(QString year, QString month, QString day )
@@ -518,7 +518,7 @@ QString Search::get_date(QString year, QString month, QString day )
     return date;
     } else
    if(date.isEmpty())
-       return nullptr;
+       return 0;
 }
 
 QString Search::get_date_query(QString date, int flag)

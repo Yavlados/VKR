@@ -11,34 +11,36 @@ struct Columns      ///Структура для колонок
 
 struct Col_contents //последние настройки - подкачка
 {
-    bool zk_id = false;
-    bool lastname  = false;
-    bool name = false;
-    bool mid_name = false;
-    bool birth_date = false;
-    bool check_for = false;
-    bool dop_info = false;
+    bool zk_id;
+    bool lastname;
+    bool name;
+    bool mid_name;
+    bool birth_date;
+    bool check_for;
+    bool dop_info;
 
     //Адрес регистрации
-    bool reg_city = false;
-    bool reg_street = false;
-    bool reg_home = false;
-    bool reg_corp = false;
-    bool reg_flat = false;
+    bool reg_city;
+    bool reg_street;
+    bool reg_home;
+    bool reg_corp;
+    bool reg_flat;
 
     //Адрес проживания
-    bool liv_city = false;
-    bool liv_street = false;
-    bool liv_home = false;
-    bool liv_corp = false;
-    bool liv_flat = false;
+    bool liv_city;
+    bool liv_street;
+    bool liv_home;
+    bool liv_corp;
+    bool liv_flat;
 
     //Дата и время сейчас
-    bool date_add = false;
-    bool time_add = false;
+    bool date_add;
+    bool time_add;
 
     // new
-    bool nickname = false;
+    bool nickname;
+
+    Col_contents();
 };
 
 class Settings_connection         ///Класс настроек
@@ -48,7 +50,7 @@ public:
 
     Settings_connection();
 
-    int showing_count = 50;
+    int showing_count;
     int columns_count;
     Col_contents content;
 
@@ -56,10 +58,10 @@ public:
             DatabaseName,
             User,
             Password;
-     int    Port = 0;
+     int    Port;
 
 
-    QSettings *settings = nullptr;
+    QSettings *settings;
 
     QSettings *ret_settings();
 

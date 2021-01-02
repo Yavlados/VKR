@@ -1,16 +1,16 @@
 #include "text_handler.h"
 
-Text_handler *Text_handler::_instance = nullptr;
+Text_handler *Text_handler::_instance = 0;
 int Text_handler::counter = 1;
 
 Text_handler::Text_handler()
 {
-    report_text = nullptr;
+    report_text = "";
 }
 
 Text_handler *Text_handler::instance()
 {
-    if( _instance == nullptr)
+    if( _instance == 0)
         _instance = new Text_handler();
 
     return _instance;

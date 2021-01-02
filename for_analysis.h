@@ -32,7 +32,7 @@ public:
 
     List_master *list;
 
-    QList<Crud*> * get_crud(Crud *cr = nullptr, QString added_SQL = nullptr);
+    QList<Crud*> * get_crud(Crud *cr = 0, QString added_SQL = 0);
 
     ///Методы сбора листа по 3 вариантам знакомства
         QList<Crud*> * get_1_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);

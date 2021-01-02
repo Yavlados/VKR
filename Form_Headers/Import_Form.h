@@ -49,7 +49,7 @@ public:
 
     Import_form_state form_state;
 
-    explicit Import_Form(QWidget *parent = nullptr);
+    explicit Import_Form(QWidget *parent = 0);
     ~Import_Form();
 
     List_master *list; ///Работа со списками
@@ -83,7 +83,7 @@ public:
     bool folder = false;
     QSize actual_size;
 
-    QDialogButtonBox *ddb = nullptr;
+    QDialogButtonBox *ddb = 0;
    // void take_buttons(QDialogButtonBox *dbb);
 
 private slots:
@@ -148,9 +148,9 @@ signals:
     void rejected();
 
 private:
-    QVector<QVector<QString>> *vector = nullptr;    //связанные ююайди
-    QVector<QVector<int> > *links_vector =nullptr;   //для связывания цепочек
-    QList<int> *linked_id_list = nullptr;
+    QVector<QVector<QString>> *vector = 0;    //связанные ююайди
+    QVector<QVector<int> > *links_vector =0;   //для связывания цепочек
+    QList<int> *linked_id_list = 0;
     QCloseEvent *event ;
     int a;  ///Итераторы для сравнений
     QFile db_file;
@@ -158,10 +158,10 @@ private:
     QList<Off_tels*>    *offtel;    ///С данными из SQLite
     QList<zk_links*>    *links;
     Crud *crud_from_pg;             ///Локальный круд из БД
-    QList<Off_tels*>    *offtel_pg = nullptr;
+    QList<Off_tels*>    *offtel_pg = 0;
     QString Local_filename ;
     Ui::Import_Form *ui;
-    QString pass = nullptr;
+    QString pass = 0;
 };
 
 #endif // IMPORT_FORM_H

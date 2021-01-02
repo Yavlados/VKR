@@ -14,7 +14,7 @@
 
 QList<Crud *> *Update::linked_crud()
 {
-    if (_linked_crud == nullptr)
+    if (_linked_crud == 0)
     {
         _linked_crud = new QList<Crud *>;
     }
@@ -84,7 +84,7 @@ Update::Update(QWidget *parent) :
 
 
     set_validators();
-    new_cr = nullptr;
+    new_cr = 0;
     set_splitter_lines();
     contacts_model = new MTM_Contacts;
 
@@ -105,67 +105,67 @@ Update::Update(QWidget *parent) :
 Update::~Update()
 {
     delete ui;
-//    if(contacts_model != nullptr)
+//    if(contacts_model != 0)
 //    {
 //       Contacts::delete_all(contacts_model->clist);
 //       delete contacts_model;
-//       //contacts_model = nullptr;
+//       //contacts_model = 0;
 //    }
-//    if(ot_model != nullptr)
+//    if(ot_model != 0)
 //    {
 //        //Owners_tel::delete_all(ot_model->otlist);
 //        delete ot_model;
-//        //ot_model = nullptr;
+//        //ot_model = 0;
 //    }
-//    if(list != nullptr)
+//    if(list != 0)
 //    {
 //        delete list;
-//        list = nullptr;
+//        list = 0;
 //    }
 
 //    if (main_cr == new_cr)
 //    {
-//        if(main_cr != nullptr)
+//        if(main_cr != 0)
 //        {
 //            delete main_cr;
-//            main_cr = nullptr;
+//            main_cr = 0;
 //        }
 //    }
 //    else
 //    {
-//        if(main_cr != nullptr)
+//        if(main_cr != 0)
 //        {
 //            delete main_cr;
-//            main_cr = nullptr;
+//            main_cr = 0;
 //        }
 
-//        if(new_cr != nullptr)
+//        if(new_cr != 0)
 //        {
 //            delete new_cr;
-//            new_cr = nullptr;
+//            new_cr = 0;
 //        }
 //    }
 
-//    if(added_cr != nullptr)
+//    if(added_cr != 0)
 //    {
 //        delete added_cr;
-//        added_cr = nullptr;
+//        added_cr = 0;
 //    }
-//    if(linked_crud_id != nullptr)
+//    if(linked_crud_id != 0)
 //    {
 //        delete linked_crud_id;
-//        linked_crud_id = nullptr;
+//        linked_crud_id = 0;
 //    }
-//    if(list_for_destroy != nullptr)
+//    if(list_for_destroy != 0)
 //    {
 //        delete list_for_destroy;
-//        list_for_destroy = nullptr;
+//        list_for_destroy = 0;
 //    }
 
-//    if(_linked_crud != nullptr)
+//    if(_linked_crud != 0)
 //    {
 //        delete _linked_crud;
-//        _linked_crud = nullptr;
+//        _linked_crud = 0;
 //    }
 }
 //-----------------------------------------------------------------------------------//
@@ -182,7 +182,7 @@ void Update::Recieve_data(Crud *cr)
     if (!ot_model->mark_rows.isEmpty())
         ot_model->mark_rows.clear();
 
-    if( (main_cr != nullptr && main_cr != new_cr) || frm_t == Confluence_form   )
+    if( (main_cr != 0 && main_cr != new_cr) || frm_t == Confluence_form   )
     {
         compare_linked_cruds();
     }
@@ -268,7 +268,7 @@ void Update::Fill_fields_update(Crud *new_cr)
     //ui->tableView->setColumnWidth(0,250);
     contacts_model->reset_ContactModel();
 
-//    if(!main_cr->take_links()->isEmpty() && _linked_crud == nullptr && frm_t != Confluence_form)
+//    if(!main_cr->take_links()->isEmpty() && _linked_crud == 0 && frm_t != Confluence_form)
 //    {
 //        main_cr = new_cr; //первая ЗК - главная(необходимо для сравнения)
 //        linked_crud()->push_front(new_cr);//также заношу в список и текущий id
@@ -324,7 +324,7 @@ void Update::on_pb_Update_clicked()
 //        new_cr->birth_date = ui->lineEdit->text();
 
 //    if(new_cr->birth_date.isEmpty())
-//        new_cr->birth_date = nullptr  ;
+//        new_cr->birth_date = 0  ;
 
    // msgbx.setGeometry(0,0, 900,210);
     msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
@@ -413,7 +413,7 @@ void Update::on_pb_Update_clicked()
         {
             if(Crud::save_all_crud(new_cr)) /// Если сохранили телефоны
             {
-                if(list_for_destroy != nullptr)
+                if(list_for_destroy != 0)
                 {
                     Crud *m_cr = list_for_destroy->at(0);
 
@@ -520,7 +520,7 @@ void Update::on_pb_del_line_telephone_clicked()
             {
                 Owners_tel *temp_owt  = new_cr->owt()->at(ind.row());
                  delete temp_owt;
-                 temp_owt = nullptr;
+                 temp_owt = 0;
                  new_cr->owt()->removeAt(ind.row());
             }
             if (new_cr->owt()->count() == 0)
@@ -589,7 +589,7 @@ void Update::on_pb_add_contact_line_clicked()
            cnt->parent_OT_id = new_cr->owt()->at(index.row())->tel_id;
 
            cnt->oldnum = false;
-           comp->set_index_data(nullptr,cnt);
+           comp->set_index_data(0,cnt);
            int st = comp->exec();
            comp->setFocus();
            switch(st)
@@ -713,7 +713,7 @@ bool Update::compare_tel_num()
 {
     /// Проверка на уникальность. Выполняется для добавления новых записей к линкед
 
-//    if(frm_t == Update_form && main_cr != nullptr)
+//    if(frm_t == Update_form && main_cr != 0)
 //        return true;
 
 
@@ -765,7 +765,7 @@ bool Update::compare_tel_num()
         {
             Dialog_conflict *dlg = new Dialog_conflict;
 
-            if(linked_crud_id == nullptr)
+            if(linked_crud_id == 0)
                 linked_crud_id = new QList<int>;
             QSqlQuery query2(db_connection::instance()->db());
 
@@ -923,12 +923,12 @@ QString Update::get_birthdate()
 
             switch (ret) {
             case QMessageBox::Ok:
-                return nullptr;
+                return 0;
             }
         }
       return  new_cr->birth_date = year+"-"+month+"-"+day;
     } else
-        return nullptr;
+        return 0;
 }
 //-----------------------------------------------------------------------------------//
 void Update::Fill_table_in_add()
@@ -990,7 +990,7 @@ void Update::Add_zk()
 
 
     if(new_cr->birth_date.isEmpty())
-        new_cr->birth_date = nullptr  ;
+        new_cr->birth_date = "" ;
 
     new_cr->lastname = ui->le_last_name->text();
     new_cr->name=ui->le_name->text();
@@ -1050,7 +1050,7 @@ void Update::Add_zk_into_base()
     QList<Crud*> *temp_crudlist = new QList<Crud*>;
     temp_crudlist->append(new_cr);  ///Лист для работы с list
 
-    if(list == nullptr)
+    if(list == 0)
         list = new List_master(Main_window_for_Update);
         if( list->insert_crud_in_db(temp_crudlist, linked_crud_id))
         {
@@ -1058,7 +1058,7 @@ void Update::Add_zk_into_base()
             QString str = "ЗК успешно №"+QString::number(new_cr->zk_id)+" добавлена!";
             QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("ЗК успешно добавлена!"));
             delete list;
-            list = nullptr;
+            list = 0;
             clear_ALL();
         }
         else {
@@ -1165,7 +1165,7 @@ void Update::update_import_data()
 //        new_cr->birth_date = ui->lineEdit->text();
 
     if(new_cr->birth_date.isEmpty())
-        new_cr->birth_date = nullptr  ;
+        new_cr->birth_date = ""  ;
 
     new_cr->liv_city = ui->le_liv_city->text();
     new_cr->liv_street = ui->le_liv_street->text();
@@ -1199,15 +1199,15 @@ void Update::take_linked_zk(Crud *cr)
    main_cr = cr;
    QList<int> *temp = Crud::take_links(main_cr->row_id, PSQLtype) ;
 
-   if (temp == nullptr)
+   if (temp == 0)
    {
-       main_cr = nullptr;
+       main_cr = 0;
        delete temp;
        return;
    } else
    {
        linked_crud_id = temp;
-       if(list == nullptr)
+       if(list == 0)
            list = new List_master(Main_window_for_Update);
 
        list->set_counters();
@@ -1218,13 +1218,13 @@ void Update::take_linked_zk(Crud *cr)
        linked_crud()->push_front(cr);//также заношу в список и текущий id
        fill_vl();
        delete list;
-       list = nullptr;
+       list = 0;
    }
 }
 //-----------------------------------------------------------------------------------//
 void Update::compare_linked_cruds()
 {
-        QList<CompareResult> *list = nullptr;
+        QList<CompareResult> *list = 0;
 
         if (frm_t == Confluence_form)
             list = new_cr->compare_cruds(added_cr);
@@ -1296,7 +1296,7 @@ void Update::compare_linked_cruds()
 //-----------------------------------------------------------------------------------//
 void Update::fill_vl()
 {
-    if(new_cr != main_cr && _linked_crud != nullptr && ui->vl_for_cnfl_button->count() == 0)
+    if(new_cr != main_cr && _linked_crud != 0 && ui->vl_for_cnfl_button->count() == 0)
     {
         QPushButton *pb = new QPushButton("Разрыв связи");
         ui->vl_for_cnfl_button->addWidget(pb);
@@ -1308,10 +1308,10 @@ void Update::fill_vl()
         delete item->widget();
     }
 
-    if (_linked_crud != nullptr)
+    if (_linked_crud != 0)
     {
         int i;
-        QLabel *lab = nullptr;
+        QLabel *lab = 0;
 
         clear_vl_for_links();
 
@@ -1388,7 +1388,7 @@ void Update::clear_vl_for_links()
 void Update::msg_before_confluence(Crud *cr)
 {
     //QList<Crud*> *crudlist = new QList<Crud*>;
-    if(list == nullptr)
+    if(list == 0)
         list = new List_master(Main_window_for_Update);
     list->set_counters();
     //crudlist->append(cr);
@@ -1413,20 +1413,20 @@ void Update::msg_before_confluence(Crud *cr)
     case QMessageBox::Ok:
         prepare_confluence_crud(cr, new_cr);
         delete list;
-        list = nullptr;
+        list = 0;
         clear_ALL();
         return;
 
     case QMessageBox::Open:
         prepare_confluence_crud(new_cr, cr);
         delete list;
-        list = nullptr;
+        list = 0;
         clear_ALL();
         return;
 
     case QMessageBox::Cancel:
         delete list;
-        list = nullptr;
+        list = 0;
         return;
     }
 }
@@ -1493,7 +1493,7 @@ void Update::destroy_link(Crud *m_cr, Crud *n_cr)
 
 void Update::add_for_destroy()
 {
-    if(list_for_destroy == nullptr)
+    if(list_for_destroy == 0)
     {
         list_for_destroy = new QList<Crud*>;
         list_for_destroy->append(main_cr); //нулевой элемент - главная зк
@@ -1587,9 +1587,9 @@ void Update::closeEvent(QCloseEvent *event)
 void Update::mark_le(QLineEdit *le, QLineEdit *le1, QLineEdit *le2)
 {
   le->setStyleSheet("QLineEdit { background: rgb(0, 255, 255); selection-background-color: rgb(233, 99, 0); }");
-   if(le1 != nullptr)
+   if(le1 != 0)
        le1->setStyleSheet("QLineEdit { background: rgb(0, 255, 255); selection-background-color: rgb(233, 99, 0); }");
-   if(le2 != nullptr)
+   if(le2 != 0)
        le2->setStyleSheet("QLineEdit { background: rgb(0, 255, 255); selection-background-color: rgb(233, 99, 0); }");
 }
 //-----------------------------------------------------------------------------------//
@@ -1599,7 +1599,7 @@ void Update::on_tableView_doubleClicked(const QModelIndex &index)
     Component *comp = new Component();
     comp->set_type(Ow_tel_num);
     Owners_tel *owt =ot_model->actotlist.at(index.row());
-    comp->set_index_data(owt, nullptr);
+    comp->set_index_data(owt, 0);
     int st = comp->exec();
                comp->setFocus();
     switch(st)
@@ -1672,7 +1672,7 @@ void Update::upload_main_cr()
 //        main_cr->birth_date = ui->lineEdit->text();
 
 //    if(new_cr->birth_date.isEmpty())
-//        main_cr->birth_date = nullptr  ;
+//        main_cr->birth_date = 0  ;
 
     main_cr->check_for = ui->le_check_for->text();
     main_cr->dop_info = ui->le_dop_info->toPlainText();
@@ -1735,7 +1735,7 @@ void Update::on_tableView_2_doubleClicked(const QModelIndex &index)
     Component *comp = new Component();
     comp->set_type(Contact_num);
     Contacts *cnt = contacts_model->actlist.at(index.row());
-    comp->set_index_data(nullptr,cnt);
+    comp->set_index_data(0,cnt);
     int st = comp->exec();
                comp->setFocus();
     switch(st)

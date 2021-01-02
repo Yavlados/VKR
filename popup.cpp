@@ -5,7 +5,7 @@
 #include <QDesktopWidget>
 #include <QDebug>
 
-PopUp *PopUp::_instance = nullptr;
+PopUp *PopUp::_instance = 0;
 
 
 PopUp::PopUp(QWidget *parent) : QWidget(parent)
@@ -99,7 +99,7 @@ void PopUp::show(menuType menuT)
 
 PopUp *PopUp::instance()
 {
-    if( _instance == nullptr)
+    if( _instance == 0)
         _instance = new PopUp();
 
     return _instance;

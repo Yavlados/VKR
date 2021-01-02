@@ -45,7 +45,7 @@ void Master_export_Form::on_rb_check_all_clicked()
 void Master_export_Form::on_pb_directory_clicked()
 {
     QString filename ;
-    if(file_path == nullptr)
+    if(file_path == 0)
         filename = QFileDialog::getSaveFileName(
                            this,
                            tr("Save Document"),

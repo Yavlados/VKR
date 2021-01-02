@@ -79,7 +79,6 @@ QString OldDbService::readLexem(QByteArray *arr, int *pos)
         QByteArray str = arr->mid(*pos,nend - *pos) ;
         QString new_str = tc->toUnicode(str);
         *pos = nend+1;
-        qDebug()<<new_str<<*pos;
         return new_str;
     }
     else

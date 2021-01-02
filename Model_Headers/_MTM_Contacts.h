@@ -21,12 +21,12 @@ class MTM_Contacts: public QAbstractTableModel ///Модель отображе�
 public:
     Calling_state_Model state;
 
-    bool linked_flg = false;
+    bool linked_flg;
 
     void up_flag();
 
     /// Пустой конструктор модели
-    MTM_Contacts(QObject *parent = nullptr);
+    MTM_Contacts(QObject *parent = 0);
 
     /// Переопределение кол-ва колонок модели
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -50,7 +50,7 @@ public:
 
     virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
 
-    QList<Contacts*> *clist = nullptr;    ///< исходный список
+    QList<Contacts*> *clist;    ///< исходный список
     QList<Contacts*> actlist;  ///<  отображаемый список
 public slots:
     void addRow_contact(Contacts *cnt);                      /// Добавление ячейки контакта

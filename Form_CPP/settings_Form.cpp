@@ -311,7 +311,7 @@ void Settings_Form::on_groupBox_clicked()
 
 void Settings_Form::on_pushButton_clicked()
 {
-    QCloseEvent *event = nullptr;
+    QCloseEvent *event = 0;
     closeEvent(event);
 }
 

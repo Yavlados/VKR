@@ -56,7 +56,7 @@ void Component::set_index_data(Owners_tel *ow_t, Contacts *cnt)
 
     if(type == Ow_tel_num || type == new_ow_tel)
     {
-        Q_ASSERT(ow_t!=nullptr);
+        Q_ASSERT(ow_t!=0);
 
         content->tel_num = ow_t->tel_num;
         content->Internum = ow_t->internum;
@@ -67,7 +67,7 @@ void Component::set_index_data(Owners_tel *ow_t, Contacts *cnt)
     }
     else if(type == Contact_num || type == new_cont_tel)
     {
-        Q_ASSERT(cnt!=nullptr);
+        Q_ASSERT(cnt!=0);
 
         content->tel_num = cnt->contact_tel_num;
         content->mark = cnt->mark;
@@ -78,7 +78,7 @@ void Component::set_index_data(Owners_tel *ow_t, Contacts *cnt)
         ui->lineEdit_7->setVisible(true);
     }
 
-    if(ow_t !=nullptr)
+    if(ow_t !=0)
     {        
         if(ow_t->oldnum == false && ow_t->internum == false)
         {
@@ -111,7 +111,7 @@ void Component::set_index_data(Owners_tel *ow_t, Contacts *cnt)
         if(ow_t->internum == true)
             ui->cb_m_n->setCheckState(Qt::Checked);
     }
-    else if (cnt != nullptr)
+    else if (cnt != 0)
     {
         ui->lineEdit_7->setText(content->mark);        
 
@@ -160,7 +160,7 @@ void Component::change_layouts()
         for(int a = 0; a< ui->hl_for_normal_n->count(); a++)
         {
             QWidget *w = ui->hl_for_normal_n->itemAt(a)->widget();
-            if( w!=nullptr)
+            if( w!=0)
                 w->setVisible(true);
         }
 
@@ -218,7 +218,7 @@ void Component::change_layouts()
         for(int a = 0; a< ui->hl_for_normal_n->count(); a++)
         {
             QWidget *w = ui->hl_for_normal_n->itemAt(a)->widget();
-            if( w!=nullptr)
+            if( w!=0)
                 w->setVisible(false);
         }
 
@@ -245,7 +245,7 @@ void Component::change_layouts()
         for(int a = 0; a< ui->hl_for_normal_n->count(); a++)
         {
             QWidget *w = ui->hl_for_normal_n->itemAt(a)->widget();
-            if( w!=nullptr)
+            if( w!=0)
                 w->setVisible(false);
         }
 

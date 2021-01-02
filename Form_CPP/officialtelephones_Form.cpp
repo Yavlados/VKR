@@ -80,9 +80,9 @@ void OfficialTelephones::on_pb_add_clicked()
     if (Off_tels::add_off_tel(of_t))
     {//или просто добавлять указатель в список
 //        delete of_model;
-//        of_model = nullptr;
+//        of_model = 0;
 //        delete ofTlist;
-//        ofTlist = nullptr;
+//        ofTlist = 0;
 
 //        Fill_table();
 

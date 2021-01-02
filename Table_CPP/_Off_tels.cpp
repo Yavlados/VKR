@@ -14,7 +14,7 @@ Off_tels::Off_tels(int id, QString num, QString name)
 
 bool Off_tels::search(QList<Off_tels *> *list, QString tel_num, QString name)
 {
-    if(list==nullptr)
+    if(list==0)
         return false;
 
     qDeleteAll(*list);
@@ -60,7 +60,7 @@ bool Off_tels::search(QList<Off_tels *> *list, QString tel_num, QString name)
 
 bool Off_tels::selectOffTel(QList<Off_tels *> *list)
 {
-    if(list==nullptr)
+    if(list==0)
         return false;
 
     qDeleteAll(*list);
@@ -173,7 +173,7 @@ bool Off_tels::update(QList<Off_tels *> *list)
 
 QList<Off_tels *> *Off_tels::compare_with_base(QString query)
 {
-    QList<Off_tels *> *list = nullptr;
+    QList<Off_tels *> *list = 0;
     QSqlQuery querry(db_connection::instance()->db());
     querry.prepare("SELECT tel_num, service_name, of_t_id from official_tel "
                    "WHERE "+ query);
@@ -202,7 +202,7 @@ QList<Off_tels *> *Off_tels::compare_with_base(QString query)
 void Off_tels::clear_list(QList<Off_tels *> *list)
 {
 
-    if(list != nullptr)
+    if(list != 0)
     {
         if(!list->isEmpty())
         {

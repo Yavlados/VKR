@@ -2,14 +2,12 @@
 
 zk_links::zk_links()
 {
-    uuid1 = nullptr;
-    uuid2 = nullptr;
-    links = nullptr;
+    links = 0;
 }
 
 void zk_links::take_links(QList<int> *exported_id)
 {
-      if (links == nullptr)
+      if (links == 0)
           links = new QList<zk_links*>;
       QSqlQuery querry(db_connection::instance()->db());
 

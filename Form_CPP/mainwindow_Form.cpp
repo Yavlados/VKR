@@ -14,7 +14,7 @@
 #include <QShortcut>
 
 #include "settings_connection.h"
-
+#include "_Event.h"
 /**
  * \file Mainwindow_Form.cpp
  * \brief Исполняемый файл класса MainWindow
@@ -32,12 +32,12 @@ MainWindow::MainWindow(QWidget *parent) :
     RefreshTab();
     auto tabbar = ui->tabWidget->tabBar();
     tabbar->tabButton(0,QTabBar::RightSide)->deleteLater();
-    tabbar->setTabButton(0, QTabBar::RightSide, nullptr);
+    tabbar->setTabButton(0, QTabBar::RightSide, 0);
 
     auto tabbar2 = ui->tabWidget_2->tabBar();
     tabbar2->tabButton(0,QTabBar::RightSide)->deleteLater();
-    tabbar2->setTabButton(0, QTabBar::RightSide, nullptr);
-    QDesktopWidget* widget = qApp->desktop();
+    tabbar2->setTabButton(0, QTabBar::RightSide, 0);
+//    QDesktopWidget* widget = qApp->desktop();
 
     ///---Фиксирую размер окна
         showMaximized();
@@ -46,22 +46,22 @@ MainWindow::MainWindow(QWidget *parent) :
         this->setFixedSize( QApplication::desktop()->screenGeometry().width(), height);
     ///---
 
-    ui->tableView->selectRow(0);
-    on_tableView_clicked(index_tab1);
+//    ui->tableView->selectRow(0);
+//    on_tableView_clicked(index_tab1);
     //set_fonts();
     add_splitter_lines();
     //Settings_connection::instance();
 
     size_list = ui->splitter->sizes();
 
-    connect(ui->tableView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(header_clicked(int)));
+//    connect(ui->tableView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(header_clicked(int)));
 
     ui->tabWidget->setAttribute(Qt::WA_StyledBackground, true);
         ui->tabWidget_2->setAttribute(Qt::WA_StyledBackground, true);
 
-        ui->tableView->setType(zkTable);
-        ui->tableView_2->setType(otTable);
-        ui->tableView_3->setType(contactTable);
+//        ui->tableView->setType(zkTable);
+//        ui->tableView_2->setType(otTable);
+//        ui->tableView_3->setType(contactTable);
 
         set_label();
         set_tab_orders();
@@ -80,13 +80,13 @@ void MainWindow::Add_pagination_buttons()
     {
         QLayoutItem *item = ui->hl_for_pagination_button_back->takeAt(0);
         delete item->widget();
-        p_b_back = nullptr;
+        p_b_back = 0;
     }
     while(ui->hl_for_pagination_button_next->count() != 0)
     {
         QLayoutItem *item = ui->hl_for_pagination_button_next->takeAt(0);
         delete item->widget();
-        p_b_forward = nullptr;
+        p_b_forward = 0;
     }
 
 
@@ -112,116 +112,116 @@ void MainWindow::Add_pagination_buttons()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //Обрабатываем клик по таблице с Владельцами номеров
 {
-    (void)index;
-    index_tab1 = ui->tableView->currentIndex();
-    if(index_tab1.isValid())
-    {
-       ui->action_delete->setEnabled(true);
-       ui->action_update->setEnabled(true); //включаю кнопку редактировать
+//    (void)index;
+//    index_tab1 = ui->tableView->currentIndex();
+//    if(index_tab1.isValid())
+//    {
+//       ui->action_delete->setEnabled(true);
+//       ui->action_update->setEnabled(true); //включаю кнопку редактировать
 
-       if (!ot_model->mark_rows.isEmpty()) //Чищу список подсвечивания
-           ot_model->mark_rows.clear();
+//       if (!ot_model->mark_rows.isEmpty()) //Чищу список подсвечивания
+//           ot_model->mark_rows.clear();
 
-            CheckState local_state = crud_model->actcrudlist.at(index_tab1.row())->checkState_;
+//            CheckState local_state = crud_model->actcrudlist.at(index_tab1.row())->checkState_;
 
-           if(Owners_tel::selectZkTelForAdd(crud_model->actcrudlist.at(index_tab1.row())->owt(), crud_model->actcrudlist.at(index_tab1.row())->zk_id))
-           {
+//           if(Owners_tel::selectZkTelForAdd(crud_model->actcrudlist.at(index_tab1.row())->owt(), crud_model->actcrudlist.at(index_tab1.row())->zk_id))
+//           {
 
-               ot_model->setOTList(crud_model->actcrudlist.at(index_tab1.row())->owt());
-               if(!num.isNull())
-               {
-                 for (int i = 0; i < ot_model->actotlist.size(); i++)
-                 {
-                     if(ot_model->actotlist.at(i)->tel_num == num)
-                         ot_model->mark_rows.append(i);
-                 }
-               }
-            if(ot_model->actotlist.at(0)->tel_num.isEmpty())
-                ot_model->actotlist.removeAt(0);//Костыль, тк не могу не отображать пустые номера
-        }
-        ui->tableView_2->setModel(ot_model);
+//               ot_model->setOTList(crud_model->actcrudlist.at(index_tab1.row())->owt());
+//               if(!num.isNull())
+//               {
+//                 for (int i = 0; i < ot_model->actotlist.size(); i++)
+//                 {
+//                     if(ot_model->actotlist.at(i)->tel_num == num)
+//                         ot_model->mark_rows.append(i);
+//                 }
+//               }
+//            if(ot_model->actotlist.at(0)->tel_num.isEmpty())
+//                ot_model->actotlist.removeAt(0);//Костыль, тк не могу не отображать пустые номера
+//        }
+//        ui->tableView_2->setModel(ot_model);
 
-        ui->tableView_2->resizeColumnToContents(0);
-        ui->tableView_2->resizeColumnToContents(1);
-         ui->tableView_2->resizeColumnToContents(2);
-         ui->tableView_2->setWordWrap(false);
-         ui->tableView_2->horizontalHeader()->setStretchLastSection(true);
+//        ui->tableView_2->resizeColumnToContents(0);
+//        ui->tableView_2->resizeColumnToContents(1);
+//         ui->tableView_2->resizeColumnToContents(2);
+//         ui->tableView_2->setWordWrap(false);
+//         ui->tableView_2->horizontalHeader()->setStretchLastSection(true);
 
-        Table_show_delegate *dl = new Table_show_delegate(this);
-        for(int row = 0; row < ot_model->actotlist.size(); row++)
-        {
-            if(ot_model->actotlist.at(row)->oldnum == false && ot_model->actotlist.at(row)->internum == false)
-                ui->tableView->setItemDelegateForRow(row,dl);
-        }
+//        Table_show_delegate *dl = new Table_show_delegate(this);
+//        for(int row = 0; row < ot_model->actotlist.size(); row++)
+//        {
+//            if(ot_model->actotlist.at(row)->oldnum == false && ot_model->actotlist.at(row)->internum == false)
+//                ui->tableView->setItemDelegateForRow(row,dl);
+//        }
 
-        contacts_model->reset_ContactModel();
-        crud_model->actcrudlist.at(index_tab1.row())->checkState_ = local_state;
+//        contacts_model->reset_ContactModel();
+//        crud_model->actcrudlist.at(index_tab1.row())->checkState_ = local_state;
 
-        while(ui->hl_label_contact->count())
-        {
-            QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-            delete item->widget();
-        }
+//        while(ui->hl_label_contact->count())
+//        {
+//            QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+//            delete item->widget();
+//        }
 
-        while(ui->hl_label_owt->count())
-        {
-            QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-            delete item->widget();
-        }
+//        while(ui->hl_label_owt->count())
+//        {
+//            QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+//            delete item->widget();
+//        }
 
-        QLabel *lb = new QLabel;
-        QString str = "Всего записей: "+QString::number(ot_model->actotlist.size());
-        lb->setText(str);
-        ui->hl_label_owt->addWidget(lb);
-    }
-    else
-    {
-        ui->action_delete->setEnabled(false);
-        ui->action_update->setEnabled(false); //выключаю кнопку редактировать
-    }
+//        QLabel *lb = new QLabel;
+//        QString str = "Всего записей: "+QString::number(ot_model->actotlist.size());
+//        lb->setText(str);
+//        ui->hl_label_owt->addWidget(lb);
+//    }
+//    else
+//    {
+//        ui->action_delete->setEnabled(false);
+//        ui->action_update->setEnabled(false); //выключаю кнопку редактировать
+//    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Номерами владельцев
 {
-    if (index_tab1.isValid())
-    {
-        if(Contacts::selectTelContacts(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
-                                       crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->tel_id))
-        {
-            contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
+//    if (index_tab1.isValid())
+//    {
+//        if(Contacts::selectTelContacts(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
+//                                       crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->tel_id))
+//        {
+//            contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
 
-        }
-
-
-        if(ui->vl_for_search_contact->count())
-        {
-            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
-            delete item->widget();
-        }
-
-        ui->tableView_3->setModel(contacts_model);
-        ui->tableView_3->resizeColumnToContents(0);
-        ui->tableView_3->resizeColumnToContents(1);
-        ui->tableView_3->resizeColumnToContents(2);
-        ui->tableView_3->setWordWrap(false);
-       ui->tableView_3->horizontalHeader()->setStretchLastSection(true);
+//        }
 
 
+//        if(ui->vl_for_search_contact->count())
+//        {
+//            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
+//            delete item->widget();
+//        }
 
-       while(ui->hl_label_contact->count())
-       {
-           QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-           delete item->widget();
-       }
+//        ui->tableView_3->setModel(contacts_model);
+//        ui->tableView_3->resizeColumnToContents(0);
+//        ui->tableView_3->resizeColumnToContents(1);
+//        ui->tableView_3->resizeColumnToContents(2);
+//        ui->tableView_3->setWordWrap(false);
+//       ui->tableView_3->horizontalHeader()->setStretchLastSection(true);
 
-       QLabel *lb = new QLabel;
-       QString str = "Всего записей: "+QString::number(contacts_model->actlist.size());
-       lb->setText(str);
-       ui->hl_label_contact->addWidget(lb);
 
-        //ui->tableView_3->setColumnWidth(0,250);
-       // ui->tableView_3->setColumnWidth(1,250);
-    }
+
+//       while(ui->hl_label_contact->count())
+//       {
+//           QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+//           delete item->widget();
+//       }
+
+//       QLabel *lb = new QLabel;
+//       QString str = "Всего записей: "+QString::number(contacts_model->actlist.size());
+//       lb->setText(str);
+//       ui->hl_label_contact->addWidget(lb);
+
+//        //ui->tableView_3->setColumnWidth(0,250);
+//       // ui->tableView_3->setColumnWidth(1,250);
+//    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и рефреш таблиц
@@ -230,16 +230,16 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
 
     if(zk_id == 0)//форма добавления
     {
-        if(addlist != nullptr)
+        if(addlist != 0)
         {
             delete addlist->at(0);
             delete addlist;
-            addlist = nullptr;
+            addlist = 0;
             return;
         }
     }else  //форма редактирования
     {
-        if(updlist != nullptr)
+        if(updlist != 0)
         {
             for (int i=0; i<updlist->size(); i++)
             {
@@ -248,7 +248,7 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
                     delete  updlist->at(i);
                     updlist->removeAt(i);
                     if (updlist->isEmpty())
-                        updlist = nullptr;
+                        updlist = 0;
                     return;
                 }
             }
@@ -258,71 +258,75 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
 //-----------------------------------------------------------------------------------//
 void MainWindow::RefreshTab()
 {
-   // Settings_connection::instance()->Set_settings();
-    if (crud_model != nullptr)
-    {
-        delete crud_model;
-        crud_model = nullptr;
-     }
 
-    crud_model = new  MTM_Crud;
-    //QHeaderView *header =crud_model->headerData();
-    QList<Crud*> *crudlist = new QList<Crud*>;
-    if(Crud::selectAll(crudlist)) ///Вызов статичной функции
-    {
-        crud_model->setCrudlist(crudlist);
+    QList<Event*> *list = new QList<Event*>;
+    Event::selectAll(list);
 
-        Add_pagination_buttons();
+//   // Settings_connection::instance()->Set_settings();
+//    if (crud_model != 0)
+//    {
+//        delete crud_model;
+//        crud_model = 0;
+//     }
 
-        ui->tableView->setModel(crud_model);
-        ui->tabWidget->setCurrentIndex(0);
-        ui->tableView->resizeColumnToContents(0);
-        ui->tableView->resizeColumnToContents(1);
-        ui->tableView->resizeColumnToContents(2);
-        ui->tableView->setWordWrap(false);
+//    crud_model = new  MTM_Crud;
+//    //QHeaderView *header =crud_model->headerData();
+//    QList<Crud*> *crudlist = new QList<Crud*>;
+//    if(Crud::selectAll(crudlist)) ///Вызов статичной функции
+//    {
+//        crud_model->setCrudlist(crudlist);
 
-        while(ui->hl_label_crud->count())
-        {
-            QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-            delete item->widget();
-        }
+//        Add_pagination_buttons();
 
-        QLabel *lb = new QLabel;
-        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
-                QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
-        lb->setText(str);
-        ui->hl_label_crud->addWidget(lb);
-    }
+//        ui->tableView->setModel(crud_model);
+//        ui->tabWidget->setCurrentIndex(0);
+//        ui->tableView->resizeColumnToContents(0);
+//        ui->tableView->resizeColumnToContents(1);
+//        ui->tableView->resizeColumnToContents(2);
+//        ui->tableView->setWordWrap(false);
 
-    m_c_s = All_unchecked;
-    ot_model->reset_OTModel();
-    contacts_model->reset_ContactModel();
+//        while(ui->hl_label_crud->count())
+//        {
+//            QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+//            delete item->widget();
+//        }
 
-    QLayout *layout = ui->vl_cancel_button->layout();
-    while (layout->count() != 0)
-        {
-            QLayoutItem *item = layout->takeAt(0);
-            delete item->widget();
-            pb_clear_search = nullptr;
-            ui->lineEdit->setFocus();
-            if (p_b_counter > 0)
-            {
-                p_b_counter--;
-            }
-        }
-    while(ui->hl_label_owt->count())
-    {
-        QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-        delete item->widget();
-    }
+//        QLabel *lb = new QLabel;
+//        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
+//                QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
+//        lb->setText(str);
+//        ui->hl_label_crud->addWidget(lb);
+//    }
 
-    ui->lineEdit->clear();
-    set_validators();
+//    m_c_s = All_unchecked;
+//    ot_model->reset_OTModel();
+//    contacts_model->reset_ContactModel();
+
+//    QLayout *layout = ui->vl_cancel_button->layout();
+//    while (layout->count() != 0)
+//        {
+//            QLayoutItem *item = layout->takeAt(0);
+//            delete item->widget();
+//            pb_clear_search = 0;
+//            ui->lineEdit->setFocus();
+//            if (p_b_counter > 0)
+//            {
+//                p_b_counter--;
+//            }
+//        }
+//    while(ui->hl_label_owt->count())
+//    {
+//        QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+//        delete item->widget();
+//    }
+
+//    ui->lineEdit->clear();
+//    set_validators();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
 {
-    if( addlist == nullptr)
+    if( addlist == 0)
     {
         addlist = new QList<Update*>;
         Update *add = new Update;
@@ -346,34 +350,34 @@ void MainWindow::on_action_add_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_delete_triggered()
 {
-    if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
-    {
-        msgbx.setText("Удаление");
-        msgbx.setWindowTitle("Удаление");
-        msgbx.setInformativeText("Вы действительно хотите удалить выбранную записную книгу № "+QString::number(crud_model->actcrudlist.at(index_tab1.row())->zk_id));
-        msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        int ret = msgbx.exec();
+//    if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
+//    {
+//        msgbx.setText("Удаление");
+//        msgbx.setWindowTitle("Удаление");
+//        msgbx.setInformativeText("Вы действительно хотите удалить выбранную записную книгу № "+QString::number(crud_model->actcrudlist.at(index_tab1.row())->zk_id));
+//        msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+//        int ret = msgbx.exec();
 
-        switch (ret) {
-        case QMessageBox::Cancel:
-            break;
-        case QMessageBox::Ok:
-            if (index_tab1.isValid())
-            {
-                if (updlist != nullptr)
-                    for (int i =0; i< updlist->size(); i++)
-                        if(updlist->at(i)->new_cr->zk_id == crud_model->actcrudlist.at(index_tab1.row())->zk_id)
-                        {  updlist->at(i)->close(); updlist->removeAt(i); break; }
-                Crud::del_zk(crud_model->actcrudlist.at(index_tab1.row())->zk_id);
+//        switch (ret) {
+//        case QMessageBox::Cancel:
+//            break;
+//        case QMessageBox::Ok:
+//            if (index_tab1.isValid())
+//            {
+//                if (updlist != 0)
+//                    for (int i =0; i< updlist->size(); i++)
+//                        if(updlist->at(i)->new_cr->zk_id == crud_model->actcrudlist.at(index_tab1.row())->zk_id)
+//                        {  updlist->at(i)->close(); updlist->removeAt(i); break; }
+//                Crud::del_zk(crud_model->actcrudlist.at(index_tab1.row())->zk_id);
 
-                RefreshTab();
-            }
-            break;
-        }
-    }
-    else {
-        QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для удаления!")); ///Хвалимся
-    }
+//                RefreshTab();
+//            }
+//            break;
+//        }
+//    }
+//    else {
+//        QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для удаления!")); ///Хвалимся
+//    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_update_triggered()
@@ -392,7 +396,7 @@ void MainWindow::on_action_update_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_analysis_triggered()
 {
-    if (an == nullptr)
+    if (an == 0)
     {
         an = new class Analysis;
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,an,"Анализ");
@@ -410,7 +414,7 @@ void MainWindow::on_action_analysis_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_search_triggered()
 {
-    if(sr == nullptr)
+    if(sr == 0)
     {
          sr = new Search;
          ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,sr,"Расширенный поиск");
@@ -432,69 +436,69 @@ void MainWindow::on_action_search_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::Search_result(QList<Crud*> *crudlist)
 {
-    crud_model->setCrudlist(crudlist);
-    ui->tableView->setModel(crud_model);
-    Add_pagination_buttons();
-    MainWindow::add_cancel_button();
+//    crud_model->setCrudlist(crudlist);
+//    ui->tableView->setModel(crud_model);
+//    Add_pagination_buttons();
+//    MainWindow::add_cancel_button();
 
-    while(ui->hl_label_crud->count())
-    {
-        QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-        delete item->widget();
-    }
+//    while(ui->hl_label_crud->count())
+//    {
+//        QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+//        delete item->widget();
+//    }
 
-    QLabel *lb = new QLabel;
-    QString str = "Найдено записей: "+QString::number(crudlist->size());
-    lb->setText(str);
-    ui->hl_label_crud->addWidget(lb);
+//    QLabel *lb = new QLabel;
+//    QString str = "Найдено записей: "+QString::number(crudlist->size());
+//    lb->setText(str);
+//    ui->hl_label_crud->addWidget(lb);
 
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_pushButton_clicked()
 {
-    if (ui->lineEdit->text() == QString(""))
-    {
-        RefreshTab();
-    }
-    else {
-   ///Проверяю условие: если в результате поиска, полученная книга = переданному айди
-        Crud *cr = Crud::id_zk_search(ui->lineEdit->text().toInt());
-        if (cr == nullptr)
-            QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("По вашему запросу ничего не найдено!")); ///Ругаемся
-        else
-        {
-            crud_model->setOneCrud(cr);
-            ui->tableView->setModel(crud_model);
-            ui->tabWidget->setCurrentIndex(0);
+//    if (ui->lineEdit->text() == QString(""))
+//    {
+//        RefreshTab();
+//    }
+//    else {
+//   ///Проверяю условие: если в результате поиска, полученная книга = переданному айди
+//        Crud *cr = Crud::id_zk_search(ui->lineEdit->text().toInt());
+//        if (cr == 0)
+//            QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("По вашему запросу ничего не найдено!")); ///Ругаемся
+//        else
+//        {
+//            crud_model->setOneCrud(cr);
+//            ui->tableView->setModel(crud_model);
+//            ui->tabWidget->setCurrentIndex(0);
 
-            ot_model->reset_OTModel();
-            contacts_model->reset_ContactModel();
+//            ot_model->reset_OTModel();
+//            contacts_model->reset_ContactModel();
 
-            while(ui->hl_label_contact->count())
-            {
-                QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-                delete item->widget();
-            }
+//            while(ui->hl_label_contact->count())
+//            {
+//                QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+//                delete item->widget();
+//            }
 
-            while(ui->hl_label_owt->count())
-            {
-                QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-                delete item->widget();
-            }
+//            while(ui->hl_label_owt->count())
+//            {
+//                QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+//                delete item->widget();
+//            }
 
-            MainWindow::add_cancel_button();
-            while(ui->hl_label_crud->count())
-            {
-                QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-                delete item->widget();
-            }
+//            MainWindow::add_cancel_button();
+//            while(ui->hl_label_crud->count())
+//            {
+//                QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+//                delete item->widget();
+//            }
 
-            QLabel *lb = new QLabel;
-            QString str = "Найдено записей: "+QString::number(crud_model->actcrudlist.size());
-            lb->setText(str);
-            ui->hl_label_crud->addWidget(lb);
-        }
-    }
+//            QLabel *lb = new QLabel;
+//            QString str = "Найдено записей: "+QString::number(crud_model->actcrudlist.size());
+//            lb->setText(str);
+//            ui->hl_label_crud->addWidget(lb);
+//        }
+//    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::add_cancel_button()
@@ -516,7 +520,7 @@ void MainWindow::add_cancel_button()
 //-----------------------------------------------------------------------------------//
 void MainWindow::open_upd_tab(Crud *cr)
 {
-        if(updlist == nullptr)
+        if(updlist == 0)
         {
             updlist = new QList<Update*>;
         }
@@ -575,16 +579,16 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
         Update *upd = dynamic_cast<Update*>(ui->tabWidget->widget(index)); //Приведение типа от виджета к классу
     if (upd->frm_t == Add_form)
     {//Работа с добавлением
-        if(addlist != nullptr)
+        if(addlist != 0)
         {
             addlist->clear();
             delete addlist;
-            addlist = nullptr;
+            addlist = 0;
             return;
         }
     } else if (upd->frm_t == Update_form)
         {
-            if(updlist != nullptr)
+            if(updlist != 0)
             {
                 int i = 0;
                 int zk_id_local = upd->new_cr->zk_id;
@@ -597,7 +601,7 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
                         updlist->removeAt(i);
                         if (updlist->isEmpty())
                         {
-                            updlist = nullptr;
+                            updlist = 0;
                             return;
                         }
                     }  else
@@ -609,7 +613,7 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
     {
         ui->tabWidget->widget(index)->deleteLater();
         delete of;
-        of = nullptr;
+        of = 0;
 
     }
 //    ui->tabWidget->setCurrentWidget(ui->tabWidget->widget(index-1));
@@ -622,28 +626,28 @@ void MainWindow::on_tabWidget_2_tabCloseRequested(int index)
     {
         ui->tabWidget_2->widget(index)->deleteLater();
         delete sr;
-        sr = nullptr;
+        sr = 0;
         return;
     } else
     if ( ui->tabWidget_2->widget(index)->objectName() == "Analysis")
     {
         ui->tabWidget_2->widget(index)->deleteLater();
         delete an;
-        an = nullptr;
+        an = 0;
         return;
     } else
     if ( ui->tabWidget_2->widget(index)->objectName() == "master_export_Form")
     {
         ui->tabWidget_2->widget(index)->deleteLater();
         delete exprt;
-        exprt = nullptr;
+        exprt = 0;
         return;
     } else
     if ( ui->tabWidget_2->widget(index)->objectName() == "Master_import_form")
     {
         ui->tabWidget_2->widget(index)->deleteLater();
         delete imprt;
-        imprt = nullptr;
+        imprt = 0;
         return;
     }
 
@@ -677,7 +681,7 @@ void MainWindow::closeOF(QString WidgetName)
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_official_tel_triggered()
 {
-    if(of == nullptr)
+    if(of == 0)
         {
         of = new OfficialTelephones;
         ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,of,"Cлужебные телефоны");
@@ -697,7 +701,7 @@ void MainWindow::on_action_official_tel_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_actionexport_triggered()
 {
-    if(exprt == nullptr)
+    if(exprt == 0)
     {
         exprt = new Master_export_Form;
         exprt->add_file_path(file_path);
@@ -717,7 +721,7 @@ void MainWindow::on_actionexport_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk)
 {
-    if( form_exprt == nullptr)
+    if( form_exprt == 0)
     {
         form_exprt = new For_export();
 
@@ -775,7 +779,7 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
         else {
             QMessageBox::warning(exprt,QObject::tr("Внимание"),QObject::tr("Экспорт не был выполнен, так как вы не выбрали данные!")); ///Хвалимся
         }
-        form_exprt =nullptr;
+        form_exprt =0;
         delete offtel;
         delete crud;
     }
@@ -953,7 +957,7 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_import_triggered()
 {
-    if(imprt == nullptr)
+    if(imprt == 0)
     {
         imprt = new Master_import_form(this);
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,imprt,"Импорт данных");
@@ -980,81 +984,81 @@ void MainWindow::on_action_Settings_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::next_page()
 {
-    if(ui->hl_for_pagination_button_next->count() >0)
-    {
-        crud_model->next_page_crud();
-        ui->tableView->setModel(crud_model);
-        Add_pagination_buttons();
-        ot_model->reset_OTModel();
-        contacts_model->reset_ContactModel();
+//    if(ui->hl_for_pagination_button_next->count() >0)
+//    {
+//        crud_model->next_page_crud();
+//        ui->tableView->setModel(crud_model);
+//        Add_pagination_buttons();
+//        ot_model->reset_OTModel();
+//        contacts_model->reset_ContactModel();
 
-        while(ui->hl_label_contact->count())
-        {
-            QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-            delete item->widget();
-        }
+//        while(ui->hl_label_contact->count())
+//        {
+//            QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+//            delete item->widget();
+//        }
 
-        while(ui->hl_label_owt->count())
-        {
-            QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-            delete item->widget();
-        }
-        while(ui->hl_label_crud->count())
-        {
-            QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-            delete item->widget();
-        }
+//        while(ui->hl_label_owt->count())
+//        {
+//            QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+//            delete item->widget();
+//        }
+//        while(ui->hl_label_crud->count())
+//        {
+//            QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+//            delete item->widget();
+//        }
 
-        QLabel *lb = new QLabel;
-        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
-                QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
-        lb->setText(str);
-        ui->hl_label_crud->addWidget(lb);
-        QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-        QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
-        ui->tableView->selectionModel()->select(tempIndex, flags);
-        ui->tableView->setFocus();
-    }
+//        QLabel *lb = new QLabel;
+//        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
+//                QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
+//        lb->setText(str);
+//        ui->hl_label_crud->addWidget(lb);
+//        QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+//        QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
+//        ui->tableView->selectionModel()->select(tempIndex, flags);
+//        ui->tableView->setFocus();
+//    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::previous_page()
 {
-   if(ui->hl_for_pagination_button_back->count() >0)
-   {
-       crud_model->previous_page_crud();
-       ui->tableView->setModel(crud_model);
-       Add_pagination_buttons();
-       ot_model->reset_OTModel();
-       contacts_model->reset_ContactModel();
+//   if(ui->hl_for_pagination_button_back->count() >0)
+//   {
+//       crud_model->previous_page_crud();
+//       ui->tableView->setModel(crud_model);
+//       Add_pagination_buttons();
+//       ot_model->reset_OTModel();
+//       contacts_model->reset_ContactModel();
 
-       while(ui->hl_label_contact->count())
-       {
-           QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-           delete item->widget();
-       }
+//       while(ui->hl_label_contact->count())
+//       {
+//           QLayoutItem *item = ui->hl_label_contact->takeAt(0);
+//           delete item->widget();
+//       }
 
-       while(ui->hl_label_owt->count())
-       {
-           QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-           delete item->widget();
-       }
-       while(ui->hl_label_crud->count())
-       {
-           QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-           delete item->widget();
-       }
+//       while(ui->hl_label_owt->count())
+//       {
+//           QLayoutItem *item = ui->hl_label_owt->takeAt(0);
+//           delete item->widget();
+//       }
+//       while(ui->hl_label_crud->count())
+//       {
+//           QLayoutItem *item = ui->hl_label_crud->takeAt(0);
+//           delete item->widget();
+//       }
 
-       QLabel *lb = new QLabel;
-       QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
-               QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
-       lb->setText(str);
-       ui->hl_label_crud->addWidget(lb);
+//       QLabel *lb = new QLabel;
+//       QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
+//               QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
+//       lb->setText(str);
+//       ui->hl_label_crud->addWidget(lb);
 
-       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
-       ui->tableView->selectionModel()->select(tempIndex, flags);
-       ui->tableView->setFocus();
-   }
+//       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+//       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
+//       ui->tableView->selectionModel()->select(tempIndex, flags);
+//       ui->tableView->setFocus();
+//   }
 
 }
 //-----------------------------------------------------------------------------------//
@@ -1088,7 +1092,6 @@ void MainWindow::add_splitter_lines()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_tabBarClicked(int index)
 {
-   // qDebug() << ui->tabWidget->tabBar()->accessibleTabName(index);
 }
 
 //-----------------------------------------------------------------------------------//
@@ -1135,26 +1138,26 @@ void MainWindow::set_normal_width(int size)
 
 void MainWindow::header_clicked(int id)
 {
-    if(id != 0)
-        return;
-    else
-    {
-        switch (m_c_s)
-        {
-        case All_unchecked:
-            crud_model->setCheckedCrudlist(crud_model->crudlist);
-            ui->tableView->setModel(crud_model);
-            m_c_s = All_checked;
-            Add_pagination_buttons();
-        return;
-        case All_checked:
-            crud_model->setUnCheckedCrudlist(crud_model->crudlist);
-            ui->tableView->setModel(crud_model);
-            m_c_s = All_unchecked;
-            Add_pagination_buttons();
-        return;
-        }
-    }
+//    if(id != 0)
+//        return;
+//    else
+//    {
+//        switch (m_c_s)
+//        {
+//        case All_unchecked:
+//            crud_model->setCheckedCrudlist(crud_model->crudlist);
+//            ui->tableView->setModel(crud_model);
+//            m_c_s = All_checked;
+//            Add_pagination_buttons();
+//        return;
+//        case All_checked:
+//            crud_model->setUnCheckedCrudlist(crud_model->crudlist);
+//            ui->tableView->setModel(crud_model);
+//            m_c_s = All_unchecked;
+//            Add_pagination_buttons();
+//        return;
+//        }
+//    }
 }
 
 void MainWindow::on_action_4_analysis_triggered()
@@ -1207,12 +1210,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             return;
 
          case Qt::Key::Key_PageUp:
-            if(p_b_forward != nullptr)
+            if(p_b_forward != 0)
                 p_b_forward->click();
             return;
 
         case Qt::Key::Key_PageDown:
-           if(p_b_back != nullptr)
+           if(p_b_back != 0)
                p_b_back->click();
            return;
 
@@ -1228,14 +1231,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 }
 
 void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
-{
+{/*
     if(contacts_model->actlist.at(index.row())->linked_id != 0)
     {
         if(ui->vl_for_search_contact->count())
         {
             QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
             delete item->widget();
-            pbGetZkVar2 = nullptr;
+            pbGetZkVar2 = 0;
         }
 
         pbGetZkVar2 = new QPushButton();
@@ -1251,50 +1254,50 @@ void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
         {
             QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
             delete item->widget();
-            pbGetZkVar2 = nullptr;
+            pbGetZkVar2 = 0;
         }
-    }
+    }*/
 }
 
 void MainWindow::find_linked_zk()
 {
-    RefreshTab();
-            while (zk_id > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
-            {
-                crud_model->next_page_crud();
-                ui->tableView->setModel(crud_model);
-                Add_pagination_buttons();
-            }
+//    RefreshTab();
+//            while (zk_id > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
+//            {
+//                crud_model->next_page_crud();
+//                ui->tableView->setModel(crud_model);
+//                Add_pagination_buttons();
+//            }
 
-            while (zk_id < crud_model->actcrudlist.at(0)->zk_id)
-            {
-                crud_model->previous_page_crud();
-                ui->tableView->setModel(crud_model);
-                Add_pagination_buttons();
-            }
+//            while (zk_id < crud_model->actcrudlist.at(0)->zk_id)
+//            {
+//                crud_model->previous_page_crud();
+//                ui->tableView->setModel(crud_model);
+//                Add_pagination_buttons();
+//            }
 
-            for (int i = 0; i < crud_model->actcrudlist.size(); i++)
-            {
-                if(crud_model->actcrudlist.at(i)->zk_id == zk_id)
-                {
-                    zk_id = i;
-                    break;
-                }
-            }
+//            for (int i = 0; i < crud_model->actcrudlist.size(); i++)
+//            {
+//                if(crud_model->actcrudlist.at(i)->zk_id == zk_id)
+//                {
+//                    zk_id = i;
+//                    break;
+//                }
+//            }
 
-            index_tab1 = crud_model->index(zk_id,0);
-            ui->tableView->setCurrentIndex(index_tab1);
-            on_tableView_clicked(index_tab1, cont_num);
-            //Delete
-            if(ui->vl_for_search_contact->count())
-            {
-                QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
-                delete item->widget();
-            }
-       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
-       ui->tableView->selectionModel()->select(tempIndex, flags);
-       ui->tableView->setFocus();
+//            index_tab1 = crud_model->index(zk_id,0);
+//            ui->tableView->setCurrentIndex(index_tab1);
+//            on_tableView_clicked(index_tab1, cont_num);
+//            //Delete
+//            if(ui->vl_for_search_contact->count())
+//            {
+//                QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
+//                delete item->widget();
+//            }
+//       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+//       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
+//       ui->tableView->selectionModel()->select(tempIndex, flags);
+//       ui->tableView->setFocus();
 }
 
 void MainWindow::on_pb_refresh_clicked()
@@ -1304,8 +1307,8 @@ void MainWindow::on_pb_refresh_clicked()
 
 void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
 {
-    index_tab1 = index;
-    on_action_update_triggered();
+//    index_tab1 = index;
+//    on_action_update_triggered();
 }
 
 void MainWindow::openPopUp(){
@@ -1342,7 +1345,7 @@ void MainWindow::set_shortcuts()
     new QShortcut(QKeySequence(Qt::Key_F12), this, SLOT(on_action_Settings_triggered()));
 }
 
-void MainWindow::next_tab()
+void MainWindow::   next_tab()
 {
     ui->tabWidget->setCurrentIndex(ui->tabWidget->currentIndex() + 1);
     QWidget *widget = ui->tabWidget->widget(ui->tabWidget->currentIndex());
@@ -1452,62 +1455,60 @@ void MainWindow::set_tab_orders()
 
 void MainWindow::focusOnOT()
 {
-
-
-    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-    QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
-    ui->tableView_2->selectionModel()->select(tempIndex, flags);
-    ui->tableView_2->setFocus();
+//    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+//    QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
+//    ui->tableView_2->selectionModel()->select(tempIndex, flags);
+//    ui->tableView_2->setFocus();
 }
 void MainWindow::focusOnZK()
 {
-    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-    ui->tableView->selectionModel()->select(this->index_tab1, flags);
-    ui->tableView->setFocus();
+//    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+//    ui->tableView->selectionModel()->select(this->index_tab1, flags);
+//    ui->tableView->setFocus();
 }
 
 
 void MainWindow::setTableConnections()
 {
-    connect (ui->tableView, SIGNAL(openUpdateForm(QModelIndex)), this,
-             SLOT(on_tableView_doubleClicked(const QModelIndex)));
-    connect (ui->tableView, SIGNAL(nextPage()), this, SLOT(next_page()));
-    connect (ui->tableView, SIGNAL(previousPage()), this, SLOT(previous_page()));
-    connect (ui->tableView, SIGNAL(getOt(QModelIndex)), this, SLOT(getOt(QModelIndex)));
+//    connect (ui->tableView, SIGNAL(openUpdateForm(QModelIndex)), this,
+//             SLOT(on_tableView_doubleClicked(const QModelIndex)));
+//    connect (ui->tableView, SIGNAL(nextPage()), this, SLOT(next_page()));
+//    connect (ui->tableView, SIGNAL(previousPage()), this, SLOT(previous_page()));
+//    connect (ui->tableView, SIGNAL(getOt(QModelIndex)), this, SLOT(getOt(QModelIndex)));
 
-    connect(ui->tableView_2, SIGNAL(backOnZk()), this, SLOT(focusOnZK()));
-    connect(ui->tableView_2, SIGNAL(getCont(QModelIndex)), this, SLOT(getCont(QModelIndex)));
+//    connect(ui->tableView_2, SIGNAL(backOnZk()), this, SLOT(focusOnZK()));
+//    connect(ui->tableView_2, SIGNAL(getCont(QModelIndex)), this, SLOT(getCont(QModelIndex)));
 
-    connect(ui->tableView_3, SIGNAL(backOnOt()), this, SLOT(focusOnOT()));
-    connect(ui->tableView_3, SIGNAL(getVar2Zk()), this, SLOT(find_linked_zk()));
-    connect(ui->tableView_3, SIGNAL(clickOnContact(QModelIndex)), this, SLOT(on_tableView_3_clicked(QModelIndex)));
+//    connect(ui->tableView_3, SIGNAL(backOnOt()), this, SLOT(focusOnOT()));
+//    connect(ui->tableView_3, SIGNAL(getVar2Zk()), this, SLOT(find_linked_zk()));
+//    connect(ui->tableView_3, SIGNAL(clickOnContact(QModelIndex)), this, SLOT(on_tableView_3_clicked(QModelIndex)));
 
-    connect(ui->tableView, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
-    connect(ui->tableView_2, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
-    connect(ui->tableView_3, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
+//    connect(ui->tableView, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
+//    connect(ui->tableView_2, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
+//    connect(ui->tableView_3, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
 }
 
 void MainWindow::getOt(QModelIndex index)
 {
-    on_tableView_clicked(index, nullptr);
-    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-    QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
-    ui->tableView_2->selectionModel()->select(tempIndex, flags);
-    ui->tableView_2->setFocus();
+//    on_tableView_clicked(index, 0);
+//    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+//    QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
+//    ui->tableView_2->selectionModel()->select(tempIndex, flags);
+//    ui->tableView_2->setFocus();
 }
 
 void MainWindow::getCont(QModelIndex index)
 {
-    on_tableView_2_clicked(index);
-    ui->tableView_3->setFocus();
-     if(ui->tableView_3->currentIndex().row() != -1)
-     {
-         QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-         QModelIndex tempIndex = ui->tableView_3->model()->index(0, 0);
-         ui->tableView_3->selectionModel()->select(tempIndex, flags);
-         ui->tableView_3->setFocus();
-         on_tableView_3_clicked(ui->tableView_3->currentIndex());
-     }
-     else
-         ui->tableView_2->setFocus();
+//    on_tableView_2_clicked(index);
+//    ui->tableView_3->setFocus();
+//     if(ui->tableView_3->currentIndex().row() != -1)
+//     {
+//         QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+//         QModelIndex tempIndex = ui->tableView_3->model()->index(0, 0);
+//         ui->tableView_3->selectionModel()->select(tempIndex, flags);
+//         ui->tableView_3->setFocus();
+//         on_tableView_3_clicked(ui->tableView_3->currentIndex());
+//     }
+//     else
+//         ui->tableView_2->setFocus();
 }

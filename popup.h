@@ -43,7 +43,7 @@ private slots:
                                              * */
 
 protected:
-    explicit PopUp(QWidget *parent = nullptr);
+    explicit PopUp(QWidget *parent = 0);
     void paintEvent(QPaintEvent *event);    // Фон будет отрисовываться через метод перерисовки
 };
 

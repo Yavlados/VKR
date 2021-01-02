@@ -18,12 +18,12 @@ class An_result : public QWidget ///Форма вывода справок
     Q_OBJECT
 
 public:
-    explicit An_result(QWidget *parent = nullptr);
+    explicit An_result(QWidget *parent = 0);
     ~An_result();
 
         //Search *sr = new Search();
     static void import_report(QString text);
-    For_analysis *an = nullptr;
+    For_analysis *an = 0;
 
     void Set_final_result();
 

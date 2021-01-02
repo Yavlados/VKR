@@ -22,7 +22,7 @@ public:
     Search *sr = new Search;
     int p_b_counter = 0;
 
-    explicit Master_export_Form(QWidget *parent = nullptr);
+    explicit Master_export_Form(QWidget *parent = 0);
     ~Master_export_Form();
 
     void add_file_path(QString path_from_main);
@@ -51,7 +51,7 @@ private slots:
 
 private:
     Ui::master_export_Form *ui;
-    QString file_path = nullptr;
+    QString file_path = 0;
 signals:
     void rb_zk_clicked();
     void rb_check_all();

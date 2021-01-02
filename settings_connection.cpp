@@ -1,13 +1,16 @@
 #include "settings_connection.h"
 #include <QDebug>
-#include <QCoreApplication>
+    #include <QCoreApplication>
 #include <QFile>
 
-Settings_connection *Settings_connection::_instance = nullptr;
+Settings_connection *Settings_connection::_instance = 0;
 
 Settings_connection::Settings_connection()
 {
     //    Set_settings();
+    showing_count = 50;
+    Port = 0;
+    settings = 0;
 }
 
 QSettings *Settings_connection::ret_settings()
@@ -159,8 +162,36 @@ void Settings_connection::set_content(QString col_name)
 
 Settings_connection *Settings_connection::instance()
 {
-    if( _instance == nullptr)
+    if( _instance == 0)
         _instance = new Settings_connection();
 
     return _instance;
+}
+
+Col_contents::Col_contents(){
+    zk_id = false;
+    lastname  = false;
+    name = false;
+    mid_name = false;
+    birth_date = false;
+    check_for = false;
+    dop_info = false;
+
+    reg_city = false;
+    reg_street = false;
+    reg_home = false;
+    reg_corp = false;
+    reg_flat = false;
+
+    liv_city = false;
+    liv_street = false;
+    liv_home = false;
+    liv_corp = false;
+    liv_flat = false;
+
+    date_add = false;
+    time_add = false;
+
+    nickname = false;
+
 }

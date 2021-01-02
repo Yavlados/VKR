@@ -407,7 +407,7 @@ if (querry.next())
     return cr;
 }
 else {
-    return nullptr;
+    return 0;
 }
 
 }
@@ -456,7 +456,7 @@ export_state List_master::fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt,
 
 bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QVector<QVector<int> > *vector, QVector<QVector<QString> > *vector_str, bool old_db)
 {
-    if(crud == nullptr || !db_connection::instance()->db_connect())
+    if(crud == 0 || !db_connection::instance()->db_connect())
         return false;
 
     QString cname = db_connection::instance()->db().connectionName();
@@ -466,7 +466,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
     QSqlQuery query(db_connection::instance()->db());
     QSqlQuery query1(db_connection::instance()->db());
     QSqlQuery query2(db_connection::instance()->db());
-    QList<QString> *Local_link_list = nullptr;
+    QList<QString> *Local_link_list = 0;
     ///Заполнение созданных таблиц
     for(int i = 0; i < crud->size(); i++)
     {
@@ -527,7 +527,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
        }
 
        bool temp = false;
-       if(vector_str != nullptr)
+       if(vector_str != 0)
            for (int v=0;v<vector_str->size();v++)
            {
                if(crud->at(i)->row_id == vector_str->at(v).at(0) || crud->at(i)->row_id == vector_str->at(v).at(1))
@@ -537,7 +537,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                    break;
                }
            }
-       if (!temp && vector_str != nullptr)
+       if (!temp && vector_str != 0)
        {
            query1.prepare("SELECT uuid_generate_v1()");
            if(query1.exec())
@@ -606,7 +606,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
            }
        }
        //Линкование записей
-       if (list_id != nullptr)
+       if (list_id != 0)
        {
            for (int a = 0; a < list_id->size();a++)
            {
@@ -624,7 +624,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
 
        }
        //Линкование вектором
-       if (vector != nullptr)
+       if (vector != 0)
            for(int u=0;u<vector->size();u++)
            {
                if(vector->at(u).at(0) == crud->at(i)->zk_id)
@@ -641,7 +641,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
                    }
                         else
                    {
-                       if (Local_link_list == nullptr)
+                       if (Local_link_list == 0)
                             Local_link_list = new QList<QString>;
 
                        Local_link_list->append(query.value(1).toString());
@@ -664,7 +664,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
         isOk = db_connection::instance()->db().database(cname).transaction();
     }
 
-    if(Local_link_list != nullptr)
+    if(Local_link_list != 0)
     {
         for (int i = 1; i<Local_link_list->size(); i++)
         {
@@ -680,7 +680,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
         }
         delete Local_link_list;
     }
-    if(vector_str != nullptr)
+    if(vector_str != 0)
         for (int i = 0; i<vector_str->size(); i++)
         {
                query1.prepare("INSERT INTO zk_links (row_id1, row_id2) VALUES ((:r_id1),(:r_id2))");
@@ -707,7 +707,7 @@ bool List_master::insert_crud_in_db(QList<Crud *> *crud, QList<int> *list_id, QV
 
 bool List_master::insert_off_tel_in_db(QList<Off_tels *> *offtel)
 {
-    if(offtel == nullptr || !db_connection::instance()->db_connect())
+    if(offtel == 0 || !db_connection::instance()->db_connect())
         return false;
 
     QString cname = db_connection::instance()->db().connectionName();
@@ -801,7 +801,7 @@ QList<Crud *> *List_master::search(QString search_query)
     if (!temp.exec())
     {
         qDebug() << "*List_master::search" << temp.lastError() << temp.executedQuery();
-        return nullptr;
+        return 0;
     }else {}
 
     QList<Crud*> *crudlist = new QList<Crud*>;

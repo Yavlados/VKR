@@ -38,28 +38,28 @@ class Update : public QWidget   ///Форма поиска
     Q_OBJECT
 
 public:
-//     Table_line_delegate *delegate_ot = nullptr;
-//     Table_line_delegate *delegate_cont = nullptr;
+//     Table_line_delegate *delegate_ot = 0;
+//     Table_line_delegate *delegate_cont = 0;
 
     int main_array_index; //Необходим для очистки памяти
     Form_type frm_t;
     Import_type imprt_t;
     QMessageBox msgbx;
 
-    MTM_OwTel *ot_model = nullptr;
-    MTM_Contacts *contacts_model =  nullptr;
-    List_master *list = nullptr;
+    MTM_OwTel *ot_model = 0;
+    MTM_Contacts *contacts_model =  0;
+    List_master *list = 0;
 
     Crud *new_cr; //Новая зк
-    Crud *main_cr = nullptr; //Зк, главная в скписке линкованных или при слиянии
-    Crud *added_cr = nullptr; //добавочная при слиянии
+    Crud *main_cr = 0; //Зк, главная в скписке линкованных или при слиянии
+    Crud *added_cr = 0; //добавочная при слиянии
 
     QList<Crud*> *linked_crud();
-    QList<int> *linked_crud_id = nullptr;
+    QList<int> *linked_crud_id = 0;
 
-    QList<Crud*> *list_for_destroy = nullptr;
+    QList<Crud*> *list_for_destroy = 0;
 
-    explicit Update(QWidget *parent = nullptr);
+    explicit Update(QWidget *parent = 0);
     void set_tab_orders();
     ~Update();
 public slots:
@@ -80,10 +80,10 @@ public slots:
     void focus_on_widget();
 
 private:
-    QList<Crud*> * _linked_crud = nullptr;
+    QList<Crud*> * _linked_crud = 0;
     int index = 0;
     Ui::Update *ui;
-    QPushButton *p_b = nullptr;
+    QPushButton *p_b = 0;
     Date_form *bd;
 signals:
 
@@ -136,7 +136,7 @@ private slots:
     void compare_linked_cruds();
 
     ///Слот подсветки совпавших
-    void mark_le(QLineEdit *le, QLineEdit *le1 = nullptr, QLineEdit *le2 = nullptr);
+    void mark_le(QLineEdit *le, QLineEdit *le1 = 0, QLineEdit *le2 = 0);
 
     ///Слот Заолнения вл
     void fill_vl();

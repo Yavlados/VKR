@@ -15,7 +15,7 @@ public:
 
     QString content;
 
-    Table_line_delegate(QObject *parent = nullptr);
+    Table_line_delegate(QObject *parent = 0);
     void set_type(Number_type type_loc);
     void input_code_num (QString c_n);
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -25,8 +25,8 @@ public:
 private:
     Number_type type;
     QString code_num;//код города, 7 по умолчанию
-    MTM_OwTel *ot_model = nullptr;
-    MTM_Contacts *cont = nullptr;
+    MTM_OwTel *ot_model = 0;
+    MTM_Contacts *cont = 0;
 };
 
 #endif // TABLE_DELEGATE_H

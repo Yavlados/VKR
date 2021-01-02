@@ -74,11 +74,11 @@ class MainWindow : public QMainWindow ///Форма главного окна
     Q_OBJECT
 
 public:
-    Search *sr = nullptr;                 //форма поиска
-    Master_export_Form *exprt = nullptr;  //форма экспорта
-    Master_import_form *imprt = nullptr;  //форма импорта
-    OfficialTelephones *of = nullptr;     //форма служебных телефонов
-    class Analysis *an = nullptr;         //форма анализа
+    Search *sr = 0;                 //форма поиска
+    Master_export_Form *exprt = 0;  //форма экспорта
+    Master_import_form *imprt = 0;  //форма импорта
+    OfficialTelephones *of = 0;     //форма служебных телефонов
+    class Analysis *an = 0;         //форма анализа
 
     ///Атрибут класса MessageBox
     /**
@@ -89,22 +89,22 @@ public:
 
     Model_check_state m_c_s;
 
-    QList<Update*> *updlist = nullptr;
-    QList<Update*> *addlist = nullptr;
+    QList<Update*> *updlist = 0;
+    QList<Update*> *addlist = 0;
 
 
      MTM_Contacts *contacts_model = new MTM_Contacts;
      MTM_OwTel *ot_model = new MTM_OwTel;
-     MTM_Crud *crud_model = nullptr;
+     MTM_Crud *crud_model = 0;
 
      int zk_id = 0;
-     QString cont_num = nullptr;
+     QString cont_num = 0;
      QList<Contacts*> *contactList = new QList<Contacts*>;
      QList<Owners_tel*> *otList = new QList<Owners_tel*>;
 
 
     ///Указатель на класс для экспорта
-    For_export *form_exprt = nullptr;
+    For_export *form_exprt = 0;
 
     ///Указатель на индекс первой таблицы
     QModelIndex index_tab1;
@@ -113,10 +113,10 @@ public:
     int p_b_counter = 0;
 
 
-    explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QString file_path = nullptr;
+    QString file_path = 0;
 
 public slots:
 
@@ -124,10 +124,10 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QList<int> size_list;
-    QPushButton *p_b_forward = nullptr;
-    QPushButton *p_b_back = nullptr;
-    QPushButton *pb_clear_search = nullptr;
-    QPushButton *pbGetZkVar2 = nullptr;
+    QPushButton *p_b_forward = 0;
+    QPushButton *p_b_back = 0;
+    QPushButton *pb_clear_search = 0;
+    QPushButton *pbGetZkVar2 = 0;
 
     void setFocusOnTab(QString widgetName , QWidget *widgetOnTab);
     focusOnMain mainwindowFocus = FocusOnLeft;
@@ -144,7 +144,7 @@ private slots:
     void focusOnOT();
     void focusOnZK();
 
-    void on_tableView_clicked(const QModelIndex &index_tab1, QString num = nullptr);
+    void on_tableView_clicked(const QModelIndex &index_tab1, QString num = 0);
 
     void on_tableView_2_clicked(const QModelIndex &index);
 

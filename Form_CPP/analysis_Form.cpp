@@ -28,7 +28,7 @@ Analysis::Analysis(QWidget *parent) :
     ui->hl_TO->addWidget(d_to);
     Analysis::clear_rb_3(false);
 //    set_tab_orders();
-
+    DefaultLEFont = new QFont("MS Shell Dlg 2",11 );
 }
 
 Analysis::~Analysis()
@@ -145,7 +145,7 @@ void Analysis::on_pushButton_clicked()
     //Обработчик результатов
     An_result *ar = new An_result();
 
-    if(linelist_zk_for_analysis!= nullptr && linelist_zk_for_analysis->size() > 0)
+    if(linelist_zk_for_analysis!= 0 && linelist_zk_for_analysis->size() > 0)
     {
         for(int le =0; le < linelist_zk_for_analysis->size(); le++)
         {
@@ -419,7 +419,7 @@ void Analysis::on_pb_add_zk_clicked()
     line->setObjectName("new_zk_for_analysis");
     line->show();
 
-    if(linelist_zk_for_analysis == nullptr)
+    if(linelist_zk_for_analysis == 0)
         linelist_zk_for_analysis = new QList<QLineEdit*>;
 
     linelist_zk_for_analysis->append(line);
@@ -430,7 +430,7 @@ void Analysis::on_pb_add_zk_clicked()
 
 void Analysis::on_pb_del_zk_clicked()
 {
-    if(linelist_zk_for_analysis != nullptr && linelist_zk_for_analysis->size() > 0)
+    if(linelist_zk_for_analysis != 0 && linelist_zk_for_analysis->size() > 0)
     {
         QLayout *layout = ui->hl_for_new_zk;
         QLayoutItem *item = layout->takeAt(layout->count()-1);
@@ -439,7 +439,7 @@ void Analysis::on_pb_del_zk_clicked()
         if(linelist_zk_for_analysis->size() == 0)
         {
             delete linelist_zk_for_analysis;
-            linelist_zk_for_analysis = nullptr;
+            linelist_zk_for_analysis = 0;
         }
     }
     hlForZkHandler();

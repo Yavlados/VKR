@@ -6,17 +6,17 @@ Owners_tel::Owners_tel()
     tel_id = 0;
     internum = 0;
     oldnum  = 0;
-    _cont = nullptr;
+    _cont = 0;
 }
 
 Owners_tel::Owners_tel(int t_d): tel_id(t_d)
 {
-    _cont = nullptr;
+    _cont = 0;
 }
 
 Owners_tel::Owners_tel(int id, int zk, bool i_m, DbState st)
 {//////// Конструктор для формы добавления////////
-    _cont = nullptr;
+    _cont = 0;
     internum = i_m;
     tel_id = id;
     parentZK_id = zk;
@@ -26,7 +26,7 @@ Owners_tel::Owners_tel(int id, int zk, bool i_m, DbState st)
 Owners_tel::Owners_tel(QString t_n, int t_id, int zk, bool i_m, bool o_n, DbState st):
     tel_id (t_id), tel_num(t_n), parentZK_id(zk), internum(i_m), oldnum(o_n)
 {
-    _cont = nullptr;
+    _cont = 0;
     state = st;
 }
 
@@ -37,7 +37,7 @@ Owners_tel::~Owners_tel()
 
 QList<Contacts *> *Owners_tel::cont()
 {
-    if (_cont == nullptr)
+    if (_cont == 0)
     {
         _cont = new QList<Contacts*>;
     }
@@ -46,7 +46,7 @@ QList<Contacts *> *Owners_tel::cont()
 
 bool Owners_tel::saveAll(QList<Owners_tel *> *list)
 {
-    if(list == nullptr || !db_connection::instance()->db_connect())
+    if(list == 0 || !db_connection::instance()->db_connect())
         return false;
 
     QString cname = db_connection::instance()->db().connectionName();
@@ -99,7 +99,7 @@ bool Owners_tel::saveAll(QList<Owners_tel *> *list)
 //////// Вместо вызова списка, создаю пустой для формы добавления ///////////
 bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
 {
-    if(list==nullptr)
+    if(list==0)
         return false;
 
     qDeleteAll(*list);
@@ -131,7 +131,7 @@ bool Owners_tel::selectZkTelForAdd(QList<Owners_tel *> *list, int zk)
     }
     else
     {  //////создаю модель с двумя - id и FK///////
-           Owners_tel *ot = new Owners_tel(nullptr, zk ,IsNewing);
+           Owners_tel *ot = new Owners_tel(0, zk ,IsNewing);
            list->append(ot);
            return true;
     }
@@ -282,7 +282,7 @@ bool Owners_tel::delete_all(QList<Owners_tel *> list)
 
 bool Owners_tel::delete_all(QList<Owners_tel *> *list)
 {
-    if(list != nullptr)
+    if(list != 0)
     {
         if(!list->isEmpty())
         {
@@ -296,6 +296,6 @@ bool Owners_tel::delete_all(QList<Owners_tel *> *list)
 
         }
         delete list;
-        list = nullptr;
+        list = 0;
     }
 }

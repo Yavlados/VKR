@@ -52,7 +52,7 @@ void myMessageHandler(QtMsgType type, const QMessageLogContext &, const QString 
     QTextStream ts(&outFile);
 
     QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-    if(codec != nullptr)
+    if(codec != 0)
       ts.setCodec(codec);
 
     ts << txt << endl;

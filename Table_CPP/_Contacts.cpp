@@ -7,6 +7,7 @@ Contacts::Contacts()
     oldnum = false;
     internum = false;
     linked_id = 0;
+    db = db_connection::instance();
 }
 
 /// Конструктор класса с тремя переменными
@@ -23,7 +24,7 @@ Contacts::~Contacts()
 
 bool Contacts::saveAll_cont(QList<Contacts*> *list, int new_tel_id)
 {
-    if(list==nullptr || !db_connection::instance()->db_connect())
+    if(list==0 || !db_connection::instance()->db_connect())
         return false;
 
     QString cname = db_connection::instance()->db().connectionName();
@@ -74,7 +75,7 @@ bool Contacts::saveAll_cont(QList<Contacts*> *list, int new_tel_id)
 
 bool Contacts::selectTelContacts(QList<Contacts *> *list, int tel_id)
 {
-    if(list==nullptr)
+    if(list==0)
         return false;
 
     qDeleteAll(*list);
@@ -259,7 +260,7 @@ void Contacts::check() const
 
 bool Contacts::delete_all(QList<Contacts *> *list)
 {
-    if(list != nullptr)
+    if(list != 0)
     {
         if(!list->isEmpty())
         {
@@ -272,6 +273,6 @@ bool Contacts::delete_all(QList<Contacts *> *list)
 
         }
         delete list;
-        list = nullptr;
+        list = 0;
     }
 }

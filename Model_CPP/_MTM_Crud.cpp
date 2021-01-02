@@ -4,7 +4,7 @@
 MTM_Crud::MTM_Crud(QObject *parent):
     QAbstractTableModel(parent)
 {
-    crudlist = nullptr  ;
+    crudlist = 0  ;
 
     showing_count = Settings_connection::instance()->showing_count;//Кол-во отображаемых записей
 }
@@ -12,7 +12,7 @@ MTM_Crud::MTM_Crud(QObject *parent):
 int MTM_Crud::columnCount(const QModelIndex &parent) const
 {
     (void)parent;
-    if(crudlist==nullptr)
+    if(crudlist==0)
         return 0;
     else return Settings_connection::instance()->columns_count;
 }
@@ -20,7 +20,7 @@ int MTM_Crud::columnCount(const QModelIndex &parent) const
 int MTM_Crud::rowCount(const QModelIndex &parent) const
 {
     (void)parent;
-    if (crudlist == nullptr)
+    if (crudlist == 0)
         return 0;
     else return actcrudlist.size();
 }
@@ -32,7 +32,7 @@ void MTM_Crud::setCrudlist(QList<Crud *> *crudl)
     crudlist = crudl;
     actcrudlist.clear();
 
-    if(crudlist!=nullptr)
+    if(crudlist!=0)
     {
         for(int i=0;( i < showing_count) && (i < crudlist->size()); i++)
             if( crudlist->at(i)->state!=IsRemoved )
@@ -61,7 +61,7 @@ void MTM_Crud::setCheckedCrudlist(QList<Crud *> *crudl)
     actcrudlist.clear();
     int iterator = 0;
 
-    if(crudlist!=nullptr)
+    if(crudlist!=0)
     {
         for(int i=0; i < crudlist->size(); i++)
             if( crudlist->at(i)->state!=IsRemoved )
@@ -87,7 +87,7 @@ void MTM_Crud::setUnCheckedCrudlist(QList<Crud *> *crudl)
     crudlist = crudl;
     actcrudlist.clear();
 
-    if(crudlist!=nullptr)
+    if(crudlist!=0)
     {
         for(int i=0; i < crudlist->size(); i++)
             if( crudlist->at(i)->state!=IsRemoved )
@@ -106,7 +106,7 @@ void MTM_Crud::setUnCheckedCrudlist(QList<Crud *> *crudl)
 
 QVariant MTM_Crud::data(const QModelIndex &index, int role) const
 {
-    if( !index.isValid() || crudlist == nullptr)
+    if( !index.isValid() || crudlist == 0)
         return QVariant();
 
     int row = index.row();      ///целочисленные указатели на строку
@@ -186,7 +186,7 @@ void MTM_Crud::next_page_crud()
     int b = a+1; //индекс добавления
     actcrudlist.clear();
 
-    if(crudlist!=nullptr)
+    if(crudlist!=0)
     {
         while (b < a+showing_count+1 && b < crudlist->size())
         {
@@ -210,7 +210,7 @@ void MTM_Crud::previous_page_crud()
 
     actcrudlist.clear();
 
-    if(crudlist!=nullptr)
+    if(crudlist!=0)
     {
         while (b < a)
         {
@@ -283,7 +283,7 @@ QVariant MTM_Crud::headerData(int section, Qt::Orientation orientation, int role
 
 Qt::ItemFlags MTM_Crud::flags(const QModelIndex &index) const
 {
-    if( !index.isValid() || crudlist==nullptr )
+    if( !index.isValid() || crudlist==0 )
         return Qt::NoItemFlags;
     else
         return  Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
@@ -291,7 +291,7 @@ Qt::ItemFlags MTM_Crud::flags(const QModelIndex &index) const
 
 bool MTM_Crud::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if( !index.isValid() || crudlist == nullptr )
+    if( !index.isValid() || crudlist == 0 )
         return false;
 
     int row = index.row();      ///целочисленные указатели на строку

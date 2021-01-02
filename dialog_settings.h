@@ -14,7 +14,7 @@ class Dialog_settings : public QDialog
     Q_OBJECT
 
 public:
-    explicit Dialog_settings(QWidget *parent = nullptr);
+    explicit Dialog_settings(QWidget *parent = 0);
     ~Dialog_settings();
 
 private slots:

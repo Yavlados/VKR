@@ -18,7 +18,7 @@ class CustomTableView : public QTableView
 {
     Q_OBJECT
 public:
-    explicit CustomTableView(QWidget *parent = nullptr);
+    explicit CustomTableView(QWidget *parent = 0);
     void keyPressEvent(QKeyEvent *event) override;
     void setType(tableType t);
 signals:

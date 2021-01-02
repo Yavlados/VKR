@@ -18,7 +18,7 @@ class Master_import_form : public QWidget ///Форма импорта
     Q_OBJECT
 
 public:
-    explicit Master_import_form(QWidget *parent = nullptr);
+    explicit Master_import_form(QWidget *parent = 0);
     ~Master_import_form();
 
     QSize actual_size;
@@ -37,7 +37,7 @@ private slots:
 private:
     QWidget *parent_win;
     Ui::Master_import_form *ui;
-   QString file_path = nullptr;
+   QString file_path = 0;
 signals:
     void TESTING_open(QString filename, QString password, bool folder, bool of_t);
     void closeThis(QString);

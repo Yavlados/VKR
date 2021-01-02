@@ -23,13 +23,13 @@ class Analysis : public QWidget         ///Форма анализа
     Q_OBJECT
 
 public:
-    explicit Analysis(QWidget *parent = nullptr);
+    explicit Analysis(QWidget *parent = 0);
     ~Analysis();
 
    QList<QLineEdit*> linelist_zk_id;
-   QList<QLineEdit*> *linelist_zk_for_analysis = nullptr;
+   QList<QLineEdit*> *linelist_zk_for_analysis;
 
-    int p_b_counter = 0;
+    int p_b_counter;
 
     QVector<int> vector;
     QString Date_From, Date_To;
@@ -107,7 +107,7 @@ signals:
 
 private:
     Ui::Analysis *ui;
-     QFont *DefaultLEFont = new QFont("MS Shell Dlg 2",11 );
+     QFont *DefaultLEFont;
      Date_form *d_from;
      Date_form *d_to;
 };

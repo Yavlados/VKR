@@ -8,7 +8,7 @@
 QList<Owners_tel *> *Crud::owt()
 {
 ///идея хорошая, но мне так не нужно
-    if (_owt == nullptr)
+    if (_owt == 0)
     {
         state = IsNewing;
         _owt = new QList<Owners_tel*>;
@@ -20,7 +20,7 @@ QList<Owners_tel *> *Crud::owt()
 
 Crud::Crud(int id): zk_id(id)
 {
-    _owt = nullptr;
+    _owt = 0;
     checkState_ = Unchecked;
 }
 
@@ -31,13 +31,14 @@ Crud::~Crud()
 
 Crud::Crud()
 {
-        _owt = nullptr;
+        _owt = 0;
     checkState_ = Unchecked;
+    compare_result = 0;
 }
 //-----------------------------------------------------------------------------------//
 bool Crud::selectAll(QList<Crud *> *list)
 {
-    if(list==nullptr)
+    if(list==0)
         return false;
 
     qDeleteAll(*list);
@@ -249,7 +250,7 @@ bool Crud::update_zk(QList<int> *list_id)
     {
         //вызвать метод добавления в линкед намс
 
-        if(list_id != nullptr && isOk)
+        if(list_id != 0 && isOk)
             while(querry.next())
             {
                 //Сначла проверка
@@ -450,7 +451,7 @@ Crud* Crud::id_zk_search(int zk_id)
         return cr;
     }
     else {
-        return nullptr;
+        return 0;
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -556,7 +557,7 @@ Crud* Crud::operator+ (Crud *old_crud)
 //-----------------------------------------------------------------------------------//
 QList<CompareResult>* Crud::compare_cruds(Crud *cmp_cr)
 {
-    if(cmp_cr != nullptr)
+    if(cmp_cr != 0)
     {
         QList<CompareResult> *list = new QList<CompareResult>;
 
@@ -622,7 +623,7 @@ bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id, Q
 
 //    if (!linked_nums.isEmpty())
 //        linked_nums.clear();
-    if (id_list == nullptr)
+    if (id_list == 0)
         id_list = new QList<int>;
 
     QSqlQuery temp(db_connection::instance()->db());
@@ -702,11 +703,11 @@ bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id, Q
 
             //Проверка на содержимое старого списка для линкед намс (позже удалить)
 
-          if(id_list != nullptr && !id_list->isEmpty())
+          if(id_list != 0 && !id_list->isEmpty())
             if(zk_id != 0  &&  !id_list->contains(zk_id))
                 linked_nums += ","+QString::number(zk_id);
 
-           if(id_list != nullptr && !id_list->isEmpty())
+           if(id_list != 0 && !id_list->isEmpty())
             if (temp.value(1).toInt() != 0 && !id_list->contains(zk_id))
                 linked_nums += ","+QString::number(temp.value(1).toInt());
 
@@ -717,7 +718,7 @@ bool Crud::compare_with_base(QString query_tel_num, QString query_fio, int id, Q
             owt()->at(0)->tel_num = temp.value(2).toString();*/
         }
 
-         if (compare_result == nullptr || compare_result->isEmpty())
+         if (compare_result == 0 || compare_result->isEmpty())
          {
 
              delete temp_for_contains;
@@ -762,7 +763,7 @@ QList<int> *Crud::take_links(QString row_id, SqlType sqltype, QString filename, 
     db_connection::instance()->set_Sql_type(sqltype);
     QFile db_file;
 
-    if(filename != nullptr && !filename.isEmpty())
+    if(filename != 0 && !filename.isEmpty())
     {
 
         if(sqltype == SQLliteType)
@@ -782,7 +783,7 @@ QList<int> *Crud::take_links(QString row_id, SqlType sqltype, QString filename, 
 
     QSqlQuery querry(db_connection::instance()->db());
 
-    QList<int> *temp = nullptr ;
+    QList<int> *temp = 0 ;
     querry.prepare(" Select zk.zk_id  FROM "
                    " (SELECT row_id1 FROM zk_links  "
                    " where row_id2 = '"+row_id+"' "

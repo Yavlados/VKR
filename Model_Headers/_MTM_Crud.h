@@ -20,7 +20,7 @@ class MTM_Crud: public QAbstractTableModel      ///Модель отображе
 {
          Q_OBJECT
 public:
-    MTM_Crud(QObject *parent = nullptr);
+    MTM_Crud(QObject *parent = 0);
 
     /// Переопределение количества колонок модели
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;

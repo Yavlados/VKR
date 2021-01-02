@@ -51,14 +51,14 @@ public:
     ~Crud();
 
     QList<Owners_tel*> *owt();  ///Инициализация пустого списка телефонов
-    QString row_id = nullptr;
+    QString row_id;
 
     CheckState checkState_;
     DbState state;
     QString search_res;
     bool search_is_ready;
     QMessageBox msgbx;
-    QString search_result = nullptr;
+    QString search_result;
 
     // ТАБЛИЦА 1
     int zk_id;
@@ -84,12 +84,12 @@ public:
     QString liv_flat;
 
     //Дата и время сейчас
-    QString date_add = nullptr;
-    QString time_add = nullptr;
+    QString date_add;
+    QString time_add;
     //Дата и время для редактирования
-    QString date_upd = nullptr;
+    QString date_upd;
     //новое поле - кличка
-    QString nickname = nullptr;
+    QString nickname;
  /////////////////////////////////////////////////////////////
     static bool selectAll(QList<Crud*> *list);
  /////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ public:
     void check() const;
     ///Методы поиска
     void zk_search_report(QString qry);
-    bool update_zk(QList<int> *list_id = nullptr);
+    bool update_zk(QList<int> *list_id = 0);
     bool add_zk();
     static void del_zk(int);
     static Crud* id_zk_search(int zk_id);
@@ -113,19 +113,19 @@ public:
     QList<CompareResult> *compare_cruds(Crud *cmp_cr);
 
     //Метод изменения БД линкованных записей
-    static void Change_linked_in_db(bool state,int id, QString linked = nullptr);
+    static void Change_linked_in_db(bool state,int id, QString linked = 0);
 
-    bool compare_with_base(QString query_tel_num = nullptr, QString query_fio = nullptr, int id = 0 , QList<int> *id_list = nullptr);
+    bool compare_with_base(QString query_tel_num = 0, QString query_fio = 0, int id = 0 , QList<int> *id_list = 0);
 
     static QList<int> string_parsing(QString linked_nums_string);
 
     ///Метод разрыва связи
     bool destroy_link(int id);
 
-    QList<Cl_in_db_struct> *compare_result = nullptr;
+    QList<Cl_in_db_struct> *compare_result;
 
     ///Методы rowid
-    static QList<int> *take_links(QString row_id, SqlType sqltype, QString filename = nullptr, QString password = nullptr   );
+    static QList<int> *take_links(QString row_id, SqlType sqltype, QString filename = 0, QString password = 0   );
 
 
     static bool delete_all(QList<Crud*> *list);

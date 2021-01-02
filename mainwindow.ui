@@ -28,11 +28,6 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background-color:rgb(255, 243, 205);
-
-</string>
-  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
@@ -48,8 +43,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1159</width>
-         <height>742</height>
+         <width>1164</width>
+         <height>747</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
@@ -142,8 +137,8 @@ color:rgb(77, 62, 62)
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>379</width>
-                  <height>672</height>
+                  <width>380</width>
+                  <height>681</height>
                  </rect>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_7">
@@ -410,7 +405,7 @@ color:rgb(77, 62, 62)
              <bool>false</bool>
             </property>
             <attribute name="title">
-             <string>Записные книги</string>
+             <string>События</string>
             </attribute>
             <layout class="QGridLayout" name="gridLayout_2">
              <item row="0" column="0">
@@ -427,7 +422,7 @@ color:rgb(77, 62, 62)
                   <x>0</x>
                   <y>0</y>
                   <width>698</width>
-                  <height>672</height>
+                  <height>681</height>
                  </rect>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_9">
@@ -701,7 +696,7 @@ color:rgb(77, 62, 62)
      <x>0</x>
      <y>0</y>
      <width>1233</width>
-     <height>28</height>
+     <height>27</height>
     </rect>
    </property>
    <property name="font">

@@ -13,8 +13,8 @@ enum component_type{    Ow_tel_num = 0,
 struct component_content{
                         bool    Oldnum = false;
                         bool    Internum = false;
-                        QString tel_num = nullptr;
-                        QString mark = nullptr;
+                        QString tel_num = 0;
+                        QString mark = 0;
                         };
 
 namespace Ui {
@@ -26,10 +26,10 @@ class Component : public QDialog
     Q_OBJECT
 
 public:
-    explicit Component(QWidget *parent = nullptr);
+    explicit Component(QWidget *parent = 0);
     ~Component();
 
-    component_content *content = nullptr;
+    component_content *content = 0;
 
     QString str;
 public slots:
@@ -37,7 +37,7 @@ public slots:
 
     void set_type(component_type c_t);
 
-    void set_index_data(Owners_tel *ow_t = nullptr, Contacts *cnt = nullptr);
+    void set_index_data(Owners_tel *ow_t = 0, Contacts *cnt = 0);
 
     void closeEvent(QCloseEvent *event);
 

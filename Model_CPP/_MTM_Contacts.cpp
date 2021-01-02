@@ -10,14 +10,15 @@ void MTM_Contacts::up_flag()
 MTM_Contacts::MTM_Contacts(QObject *parent):
     QAbstractTableModel(parent)
 {
-    clist = nullptr;
+    clist = 0;
     state = Show_cont;
+    linked_flg = false;
 }
 
 /// Определение методов
 int MTM_Contacts::columnCount(const QModelIndex & parent) const
 {
-    if( clist==nullptr)
+    if( clist==0)
         return 0;
     else {
         if (state == Show_cont)
@@ -32,7 +33,7 @@ int MTM_Contacts::columnCount(const QModelIndex & parent) const
 int MTM_Contacts::rowCount(const QModelIndex &parent) const
 {
     (void)parent;
-    if (  clist==nullptr )
+    if (  clist==0 )
         return 0;
     else
     {
@@ -48,7 +49,7 @@ void MTM_Contacts:: setContactList(QList<Contacts *> *contactList)
     clist = contactList;
     actlist.clear();
 
-    if(clist!=nullptr)
+    if(clist!=0)
     {
         for(int i=0; i < clist->size(); i++)
             if( clist->at(i)->cont_state!=IsRemoved )
@@ -60,7 +61,7 @@ void MTM_Contacts:: setContactList(QList<Contacts *> *contactList)
 
 QVariant MTM_Contacts::data(const QModelIndex &index, int role) const
 {
-    if( !index.isValid() || clist==nullptr)
+    if( !index.isValid() || clist==0)
         return QVariant();
 
     int row = index.row();      ///целочисленные указатели на строку
@@ -159,7 +160,7 @@ QVariant MTM_Contacts::headerData(int section, Qt::Orientation orientation, int 
 
 Qt::ItemFlags MTM_Contacts::flags ( const QModelIndex & index ) const
 {
-    if( !index.isValid() || clist==nullptr)
+    if( !index.isValid() || clist==0)
         return Qt::NoItemFlags;
 
     if( state == Show_cont )
@@ -170,7 +171,7 @@ Qt::ItemFlags MTM_Contacts::flags ( const QModelIndex & index ) const
 
 bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, int role )
 {
-    if( !index.isValid() || clist==nullptr )
+    if( !index.isValid() || clist==0 )
         return false;
 
     int row = index.row();      ///целочисленные указатели на строку
@@ -228,7 +229,7 @@ bool MTM_Contacts::setData ( const QModelIndex & index, const QVariant & value, 
 
 void MTM_Contacts::addRow_contact(Contacts *cnt)
 {
-    if (clist==nullptr )
+    if (clist==0 )
         return;
 
     beginInsertRows(QModelIndex(),actlist.size(),actlist.size());
@@ -240,13 +241,13 @@ void MTM_Contacts::addRow_contact(Contacts *cnt)
 
 void MTM_Contacts::delRow_contact(const QModelIndex &index)
    {
-       if (clist==nullptr)
+       if (clist==0)
            return;
 
        beginRemoveRows(QModelIndex(),index.row(),index.row());
 
        Contacts *cont = actlist.at(index.row());
-       if( cont!=nullptr)
+       if( cont!=0)
        {
            actlist.removeAt(index.row());
 
@@ -265,7 +266,7 @@ void MTM_Contacts::delRow_contact(const QModelIndex &index)
 
 void MTM_Contacts::delBindedContacts(int tel_id)
 {
-       if (clist == nullptr)
+       if (clist == 0)
           return;
        QList<Contacts*> *temp_list = new  QList<Contacts*>;
        for (int i =0; i < clist->size(); i++)

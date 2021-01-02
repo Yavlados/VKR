@@ -30,7 +30,7 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
 
          QTextStream in(&export_report);
          QTextCodec *codec = QTextCodec::codecForName("Windows-1251");
-         if(codec != nullptr)
+         if(codec != 0)
            in.setCodec(codec);
 
          in << info_text;
@@ -193,7 +193,6 @@ bool For_export::Do_export(QString filename, QList<Crud *> *crud, QString passwo
                 else
                 {
                     query.clear();
-                    qDebug()<< crud->at(i)->owt()->at(a)->cont()->size();
                     for (int b=0; b<crud->at(i)->owt()->at(a)->cont()->size();b++)
                     {
                         query.prepare("INSERT INTO contacts (cl_telephone, cl_info, FK_Cl_telephone, internum, oldnum) VALUES ( (:tel_num), (:mark), (:fk_id), (:i_n), (:o_n))");

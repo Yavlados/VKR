@@ -9,7 +9,7 @@ class Table_show_delegate: public QItemDelegate       ///Класс делега
     Q_OBJECT
 public:
     QString code_num;
-    Table_show_delegate(QObject *parent = nullptr);
+    Table_show_delegate(QObject *parent = 0);
      bool hasClipping() const;
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 private:

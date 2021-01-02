@@ -5,6 +5,7 @@
 #include "_Zk_links.h"
 
 #include <QString>
+#include <QVector>
 
 enum Form_state { Export = 0,
                   Import = 1,
@@ -40,13 +41,13 @@ public:
      void fill_contacts_list(QList<Contacts*> *contactLIST, int tel_id, int new_tel_id, SqlType);
 
     /// Достает список ЗК, а также связанных с ними объектов (телефоны и контакты)
-    export_state fill_all_crud_list(QList<Crud*> *crud, SqlType sqltype, QString password = nullptr, QString filename = nullptr);
+    export_state fill_all_crud_list(QList<Crud*> *crud, SqlType sqltype, QString password = 0, QString filename = 0);
 
     ///Достает список всех служебных телефонов
-    export_state fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt, QString password = nullptr, QString filename = nullptr);
+    export_state fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt, QString password = 0, QString filename = 0);
 
     ///Добавляет в базу список ЗК
-    bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = nullptr, QVector<QVector<int> > *vector = nullptr,QVector<QVector<QString>> *vector_str = nullptr, bool old_db = false);
+    bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = 0, QVector<QVector<int> > *vector = 0,QVector<QVector<QString>> *vector_str = 0, bool old_db = false);
 
     ///Добавляет в базу список служебных телефонов
     bool insert_off_tel_in_db(QList<Off_tels *> *offtel);

@@ -30,6 +30,8 @@ win32:RC_ICONS += png/MainPic.ico
 # CONFIG += release
 
 SOURCES += \
+    New_db_model/_Event.cpp \
+    New_db_model/_Person.cpp \
         main.cpp \
     for_analysis.cpp \
     db_connection.cpp \
@@ -67,6 +69,9 @@ SOURCES += \
     popup.cpp
 
 HEADERS += \
+    New_db_model/_Event.h \
+    New_db_model/_Person.h \
+    New_db_model/enums.h \
     db_connection.h \
     for_analysis.h \
     Table_Headers/_Contacts.h \
@@ -133,4 +138,5 @@ INCLUDEPATH += $$PWD\
                Model_CPP\
                Table_Headers\
                Form_Headers\
-               Model_Headers
+               Model_Headers\
+               New_db_model

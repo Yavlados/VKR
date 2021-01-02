@@ -9,7 +9,7 @@ Import_Form::Import_Form(QWidget *parent) :
     parent_win = parent;
     ui->setupUi(this);
 
-    event = nullptr;//Зануляю, тк игнорируется компилятором в методе
+    event = 0;//Зануляю, тк игнорируется компилятором в методе
 
     list = new List_master(Import);
 
@@ -31,7 +31,7 @@ Import_Form::Import_Form(QWidget *parent) :
 
 Import_Form::~Import_Form()
 {
-    if(crud != nullptr)
+    if(crud != 0)
         Crud::delete_all(crud);
     delete ui;
 }
@@ -71,7 +71,7 @@ void Import_Form::abort_link_import()
     }
     delete linked_id_list;
 
-    linked_id_list=nullptr;
+    linked_id_list=0;
 
     clear_models();
      clear_label();
@@ -81,7 +81,7 @@ void Import_Form::abort_link_import()
 
 void Import_Form::import_list_with_link()
 {
-    if(links_vector == nullptr)
+    if(links_vector == 0)
         links_vector = new QVector<QVector<int> >;
 
     QList<Crud*> *new_crudlist = new QList<Crud*>;//Собираем цепочку
@@ -113,7 +113,7 @@ void Import_Form::import_list_with_link()
 
     delete new_crudlist;
     delete linked_id_list;
-    linked_id_list=nullptr;
+    linked_id_list=0;
     clear_models();
     clear_label();
     if (!begin_import()) //
@@ -146,7 +146,7 @@ void Import_Form::recieve_added_import_crud(Crud *new_cr)
 void Import_Form::make_link_clicked()
 {
     //Сохранить со связью
-    if(vector == nullptr)
+    if(vector == 0)
         vector = new QVector<QVector<QString>   >;
     Text_handler::instance()->set_make_link_text(crud_model->actcrudlist.at(0), crud_model_pg->actcrudlist.at(0));
     QString row_id1 = crud_model->actcrudlist.at(0)->row_id;
@@ -181,10 +181,10 @@ bool Import_Form::add_to_db()
   if (!crud->isEmpty())
   {
 
-    QList<int> *templist = nullptr;
+    QList<int> *templist = 0;
     if(list->insert_crud_in_db(crud,templist,links_vector,vector, old_db))
     {
-//        if(vector != nullptr)
+//        if(vector != 0)
 //            if(!vector->isEmpty())
 //            {
 //                list->fill_links(vector);
@@ -193,13 +193,13 @@ bool Import_Form::add_to_db()
       //  QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно! Импортировано %1 записных книг").arg(QString::number(crud->size()))); ///Хвалимся
         emit Refresh_tab();
 
-        if(ddb != nullptr)
+        if(ddb != 0)
             ddb->accepted();
         return true;
     } else
     {
         QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("При импорте возникли неполадки!")); ///Хвалимся
-        if(ddb != nullptr)
+        if(ddb != 0)
             ddb->rejected();
 
         return false; //Если нет совпадениий, необходимо начинать импорт
@@ -210,7 +210,7 @@ bool Import_Form::add_to_db()
      if(!isOk)
      {
          QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("При импорте возникли неполадки!")); ///Хвалимся
-         if(ddb != nullptr)
+         if(ddb != 0)
              ddb->rejected();
          return false;
      } else
@@ -218,7 +218,7 @@ bool Import_Form::add_to_db()
         // QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Импорт прошел успешно! Импортировано %1 служебных телефонов").arg(QString::number(offtel->size()))); ///Хвалимся
          emit Refresh_tab();
 
-         if(ddb != nullptr)
+         if(ddb != 0)
              ddb->accepted();
          return true;
      }
@@ -226,7 +226,7 @@ bool Import_Form::add_to_db()
   else
   {
       QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("При сравнении не осталось ни одной записи для импорта")); ///Хвалимся
-      if(ddb != nullptr)
+      if(ddb != 0)
           ddb->rejected();
       return false;
   }
@@ -287,8 +287,7 @@ bool Import_Form::compare_dump_db()
         //Сперва проверим по роу айди
         QSqlQuery temp(db_connection::instance()->db());
         temp.prepare("SELECT zk.zk_id FROM zk WHERE zk.row_id = ('"+crud->at(a)->row_id+"')");
-        if(!temp.exec())
-            qDebug() << temp.executedQuery();
+        if(!temp.exec()){}
         else
         {
             while(temp.next())
@@ -298,17 +297,17 @@ bool Import_Form::compare_dump_db()
                                         "<b>"+QString::number(temp.value(0).toInt())+"</b> </div>  </font>");
                 ui->vl_for_label->addWidget(lb);
 
-               QList<int> *import_crud_links = nullptr;
+               QList<int> *import_crud_links = 0;
 
-                if(pass != nullptr )
+                if(pass != 0 )
                     import_crud_links =  Crud::take_links(crud->at(a)->row_id, SQLlitechipher, Local_filename, pass);
                 else
                    import_crud_links =  Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
 
 
-                if(import_crud_links != nullptr && !import_crud_links->isEmpty())
+                if(import_crud_links != 0 && !import_crud_links->isEmpty())
                 {
-                    if(linked_id_list != nullptr)
+                    if(linked_id_list != 0)
                         delete linked_id_list;
 
                     linked_id_list = new QList<int>;
@@ -395,11 +394,11 @@ bool Import_Form::compare_dump_db()
             if(crud->at(a)->row_id != QString::number(1) )
             {
                 QList<int> *import_crud_links = Crud::take_links(crud->at(a)->row_id, SQLliteType, Local_filename);
-               if(import_crud_links != nullptr)
+               if(import_crud_links != 0)
                 {
                     if(!import_crud_links->isEmpty())
                     {
-                        if(linked_id_list != nullptr)
+                        if(linked_id_list != 0)
                             delete linked_id_list;
 
                         linked_id_list = new QList<int>;
@@ -424,7 +423,7 @@ bool Import_Form::compare_dump_db()
                 }
             }
 
-                QLabel *lb= nullptr;
+                QLabel *lb= 0;
                 if(cr->compare_result->at(0).Tel_num != "NULL") //Совпадение по телефону
                 {
                     db->set_Sql_type(PSQLtype);
@@ -509,11 +508,11 @@ bool Import_Form::compare_dump_db()
 
 Import_state Import_Form::compare_of_t()
 {
-    if (offtel_pg != nullptr)
+    if (offtel_pg != 0)
     {
         Off_tels::clear_list(offtel_pg);
         delete offtel_pg;
-        offtel_pg = nullptr;
+        offtel_pg = 0;
     }
 
     if(a<offtel->size())
@@ -523,7 +522,7 @@ Import_state Import_Form::compare_of_t()
             QString query = " tel_num = '"+offtel->at(a)->tel_num+"' "
                     " OR service_name = '"+offtel->at(a)->service_name+"'";
             QList<Off_tels *> *matches = Off_tels::compare_with_base(query);
-            if(matches == nullptr)
+            if(matches == 0)
             {
                 return Import_abort;        //ошибка при заполнении
             } else
@@ -756,7 +755,7 @@ bool Import_Form::Testing_open_db(QString filename, QString password, bool off_t
     db_file.setFileName(filename);
         if(filename.endsWith(".db"))
         {
-            if (password != nullptr && !password.isEmpty())
+            if (password != 0 && !password.isEmpty())
                     pass = password;
 
             /// В зависимости от наличия пароля меняем драйвер
@@ -1262,7 +1261,7 @@ void Import_Form::switch_zk_to_crud(QList<Crud *> *crud_list, OldDbZk *zk)
             local_vector.append(row_id1);
             local_vector.append(row_id2);
 
-            if(vector == nullptr)
+            if(vector == 0)
                  vector = new QVector<QVector<QString>   >;
 
             vector->append(local_vector);

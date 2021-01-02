@@ -4,7 +4,7 @@
 MTM_OwTel::MTM_OwTel(QObject *parent):
     QAbstractTableModel(parent)
 {
-    otlist = nullptr;
+    otlist = 0;
     //state = Show_Ot;
     mark_rows.clear();
 }
@@ -16,7 +16,7 @@ void MTM_OwTel::setOTList(QList<Owners_tel *> *OTList)
     otlist = OTList;
     actotlist.clear();
 
-    if(otlist!=nullptr)
+    if(otlist!=0)
     {
         for(int i=0 ;i < otlist->size() ;i++)
             if( otlist->at(i)->state!=IsRemoved )
@@ -27,7 +27,7 @@ void MTM_OwTel::setOTList(QList<Owners_tel *> *OTList)
 
 int MTM_OwTel::columnCount(const QModelIndex &parent) const
 {
-    if(otlist==nullptr)
+    if(otlist==0)
         return 0;
     else return 3;
 }
@@ -35,7 +35,7 @@ int MTM_OwTel::columnCount(const QModelIndex &parent) const
 int MTM_OwTel::rowCount(const QModelIndex &parent) const
 {
     (void)parent;
-    if ( otlist == nullptr)
+    if ( otlist == 0)
         return 0;
     else                          /// Owners_tel
         return actotlist.size();
@@ -43,7 +43,7 @@ int MTM_OwTel::rowCount(const QModelIndex &parent) const
 
 QVariant MTM_OwTel::data(const QModelIndex &index, int role) const
 {
-    if( !index.isValid() || otlist==nullptr)
+    if( !index.isValid() || otlist==0)
         return QVariant();
 
     int row = index.row();      ///целочисленные указатели на строку
@@ -136,7 +136,7 @@ QVariant MTM_OwTel::headerData(int section, Qt::Orientation orientation, int rol
 
 Qt::ItemFlags MTM_OwTel::flags(const QModelIndex &index) const
 {
-    if( !index.isValid() ||  otlist==nullptr)
+    if( !index.isValid() ||  otlist==0)
         return Qt::NoItemFlags;
     else
     //if( state == Show_Ot )
@@ -146,7 +146,7 @@ Qt::ItemFlags MTM_OwTel::flags(const QModelIndex &index) const
 /*
 //bool MTM_OwTel::setData(const QModelIndex &index, const QVariant &value, int role)
 //{
-//    if( !index.isValid() ||  otlist == nullptr )
+//    if( !index.isValid() ||  otlist == 0 )
 //        return false;
 
 //    int row = index.row();      ///целочисленные указатели на строку
@@ -222,7 +222,7 @@ QList<Owners_tel *> MTM_OwTel::recall_list()
 
 void MTM_OwTel::addRow_owner_tel(Owners_tel *newc)
 {
-        if (otlist == nullptr)
+        if (otlist == 0)
              return;
         beginInsertRows(QModelIndex(),actotlist.size(),actotlist.size());
 
@@ -235,13 +235,13 @@ void MTM_OwTel::addRow_owner_tel(Owners_tel *newc)
 void MTM_OwTel::delRow_owner_tel(const QModelIndex &index)
 {
 
-    if (otlist==nullptr)
+    if (otlist==0)
         return;
 
     beginRemoveRows(QModelIndex(),index.row(),index.row());
 
     Owners_tel *ot = actotlist.at(index.row());
-    if( ot!=nullptr)
+    if( ot!=0)
     {
         actotlist.removeAt(index.row());
         if( ot->state==IsNewing )

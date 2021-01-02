@@ -18,7 +18,7 @@ class Search : public QWidget   ///Форма поиска
     Q_OBJECT
 
 public:
-    explicit Search(QWidget *parent = nullptr);
+    explicit Search(QWidget *parent = 0);
     ~Search();
 
     QString Date_From, Date_To, Birth_date, Add_date;

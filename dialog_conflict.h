@@ -13,7 +13,7 @@ class Dialog_conflict : public QDialog
     Q_OBJECT
 
 public:
-    explicit Dialog_conflict(QWidget *parent = nullptr);
+    explicit Dialog_conflict(QWidget *parent = 0);
     ~Dialog_conflict();
 
     int state = 4;

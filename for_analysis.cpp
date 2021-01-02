@@ -100,14 +100,14 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
             {
                 if(crudlist->at(a)->zk_id == querry.value(0).toInt())    //Если запись совпадает
                 {
-                    Owners_tel *temp_ot = nullptr;
+                    Owners_tel *temp_ot = 0;
                    ///Просто добавляю новый телефон в старую запись
                     if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
                         temp_ot = new Owners_tel(querry.value(1).toString(),1,crudlist->at(a)->zk_id, false, true);
                     else
                         temp_ot = new Owners_tel(querry.value(1).toString(),1,crudlist->at(a)->zk_id, false, false);
 
-                    Contacts *temp_cont = nullptr;
+                    Contacts *temp_cont = 0;
                     if(querry.value(3).toString().startsWith("499") || querry.value(3).toString().startsWith("495") )
                         temp_cont = new Contacts(1, querry.value(3).toString(), querry.value(2).toString(),temp_ot->tel_id, false, true);
                     else
@@ -124,7 +124,7 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
                 metka: //То добавляю новую запись
                 Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
 
-                Owners_tel *temp_ot = nullptr;
+                Owners_tel *temp_ot = 0;
                 ///Беру его телефон с id = 1 (Значит телефон анализируемого обнаружен в контактах этого человека)
 
                 if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
@@ -132,7 +132,7 @@ QList<Crud *> *For_analysis::get_1_var(Crud *cr, QList<Crud *> *crudlist, QStrin
                 else
                     temp_ot = new Owners_tel(querry.value(1).toString(),1,temp_crud->zk_id, false, false);
 
-                Contacts *temp_cont = nullptr;
+                Contacts *temp_cont = 0;
                 if( querry.value(3).toString().startsWith("499") || querry.value(3).toString().startsWith("495") )
                     temp_cont = new Contacts(1, querry.value(3).toString(), querry.value(2).toString(),temp_ot->tel_id,false, true);
                 else
@@ -197,8 +197,8 @@ QList<Crud *> *For_analysis::get_2_var(Crud *cr, QList<Crud *> *crudlist, QStrin
                       {
                           if(crudlist->at(a)->zk_id == querry.value(0).toInt())    //Если запись совпадает
                           {
-                              Owners_tel *temp_ot = nullptr;
-                              Contacts *temp_cont = nullptr;
+                              Owners_tel *temp_ot = 0;
+                              Contacts *temp_cont = 0;
 
                                 if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
                                temp_ot = new Owners_tel(querry.value(1).toString(),2,crudlist->at(a)->zk_id, false, true);
@@ -223,8 +223,8 @@ QList<Crud *> *For_analysis::get_2_var(Crud *cr, QList<Crud *> *crudlist, QStrin
                       {
                           metka: //То добавляю новую запись
                           Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
-                          Owners_tel *temp_ot = nullptr;
-                          Contacts *temp_cont = nullptr;
+                          Owners_tel *temp_ot = 0;
+                          Contacts *temp_cont = 0;
 
                           ///Беру его телефон с id = 2 (ЗНАЧИТ ТЕЛЕФОН - НОМЕР АНАЛИЗИРУЕМОГО, В КОТОРОМ ОБНАРУЖЕН КОНТАКТ)
                           if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
@@ -295,8 +295,8 @@ QList<Crud *> *For_analysis::get_3_var(Crud *cr, QList<Crud *> *crudlist, QStrin
               {
                   if(crudlist->at(a)->zk_id == querry.value(0).toInt())    //Если запись совпадает
                   {
-                      Owners_tel *temp_ot = nullptr;
-                      Contacts *temp_cont = nullptr;
+                      Owners_tel *temp_ot = 0;
+                      Contacts *temp_cont = 0;
                       ///Просто добавляю новый телефон в старую запись
                       if(querry.value(1).toString().startsWith("499") || querry.value(1).toString().startsWith("495") )
                         temp_ot = new Owners_tel(querry.value(1).toString(),3,crudlist->at(a)->zk_id,false, true);
@@ -318,8 +318,8 @@ QList<Crud *> *For_analysis::get_3_var(Crud *cr, QList<Crud *> *crudlist, QStrin
               if(add_is_ready==false) //если флаг апдейта не изменился
               {
                   metka: //То добавляю новую запись
-                  Owners_tel *temp_ot = nullptr;
-                  Contacts *temp_cont = nullptr;
+                  Owners_tel *temp_ot = 0;
+                  Contacts *temp_cont = 0;
                   Crud *temp_crud = Crud::id_zk_search(querry.value(0).toInt());//Собираю информацию о владельце ЗК
 
                   ///Беру его телефон с id = 2 (ЗНАЧИТ ТЕЛЕФОН - НОМЕР АНАЛИЗИРУЕМОГО, В КОТОРОМ ОБНАРУЖЕН КОНТАКТ)

@@ -21,7 +21,7 @@ class MTM_OwTel: public QAbstractTableModel     ///Модель отображе
 public:
      //Calling_state_Ot state;
      QList<int> mark_rows; //индексы строчек для подсвечивания
-    MTM_OwTel(QObject *parent = nullptr);
+    MTM_OwTel(QObject *parent = 0);
     /// Получение списка ТЕЛЕФОНОВ моделью
     virtual void setOTList(QList<Owners_tel*> *OTList);
 
@@ -46,7 +46,7 @@ public:
     ///TESTING
     virtual QList<Owners_tel*> recall_list();
 
-    QList<Owners_tel*> *otlist = nullptr;    ///< исходный список
+    QList<Owners_tel*> *otlist;    ///< исходный список
     QList<Owners_tel*> actotlist;  ///<  отображаемый список
 private:
 

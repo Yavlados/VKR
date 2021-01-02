@@ -21,7 +21,7 @@ class Settings_Form : public QWidget    ///Форма поиска
     Q_OBJECT
 
 public:
-    explicit Settings_Form(QWidget *parent = nullptr);
+    explicit Settings_Form(QWidget *parent = 0);
     ~Settings_Form();
    void dragEnterEvent(QDragEnterEvent *e);
 

@@ -20,7 +20,7 @@ class Date_form : public QWidget
     Q_OBJECT
 
 public:
-    explicit Date_form(QWidget *parent = nullptr);
+    explicit Date_form(QWidget *parent = 0);
     ~Date_form();
     void set_mode(date_form_type m);
     void recieve_data(QString date, QString month, QString year);
@@ -34,9 +34,9 @@ public:
     void set_month(QString t);
     void set_year(QString t);
 
-    QLineEdit *day = nullptr;
-    QLineEdit *month = nullptr;
-    QLineEdit *year = nullptr;
+    QLineEdit *day;
+    QLineEdit *month;
+    QLineEdit *year;
 
     void refresh();
 
