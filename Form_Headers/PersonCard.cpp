@@ -21,7 +21,22 @@ void PersonCard::setPerson(Person *person)
                            this->localPerson->midname);
 }
 
+//void PersonCard::close()
+//{
+
+//}
+
 void PersonCard::on_editButton_clicked()
 {
     emit openEditWindow(this->localPerson);
 }
+
+//void PersonCard::keyPressEvent(QKeyEvent *event)
+//{
+//    switch(event->key())
+//    {
+//    case Qt::Key::Key_Escape:
+//        this->close();
+//        return;
+//    }
+//}

@@ -50,7 +50,7 @@ void Component::set_type(component_type c_t)
     type = c_t;
 }
 
-void Component::set_index_data(Owners_tel *ow_t, Contacts *cnt)
+void Component::set_index_data(Telephone *ow_t, Contact *cnt)
 {
 //    content = new component_content;
 
@@ -58,7 +58,7 @@ void Component::set_index_data(Owners_tel *ow_t, Contacts *cnt)
     {
         Q_ASSERT(ow_t!=0);
 
-        content->tel_num = ow_t->tel_num;
+        content->tel_num = ow_t->num;
         content->Internum = ow_t->internum;
         content->Oldnum = ow_t->oldnum;
 
@@ -69,8 +69,8 @@ void Component::set_index_data(Owners_tel *ow_t, Contacts *cnt)
     {
         Q_ASSERT(cnt!=0);
 
-        content->tel_num = cnt->contact_tel_num;
-        content->mark = cnt->mark;
+        content->tel_num = cnt->number;
+        content->mark = cnt->alias;
         content->Internum = cnt->internum;
         content->Oldnum = cnt->oldnum;
 

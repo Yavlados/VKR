@@ -634,6 +634,27 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
         of = 0;
 
     }
+    ///NEW
+    else if(ui->tabWidget->widget(index)->objectName() == "EditPerson"){
+
+        if(this->editPersonList != 0){
+            EditPerson *ep = dynamic_cast<EditPerson*>(ui->tabWidget->widget(index)); //Приведение типа от виджета к классу
+            int i = 0;
+            QString personIdInTab =  ep->person->id;
+            while( i< this->editPersonList->size()){
+                if(this->editPersonList->at(i)->person->id == personIdInTab){
+                    delete  this->editPersonList->at(i);
+                    this->editPersonList->removeAt(i);
+                    if (this->editPersonList->isEmpty())
+                    {
+                        this->editPersonList = 0;
+                        return;
+                    }
+                } else
+                    i++;
+            }
+        }
+    }
 //    ui->tabWidget->setCurrentWidget(ui->tabWidget->widget(index-1));
 }
 //-----------------------------------------------------------------------------------//
@@ -1408,13 +1429,13 @@ void MainWindow::setFocusOnTab(QString widgetName, QWidget *widgetOnTab)
         of->focus_on_widget();
         return;
     }
-    if(widgetName =="Update")
+    else if(widgetName =="Update")
     {
         Update *upd = dynamic_cast<Update*>(widgetOnTab);
         upd->focus_on_widget();
         return;
     }
-    if(widgetName =="tab")
+    else if(widgetName =="tab")
     {
         mainwindowFocus = FocusOnRight;
         QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
@@ -1425,31 +1446,36 @@ void MainWindow::setFocusOnTab(QString widgetName, QWidget *widgetOnTab)
 //        ui->tableView->setFocus();
         return;
     }
-    if(widgetName =="Analysis")
+    else if(widgetName =="Analysis")
     {
         class Analysis *an = dynamic_cast<class Analysis*>(widgetOnTab);
         an->focus_on_widget();
         return;
     }
-    if(widgetName =="tab_2"){
+    else if(widgetName =="tab_2"){
         mainwindowFocus = FocusOnLeft;
         ui->lineEdit->setFocus();
         return;
     }
-    if(widgetName =="Search"){
+    else if(widgetName =="Search"){
         Search *sr = dynamic_cast<Search*>(widgetOnTab);
         sr->set_tab_orders();
         return;
     }
-   if(widgetName =="master_export_Form"){
+    else if(widgetName =="master_export_Form"){
 
        Master_export_Form *exp = dynamic_cast<Master_export_Form*>(widgetOnTab);
        exp->focus_on_widget();
        return;
    }
-    if(widgetName =="Master_import_form"){
+    else if(widgetName =="Master_import_form"){
         Master_import_form *imp = dynamic_cast<Master_import_form*>(widgetOnTab);
         imp->focus_on_widget();
+        return;
+    }
+    else if(widgetName =="EditPerson"){
+        EditPerson *ep = dynamic_cast<EditPerson*>(widgetOnTab);
+        ep->setFocus();
         return;
     }
 }
@@ -1563,6 +1589,9 @@ void MainWindow::openEditWindow(Person *p)
     }
 
     EditPerson *ep = new EditPerson;
+    ep->setType(updatePerson);
+    connect(ep, SIGNAL(closeThis(EditPerson*)), this, SLOT(closePersonEdit(EditPerson*)));
+
     ep->setPerson(p);
     this->editPersonList->append(ep);
 
@@ -1570,5 +1599,30 @@ void MainWindow::openEditWindow(Person *p)
                               this->editPersonList->at(this->editPersonList->size()-1),
                               "Редактирование фигуранта "+p->name + " "+ p->lastname + " " + p->midname);
     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+}
+
+void MainWindow::closePersonEdit(EditPerson *ep)
+{
+    if(this->editPersonList != 0){
+        int i = 0;
+        QString personIdInTab =  ep->person->id;
+        while( i< this->editPersonList->size()){
+            if(this->editPersonList->at(i)->person->id == personIdInTab){
+                delete  this->editPersonList->at(i);
+                this->editPersonList->removeAt(i);
+                if (this->editPersonList->isEmpty())
+                {
+                    this->editPersonList = 0;
+                    return;
+                }
+                ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+                QWidget *widget = ui->tabWidget->widget(ui->tabWidget->currentIndex());
+                QString widgetName = widget->objectName();
+                this->setFocusOnTab(widgetName, widget);
+                return;
+            } else
+                i++;
+        }
+    }
 }
 

@@ -2,8 +2,8 @@
 #define COMPONENT_H
 
 #include <QDialog>
-#include "_Owners_tel.h"
-#include "_Contacts.h"
+#include "_Telephone.h"
+#include "_Contact.h"
 
 enum component_type{    Ow_tel_num = 0,
                         Contact_num = 1,
@@ -37,7 +37,7 @@ public slots:
 
     void set_type(component_type c_t);
 
-    void set_index_data(Owners_tel *ow_t = 0, Contacts *cnt = 0);
+    void set_index_data(Telephone *ow_t = 0, Contact *cnt = 0);
 
     void closeEvent(QCloseEvent *event);
 

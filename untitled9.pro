@@ -32,9 +32,13 @@ win32:RC_ICONS += png/MainPic.ico
 SOURCES += \
     EditPerson.cpp \
     Form_Headers/PersonCard.cpp \
+    New_db_MTM/_MTM_Contact.cpp \
     New_db_MTM/_MTM_Event.cpp \
+    New_db_MTM/_MTM_Telephone.cpp \
+    New_db_model/_Contact.cpp \
     New_db_model/_Event.cpp \
     New_db_model/_Person.cpp \
+    New_db_model/_Telephone.cpp \
         main.cpp \
     for_analysis.cpp \
     db_connection.cpp \
@@ -74,9 +78,13 @@ SOURCES += \
 HEADERS += \
     EditPerson.h \
     Form_Headers/PersonCard.h \
+    New_db_MTM/_MTM_Contact.h \
     New_db_MTM/_MTM_Event.h \
+    New_db_MTM/_MTM_Telephone.h \
+    New_db_model/_Contact.h \
     New_db_model/_Event.h \
     New_db_model/_Person.h \
+    New_db_model/_Telephone.h \
     New_db_model/enums.h \
     db_connection.h \
     for_analysis.h \

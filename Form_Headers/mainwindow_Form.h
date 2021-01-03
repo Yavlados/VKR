@@ -273,6 +273,8 @@ private slots:
     void on_eventTable_clicked(const QModelIndex &index);
 
     void openEditWindow(Person *p);
+
+    void closePersonEdit(EditPerson*);
 signals:
     void Send_data(Crud *cr, int index);
 

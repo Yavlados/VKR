@@ -2,7 +2,16 @@
 
 Person::Person()
 {
+    this->_telephones = 0;
+}
 
+QList<Telephone *> *Person::telephones()
+{
+    if (this->_telephones == 0)
+    {
+        this->_telephones = new QList<Telephone*>;
+    }
+    return this->_telephones;
 }
 
 bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)

@@ -579,39 +579,39 @@ void Update::on_pb_del_contact_line_clicked()
 //-----------------------------------------------------------------------------------//
 void Update::on_pb_add_contact_line_clicked()
 {
-    QModelIndex index = ui->tableView->currentIndex();
-       if(index.isValid())
-       {
-           Component *comp = new Component();
-           comp->set_type(new_cont_tel);
+//    QModelIndex index = ui->tableView->currentIndex();
+//       if(index.isValid())
+//       {
+//           Component *comp = new Component();
+//           comp->set_type(new_cont_tel);
 
-           Contacts *cnt = new Contacts();
-           cnt->parent_OT_id = new_cr->owt()->at(index.row())->tel_id;
+//           Contacts *cnt = new Contacts();
+//           cnt->parent_OT_id = new_cr->owt()->at(index.row())->tel_id;
 
-           cnt->oldnum = false;
-           comp->set_index_data(0,cnt);
-           int st = comp->exec();
-           comp->setFocus();
-           switch(st)
-           {
-           case 1:
-               cnt->oldnum = comp->content->Oldnum;
-               cnt->internum = comp->content->Internum;
-               cnt->contact_tel_num= comp->content->tel_num;
-               cnt->mark = comp->content->mark;
-               contacts_model->addRow_contact(cnt);
+//           cnt->oldnum = false;
+//           comp->set_index_data(0,cnt);
+//           int st = comp->exec();
+//           comp->setFocus();
+//           switch(st)
+//           {
+//           case 1:
+//               cnt->oldnum = comp->content->Oldnum;
+//               cnt->internum = comp->content->Internum;
+//               cnt->contact_tel_num= comp->content->tel_num;
+//               cnt->mark = comp->content->mark;
+//               contacts_model->addRow_contact(cnt);
 
-               ui->tableView_2->setModel(contacts_model);
+//               ui->tableView_2->setModel(contacts_model);
 
-               QString temp = "Номера контактов("+QString::number(contacts_model->actlist.count())+")";
-               ui->label_cont->setText(temp);
+//               QString temp = "Номера контактов("+QString::number(contacts_model->actlist.count())+")";
+//               ui->label_cont->setText(temp);
 
-               ui->tableView_2->resizeColumnToContents(2);
-               break;
-           }
-           delete comp;
-       }else
-        return;
+//               ui->tableView_2->resizeColumnToContents(2);
+//               break;
+//           }
+//           delete comp;
+//       }else
+//        return;
 
 //    QModelIndex index = ui->tableView->currentIndex();
 //    if(index.isValid())
@@ -1596,30 +1596,30 @@ void Update::mark_le(QLineEdit *le, QLineEdit *le1, QLineEdit *le2)
 
 void Update::on_tableView_doubleClicked(const QModelIndex &index)
 {
-    Component *comp = new Component();
-    comp->set_type(Ow_tel_num);
-    Owners_tel *owt =ot_model->actotlist.at(index.row());
-    comp->set_index_data(owt, 0);
-    int st = comp->exec();
-               comp->setFocus();
-    switch(st)
-    {
-        case 1:
-        owt->oldnum = comp->content->Oldnum;
-        owt->internum = comp->content->Internum;
-        owt->tel_num = comp->content->tel_num;
+//    Component *comp = new Component();
+//    comp->set_type(Ow_tel_num);
+//    Owners_tel *owt =ot_model->actotlist.at(index.row());
+//    comp->set_index_data(owt, 0);
+//    int st = comp->exec();
+//               comp->setFocus();
+//    switch(st)
+//    {
+//        case 1:
+//        owt->oldnum = comp->content->Oldnum;
+//        owt->internum = comp->content->Internum;
+//        owt->tel_num = comp->content->tel_num;
 
-        if(owt->state != IsNewing)
-            owt->state = IsChanged;
+//        if(owt->state != IsNewing)
+//            owt->state = IsChanged;
 
-        //ot_model->setOTList(new_cr->owt());
-        ui->tableView->setModel(ot_model);
+//        //ot_model->setOTList(new_cr->owt());
+//        ui->tableView->setModel(ot_model);
 
-        QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
-        ui->label_tels->setText(temp);
-        break;
-    }
-    delete comp;
+//        QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+//        ui->label_tels->setText(temp);
+//        break;
+//    }
+//    delete comp;
 }
 
 void Update::on_tableView_entered(const QModelIndex &index)
@@ -1705,58 +1705,58 @@ void Update::upload_main_cr()
 
 void Update::on_pb_add_line_telephone_clicked()
 {
-    Component *comp = new Component();
-    comp->set_type(new_ow_tel);
-    Owners_tel *owt = new Owners_tel(ot_model->otlist->count(),0,false,IsNewing);
-    owt->oldnum = false;
-    comp->set_index_data(owt);
-    int st = comp->exec();
-               comp->setFocus();
-    switch(st)
-    {
-        case 1:
-            owt->oldnum = comp->content->Oldnum;
-            owt->internum = comp->content->Internum;
-            owt->tel_num = comp->content->tel_num;
-            ot_model->addRow_owner_tel(owt);
-            //owt->state = IsChanged;
-            //ot_model->setOTList(new_cr->owt());
-            ui->tableView->setModel(ot_model);
+//    Component *comp = new Component();
+//    comp->set_type(new_ow_tel);
+//    Owners_tel *owt = new Owners_tel(ot_model->otlist->count(), 0, false, IsNewing);
+//    owt->oldnum = false;
+//    comp->set_index_data(owt);
+//    int st = comp->exec();
+//               comp->setFocus();
+//    switch(st)
+//    {
+//        case 1:
+//            owt->oldnum = comp->content->Oldnum;
+//            owt->internum = comp->content->Internum;
+//            owt->tel_num = comp->content->tel_num;
+//            ot_model->addRow_owner_tel(owt);
+//            //owt->state = IsChanged;
+//            //ot_model->setOTList(new_cr->owt());
+//            ui->tableView->setModel(ot_model);
 
-            QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
-            ui->label_tels->setText(temp);
-        break;
-    }
-    delete comp;
+//            QString temp = "Номера телефонов("+QString::number(new_cr->owt()->size())+")";
+//            ui->label_tels->setText(temp);
+//        break;
+//    }
+//    delete comp;
 }
 
 void Update::on_tableView_2_doubleClicked(const QModelIndex &index)
 {
-    Component *comp = new Component();
-    comp->set_type(Contact_num);
-    Contacts *cnt = contacts_model->actlist.at(index.row());
-    comp->set_index_data(0,cnt);
-    int st = comp->exec();
-               comp->setFocus();
-    switch(st)
-    {
-        case 1:
-        cnt->oldnum = comp->content->Oldnum;
-        cnt->internum = comp->content->Internum;
-        cnt->contact_tel_num = comp->content->tel_num;
-        cnt->mark = comp->content->mark;
+//    Component *comp = new Component();
+//    comp->set_type(Contact_num);
+//    Contacts *cnt = contacts_model->actlist.at(index.row());
+//    comp->set_index_data(0,cnt);
+//    int st = comp->exec();
+//               comp->setFocus();
+//    switch(st)
+//    {
+//        case 1:
+//        cnt->oldnum = comp->content->Oldnum;
+//        cnt->internum = comp->content->Internum;
+//        cnt->contact_tel_num = comp->content->tel_num;
+//        cnt->mark = comp->content->mark;
 
-        if(cnt->cont_state != IsNewing)
-            cnt->cont_state = IsChanged;
+//        if(cnt->cont_state != IsNewing)
+//            cnt->cont_state = IsChanged;
 
-        //ot_model->setOTList(new_cr->owt());
-        ui->tableView_2->setModel(contacts_model);
-        ui->tableView_2->resizeColumnToContents(2);
-        QString temp = "Номера контактов("+QString::number(contacts_model->actlist.count())+")";
-        ui->label_cont->setText(temp);
-        break;
-    }
-    delete comp;
+//        //ot_model->setOTList(new_cr->owt());
+//        ui->tableView_2->setModel(contacts_model);
+//        ui->tableView_2->resizeColumnToContents(2);
+//        QString temp = "Номера контактов("+QString::number(contacts_model->actlist.count())+")";
+//        ui->label_cont->setText(temp);
+//        break;
+//    }
+//    delete comp;
 }
 
 void Update::setFocusOnTab1()
