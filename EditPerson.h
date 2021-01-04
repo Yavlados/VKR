@@ -38,6 +38,7 @@ public:
 
     void setFocus();
 
+    QMessageBox msgbx;
 signals:
     void closeThis(EditPerson*);
 
@@ -62,6 +63,10 @@ private slots:
     void setFocusOnTab2();
 
     void set_tab_orders();
+
+    void on_pb_save_clicked();
+
+    void on_pb_cancel_clicked();
 
 private:
     Ui::EditPerson *ui;

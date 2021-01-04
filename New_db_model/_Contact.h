@@ -22,6 +22,9 @@ public:
     bool internum;
 
     static bool selectContacts(QList<Contact*> *list, QString tel_id);
+    static bool createContact(Contact *contact, QString telephoneId);
+    static bool updateContact(Contact *contact);
+    static bool deleteContact(Contact *contact);
 };
 
 #endif // CONTACT_H

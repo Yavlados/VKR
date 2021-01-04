@@ -19,7 +19,9 @@ public:
 
     QList<Telephone *> *telephones();
     static bool selectByEventId(QList<Person*> *personsList, QString eventId);
-
+    static bool updatePersonAll( Person *person);
+    static bool updatePerson(Person *person);
+    static bool createPerson(Person *person);
 };
 
 #endif // PERSON_H

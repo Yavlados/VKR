@@ -3,7 +3,6 @@
 Telephone::Telephone()
 {
     this->num = "";
-    this->alias = "";
     this->internum = 0;
     this->oldnum  = 0;
     this->_cont = 0;
@@ -41,7 +40,7 @@ bool Telephone::selectTelephone(QList<Telephone *> *list, QString personId)
     temp.bindValue(":id", personId);
     if (!temp.exec())
     {
-        qDebug() << "Owners_tel::selectZkTelForAdd" << temp.lastError();
+        qDebug() << "Telephone::selectTelephone" << temp.lastError();
         return false;
     }
 
@@ -58,4 +57,114 @@ bool Telephone::selectTelephone(QList<Telephone *> *list, QString personId)
     }
 
     return true;
+}
+
+bool Telephone::createTelephone(Telephone *telephone, QString personId)
+{
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("INSERT INTO notebook2.telephone ( number,"
+                                                   "person_id,"
+                                                   "internum,"
+                                                   "oldnum)"
+                 " VALUES ( (:number), (:person_id), (:internum), (:oldnum))"
+                 " RETURNING id" );
+    temp.bindValue(":number",telephone->num);
+    temp.bindValue(":person_id", personId.toInt());
+    temp.bindValue(":internum", telephone->internum);
+    temp.bindValue(":oldnum", telephone->oldnum);
+
+    if (!temp.exec())
+    {
+        db_connection::instance()->lastError = temp.lastError().text();
+        qDebug() << "Telephone::createTelephone" << temp.lastError();
+        return false;
+    }
+    if (temp.next())
+    {
+        for( int i=0; i<telephone->cont()->size(); i++){
+            Contact *cont = telephone->cont()->at(i);
+
+            switch(cont->state){
+            case IsNewing:
+             Contact::createContact(cont, temp.value(0).toString());
+             break;
+         case IsChanged:
+             Contact::updateContact(cont);
+             break;
+         case IsRemoved:
+             Contact::deleteContact(cont);
+             break;
+         case IsReaded:
+             break;
+            }
+        }
+        db_connection::instance()->db().database(cname).commit();
+        return true;
+    }
+        db_connection::instance()->lastError = temp.lastError().text();
+        db_connection::instance()->db().database(cname).rollback();
+
+        return false;
+}
+
+bool Telephone::updateTelephone(Telephone *telephone)
+{
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("UPDATE notebook2.telephone "
+                 " SET 	number = (:number),"
+                         " person_id = (:person_id),"
+                         " internum = (:internum),"
+                         " oldnum = (:oldnum)"
+                 " WHERE id= (:id)");
+
+     temp.bindValue(":number", telephone->num);
+     temp.bindValue(":person_id", telephone->person_id.toInt());
+     temp.bindValue(":internum", telephone->internum);
+     temp.bindValue(":oldnum", telephone->oldnum);
+     temp.bindValue(":id", telephone->id.toInt());
+
+     if (!temp.exec())
+     {
+         qDebug()  << "Telephone::updateTelephone"<< temp.lastError() << temp.executedQuery();
+
+         isOk = false;
+     } else {
+         for( int i=0; i<telephone->cont()->size(); i++){
+             Contact *cont = telephone->cont()->at(i);
+
+             switch(cont->state){
+             case IsNewing:
+              Contact::createContact(cont, telephone->id);
+              break;
+          case IsChanged:
+              Contact::updateContact(cont);
+              break;
+          case IsRemoved:
+              Contact::deleteContact(cont);
+              break;
+          case IsReaded:
+              break;
+             }
+         }
+         db_connection::instance()->db().database(cname).commit();
+         return true;
+     }
+         db_connection::instance()->lastError = temp.lastError().text();
+         db_connection::instance()->db().database(cname).rollback();
+
+         return false;
+}
+
+bool Telephone::deleteTelephone(Telephone *telephone)
+{
+
 }

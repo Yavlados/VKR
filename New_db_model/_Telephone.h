@@ -13,7 +13,6 @@ public:
 
     QString id;
     QString num;
-    QString alias;
     QString person_id;
     bool internum;
     bool oldnum;
@@ -24,7 +23,11 @@ public:
     QList<Contact *> *cont();
 
     QList<Contact*> *_cont; /// У телефона - список контактов
+    /// CRUD
     static bool selectTelephone(QList<Telephone *> *list, QString personId );
+    static bool createTelephone(Telephone *telephone, QString personId);
+    static bool updateTelephone(Telephone *telephone);
+    static bool deleteTelephone(Telephone *telephone);
 
 };
 

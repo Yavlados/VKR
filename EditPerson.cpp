@@ -48,28 +48,37 @@ EditPerson::~EditPerson()
 
 void EditPerson::keyPressEvent(QKeyEvent *event)
 {
-    switch(event->key())
+    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
+    QModelIndex ind1 = ui->tableView->model()->index(0, 0);
+
+        switch(event->key())
         {
-            case Qt::Key::Key_Enter:
-//                on_pushButton_clicked();
-                return ;
-             case Qt::Key::Key_Escape:
-                emit closeThis(this);
+        case Qt::Key::Key_Enter:
+            on_pb_save_clicked();
             return;
-        case Qt::Key::Key_F1:
-//           PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне анализа</h2>"
-//                                           "<p><b>\"CTRL\"+ \"+\"</b> для добавления строк поиска</p>"
-//                                           "<p><b>\"CTRL\"+ \"-\"</b> для удаления строк поиска"
-//                                           "<p><b>\"ENTER\"</b> для запуска анализа</p>"
-//                                           "<p><b>\"ESC\"</b> для закрытия окна анализа</p>", rightMenu);
-           return;
-        case Qt::Key::Key_Plus:
-//            on_pb_add_zk_clicked();
+        case Qt::Key::Key_Escape:
+            on_pb_cancel_clicked();
             return;
-        case Qt::Key::Key_Minus:
-//            on_pb_del_zk_clicked();
+            case Qt::Key::Key_Space:
+                if(ui->tableView->currentIndex().isValid())
+                    on_tableView_clicked(ui->tableView->currentIndex());
             return;
-    }
+        case Qt::Key::Key_PageDown:
+//            prev_page();
+            return;
+        case Qt::Key::Key_PageUp:
+//            next_page();
+            return;
+         case Qt::Key::Key_F1:
+            ShowPopUp();
+            return;
+            case Qt::Key::Key_T:
+                ui->tableView->selectionModel()->select(ind1, flags);
+                ui->tableView->setFocus();
+            return;
+            case Qt::Key::Key_G:
+            return;
+        }
 }
 
 void EditPerson::setType(formStates s)
@@ -408,5 +417,157 @@ void EditPerson::fillFields()
     }
     this->ot_model->setOTList(this->editablePerson->telephones());
     ui->tableView->setModel(this->ot_model);
-    ui->tableView->resizeColumnsToContents();
+    ui->tableView->resizeColumnToContents(0);
+    ui->tableView->resizeColumnToContents(1);
+    ui->tableView->resizeColumnToContents(2);
+    ui->tableView->resizeColumnToContents(3);
+    ui->tableView->setWordWrap(false);
+    ui->tableView->horizontalHeader()->setStretchLastSection(true);
+}
+
+void EditPerson::on_pb_save_clicked()
+{
+    ///Исключаю пропуски
+    for (int a=0; a < ot_model->actotlist.size(); a++)
+    {
+        if((ot_model->actotlist.at(a)->num == "") && (ot_model->actotlist.at(a)->state == IsNewing))
+        {
+            ot_model->actotlist.removeAt(a);
+            ot_model->otlist->removeAt(a);
+            a--;
+        }
+    }
+
+    for (int a=0; a < contacts_model->actlist.size(); a++)
+    {
+        if((contacts_model->actlist.at(a)->number == "") &&
+                (contacts_model->actlist.at(a)->state == IsNewing))
+        {
+            contacts_model->actlist.removeAt(a);
+            contacts_model->clist->removeAt(a);
+            a--;
+        }
+    }
+
+    msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
+    msgbx.setWindowTitle("Выберите действие");
+
+    this->editablePerson->name = ui->le_name->text();
+    this->editablePerson->alias = ui->le_alias->text();
+    this->editablePerson->midname = ui->le_mid_name->text();
+    this->editablePerson->lastname = ui->le_last_name->text();
+
+    msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    int ret = msgbx.exec();
+
+    switch (ret) {
+    case QMessageBox::Cancel:
+        break;
+    case QMessageBox::Ok:
+        Person::updatePerson(this->editablePerson);
+        break;
+    }
+    ///ПРОВЕРКА НОВЫХ НОМЕРОВ
+//        switch (imprt_t) {
+//        case Update_import_data:
+//            break;
+//        case Add_import_data:
+//            break;
+
+//        case Update_pg_data:            //Проверку номеров с базой
+//          if(new_cr->zk_id == main_cr->zk_id)
+//          {
+//              if (!compare_tel_num())     //Делаем только в случае редактирования
+//              {
+//                  return;
+//              }
+//                  break;
+//          }
+//                break;
+
+//        case Update_pg_data_import:
+//            break;
+//             }
+
+
+
+
+//    this->editablePerson->check_for = ui->le_check_for->text();
+//    this->editablePerson->dop_info = ui->le_dop_info->toPlainText();
+//    this->editablePerson->reg_city = ui->le_reg_city->text();
+//    this->editablePerson->reg_street = ui->le_reg_street->text();
+//    this->editablePerson->reg_home = ui->le_reg_house->text();
+//    this->editablePerson->reg_corp = ui->le_reg_corp ->text();
+//    this->editablePerson->reg_flat = ui->le_reg_flat->text();
+//    this->editablePerson->nickname = ui->le_nickname->text();
+//    if (ui->cb_adres->checkState() == Qt::Checked)
+//    {
+//        this->editablePerson->liv_city = new_cr->reg_city;
+//        this->editablePerson->liv_street = this->editablePerson->reg_street;
+//        this->editablePerson->liv_home = this->editablePerson->reg_home;
+//        this->editablePerson->liv_corp = this->editablePerson->reg_corp;
+//        this->editablePerson->liv_flat = this->editablePerson->reg_flat;
+//    }
+//    else
+//    {
+//        this->editablePerson->liv_city = ui->le_liv_city->text();
+//        this->editablePerson->liv_street = ui->le_liv_street->text();
+//        new_cr->liv_home = ui->le_liv_house->text();
+//        this->editablePerson->liv_corp = ui->le_liv_corp->text();
+//        this->editablePerson->liv_flat = ui->le_liv_flat->text();
+//    }
+
+//        if(frm_t == Confluence_form)
+//        {
+//            if(new_cr->zk_id == 0)
+//            {
+//                Add_zk_into_base();
+//                return;
+//            }else
+//                Crud::del_zk(added_cr->zk_id);
+//        }
+//        if( new_cr->update_zk(linked_crud_id) )
+//        {
+//            if(Crud::save_all_crud(new_cr)) /// Если сохранили телефоны
+//            {
+//                if(list_for_destroy != 0)
+//                {
+//                    Crud *m_cr = list_for_destroy->at(0);
+
+//                    for(int a = 1; a<list_for_destroy->size(); a++)
+//                    {
+//                        for(int b = 0 ; b< linked_crud_id->size(); b++)
+//                        {
+//                            if( list_for_destroy->at(a)->zk_id == linked_crud_id->at(b))
+//                            {
+//                                linked_crud_id->removeAt(b);
+//                                break;
+//                            }
+//                        }
+//                        destroy_link(m_cr,list_for_destroy->at(a));
+//                    }
+//                }
+
+//                QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные сохранены в БД!")); ///Хвалимся
+//               clear_ALL();
+//            }
+//            else
+//            {        /// Если не удалось добавить телефоны
+//         QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить обновление данных!"));
+//                 clea r_ALL();
+//            }
+//        }
+//        else {
+//            QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить обновление данных!"));
+//                  clear_ALL();
+//             }
+//             return;
+
+//    }
+
+}
+
+void EditPerson::on_pb_cancel_clicked()
+{
+    emit closeThis(this);
 }

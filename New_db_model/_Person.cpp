@@ -43,6 +43,8 @@ bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)
      if (!temp.exec())
      {
          qDebug()  << "Person::selectByEventId"<< temp.lastError() << temp.executedQuery();
+         db_connection::instance()->db().database(cname).rollback();
+
          isOk = false;
      }
 
@@ -58,8 +60,72 @@ bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)
          personsList->append(person);
      }
 
-     if(personsList->isEmpty())
+     if(personsList->isEmpty()){
          return false;
+     }
+     db_connection::instance()->db().database(cname).commit();
 
      return true;
+}
+
+bool Person::updatePersonAll(Person *person)
+{
+    person;
+
+}
+
+bool Person::updatePerson(Person *person)
+{
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("UPDATE notebook2.person "
+                 " SET lastname = (:lastname),"
+                      " name = (:name),"
+                      " midname = (:midname),"
+                      " alias = (:alias) "
+                 " WHERE id = (:id) ");
+
+     temp.bindValue(":lastname", person->lastname);
+     temp.bindValue(":name", person->name);
+     temp.bindValue(":midname", person->midname);
+     temp.bindValue(":alias", person->alias);
+     temp.bindValue(":id", person->id.toInt());
+
+     if (!temp.exec())
+     {
+         qDebug()  << "Person::updatePerson"<< temp.lastError() << temp.executedQuery();
+         db_connection::instance()->db().database(cname).rollback();
+
+         isOk = false;
+     } else {
+         for( int i=0; i<person->telephones()->size(); i++){
+             Telephone *tel = person->telephones()->at(i);
+             int a = 0;
+             switch (tel->state) {
+                case IsNewing:
+                 a = Telephone::createTelephone(tel, person->id);
+                 break;
+             case IsChanged:
+                 a = Telephone::updateTelephone(tel);
+                 break;
+             case IsRemoved:
+                 a = Telephone::deleteTelephone(tel);
+                 break;
+             case IsReaded:
+                 break;
+             }
+         }
+
+         isOk = true;
+         db_connection::instance()->db().database(cname).commit();
+         return true;
+     }
+     return isOk;
+}
+
+bool Person::createPerson(Person *person)
+{
+
 }

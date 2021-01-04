@@ -49,3 +49,80 @@ bool Contact::selectContacts(QList<Contact *> *list, QString tel_id)
     return true;
 
 }
+
+bool Contact::createContact(Contact *contact, QString telephoneId)
+{
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+
+    temp.prepare("INSERT INTO notebook2.contact ( "
+                     "number,"
+                     "alias,"
+                     "internum, "
+                     "oldnum,"
+                     " telephone_id)"
+                 " VALUES ( (:number), (:alias), (:internum), (:oldnum), (:telephone_id))" );
+    temp.bindValue(":number",contact->number);
+    temp.bindValue(":alias", contact->alias);
+    temp.bindValue(":internum", contact->internum);
+    temp.bindValue(":oldnum", contact->oldnum);
+    temp.bindValue(":telephone_id", telephoneId.toInt());
+
+    if (!temp.exec())
+    {
+        db_connection::instance()->lastError = temp.lastError().text();
+        qDebug() << "Contact::createContact" << temp.lastError();
+        db_connection::instance()->db().database(cname).rollback();
+
+        return false;
+    }
+    db_connection::instance()->db().database(cname).commit();
+    return true;
+
+}
+
+bool Contact::updateContact(Contact *contact)
+{
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+
+    temp.prepare("UPDATE notebook2.contact "
+                 " SET 	number = (:number),"
+                         " alias = (:alias),"
+                         " internum = (:internum),"
+                         " oldnum = (:oldnum),"
+                         "telephone_id = (:telephone_id)"
+                 " WHERE id = (:id)");
+    temp.bindValue(":number",contact->number);
+    temp.bindValue(":alias", contact->alias);
+    temp.bindValue(":internum", contact->internum);
+    temp.bindValue(":oldnum", contact->oldnum);
+    temp.bindValue(":telephone_id", contact->telephone_id.toInt());
+    temp.bindValue(":id", contact->id.toInt());
+
+    if (!temp.exec())
+    {
+        db_connection::instance()->lastError = temp.lastError().text();
+        qDebug() << "Contact::updateContact" << temp.lastError();
+        db_connection::instance()->db().database(cname).rollback();
+        return false;
+    }
+    db_connection::instance()->db().database(cname).commit();
+    return true;
+
+}
+
+bool Contact::deleteContact(Contact *contact)
+{
+
+}

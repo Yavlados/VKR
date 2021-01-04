@@ -279,6 +279,7 @@ void MainWindow::RefreshTab()
     }
 
         ui->eventTable->resizeColumnsToContents();
+        ui->eventTable->setWordWrap(false);
 
 //   // Settings_connection::instance()->Set_settings();
 //    if (crud_model != 0)
