@@ -9,6 +9,11 @@ Master_export_Form::Master_export_Form(QWidget *parent) :
     ui(new Ui::master_export_Form)
 {
     ui->setupUi(this);
+
+    this->sr = new Search;
+    this->p_b_counter = 0;
+    this->file_path = "";
+
     ui->le_password->setEchoMode(QLineEdit::Password);
     on_cb_set_password_clicked();
         actual_size = this->size();
@@ -88,13 +93,13 @@ void Master_export_Form::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
  {
-  case Qt::Key::Key_Enter:
+  case Qt::Key_Enter:
         on_pb_Export_clicked();
      return;
- case Qt::Key::Key_Escape:
+ case Qt::Key_Escape:
         emit closeThis(this->objectName());
      return;
-    case Qt::Key::Key_F1:
+    case Qt::Key_F1:
       PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне мастера экспорта</h2>"
                                       "<p><b>\"ENTER\"</b> для начала экспорта</p>"
                                       "<p><b>\"ESC\"</b> для закрытия окна мастера экспорта</p>", rightMenu);

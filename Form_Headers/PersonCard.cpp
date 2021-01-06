@@ -35,7 +35,7 @@ void PersonCard::on_editButton_clicked()
 //{
 //    switch(event->key())
 //    {
-//    case Qt::Key::Key_Escape:
+//    case Qt::Key_Escape:
 //        this->close();
 //        return;
 //    }

@@ -124,5 +124,21 @@ bool Contact::updateContact(Contact *contact)
 
 bool Contact::deleteContact(Contact *contact)
 {
+    QString cname = db_connection::instance()->db().connectionName();
 
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("DELETE FROM notebook2.contact WHERE id=(:id)");
+
+    temp.bindValue(":id", contact->id.toInt());
+
+    if (!temp.exec())
+    {
+        qDebug()  << "Telephone::updateTelephone"<< temp.lastError() << temp.executedQuery();
+        db_connection::instance()->db().database(cname).rollback();
+        return false ;
+    } else{
+        db_connection::instance()->db().database(cname).commit();
+        return true;
+    }
 }

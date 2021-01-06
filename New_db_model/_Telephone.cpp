@@ -166,5 +166,21 @@ bool Telephone::updateTelephone(Telephone *telephone)
 
 bool Telephone::deleteTelephone(Telephone *telephone)
 {
+    QString cname = db_connection::instance()->db().connectionName();
 
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("DELETE FROM notebook2.telephone WHERE id=(:id)");
+
+    temp.bindValue(":id", telephone->id.toInt());
+
+    if (!temp.exec())
+    {
+        qDebug()  << "Telephone::updateTelephone"<< temp.lastError() << temp.executedQuery();
+        db_connection::instance()->db().database(cname).rollback();
+        return false ;
+    } else{
+        db_connection::instance()->db().database(cname).commit();
+        return true;
+    }
 }

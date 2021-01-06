@@ -395,10 +395,10 @@ void Settings_Form::keyPressEvent(QKeyEvent *event)
 {
         switch(event->key())
      {
-      case Qt::Key::Key_Enter:
+      case Qt::Key_Enter:
          on_pb_save_settings_clicked();
          return;
-     case Qt::Key::Key_Escape:
+     case Qt::Key_Escape:
             on_pushButton_clicked();
             return;
      }

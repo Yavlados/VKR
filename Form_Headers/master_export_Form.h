@@ -19,8 +19,8 @@ class Master_export_Form : public QWidget ///Форма экспорта
     Q_OBJECT
 
 public:
-    Search *sr = new Search;
-    int p_b_counter = 0;
+    Search *sr;
+    int p_b_counter;
 
     explicit Master_export_Form(QWidget *parent = 0);
     ~Master_export_Form();
@@ -51,7 +51,7 @@ private slots:
 
 private:
     Ui::master_export_Form *ui;
-    QString file_path = 0;
+    QString file_path;
 signals:
     void rb_zk_clicked();
     void rb_check_all();

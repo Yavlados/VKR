@@ -11,10 +11,11 @@ enum component_type{    Ow_tel_num = 0,
                         new_cont_tel = 3};
 
 struct component_content{
-                        bool    Oldnum = false;
-                        bool    Internum = false;
-                        QString tel_num = 0;
-                        QString mark = 0;
+                        bool    Oldnum   ;
+                        bool    Internum ;
+                        QString tel_num  ;
+                        QString mark     ;
+                        component_content();
                         };
 
 namespace Ui {
@@ -29,7 +30,7 @@ public:
     explicit Component(QWidget *parent = 0);
     ~Component();
 
-    component_content *content = 0;
+    component_content *content;
 
     QString str;
 public slots:

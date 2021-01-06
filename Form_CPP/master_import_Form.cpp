@@ -170,13 +170,13 @@ void Master_import_form::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
  {
-  case Qt::Key::Key_Enter:
+  case Qt::Key_Enter:
      on_pushButton_clicked();
      return;
-    case Qt::Key::Key_Escape:
+    case Qt::Key_Escape:
         emit closeThis(this->objectName());
       return;
-    case Qt::Key::Key_F1:
+    case Qt::Key_F1:
       PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне мастера импорта</h2>"
                                       "<p><b>\"ENTER\"</b> для начала импорта</p>"
                                       "<p><b>\"ESC\"</b> для закрытия окна мастера импорта</p>", rightMenu);

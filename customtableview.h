@@ -19,7 +19,7 @@ class CustomTableView : public QTableView
     Q_OBJECT
 public:
     explicit CustomTableView(QWidget *parent = 0);
-    void keyPressEvent(QKeyEvent *event) override;
+    void keyPressEvent(QKeyEvent *event);
     void setType(tableType t);
 signals:
     void openUpdOT(QModelIndex index);

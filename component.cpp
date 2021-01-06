@@ -373,3 +373,11 @@ void Component::setTelNum()
         content->tel_num= ui->le_1->text() + ui->le_2->text() + ui->le_3->text() + ui->le_4->text() + ui->le_5->text();
     }
 }
+
+component_content::component_content()
+{
+    Oldnum = false;
+    Internum = false;
+    tel_num = "";
+    mark = "";
+}

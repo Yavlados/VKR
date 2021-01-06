@@ -1548,30 +1548,30 @@ void Update::keyPressEvent(QKeyEvent *event)
 
         switch(event->key())
         {
-        case Qt::Key::Key_Enter:
+        case Qt::Key_Enter:
             p_b->click();
             return;
-        case Qt::Key::Key_Escape:
+        case Qt::Key_Escape:
             on_pb_Back_to_Main_clicked();
             return;
-            case Qt::Key::Key_Space:
+            case Qt::Key_Space:
                 if(ui->tableView->currentIndex().isValid())
                     on_tableView_clicked(ui->tableView->currentIndex());
             return;
-        case Qt::Key::Key_PageDown:
+        case Qt::Key_PageDown:
             prev_page();
             return;
-        case Qt::Key::Key_PageUp:
+        case Qt::Key_PageUp:
             next_page();
             return;
-         case Qt::Key::Key_F1:
+         case Qt::Key_F1:
             ShowPopUp();
             return;
-            case Qt::Key::Key_T:
+            case Qt::Key_T:
                 ui->tableView->selectionModel()->select(ind1, flags);
                 ui->tableView->setFocus();
             return;
-            case Qt::Key::Key_G:
+            case Qt::Key_G:
             return;
         }
 

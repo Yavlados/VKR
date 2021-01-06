@@ -1242,28 +1242,28 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
     {
-        case Qt::Key::Key_Enter:
+        case Qt::Key_Enter:
             if(mainwindowFocus == FocusOnRight && index_tab1.isValid())
                 on_action_update_triggered();
             else if(mainwindowFocus == FocusOnLeft)
                 on_pushButton_clicked();
             return;
 
-         case Qt::Key::Key_PageUp:
+         case Qt::Key_PageUp:
             if(p_b_forward != 0)
                 p_b_forward->click();
             return;
 
-        case Qt::Key::Key_PageDown:
+        case Qt::Key_PageDown:
            if(p_b_back != 0)
                p_b_back->click();
            return;
 
-        case Qt::Key::Key_F1:
+        case Qt::Key_F1:
             openPopUp();
         return;
 
-        case Qt::Key::Key_Escape:
+        case Qt::Key_Escape:
             RefreshTab();
         return;
     }

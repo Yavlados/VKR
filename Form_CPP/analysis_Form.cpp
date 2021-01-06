@@ -449,23 +449,23 @@ void Analysis::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
     {
-        case Qt::Key::Key_Enter:
+        case Qt::Key_Enter:
             on_pushButton_clicked();
             return ;
-         case Qt::Key::Key_Escape:
+         case Qt::Key_Escape:
             emit closeThis(this->objectName());
         return;
-    case Qt::Key::Key_F1:
+    case Qt::Key_F1:
        PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне анализа</h2>"
                                        "<p><b>\"CTRL\"+ \"+\"</b> для добавления строк поиска</p>"
                                        "<p><b>\"CTRL\"+ \"-\"</b> для удаления строк поиска"
                                        "<p><b>\"ENTER\"</b> для запуска анализа</p>"
                                        "<p><b>\"ESC\"</b> для закрытия окна анализа</p>", rightMenu);
        return;
-    case Qt::Key::Key_Plus:
+    case Qt::Key_Plus:
         on_pb_add_zk_clicked();
         return;
-    case Qt::Key::Key_Minus:
+    case Qt::Key_Minus:
         on_pb_del_zk_clicked();
         return;
     }

@@ -14,7 +14,7 @@ class PersonCard : public QWidget
     Q_OBJECT
 
 public:
-    explicit PersonCard(QWidget *parent = nullptr);
+    explicit PersonCard(QWidget *parent = 0);
     ~PersonCard();
     void setPerson(Person *person);
     void close();

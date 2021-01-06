@@ -53,30 +53,30 @@ void EditPerson::keyPressEvent(QKeyEvent *event)
 
         switch(event->key())
         {
-        case Qt::Key::Key_Enter:
+        case Qt::Key_Enter:
             on_pb_save_clicked();
             return;
-        case Qt::Key::Key_Escape:
+        case Qt::Key_Escape:
             on_pb_cancel_clicked();
             return;
-            case Qt::Key::Key_Space:
+            case Qt::Key_Space:
                 if(ui->tableView->currentIndex().isValid())
                     on_tableView_clicked(ui->tableView->currentIndex());
             return;
-        case Qt::Key::Key_PageDown:
+        case Qt::Key_PageDown:
 //            prev_page();
             return;
-        case Qt::Key::Key_PageUp:
+        case Qt::Key_PageUp:
 //            next_page();
             return;
-         case Qt::Key::Key_F1:
+         case Qt::Key_F1:
             ShowPopUp();
             return;
-            case Qt::Key::Key_T:
+            case Qt::Key_T:
                 ui->tableView->selectionModel()->select(ind1, flags);
                 ui->tableView->setFocus();
             return;
-            case Qt::Key::Key_G:
+            case Qt::Key_G:
             return;
         }
 }
@@ -464,7 +464,21 @@ void EditPerson::on_pb_save_clicked()
     case QMessageBox::Cancel:
         break;
     case QMessageBox::Ok:
-        Person::updatePerson(this->editablePerson);
+        bool state = Person::updatePerson(this->editablePerson);
+        if(state){
+            msgbx.setText("<font size = '5'>Данные усешно сохранены.</font>");
+            msgbx.setWindowTitle("Успех");
+            msgbx.setStandardButtons(QMessageBox::Ok);
+            msgbx.exec();
+            this->on_pb_cancel_clicked();
+
+        } else {
+            msgbx.setText("<font size = '5'>Во время сохранения данных возникла следующая ошибка:"+
+                          db_connection::instance()->lastError+"</font>");
+            msgbx.setWindowTitle("Ошибка");
+            msgbx.setStandardButtons(QMessageBox::Ok);
+            msgbx.exec();
+        }
         break;
     }
     ///ПРОВЕРКА НОВЫХ НОМЕРОВ

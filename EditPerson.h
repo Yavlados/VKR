@@ -22,7 +22,7 @@ class EditPerson : public QWidget
     Q_OBJECT
 
 public:
-    explicit EditPerson(QWidget *parent = nullptr);
+    explicit EditPerson(QWidget *parent = 0);
     void setPerson(Person *person);
 
     ~EditPerson();
@@ -33,7 +33,7 @@ public:
     MTM_Telephone *ot_model;
     MTM_Contact *contacts_model;
 
-    void keyPressEvent(QKeyEvent *event) override;
+    void keyPressEvent(QKeyEvent *event);
     void setType(formStates s);
 
     void setFocus();

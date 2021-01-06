@@ -485,10 +485,10 @@ void Dialog_settings::keyPressEvent(QKeyEvent *event)
 
         switch(event->key())
      {
-      case Qt::Key::Key_Enter:
+      case Qt::Key_Enter:
          on_pushButton_clicked();
          return;
-     case Qt::Key::Key_Escape:
+     case Qt::Key_Escape:
             reject();
          return;
      }

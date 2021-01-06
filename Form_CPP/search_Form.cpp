@@ -38,16 +38,16 @@ void Search::keyPressEvent(QKeyEvent *event)
 {
        switch(event->key())
     {
-     case Qt::Key::Key_Enter:
+     case Qt::Key_Enter:
         on_pb_search_clicked();
         return;
-    case Qt::Key::Key_Equal:
+    case Qt::Key_Equal:
         on_pushButton_clicked();
         return;
-     case Qt::Key::Key_Escape:
+     case Qt::Key_Escape:
          emit closeThis(this->objectName());
         return;
-       case Qt::Key::Key_F1:
+       case Qt::Key_F1:
           PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в окне поиска</h2>"
             "<p><b>\"CTRL\"+\"=\"</b> для сброса результатов поиска</p>"
             "<p><b>\"ENTER\"</b> для выполнения поиска</p>"

@@ -199,25 +199,25 @@ void OfficialTelephones::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
     {
-    case Qt::Key::Key_F1:
+    case Qt::Key_F1:
         showPopUp();
        return;
-     case Qt::Key::Key_F:
+     case Qt::Key_F:
         on_pushButton_clicked();
         return;
-     case Qt::Key::Key_Equal:
+     case Qt::Key_Equal:
         on_pushButton_4_clicked();
         return;
-    case Qt::Key::Key_Enter:
+    case Qt::Key_Enter:
        on_pushButton_3_clicked();
        return;
-    case Qt::Key::Key_Escape:
+    case Qt::Key_Escape:
         if(ui->tableView->hasFocus())
             set_tab_orders();
         else
        emit closeTab(this->objectName());
         return;
-    case Qt::Key::Key_T:
+    case Qt::Key_T:
         QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::SelectCurrent;
         QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
         ui->tableView->selectionModel()->select(tempIndex, flags);

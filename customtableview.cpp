@@ -17,23 +17,23 @@ void CustomTableView::keyPressEvent(QKeyEvent *event)
 
     switch (event->key())
     {
-        case Qt::Key::Key_F1:
+        case Qt::Key_F1:
             emit f1Pressed();
         return;
 
-        case Qt::Key::Key_X:
+        case Qt::Key_X:
         if(currentColumn == colsCount-1)    return;
             newIndex = this->model()->index(currentRow, currentColumn+1);
             this->setCurrentIndex(newIndex);
         return;
 
-        case Qt::Key::Key_Z:
+        case Qt::Key_Z:
         if(currentColumn == 0)    return;
             newIndex = this->model()->index(currentRow, currentColumn-1);
             this->setCurrentIndex(newIndex);
         return;
 
-        case Qt::Key::Key_Down:
+        case Qt::Key_Down:
         if(currentRow == rowsCount-1) return;
             newIndex = this->model()->index(currentRow+1, currentColumn);
             this->setCurrentIndex(newIndex);
@@ -41,7 +41,7 @@ void CustomTableView::keyPressEvent(QKeyEvent *event)
                 emit clickOnContact(this->currentIndex());
         return;
 
-        case Qt::Key::Key_Up:
+        case Qt::Key_Up:
         if(currentRow == 0)     return;
             newIndex = this->model()->index(currentRow-1, currentColumn);
             this->setCurrentIndex(newIndex);
@@ -49,7 +49,7 @@ void CustomTableView::keyPressEvent(QKeyEvent *event)
                 emit clickOnContact(this->currentIndex());
         return;
 
-        case Qt::Key::Key_Enter:
+        case Qt::Key_Enter:
             if(type == zkTable)
                 emit openUpdateForm(this->currentIndex());
             else if (type == contactTable)
@@ -60,17 +60,17 @@ void CustomTableView::keyPressEvent(QKeyEvent *event)
                  emit openUpdCont(this->currentIndex());
         return;
 
-        case Qt::Key::Key_PageUp:
+        case Qt::Key_PageUp:
             if(type == zkTable)
              emit nextPage();
             return;
 
-        case Qt::Key::Key_PageDown:
+        case Qt::Key_PageDown:
             if(type == zkTable)
              emit previousPage();
             return;
 
-        case Qt::Key::Key_Right:
+        case Qt::Key_Right:
         if(this->currentIndex().row() != -1)
         {
             if(type == zkTable)
@@ -80,7 +80,7 @@ void CustomTableView::keyPressEvent(QKeyEvent *event)
         }
             return;
 
-         case Qt::Key::Key_Left:
+         case Qt::Key_Left:
         if(this->currentIndex().row() != -1)
         {
         if(type == otTable)
@@ -90,22 +90,22 @@ void CustomTableView::keyPressEvent(QKeyEvent *event)
         }
             return;
 
-         case Qt::Key::Key_Escape:
+         case Qt::Key_Escape:
             if(type == UpdateOT || type == UpdateCont)
                 emit stopFocus();
         return;
 
-        case Qt::Key::Key_D:
+        case Qt::Key_D:
         if(type== UpdateOT || type == UpdateCont)
             emit deleteTelephone();
         return;
 
-        case Qt::Key::Key_A:
+        case Qt::Key_A:
         if(type== UpdateOT || type == UpdateCont)
             emit addNewTelephone();
         return;
 
-        case Qt::Key::Key_S:
+        case Qt::Key_S:
         if(type== UpdateOT || type == UpdateCont)
             emit addNewCont();
         return;

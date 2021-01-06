@@ -23,7 +23,7 @@ public:
 
         //Search *sr = new Search();
     static void import_report(QString text);
-    For_analysis *an = 0;
+    For_analysis *an;
 
     void Set_final_result();
 
