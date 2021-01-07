@@ -34,6 +34,7 @@
 #include <QSqlQueryModel>
 #include <QFileDialog>
 #include <QStyle>
+#include "Util.h"
 
 #include <QIcon>
 /** \file mainwindow_form.h
@@ -94,9 +95,6 @@ public:
 
     QList<Update*> *updlist = 0;
     QList<Update*> *addlist = 0;
-    ///NEW
-    QList<EditPerson*> *editPersonList;
-
 
      MTM_Contacts *contacts_model = new MTM_Contacts;
      MTM_OwTel *ot_model = new MTM_OwTel;
@@ -113,7 +111,7 @@ public:
     For_export *form_exprt = 0;
 
     ///Указатель на индекс первой таблицы
-    QModelIndex index_tab1;
+    QModelIndex eventTableIndex;
 
     ///Счетчик для кнопки
     int p_b_counter = 0;
@@ -272,9 +270,14 @@ private slots:
 
     void on_eventTable_clicked(const QModelIndex &index);
 
-    void openEditWindow(Person *p);
+    void openEditPersonWindow(Person *p);
+    void openAddPersonWindow(Person *p, editEvent *ee);
+    void personIsAdded(EditPerson *ep);
 
     void closePersonEdit(EditPerson*);
+    void on_eventTable_doubleClicked(const QModelIndex &index);
+    void closeEditEvent(editEvent*);
+
 signals:
     void Send_data(Crud *cr, int index);
 

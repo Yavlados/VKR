@@ -2,7 +2,11 @@
 
 Contact::Contact()
 {
-
+    this->state         =IsNewing;
+    this->number        ="";
+    this->alias         ="";
+    this->id            ="";
+    this->telephone_id  ="";
 }
 
 bool Contact::selectContacts(QList<Contact *> *list, QString tel_id)
@@ -30,6 +34,7 @@ bool Contact::selectContacts(QList<Contact *> *list, QString tel_id)
     temp.bindValue(":id",tel_id);
     if (!temp.exec())
     {
+        db_connection::instance()->lastError = "Contact::selectContacts " + temp.lastError().text();
         qDebug() << "Contact::selectContacts" <<  temp.lastError() << temp.executedQuery();
         return false;
     }
@@ -75,7 +80,7 @@ bool Contact::createContact(Contact *contact, QString telephoneId)
 
     if (!temp.exec())
     {
-        db_connection::instance()->lastError = temp.lastError().text();
+         db_connection::instance()->lastError = "Contact::createContact " + temp.lastError().text();
         qDebug() << "Contact::createContact" << temp.lastError();
         db_connection::instance()->db().database(cname).rollback();
 
@@ -112,7 +117,7 @@ bool Contact::updateContact(Contact *contact)
 
     if (!temp.exec())
     {
-        db_connection::instance()->lastError = temp.lastError().text();
+          db_connection::instance()->lastError = "Contact::updateContact " + temp.lastError().text();
         qDebug() << "Contact::updateContact" << temp.lastError();
         db_connection::instance()->db().database(cname).rollback();
         return false;
@@ -134,7 +139,8 @@ bool Contact::deleteContact(Contact *contact)
 
     if (!temp.exec())
     {
-        qDebug()  << "Telephone::updateTelephone"<< temp.lastError() << temp.executedQuery();
+          db_connection::instance()->lastError = "Contact::deleteContact " + temp.lastError().text();
+        qDebug()  << "Contact::deleteContact"<< temp.lastError() << temp.executedQuery();
         db_connection::instance()->db().database(cname).rollback();
         return false ;
     } else{

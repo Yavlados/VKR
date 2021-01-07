@@ -2,9 +2,12 @@
 
 Telephone::Telephone()
 {
-    this->num = "";
-    this->internum = 0;
-    this->oldnum  = 0;
+    this->id        ="";
+    this->num       ="";
+    this->person_id ="";
+    this->internum  =false;
+    this->oldnum    =false;
+    this->state     =IsNewing;
     this->_cont = 0;
 }
 
@@ -40,6 +43,7 @@ bool Telephone::selectTelephone(QList<Telephone *> *list, QString personId)
     temp.bindValue(":id", personId);
     if (!temp.exec())
     {
+        db_connection::instance()->lastError = "Person::selectTelephone " + temp.lastError().text();
         qDebug() << "Telephone::selectTelephone" << temp.lastError();
         return false;
     }
@@ -81,7 +85,7 @@ bool Telephone::createTelephone(Telephone *telephone, QString personId)
 
     if (!temp.exec())
     {
-        db_connection::instance()->lastError = temp.lastError().text();
+        db_connection::instance()->lastError = "Telephone::createTelephone " + temp.lastError().text();
         qDebug() << "Telephone::createTelephone" << temp.lastError();
         return false;
     }
@@ -134,6 +138,8 @@ bool Telephone::updateTelephone(Telephone *telephone)
 
      if (!temp.exec())
      {
+         db_connection::instance()->lastError = "Telephone::updateTelephone " + temp.lastError().text();
+
          qDebug()  << "Telephone::updateTelephone"<< temp.lastError() << temp.executedQuery();
 
          isOk = false;
@@ -176,6 +182,7 @@ bool Telephone::deleteTelephone(Telephone *telephone)
 
     if (!temp.exec())
     {
+        db_connection::instance()->lastError = "Telephone::updateTelephone " + temp.lastError().text();
         qDebug()  << "Telephone::updateTelephone"<< temp.lastError() << temp.executedQuery();
         db_connection::instance()->db().database(cname).rollback();
         return false ;

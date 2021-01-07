@@ -11,12 +11,12 @@ class Telephone
 {
 public:
 
-    QString id;
-    QString num;
-    QString person_id;
-    bool internum;
-    bool oldnum;
-    DbState state;
+    QString     id;
+    QString     num;
+    QString     person_id;
+    bool        internum;
+    bool        oldnum;
+    DbState     state;
 
     Telephone();
 

@@ -34,11 +34,9 @@ EditPerson::EditPerson(QWidget *parent) :
 void EditPerson::setPerson(Person *person)
 {
     this->person = person;
+    this->editablePerson = person;
+    this->fillFields();
 
-    if(this->state == updatePerson){
-        this->editablePerson = person;
-        this->fillFields();
-    }
 }
 
 EditPerson::~EditPerson()
@@ -57,7 +55,7 @@ void EditPerson::keyPressEvent(QKeyEvent *event)
             on_pb_save_clicked();
             return;
         case Qt::Key_Escape:
-            on_pb_cancel_clicked();
+            this->closeWidget();
             return;
             case Qt::Key_Space:
                 if(ui->tableView->currentIndex().isValid())
@@ -86,6 +84,11 @@ void EditPerson::setType(formStates s)
     this->state = s;
 }
 
+//void EditPerson::setParent(editEvent *parent)
+//{
+//    this->parent = parent;
+//}
+
 void EditPerson::on_tableView_clicked(const QModelIndex &index)
 {
 
@@ -94,7 +97,7 @@ void EditPerson::on_tableView_clicked(const QModelIndex &index)
     QList<Contact*> *cont_temp = new QList<Contact*>;
     Telephone *selectedTel= ot_model->actotlist.at(index.row());
     cont_temp = selectedTel->cont();
-    if(cont_temp->isEmpty()){
+    if(cont_temp->isEmpty() && selectedTel->state != IsNewing){
         Contact::selectContacts(cont_temp, selectedTel->id);
     }
 
@@ -412,7 +415,8 @@ void EditPerson::fillFields()
     ui->le_mid_name->setText(this->editablePerson->midname);
     ui->le_last_name->setText(this->editablePerson->lastname);
 
-    if(this->editablePerson->telephones()->isEmpty()){
+    if(     this->state == updatePerson &&
+            this->editablePerson->telephones()->isEmpty()){
         Telephone::selectTelephone(this->editablePerson->telephones(), this->editablePerson->id);
     }
     this->ot_model->setOTList(this->editablePerson->telephones());
@@ -449,36 +453,55 @@ void EditPerson::on_pb_save_clicked()
         }
     }
 
-    msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>Вы готовы завершить редактирование записной книги?</font>");
-    msgbx.setWindowTitle("Выберите действие");
-
     this->editablePerson->name = ui->le_name->text();
     this->editablePerson->alias = ui->le_alias->text();
     this->editablePerson->midname = ui->le_mid_name->text();
     this->editablePerson->lastname = ui->le_last_name->text();
 
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    if(this->state==updatePerson)
+        msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>"
+                  "Вы готовы завершить редактирование фигуранта уголовного дела?</font>");
+
+    else if(this->state==addPerson)
+        msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>"
+              "Вы готовы завершить добавление фигуранта уголовного дела?</font>");
+
+    msgbx.setWindowTitle("Выберите действие");
+
     int ret = msgbx.exec();
 
     switch (ret) {
     case QMessageBox::Cancel:
         break;
     case QMessageBox::Ok:
-        bool state = Person::updatePerson(this->editablePerson);
-        if(state){
-            msgbx.setText("<font size = '5'>Данные усешно сохранены.</font>");
-            msgbx.setWindowTitle("Успех");
-            msgbx.setStandardButtons(QMessageBox::Ok);
-            msgbx.exec();
-            this->on_pb_cancel_clicked();
 
-        } else {
-            msgbx.setText("<font size = '5'>Во время сохранения данных возникла следующая ошибка:"+
-                          db_connection::instance()->lastError+"</font>");
-            msgbx.setWindowTitle("Ошибка");
-            msgbx.setStandardButtons(QMessageBox::Ok);
-            msgbx.exec();
+        if(this->state == updatePerson){
+            bool state = Person::updatePerson(this->editablePerson);
+            if(state){
+                msgbx.setText("<font size = '5'>Данные усешно сохранены.</font>");
+                msgbx.setWindowTitle("Успех");
+                msgbx.setStandardButtons(QMessageBox::Ok);
+                msgbx.exec();
+                this->closeWidget();
+
+            } else {
+                msgbx.setText("<font size = '5'>Во время сохранения данных возникла следующая ошибка:"+
+                              db_connection::instance()->lastError+"</font>");
+                msgbx.setWindowTitle("Ошибка");
+                msgbx.setStandardButtons(QMessageBox::Ok);
+                msgbx.exec();
+            }
+        }else if(this->state == addPerson){
+            QStringList list = this->editablePerson->id.split("raw");
+            this->editablePerson->id = "new" + list[1];
+//            this->parent->clearLayout();
+            emit personIsAdded(this);
+            this->closeWidget();
         }
+
+
+
         break;
     }
     ///ПРОВЕРКА НОВЫХ НОМЕРОВ
@@ -582,6 +605,27 @@ void EditPerson::on_pb_save_clicked()
 }
 
 void EditPerson::on_pb_cancel_clicked()
+{
+
+    msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+
+    msgbx.setText("<font size = '8'>Подтверждение</font> <br> <font size = '5'>"
+                  "Вы готовы выйти без сохранения?</font>");
+
+    msgbx.setWindowTitle("Выберите действие");
+
+    int ret = msgbx.exec();
+
+    switch (ret) {
+    case QMessageBox::Cancel:
+        break;
+    case QMessageBox::Ok:
+        this->closeWidget();
+        break;
+    }
+}
+
+void EditPerson::closeWidget()
 {
     emit closeThis(this);
 }

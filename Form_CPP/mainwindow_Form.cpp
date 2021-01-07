@@ -19,19 +19,11 @@
  * \brief Исполняемый файл класса MainWindow
 */
 
-void clearLayout(QLayout *layout){
-    int size = layout->count();
-    for(int i=0; i< size; i++){
-        QLayoutItem *witem = layout->itemAt(0);
-        delete witem->widget();
-    }
-}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    this->editPersonList = 0;
     ui->setupUi(this);
     //ui->tableView->setFocus();
     set_shortcuts();
@@ -278,9 +270,11 @@ void MainWindow::RefreshTab()
         ui->eventTable->setModel(eventModel);
     }
 
-        ui->eventTable->resizeColumnsToContents();
+//        ui->eventTable->resizeColumnsToContents();
         ui->eventTable->setWordWrap(false);
-
+        ui->eventTable->resizeColumnToContents(0);
+        ui->eventTable->resizeColumnToContents(2);
+        ui->eventTable->resizeColumnToContents(3);
 //   // Settings_connection::instance()->Set_settings();
 //    if (crud_model != 0)
 //    {
@@ -345,62 +339,147 @@ void MainWindow::RefreshTab()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
 {
-    if( addlist == 0)
-    {
-        addlist = new QList<Update*>;
-        Update *add = new Update;
-        add->frm_t = Add_form;
-        addlist->append(add);
 
-        ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,addlist->at(0),"Добавление новой ЗК");
-        addlist->at(0)->Fill_table_in_add();
-        ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
-        connect (addlist->at(0), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
-        connect(addlist->at(0), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
-        connect(addlist->at(0), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
-        add->set_tab_orders();
-    }
-    else
-        ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(addlist->at(0)));
+    Event *newEvent = new Event();
 
-    addlist->at(0)->focus_on_widget();
+    editEvent *ee = new editEvent;
+    ee->setEventAndType(newEvent, addEvent);
+    connect(ee, SIGNAL(addPerson(Person*, editEvent*)), this, SLOT(openAddPersonWindow(Person*, editEvent*)));
+    connect(ee, SIGNAL(closeThis(editEvent*)), this, SLOT(closeEditEvent(editEvent*)));
+
+    Util::instance()->editEventList()->append(ee);
+
+    ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,
+                              Util::instance()->editEventList()->at(Util::instance()->editEventList()->size()-1),
+                              "Создание нового события");
+    ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+
+
+//    if( addlist == 0)
+//    {
+//        addlist = new QList<Update*>;
+//        Update *add = new Update;
+//        add->frm_t = Add_form;
+//        addlist->append(add);
+
+//        ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,addlist->at(0),"Добавление новой ЗК");
+//        addlist->at(0)->Fill_table_in_add();
+//        ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+//        connect (addlist->at(0), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
+//        connect(addlist->at(0), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
+//        connect(addlist->at(0), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
+//        add->set_tab_orders();
+//    }
+//    else
+//        ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(addlist->at(0)));
+
+//    addlist->at(0)->focus_on_widget();
+
+
 
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_delete_triggered()
 {
-//    if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
-//    {
-//        msgbx.setText("Удаление");
-//        msgbx.setWindowTitle("Удаление");
-//        msgbx.setInformativeText("Вы действительно хотите удалить выбранную записную книгу № "+QString::number(crud_model->actcrudlist.at(index_tab1.row())->zk_id));
-//        msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-//        int ret = msgbx.exec();
+    if(this->eventTableIndex.isValid() && this->eventTableIndex == ui->eventTable->currentIndex())
+    {
+        Event *selectedEvent = this->eventModel->actEventList.at(this->eventTableIndex.row());
+        msgbx.setText("Удаление");
+        msgbx.setWindowTitle("Удаление");
+        msgbx.setInformativeText("Вы действительно хотите удалить выбранное событие № "+selectedEvent->id);
+        msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        int ret = msgbx.exec();
 
-//        switch (ret) {
-//        case QMessageBox::Cancel:
-//            break;
-//        case QMessageBox::Ok:
-//            if (index_tab1.isValid())
-//            {
-//                if (updlist != 0)
-//                    for (int i =0; i< updlist->size(); i++)
-//                        if(updlist->at(i)->new_cr->zk_id == crud_model->actcrudlist.at(index_tab1.row())->zk_id)
-//                        {  updlist->at(i)->close(); updlist->removeAt(i); break; }
-//                Crud::del_zk(crud_model->actcrudlist.at(index_tab1.row())->zk_id);
+        switch (ret) {
+        case QMessageBox::Cancel:
+            break;
+        case QMessageBox::Ok:
+            if (this->eventTableIndex.isValid())
+            {
+                for(int a=0; a < Util::instance()->addEventManager()->size(); a++){
+                    AddEventManager* aem =  Util::instance()->addEventManager()->at(a);
+                    if(aem->parent->localEvent->id == selectedEvent->id){
+                        for(int i=0; i<ui->tabWidget->count(); i++){
+                            auto tab = ui->tabWidget->widget(i);
+                            auto tabName = tab->objectName();
 
-//                RefreshTab();
-//            }
-//            break;
-//        }
-//    }
-//    else {
-//        QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для удаления!")); ///Хвалимся
-//    }
+                            if(tabName=="editEvent"){
+                                editEvent *localEE = dynamic_cast<editEvent*>(tab);
+                                if(localEE->localEvent->id == aem->parent->localEvent->id){
+                                    ui->tabWidget->widget(i)->deleteLater();
+
+                                    for(int d=0; d < Util::instance()->editEventList()->size(); d++){
+                                        if(aem->parent->localEvent->id == Util::instance()->editEventList()->at(d)->localEvent->id){
+                                            Util::instance()->editEventList()->removeAt(d);
+                                            break;
+                                        }
+                                    }
+
+                                }
+                            }
+                            else if(tabName=="EditPerson"){
+                                EditPerson *localEP = dynamic_cast<EditPerson*>(tab);
+                                for(int c=0; c < aem->childs->size(); c++){
+                                    EditPerson *personOnList = aem->childs->at(c);
+
+                                    if(localEP->person->id == personOnList->person->id){
+                                        ui->tabWidget->widget(i)->deleteLater();
+                                        for(int r=0; r<Util::instance()->editPersonList()->size(); r++){
+                                            if(personOnList->person->id == Util::instance()->editPersonList()->at(r)->person->id){
+                                                Util::instance()->editPersonList()->removeAt(r);
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                Event::deleteEvent(selectedEvent);
+                this->RefreshTab();
+            }
+            break;
+        }
+    }
+    else {
+        QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали событие для удаления!")); ///Хвалимся
+    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_update_triggered()
 {
+    if(this->eventTableIndex.isValid() &&
+       this->eventTableIndex == ui->eventTable->currentIndex()) {
+        Event *localEvent = this->eventModel->actEventList.at(this->eventTableIndex.row());
+        Person::selectByEventId(localEvent->persons(), localEvent->id);
+
+        for (int i=0; i < Util::instance()->editEventList()->size(); i++)
+        {
+            if(Util::instance()->editEventList()->at(i)->localEvent->id == localEvent->id)
+            {
+                ui->tabWidget->setCurrentIndex(i+1);
+                return;
+            }
+        }
+
+        editEvent *ee = new editEvent;
+        ee->setEventAndType(localEvent, updateEvent);
+        connect(ee, SIGNAL(addPerson(Person*, editEvent*)), this, SLOT(openAddPersonWindow(Person*, editEvent*)));
+        connect(ee, SIGNAL(closeThis(editEvent*)), this, SLOT(closeEditEvent(editEvent*)));
+
+        Util::instance()->editEventList()->append(ee);
+
+        ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,
+                                  Util::instance()->editEventList()->at(Util::instance()->editEventList()->size()-1),
+                                  "Редактирование события №"+localEvent->id);
+        ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+    }
+    else {
+            QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали событие для изменения!")); ///Хвалимся
+        }
 //    if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
 //    {
 //        //index_tab1 = ui->tableView->currentIndex();
@@ -539,49 +618,49 @@ void MainWindow::add_cancel_button()
 //-----------------------------------------------------------------------------------//
 void MainWindow::open_upd_tab(Crud *cr)
 {
-        if(updlist == 0)
-        {
-            updlist = new QList<Update*>;
-        }
+//        if(updlist == 0)
+//        {
+//            updlist = new QList<Update*>;
+//        }
 
-        for (int i=0; i<updlist->size(); i++)
-        {
-            if(updlist->at(i)->new_cr->zk_id == cr->zk_id)
-            {
-                ui->tabWidget->setCurrentIndex(i+1);
-                return;
-            }
-        }
+//        for (int i=0; i<updlist->size(); i++)
+//        {
+//            if(updlist->at(i)->new_cr->zk_id == cr->zk_id)
+//            {
+//                ui->tabWidget->setCurrentIndex(i+1);
+//                return;
+//            }
+//        }
 
-        Update *upd = new Update; //указатель на форму добавления
-        upd->frm_t = Update_form;
-        upd->imprt_t = Update_pg_data;
+//        Update *upd = new Update; //указатель на форму добавления
+//        upd->frm_t = Update_form;
+//        upd->imprt_t = Update_pg_data;
 
-        //connect(this,SIGNAL(Send_data(Crud*, int)), updlist->at(updlist->size()-1), SLOT(Recieve_data(Crud*, int)));
-        ///создание списка обусловлено работой класса листмастер
-        /// он работает только со списками
-        QList<Crud*> *crudlist = new QList<Crud*>;
-        List_master *list = new List_master(Main_window_for_Update);
-        list->set_counters();
-        //Загрузка ВСЕХ данных выбранной ЗК
-        list->fill_crud_list(crudlist,cr->zk_id, PSQLtype);
-        //emit Send_data(crudlist->at(0), updlist->size()-1);
+//        //connect(this,SIGNAL(Send_data(Crud*, int)), updlist->at(updlist->size()-1), SLOT(Recieve_data(Crud*, int)));
+//        ///создание списка обусловлено работой класса листмастер
+//        /// он работает только со списками
+//        QList<Crud*> *crudlist = new QList<Crud*>;
+//        List_master *list = new List_master(Main_window_for_Update);
+//        list->set_counters();
+//        //Загрузка ВСЕХ данных выбранной ЗК
+//        list->fill_crud_list(crudlist,cr->zk_id, PSQLtype);
+//        //emit Send_data(crudlist->at(0), updlist->size()-1);
 
-        if(crudlist->isEmpty())
-        {
-            QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Возможно выбранной записи нет в базе. Попробуйте обновить таблицы")); ///Хвалимся
-            return;
-        }
+//        if(crudlist->isEmpty())
+//        {
+//            QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Возможно выбранной записи нет в базе. Попробуйте обновить таблицы")); ///Хвалимся
+//            return;
+//        }
 
-        updlist->append(upd);
-        upd->Recieve_data(crudlist->at(0));
-        upd->take_linked_zk(crudlist->at(0));
-        connect (updlist->at(updlist->size()-1), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
-        connect(updlist->at(updlist->size()-1), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
-        connect(updlist->at(updlist->size()-1), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
-        ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,updlist->at(updlist->size()-1),"Редактировать ЗК № "+QString::number(updlist->at(updlist->size()-1)->new_cr->zk_id));
-        ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
-        upd->focus_on_widget();
+//        updlist->append(upd);
+//        upd->Recieve_data(crudlist->at(0));
+//        upd->take_linked_zk(crudlist->at(0));
+//        connect (updlist->at(updlist->size()-1), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
+//        connect(updlist->at(updlist->size()-1), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
+//        connect(updlist->at(updlist->size()-1), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
+//        ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,updlist->at(updlist->size()-1),"Редактировать ЗК № "+QString::number(updlist->at(updlist->size()-1)->new_cr->zk_id));
+//        ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+//        upd->focus_on_widget();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::set_validators()
@@ -638,17 +717,34 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
     ///NEW
     else if(ui->tabWidget->widget(index)->objectName() == "EditPerson"){
 
-        if(this->editPersonList != 0){
+        if(Util::instance()->editPersonList() != 0){
             EditPerson *ep = dynamic_cast<EditPerson*>(ui->tabWidget->widget(index)); //Приведение типа от виджета к классу
             int i = 0;
             QString personIdInTab =  ep->person->id;
-            while( i< this->editPersonList->size()){
-                if(this->editPersonList->at(i)->person->id == personIdInTab){
-                    delete  this->editPersonList->at(i);
-                    this->editPersonList->removeAt(i);
-                    if (this->editPersonList->isEmpty())
+            while( i< Util::instance()->editPersonList()->size()){
+                if(Util::instance()->editPersonList()->at(i)->person->id == personIdInTab){
+                    delete  Util::instance()->editPersonList()->at(i);
+                    Util::instance()->editPersonList()->removeAt(i);
+                    if (Util::instance()->editPersonList()->isEmpty())
                     {
-                        this->editPersonList = 0;
+                        return;
+                    }
+                } else
+                    i++;
+            }
+        }
+    }
+    else if(ui->tabWidget->widget(index)->objectName() == "editEvent"){
+        if(Util::instance()->editEventList() != 0){
+            editEvent *ee = dynamic_cast<editEvent*>(ui->tabWidget->widget(index)); //Приведение типа от виджета к классу
+            int i = 0;
+            QString eventIdInTab =  ee->localEvent->id;
+            while( i< Util::instance()->editEventList()->size()){
+                if(Util::instance()->editEventList()->at(i)->localEvent->id == eventIdInTab){
+                    delete  Util::instance()->editEventList()->at(i);
+                    Util::instance()->editEventList()->removeAt(i);
+                    if (Util::instance()->editEventList()->isEmpty())
+                    {
                         return;
                     }
                 } else
@@ -1243,7 +1339,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     switch(event->key())
     {
         case Qt::Key_Enter:
-            if(mainwindowFocus == FocusOnRight && index_tab1.isValid())
+            if(mainwindowFocus == FocusOnRight && this->eventTableIndex.isValid())
                 on_action_update_triggered();
             else if(mainwindowFocus == FocusOnLeft)
                 on_pushButton_clicked();
@@ -1560,29 +1656,25 @@ void MainWindow::getCont(QModelIndex index)
 
 void MainWindow::on_eventTable_clicked(const QModelIndex &index)
 {
-    qDebug() << index;
+    this->eventTableIndex = index;
     Event *localEvent = this->eventModel->actEventList.at(index.row());
     Person::selectByEventId(localEvent->persons(), localEvent->id);
-    clearLayout(ui->cardsLayout);
+    Util::instance()->clearLayout(ui->cardsLayout);
     for ( int i =0; i < localEvent->persons()->size(); i++){
         PersonCard *card = new PersonCard();
         card->setPerson(localEvent->persons()->at(i));
         ui->cardsLayout->addWidget(card);
-        connect(card, SIGNAL(openEditWindow(Person*)), this, SLOT(openEditWindow(Person*)));
+        connect(card, SIGNAL(openEditWindow(Person*)), this, SLOT(openEditPersonWindow(Person*)));
 
     }
 }
 
-void MainWindow::openEditWindow(Person *p)
+void MainWindow::openEditPersonWindow(Person *p)
 {
-    if(this->editPersonList == 0)
-    {
-        this->editPersonList = new QList<EditPerson*>;
-    }
 
-    for (int i=0; i < this->editPersonList->size(); i++)
+    for (int i=0; i < Util::instance()->editPersonList()->size(); i++)
     {
-        if(this->editPersonList->at(i)->person->id == p->id)
+        if(Util::instance()->editPersonList()->at(i)->person->id == p->id)
         {
             ui->tabWidget->setCurrentIndex(i+1);
             return;
@@ -1594,32 +1686,52 @@ void MainWindow::openEditWindow(Person *p)
     connect(ep, SIGNAL(closeThis(EditPerson*)), this, SLOT(closePersonEdit(EditPerson*)));
 
     ep->setPerson(p);
-    this->editPersonList->append(ep);
+    Util::instance()->editPersonList()->append(ep);
 
     ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,
-                              this->editPersonList->at(this->editPersonList->size()-1),
+                              Util::instance()->editPersonList()->at(Util::instance()->editPersonList()->size()-1),
                               "Редактирование фигуранта "+p->name + " "+ p->lastname + " " + p->midname);
     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
 }
 
+void MainWindow::openAddPersonWindow(Person *p, editEvent *ee)
+{
+    EditPerson *ep = new EditPerson;
+    ep->setType(addPerson);
+    ep->setParent(ee);
+    connect(ep, SIGNAL(closeThis(EditPerson*)), this, SLOT(closePersonEdit(EditPerson*)));
+    connect(ep, SIGNAL(personIsAdded(EditPerson*)), this, SLOT(personIsAdded(EditPerson*)));
+    ep->setPerson(p);
+    Util::instance()->editPersonList()->append(ep);
+    Util::instance()->linkAddEventPerson(ee,ep);
+
+    ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,
+                              Util::instance()->editPersonList()->at(Util::instance()->editPersonList()->size()-1),
+                              "Добавление нового фигуранта для дела "+ee->localEvent->id);
+    ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+}
+
+void MainWindow::personIsAdded(EditPerson *ep)
+{
+    editEvent *ee = Util::instance()->getManagerParent(ep);
+    ee->addNewPerson(ep->person);
+    ee->updateCardsLayout();
+    int a = ui->tabWidget->indexOf(ee);
+    ui->tabWidget->setCurrentIndex(a);
+    QWidget *widget = ui->tabWidget->widget(ui->tabWidget->currentIndex());
+    QString widgetName = widget->objectName();
+    this->setFocusOnTab(widgetName, widget);
+}
+
 void MainWindow::closePersonEdit(EditPerson *ep)
 {
-    if(this->editPersonList != 0){
+    if(Util::instance()->editPersonList() != 0){
         int i = 0;
         QString personIdInTab =  ep->person->id;
-        while( i< this->editPersonList->size()){
-            if(this->editPersonList->at(i)->person->id == personIdInTab){
-                delete  this->editPersonList->at(i);
-                this->editPersonList->removeAt(i);
-                if (this->editPersonList->isEmpty())
-                {
-                    this->editPersonList = 0;
-                    return;
-                }
-                ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
-                QWidget *widget = ui->tabWidget->widget(ui->tabWidget->currentIndex());
-                QString widgetName = widget->objectName();
-                this->setFocusOnTab(widgetName, widget);
+        while( i< Util::instance()->editPersonList()->size()){
+            if(Util::instance()->editPersonList()->at(i)->person->id == personIdInTab){
+                delete  Util::instance()->editPersonList()->at(i);
+                Util::instance()->editPersonList()->removeAt(i);               
                 return;
             } else
                 i++;
@@ -1627,3 +1739,31 @@ void MainWindow::closePersonEdit(EditPerson *ep)
     }
 }
 
+
+void MainWindow::on_eventTable_doubleClicked(const QModelIndex &index)
+{
+    this->eventTableIndex = index;
+    this->on_action_update_triggered();
+}
+
+void MainWindow::closeEditEvent(editEvent *ee)
+{
+    if(Util::instance()->editEventList() != 0){
+        Util::instance()->unlinkAddEventPerson(ee);
+        int i = 0;
+        QString eventIdInTab =  ee->localEvent->id;
+        while( i< Util::instance()->editEventList()->size()){
+            if(Util::instance()->editEventList()->at(i)->localEvent->id == eventIdInTab){
+                delete  Util::instance()->editEventList()->at(i);
+                Util::instance()->editEventList()->removeAt(i);
+                ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
+                QWidget *widget = ui->tabWidget->widget(ui->tabWidget->currentIndex());
+                QString widgetName = widget->objectName();
+                this->setFocusOnTab(widgetName, widget);
+                this->RefreshTab();
+                return;
+            } else
+                i++;
+        }
+    }
+}

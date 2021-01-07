@@ -72,6 +72,9 @@ background-color: rgb(255, 243, 205)
        <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="styleSheet">
         <string notr="true">QWidget::title{
 color:rgb(77, 62, 62)

@@ -1,5 +1,6 @@
 #include "PersonCard.h"
 #include "ui_PersonCard.h"
+#include <QMessageBox>
 
 PersonCard::PersonCard(QWidget *parent) :
     QWidget(parent),
@@ -40,3 +41,24 @@ void PersonCard::on_editButton_clicked()
 //        return;
 //    }
 //}
+
+void PersonCard::on_pb_button_clicked()
+{
+    QMessageBox msg;
+    msg.setWindowTitle("Подтверждение");
+    msg.setText("Вы действительно хотите удалить выбранного фигуранта?");
+    msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+
+    int a = msg.exec();
+
+    switch (a) {
+        case QMessageBox::Ok :
+        this->localPerson->state = IsRemoved;
+        emit resetCardsLayout();
+        return;
+    case QMessageBox::Cancel :
+
+        return;
+    }
+
+}

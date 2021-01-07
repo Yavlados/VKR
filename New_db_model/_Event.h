@@ -22,6 +22,9 @@ public:
     DbState state;
     QList<Person *> *persons();
     static bool selectAll(QList<Event*> *eventList);
+    static bool updateEvent(Event *event);
+    static bool createEvent(Event *event);
+    static bool deleteEvent(Event *event);
 private:
     QList<Person*> *_persons;
 };

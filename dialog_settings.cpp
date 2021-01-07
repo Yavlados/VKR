@@ -21,6 +21,11 @@ Dialog_settings::Dialog_settings(QWidget *parent) :
     ui->comboBox->setVisible(false);
     Settings_connection::instance()->Set_settings();
     set_settings_from_ini();
+
+            auto tabBar = ui->tabWidget->tabBar();
+            tabBar->setCurrentIndex(1);
+            ui->tabWidget->removeTab(0);
+
 }
 
 Dialog_settings::~Dialog_settings()

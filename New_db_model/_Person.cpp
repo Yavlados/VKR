@@ -3,6 +3,12 @@
 Person::Person()
 {
     this->_telephones = 0;
+    this->lastname    ="";
+    this->name        ="";
+    this->midname     ="";
+    this->alias       ="";
+    this->id          ="";
+    this->state       =IsNewing;
 }
 
 QList<Telephone *> *Person::telephones()
@@ -43,6 +49,7 @@ bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)
      if (!temp.exec())
      {
          qDebug()  << "Person::selectByEventId"<< temp.lastError() << temp.executedQuery();
+         db_connection::instance()->lastError = "Person::selectByEventId " + temp.lastError().text();
          db_connection::instance()->db().database(cname).rollback();
 
          isOk = false;
@@ -56,6 +63,7 @@ bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)
          person->lastname = temp.value(2).toString();
          person->alias = temp.value(3).toString();
          person->id = temp.value(4).toString();
+         person->state = IsReaded;
 
          personsList->append(person);
      }
@@ -90,6 +98,8 @@ bool Person::updatePerson(Person *person)
      if (!temp.exec())
      {
          qDebug()  << "Person::updatePerson"<< temp.lastError() << temp.executedQuery();
+         db_connection::instance()->lastError = "Person::updatePerson " + temp.lastError().text();
+
          db_connection::instance()->db().database(cname).rollback();
 
          isOk = false;
@@ -108,13 +118,14 @@ bool Person::updatePerson(Person *person)
                  a = Telephone::deleteTelephone(tel);
                  break;
              case IsReaded:
+                 a=true;
                  break;
              }
 
              if(!a){
                  db_connection::instance()->db().database(cname).rollback();
                  isOk = false;
-                 break;
+                 return isOk;
              }
          }
 
@@ -125,7 +136,7 @@ bool Person::updatePerson(Person *person)
      return isOk;
 }
 
-bool Person::createPerson(Person *person)
+bool Person::createPerson(Person *person, QString eventId)
 {
     if( !db_connection::instance()->db_connect() )
         return false;
@@ -149,7 +160,7 @@ bool Person::createPerson(Person *person)
 
     if (!temp.exec())
     {
-        db_connection::instance()->lastError = temp.lastError().text();
+         db_connection::instance()->lastError = "Person::createPerson " + temp.lastError().text();
         qDebug() << "Person::createPerson" << temp.lastError();
         db_connection::instance()->db().database(cname).rollback();
 
@@ -159,7 +170,6 @@ bool Person::createPerson(Person *person)
     while (temp.next())
     {
         person->id = temp.value(0).toString();
-        bool a = false;
         for( int i=0; i<person->telephones()->size(); i++){
             Telephone *tel = person->telephones()->at(i);
             bool a = false;
@@ -174,6 +184,7 @@ bool Person::createPerson(Person *person)
                 a = Telephone::deleteTelephone(tel);
                 break;
             case IsReaded:
+                a=true;
                 break;
             }
 
@@ -184,6 +195,10 @@ bool Person::createPerson(Person *person)
             }
         }
 
+        if(!Person::linkEventPerson(eventId, person->id)){
+            db_connection::instance()->db().database(cname).rollback();
+            return false;
+        }
     }
 
 
@@ -204,9 +219,39 @@ bool Person::deletePerson(Person *person)
     if (!temp.exec())
     {
         qDebug()  << "Person::deletePerson"<< temp.lastError() << temp.executedQuery();
+       db_connection::instance()->lastError = "Person::deletePerson " + temp.lastError().text();
         db_connection::instance()->db().database(cname).rollback();
         return false ;
     } else{
+        db_connection::instance()->db().database(cname).commit();
+        return true;
+    }
+}
+
+bool Person::linkEventPerson(QString eventId, QString personId)
+{
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+
+    temp.prepare("INSERT INTO notebook2.event_person ( "
+                     "event_id,"
+                     "person_id)"
+                 " VALUES ( (:event_id), (:person_id))");
+    temp.bindValue(":event_id", eventId);
+    temp.bindValue(":person_id",personId);
+
+    if (!temp.exec())
+    {
+        db_connection::instance()->lastError = "Person::linkEventPerson " + temp.lastError().text();
+        qDebug() << "Person::linkEventPerson" << temp.lastError();
+        db_connection::instance()->db().database(cname).rollback();
+        return false;
+    }else {
         db_connection::instance()->db().database(cname).commit();
         return true;
     }

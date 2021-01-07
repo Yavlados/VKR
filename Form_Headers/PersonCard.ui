@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>409</width>
-    <height>166</height>
+    <width>169</width>
+    <height>82</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -21,9 +21,9 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QFormLayout" name="formLayout">
-     <item row="1" column="0" colspan="2">
-      <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QLabel" name="personFio">
          <property name="font">
@@ -38,45 +38,26 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="editButton">
-         <property name="font">
-          <font>
-           <family>Arial</family>
-           <pointsize>13</pointsize>
-          </font>
-         </property>
+        <widget class="QPushButton" name="pb_button">
          <property name="text">
-          <string>Редактировать</string>
+          <string>X</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
-     <item row="2" column="0" colspan="2">
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
+     <item>
+      <widget class="QPushButton" name="editButton">
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>13</pointsize>
+        </font>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
+       <property name="text">
+        <string>Редактировать</string>
        </property>
-      </spacer>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
+      </widget>
      </item>
     </layout>
    </item>

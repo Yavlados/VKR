@@ -39,6 +39,8 @@ SOURCES += \
     New_db_model/_Event.cpp \
     New_db_model/_Person.cpp \
     New_db_model/_Telephone.cpp \
+    Singletons/Util.cpp \
+    editEvent.cpp \
         main.cpp \
     for_analysis.cpp \
     db_connection.cpp \
@@ -86,7 +88,10 @@ HEADERS += \
     New_db_model/_Person.h \
     New_db_model/_Telephone.h \
     New_db_model/enums.h \
+    Singletons/Util.h \
+    Singletons/index.h \
     db_connection.h \
+    editEvent.h \
     for_analysis.h \
     Table_Headers/_Contacts.h \
     Table_Headers/_Owners_tel.h \
@@ -124,6 +129,7 @@ HEADERS += \
 FORMS += \
     EditPerson.ui \
     Form_Headers/PersonCard.ui \
+    editEvent.ui \
         mainwindow.ui \
     analysis.ui \
     update.ui \
@@ -156,4 +162,5 @@ INCLUDEPATH += $$PWD\
                Form_Headers\
                Model_Headers\
                New_db_model\
-               New_db_MTM
+               New_db_MTM\
+               Singletons

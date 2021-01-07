@@ -9,6 +9,7 @@
 #include "_MTM_Contact.h"
 #include "popup.h"
 #include "component.h"
+//#include "editEvent.h"
 
 namespace Ui {
 class EditPerson;
@@ -29,18 +30,21 @@ public:
     Person *person;
     Person *editablePerson;
     formStates state;
+//    editEvent *parent;
 
     MTM_Telephone *ot_model;
     MTM_Contact *contacts_model;
 
     void keyPressEvent(QKeyEvent *event);
     void setType(formStates s);
+//    void setParent(editEvent *);
 
     void setFocus();
 
     QMessageBox msgbx;
 signals:
     void closeThis(EditPerson*);
+    void personIsAdded(EditPerson*);
 
 private slots:
     void on_tableView_clicked(const QModelIndex &index);
@@ -68,9 +72,11 @@ private slots:
 
     void on_pb_cancel_clicked();
 
+    void closeWidget();
+    void ShowPopUp();
+
 private:
     Ui::EditPerson *ui;
-    void ShowPopUp();
     void fillFields();
 
 
