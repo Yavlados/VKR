@@ -21,7 +21,7 @@ class editEvent : public QWidget
     Q_OBJECT
 
 public:
-    explicit editEvent(QWidget *parent = nullptr);
+    explicit editEvent(QWidget *parent = 0);
     ~editEvent();
 
     void setEventAndType(Event *e, editEventState s);

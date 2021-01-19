@@ -10,6 +10,9 @@
 #include <QSqlError>
 #include <QMessageBox>
 #include <QDate>
+#include "analysisModels.h"
+#include <QVector>
+#include <QMap>
 
 /**
  * \file for_analysis.h
@@ -61,6 +64,22 @@ public:
 
     QSqlQueryModel *model = new QSqlQueryModel();
     void ClearAll();
+
+
+
+    ///NEW
+    QList<Analysis_V1*> *v1Result;
+    QList<Analysis_V2*> *v2Result;
+    QList<Analysis_V3*> *v3Result;
+    QMap< QString, QList<Analysis_general> > analysisResult;
+
+    void getDataFromBase(int eventId = 0, QVector<int> *eventIdList = 0);
+    QList<Analysis_V1*> *getV1(int eventId = 0, QVector<int> *eventIdList = 0);
+    QList<Analysis_V2*> *getV2(int eventId = 0, QVector<int> *eventIdList = 0);
+    QList<Analysis_V3 *> *getV3(int eventId = 0, QVector<int> *eventIdList = 0);
+
+
+    void short_face_analysis(int eventId);
 };
 
 #endif // FOR_ANALYSIS_H

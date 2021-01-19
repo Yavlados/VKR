@@ -66,7 +66,7 @@ void editEvent::clearLayout()
 void editEvent::on_pb_add_person_clicked()
 {
     Person *p = new Person();
-    p->id = "raw"+QString( this->newPersonCounter );
+    p->id = "raw"+QString::number( this->newPersonCounter );
     this->newPersonCounter += 1;
 
     emit addPerson(p, this);

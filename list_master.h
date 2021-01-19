@@ -6,6 +6,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QList>
 
 enum Form_state { Export = 0,
                   Import = 1,
@@ -47,7 +48,7 @@ public:
     export_state fill_off_tels(QList<Off_tels *> *offtel, SqlType sqlt, QString password = 0, QString filename = 0);
 
     ///Добавляет в базу список ЗК
-    bool insert_crud_in_db(QList<Crud*>*crud , QList<int> *list_id = 0, QVector<QVector<int> > *vector = 0,QVector<QVector<QString>> *vector_str = 0, bool old_db = false);
+    bool insert_crud_in_db(QList<Crud*>*crud = 0, QList<int> *list_id = 0, QVector<QVector<int> > *vector = 0,QVector<QVector<QString>> *vector_str = 0, bool old_db = false);
 
     ///Добавляет в базу список служебных телефонов
     bool insert_off_tel_in_db(QList<Off_tels *> *offtel);

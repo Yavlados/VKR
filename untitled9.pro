@@ -35,6 +35,7 @@ SOURCES += \
     New_db_MTM/_MTM_Contact.cpp \
     New_db_MTM/_MTM_Event.cpp \
     New_db_MTM/_MTM_Telephone.cpp \
+    New_db_model/Analysis_models/analysisModels.cpp \
     New_db_model/_Contact.cpp \
     New_db_model/_Event.cpp \
     New_db_model/_Person.cpp \
@@ -83,6 +84,7 @@ HEADERS += \
     New_db_MTM/_MTM_Contact.h \
     New_db_MTM/_MTM_Event.h \
     New_db_MTM/_MTM_Telephone.h \
+    New_db_model/Analysis_models/analysisModels.h \
     New_db_model/_Contact.h \
     New_db_model/_Event.h \
     New_db_model/_Person.h \
@@ -163,4 +165,5 @@ INCLUDEPATH += $$PWD\
                Model_Headers\
                New_db_model\
                New_db_MTM\
-               Singletons
+               Singletons\
+               New_db_model/Analysis_models\

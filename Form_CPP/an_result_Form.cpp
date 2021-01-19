@@ -28,6 +28,7 @@ void An_result::closeEvent(QCloseEvent *event)
 
 void An_result::Recieve_short_face_analysis_all_db(int zk_id)
 {
+    an->getDataFromBase(zk_id);
     an->short_face_analysis_all_db(zk_id);
     FinalResult += an->analysis_res+"\r\n \r\n";
     an->ClearAll();
@@ -54,30 +55,30 @@ void An_result::Recieve_long_tel_analysis_all_db(int zk_id)
     an->ClearAll();
 }
 
-void An_result::Recieve_short_face_analysis_all_db(QVector<int> vector, int zk_id)
+void An_result::Recieve_short_face_analysis_all_db(QVector<int>* vector, int zk_id)
 {
-    an->short_face_analysis_all_db(vector, zk_id);
+    an->short_face_analysis_all_db(*vector, zk_id);
     FinalResult += an->analysis_res+"\r\n \r\n";
     an->ClearAll();
 }
 
-void An_result::Recieve_short_tel_analysis_all_db(QVector<int>vector, int zk_id)
+void An_result::Recieve_short_tel_analysis_all_db(QVector<int>*vector, int zk_id)
 {
-    an->short_tel_analysis_all_db(vector, zk_id);
+    an->short_tel_analysis_all_db(*vector, zk_id);
     FinalResult += an->analysis_res+"\r\n \r\n";
     an->ClearAll();
 }
 
-void An_result::Recieve_long_face_analysis_all_db(QVector<int> vector, int zk_id)
+void An_result::Recieve_long_face_analysis_all_db(QVector<int> *vector, int zk_id)
 {
-    an->long_face_analysis_all_db(vector, zk_id);
+    an->long_face_analysis_all_db(*vector, zk_id);
     FinalResult += an->analysis_res+"\r\n \r\n";
     an->ClearAll();
 }
 
-void An_result::Recieve_long_tel_analysis_all_db(QVector<int> vector, int zk_id)
+void An_result::Recieve_long_tel_analysis_all_db(QVector<int> *vector, int zk_id)
 {
-    an->long_tel_analysis_all_db(vector, zk_id);
+    an->long_tel_analysis_all_db(*vector, zk_id);
     FinalResult += an->analysis_res+"\r\n \r\n";
     an->ClearAll();
 }

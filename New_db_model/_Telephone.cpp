@@ -91,30 +91,38 @@ bool Telephone::createTelephone(Telephone *telephone, QString personId)
     }
     if (temp.next())
     {
-        for( int i=0; i<telephone->cont()->size(); i++){
-            Contact *cont = telephone->cont()->at(i);
-
-            switch(cont->state){
-            case IsNewing:
-             Contact::createContact(cont, temp.value(0).toString());
-             break;
-         case IsChanged:
-             Contact::updateContact(cont);
-             break;
-         case IsRemoved:
-             Contact::deleteContact(cont);
-             break;
-         case IsReaded:
-             break;
-            }
+        if(!Telephone::handleContacts(telephone->cont(), temp.value(0).toString())){
+            db_connection::instance()->lastError = temp.lastError().text();
+            db_connection::instance()->db().database(cname).rollback();
+            return false;
         }
-        db_connection::instance()->db().database(cname).commit();
-        return true;
-    }
-        db_connection::instance()->lastError = temp.lastError().text();
-        db_connection::instance()->db().database(cname).rollback();
 
-        return false;
+//        for( int i=0; i<telephone->cont()->size(); i++){
+//            Contact *cont = telephone->cont()->at(i);
+
+//            switch(cont->state){
+//            case IsNewing:
+//             Contact::createContact(cont, temp.value(0).toString());
+//             break;
+//         case IsChanged:
+//             Contact::updateContact(cont);
+//             break;
+//         case IsRemoved:
+//             Contact::deleteContact(cont);
+//             break;
+//         case IsReaded:
+//             break;
+//            }
+//        }
+//        db_connection::instance()->db().database(cname).commit();
+//        return true;
+    }
+    db_connection::instance()->db().database(cname).commit();
+    return true;
+//        db_connection::instance()->lastError = temp.lastError().text();
+//        db_connection::instance()->db().database(cname).rollback();
+
+//        return false;
 }
 
 bool Telephone::updateTelephone(Telephone *telephone)
@@ -144,30 +152,35 @@ bool Telephone::updateTelephone(Telephone *telephone)
 
          isOk = false;
      } else {
-         for( int i=0; i<telephone->cont()->size(); i++){
-             Contact *cont = telephone->cont()->at(i);
 
-             switch(cont->state){
-             case IsNewing:
-              Contact::createContact(cont, telephone->id);
-              break;
-          case IsChanged:
-              Contact::updateContact(cont);
-              break;
-          case IsRemoved:
-              Contact::deleteContact(cont);
-              break;
-          case IsReaded:
-              break;
-             }
+         if(!Telephone::handleContacts(telephone->cont(), telephone->id)){
+             db_connection::instance()->lastError = temp.lastError().text();
+             db_connection::instance()->db().database(cname).rollback();
+             return false;
          }
+
+//         for( int i=0; i<telephone->cont()->size(); i++){
+//             Contact *cont = telephone->cont()->at(i);
+
+//             switch(cont->state){
+//             case IsNewing:
+//              Contact::createContact(cont, telephone->id);
+//              break;
+//          case IsChanged:
+//              Contact::updateContact(cont);
+//              break;
+//          case IsRemoved:
+//              Contact::deleteContact(cont);
+//              break;
+//          case IsReaded:
+//              break;
+//             }
+//         }
+//         db_connection::instance()->db().database(cname).commit();
+//         return true;
+     }
          db_connection::instance()->db().database(cname).commit();
          return true;
-     }
-         db_connection::instance()->lastError = temp.lastError().text();
-         db_connection::instance()->db().database(cname).rollback();
-
-         return false;
 }
 
 bool Telephone::deleteTelephone(Telephone *telephone)
@@ -190,4 +203,31 @@ bool Telephone::deleteTelephone(Telephone *telephone)
         db_connection::instance()->db().database(cname).commit();
         return true;
     }
+}
+
+bool Telephone::handleContacts(QList<Contact *> *cont, QString telephoneId)
+{
+    for( int i=0; i< cont->size(); i++){
+        bool state = false;
+        Contact *c = cont->at(i);
+
+        switch(c->state){
+     case IsNewing:
+         state = Contact::createContact(c, telephoneId);
+         break;
+     case IsChanged:
+         state = Contact::updateContact(c);
+         break;
+     case IsRemoved:
+         state = Contact::deleteContact(c);
+         break;
+     case IsReaded:
+         state = true;
+         break;
+        }
+
+        if(!state)
+            return state;
+    }
+    return true;
 }

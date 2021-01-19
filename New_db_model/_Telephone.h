@@ -29,6 +29,9 @@ public:
     static bool updateTelephone(Telephone *telephone);
     static bool deleteTelephone(Telephone *telephone);
 
+
+    static bool handleContacts(QList<Contact *> *cont, QString telephoneId);
+
 };
 
 #endif // TELEPHONE_H

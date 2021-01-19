@@ -19,7 +19,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="QFrame" name="frame_6">
@@ -297,7 +297,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="label">
@@ -325,7 +325,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>317</width>
+            <width>573</width>
             <height>631</height>
            </rect>
           </property>
@@ -350,6 +350,18 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>le_category</tabstop>
+  <tabstop>le_time</tabstop>
+  <tabstop>le_reason</tabstop>
+  <tabstop>le_detention_by</tabstop>
+  <tabstop>le_keeping_place</tabstop>
+  <tabstop>le_additional</tabstop>
+  <tabstop>pb_add_person</tabstop>
+  <tabstop>pb_save</tabstop>
+  <tabstop>pb_cancel</tabstop>
+  <tabstop>scrollArea_3</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

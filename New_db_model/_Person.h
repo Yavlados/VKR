@@ -23,6 +23,8 @@ public:
     static bool createPerson(Person *person, QString eventId);
     static bool deletePerson(Person *person);
 
+    static bool handleTelephones(QList<Telephone*> *telephones, QString personId);
+
     static bool linkEventPerson(QString eventId, QString personId);
 };
 

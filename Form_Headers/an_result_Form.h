@@ -41,13 +41,13 @@ public slots:
 
     void Recieve_long_tel_analysis_all_db(int);
 
-    void Recieve_short_face_analysis_all_db(QVector<int>, int);
+    void Recieve_short_face_analysis_all_db(QVector<int>*, int);
 
-    void Recieve_short_tel_analysis_all_db(QVector<int>, int);
+    void Recieve_short_tel_analysis_all_db(QVector<int>*, int);
 
-    void Recieve_long_face_analysis_all_db(QVector<int>, int);
+    void Recieve_long_face_analysis_all_db(QVector<int>*, int);
 
-    void Recieve_long_tel_analysis_all_db(QVector<int>, int);
+    void Recieve_long_tel_analysis_all_db(QVector<int>*, int);
 
     void Recieve_short_face_analysis_all_db(QString DateFrom, QString DateTo, int);
 

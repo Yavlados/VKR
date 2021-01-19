@@ -29,6 +29,7 @@ Analysis::Analysis(QWidget *parent) :
     Analysis::clear_rb_3(false);
 //    set_tab_orders();
     DefaultLEFont = new QFont("MS Shell Dlg 2",11 );
+    this->linelist_zk_for_analysis = 0;
 }
 
 Analysis::~Analysis()
@@ -157,16 +158,16 @@ void Analysis::on_pushButton_clicked()
     ///Проверка на валидность номера
 
     QSqlQuery querry(db_connection::instance()->db());
-    QString query = "SELECT zk.zk_id"
-                    " FROM  zk"
+    QString query = "SELECT id"
+                    " FROM  notebook2.event"
                     " WHERE ";
                 //Сбор строки поиска
             for(int le =0; le < local_list_id.size(); le++)
             {
                 if(le ==0)
-                    query += " zk.zk_id="+QString::number(local_list_id.at(le));
+                    query += " id="+QString::number(local_list_id.at(le));
                 else
-                    query +=" OR zk.zk_id="+ QString::number(local_list_id.at(le));
+                    query +=" OR id="+ QString::number(local_list_id.at(le));
             }
 
 
@@ -175,7 +176,7 @@ void Analysis::on_pushButton_clicked()
         //Обработка ошибки
         if(querry.size() != local_list_id.size()) //НЕ ВСЕ ЗК НАЙДЕНЫ В БАЗЕ
         {
-            QString reportResult = "ЗК ";
+            QString reportResult = "События ";
 
             while(querry.next())
             {//Убираю из списка те номера ЗК, которые нашел, оставляю ненайденные
@@ -193,31 +194,31 @@ void Analysis::on_pushButton_clicked()
         while(querry.next())
         {
            int zk_id_num = querry.value(0).toInt();
-        //////////////////     1     //////////////////
+        //////////////////     По базе; Краткий; К лицу;     //////////////////
         if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
         {
             ar->Recieve_short_face_analysis_all_db(zk_id_num);
         }
 
-        //////////////////     2     //////////////////
+        //////////////////     По базе; Краткий; К номеру;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
         {
             ar->Recieve_short_tel_analysis_all_db(zk_id_num);
         }
 
-        //////////////////     3     //////////////////
+        //////////////////     По базе; Полный; К лицу;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
         {
             ar->Recieve_long_face_analysis_all_db(zk_id_num);
         }
 
-        //////////////////     4     //////////////////
+        //////////////////    По базе; Полный; К номеру;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
        {
             ar->Recieve_long_tel_analysis_all_db(zk_id_num);
        }
 
-        //////////////////     5     //////////////////
+        //////////////////     По выбранным; Краткий; К лицу;    //////////////////
         else if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
        {
 
@@ -228,11 +229,11 @@ void Analysis::on_pushButton_clicked()
             }
             Analysis::uniq_array();
 
-            ar->Recieve_short_face_analysis_all_db(vector,zk_id_num);
+            ar->Recieve_short_face_analysis_all_db(&vector,zk_id_num);
             vector.clear();
        }
 
-        //////////////////     6     //////////////////
+        //////////////////    По выбранным; Краткий; К номеру;     //////////////////
         else if(ui->rb_some_zk->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
       {
        foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
@@ -243,11 +244,11 @@ void Analysis::on_pushButton_clicked()
 
        Analysis::uniq_array();
 
-       ar->Recieve_short_tel_analysis_all_db(vector,zk_id_num);
+       ar->Recieve_short_tel_analysis_all_db(&vector,zk_id_num);
        vector.clear();
       }
 
-        //////////////////     7     //////////////////
+        //////////////////     По выбранным; Полный; К лицу;     //////////////////
         else if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
      {
       foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
@@ -258,11 +259,11 @@ void Analysis::on_pushButton_clicked()
 
       Analysis::uniq_array();
 
-      ar->Recieve_long_face_analysis_all_db(vector,zk_id_num);
+      ar->Recieve_long_face_analysis_all_db(&vector,zk_id_num);
       vector.clear();
      }
 
-        //////////////////     8     //////////////////
+        //////////////////     По выбранным; Полный; К лицу;     //////////////////
         else if(ui->rb_some_zk->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
      {
       foreach(QLineEdit *l, this->findChildren<QLineEdit*>("le_some_new_zk"))
@@ -273,12 +274,12 @@ void Analysis::on_pushButton_clicked()
 
       Analysis::uniq_array();
 
-      ar->Recieve_long_tel_analysis_all_db(vector,zk_id_num);
+      ar->Recieve_long_tel_analysis_all_db(&vector,zk_id_num);
       vector.clear();
 
      }
 
-        //////////////////     9     //////////////////
+        //////////////////     По дате; Краткий; К лицу;     //////////////////
         else if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
      {
         if(get_date_from() < get_date_to())
@@ -290,7 +291,7 @@ void Analysis::on_pushButton_clicked()
         }
      }
 
-        //////////////////     10     //////////////////
+        //////////////////     По дате; Краткий; К номеру;     //////////////////
         else if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
     {
         if(!get_date_from().isEmpty() || !get_date_to().isEmpty())
@@ -302,7 +303,7 @@ void Analysis::on_pushButton_clicked()
        }
     }
 
-        //////////////////     11     //////////////////
+        //////////////////     По дате; Полный; К лицу;     //////////////////
         else if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
     {
       if(get_date_from() < get_date_to())
@@ -314,7 +315,7 @@ void Analysis::on_pushButton_clicked()
         }
     }
 
-        //////////////////     12      //////////////////
+        //////////////////     По дате; Полный; К номеру;      //////////////////
     else if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
     {
         if(get_date_from() < get_date_to())

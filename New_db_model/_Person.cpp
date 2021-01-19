@@ -104,30 +104,37 @@ bool Person::updatePerson(Person *person)
 
          isOk = false;
      } else {
-         for( int i=0; i<person->telephones()->size(); i++){
-             Telephone *tel = person->telephones()->at(i);
-             bool a = false;
-             switch (tel->state) {
-                case IsNewing:
-                 a = Telephone::createTelephone(tel, person->id);
-                 break;
-             case IsChanged:
-                 a = Telephone::updateTelephone(tel);
-                 break;
-             case IsRemoved:
-                 a = Telephone::deleteTelephone(tel);
-                 break;
-             case IsReaded:
-                 a=true;
-                 break;
-             }
 
-             if(!a){
-                 db_connection::instance()->db().database(cname).rollback();
-                 isOk = false;
-                 return isOk;
-             }
+         if(!Person::handleTelephones(person->telephones(), person->id)){
+             db_connection::instance()->db().database(cname).rollback();
+             return false;
          }
+
+
+//         for( int i=0; i<person->telephones()->size(); i++){
+//             Telephone *tel = person->telephones()->at(i);
+//             bool a = false;
+//             switch (tel->state) {
+//                case IsNewing:
+//                 a = Telephone::createTelephone(tel, person->id);
+//                 break;
+//             case IsChanged:
+//                 a = Telephone::updateTelephone(tel);
+//                 break;
+//             case IsRemoved:
+//                 a = Telephone::deleteTelephone(tel);
+//                 break;
+//             case IsReaded:
+//                 a=true;
+//                 break;
+//             }
+
+//             if(!a){
+//                 db_connection::instance()->db().database(cname).rollback();
+//                 isOk = false;
+//                 return isOk;
+//             }
+//         }
 
          isOk = true;
          db_connection::instance()->db().database(cname).commit();
@@ -170,35 +177,41 @@ bool Person::createPerson(Person *person, QString eventId)
     while (temp.next())
     {
         person->id = temp.value(0).toString();
-        for( int i=0; i<person->telephones()->size(); i++){
-            Telephone *tel = person->telephones()->at(i);
-            bool a = false;
-            switch (tel->state) {
-               case IsNewing:
-                a = Telephone::createTelephone(tel, person->id);
-                break;
-            case IsChanged:
-                a = Telephone::updateTelephone(tel);
-                break;
-            case IsRemoved:
-                a = Telephone::deleteTelephone(tel);
-                break;
-            case IsReaded:
-                a=true;
-                break;
-            }
 
-            if(!a){
-                db_connection::instance()->db().database(cname).rollback();
-                isOk = false;
-                break;
-            }
-        }
-
-        if(!Person::linkEventPerson(eventId, person->id)){
+        if(!Person::handleTelephones(person->telephones(), person->id) &&
+                !Person::linkEventPerson(eventId, person->id)){
             db_connection::instance()->db().database(cname).rollback();
             return false;
         }
+//        for( int i=0; i<person->telephones()->size(); i++){
+//            Telephone *tel = person->telephones()->at(i);
+//            bool a = false;
+//            switch (tel->state) {
+//               case IsNewing:
+//                a = Telephone::createTelephone(tel, person->id);
+//                break;
+//            case IsChanged:
+//                a = Telephone::updateTelephone(tel);
+//                break;
+//            case IsRemoved:
+//                a = Telephone::deleteTelephone(tel);
+//                break;
+//            case IsReaded:
+//                a=true;
+//                break;
+//            }
+
+//            if(!a){
+//                db_connection::instance()->db().database(cname).rollback();
+//                isOk = false;
+//                break;
+//            }
+//        }
+
+//        if(!Person::linkEventPerson(eventId, person->id)){
+//            db_connection::instance()->db().database(cname).rollback();
+//            return false;
+//        }
     }
 
 
@@ -226,6 +239,36 @@ bool Person::deletePerson(Person *person)
         db_connection::instance()->db().database(cname).commit();
         return true;
     }
+}
+
+bool Person::handleTelephones(QList<Telephone *> *telephones, QString personId)
+{
+    for( int i=0; i< telephones->size(); i++){
+        Telephone *tel = telephones->at(i);
+        bool a = false;
+        switch (tel->state) {
+           case IsNewing:
+            a = Telephone::createTelephone(tel, personId);
+            break;
+        case IsChanged:
+            a = Telephone::updateTelephone(tel);
+            break;
+        case IsRemoved:
+            a = Telephone::deleteTelephone(tel);
+            break;
+        case IsReaded:
+            a=Telephone::handleContacts(tel->cont(), tel->id);
+            break;
+        }
+
+        if(!a){
+            return a;
+//            db_connection::instance()->db().database(cname).rollback();
+//            isOk = false;
+//            break;
+        }
+    }
+    return true;
 }
 
 bool Person::linkEventPerson(QString eventId, QString personId)
