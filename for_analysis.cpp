@@ -752,7 +752,6 @@ void For_analysis::short_face_analysis_all_db(int id)
 //    QList<Crud*> *crudlist = For_analysis::get_crud(cr);
 
    short_face_analysis(id);
-
 }
 
 void For_analysis::short_tel_analysis_all_db(int id)
@@ -1219,4 +1218,16 @@ void For_analysis::short_face_analysis(int eventId)
                         res.to_event_detention_date+" "+ res.to_event_detention_time+";\r\n";
         }
     }
+}
+
+void For_analysis::short_tel_analysis(int eventId)
+{
+    analysis_res +="\t КРАТКАЯ СПРАВКА ПРИВЯЗКА К ТЕЛЕФОНАМ СОБЫТИЕ #"+QString::number(eventId)+" \r\n \r\n";
+     for(int i=0; i<this->analysisResult.keys().size(); i++ ){
+         QString fio = this->analysisResult.keys().at(i);
+         QList<Analysis_general> list = this->analysisResult[fio];
+         for(int a=0; a<list.size();a++){
+
+         }
+     }
 }

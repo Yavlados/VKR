@@ -80,6 +80,7 @@ public:
 
 
     void short_face_analysis(int eventId);
+    void short_tel_analysis(int eventId);
 };
 
 #endif // FOR_ANALYSIS_H
