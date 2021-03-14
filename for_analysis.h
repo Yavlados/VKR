@@ -35,33 +35,6 @@ public:
 
     List_master *list;
 
-    QList<Crud*> * get_crud(Crud *cr = 0, QString added_SQL = 0);
-
-    ///Методы сбора листа по 3 вариантам знакомства
-        QList<Crud*> * get_1_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);
-        QList<Crud*> * get_2_var(Crud *cr, QList<Crud*> *crudlist, QString   added_SQL);
-        QList<Crud*> * get_3_var(Crud *cr, QList<Crud*> *crudlist, QString added_SQL);
-
-    ///Основные методы анализа
-    void short_face_analysis(Crud *cr, QList<Crud*> *crudlist);
-    void short_tel_analysis(Crud *cr, QList<Crud*> *crudlist);
-    void long_face_analysis(Crud *cr, QList<Crud*> *crudlist);
-    void long_tel_analysis(Crud *cr, QList<Crud*> *crudlist);
-
-    ///Методы для корректировки входящих списков
-    void short_face_analysis_all_db(int);
-    void short_tel_analysis_all_db(int);
-    void long_face_analysis_all_db(int);
-    void long_tel_analysis_all_db(int);
-    void short_face_analysis_all_db(QVector<int>,int);
-    void short_tel_analysis_all_db(QVector<int>,int);
-    void long_face_analysis_all_db(QVector<int> vector, int id);
-    void long_tel_analysis_all_db(QVector<int> vector, int id);
-    void short_face_analysis_all_db(QString DateFrom, QString DateTo, int);
-    void short_tel_analysis_all_db(QString DateFrom, QString DateTo, int);
-    void long_face_analysis_all_db(QString DateFrom, QString DateTo, int);
-    void long_tel_analysis_all_db(QString DateFrom, QString DateTo, int);
-
     QSqlQueryModel *model = new QSqlQueryModel();
     void ClearAll();
 
