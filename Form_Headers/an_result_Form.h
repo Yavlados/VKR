@@ -49,13 +49,13 @@ public slots:
 
     void Recieve_long_tel_analysis(QVector<int>*, int);
 
-    void Recieve_short_face_analysis(QString DateFrom, QString DateTo, int);
+    void Recieve_short_face_analysis(QMap<QString, QString> *period, int);
 
-    void Recieve_short_tel_analysis(QString DateFrom, QString DateTo, int);
+    void Recieve_short_tel_analysis (QMap<QString, QString> *period, int);
 
-    void Recieve_long_face_analysis(QString DateFrom, QString DateTo, int);
+    void Recieve_long_face_analysis (QMap<QString, QString> *period, int);
 
-    void Recieve_long_tel_analysis(QString DateFrom, QString DateTo, int);
+    void Recieve_long_tel_analysis  (QMap<QString, QString> *period, int);
 
     void Recieve_search_result(QString);
 

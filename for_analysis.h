@@ -74,14 +74,14 @@ public:
     QMap< QString, QList<Analysis_general> > analysisResult;
     QMap< QString, QMap<QString, QList<Analysis_general> > > analysisResultFull;
 
-    void getDataFromBaseFace(int eventId = 0, QVector<int> *eventIdList = 0);
-    void getDataFromBaseTelephone(int eventId = 0, QVector<int> *eventIdList = 0);
-    void getDataFromBaseFullFace(int eventId = 0, QVector<int> *eventIdList = 0);
-    void getDataFromBaseFullTelephone(int eventId = 0, QVector<int> *eventIdList = 0);
+    void getDataFromBaseFace(int eventId = 0, QVector<int> *eventIdList = 0, QMap<QString, QString> *period = 0);
+    void getDataFromBaseTelephone(int eventId = 0, QVector<int> *eventIdList = 0, QMap<QString, QString> *period = 0);
+    void getDataFromBaseFullFace(int eventId = 0, QVector<int> *eventIdList = 0, QMap<QString, QString> *period = 0);
+    void getDataFromBaseFullTelephone(int eventId = 0, QVector<int> *eventIdList = 0, QMap<QString, QString> *period = 0);
 
-    QList<Analysis_V1*> *getV1(int eventId = 0, QVector<int> *eventIdList = 0);
-    QList<Analysis_V2*> *getV2(int eventId = 0, QVector<int> *eventIdList = 0);
-    QList<Analysis_V3 *> *getV3(int eventId = 0, QVector<int> *eventIdList = 0);
+    QList<Analysis_V1*> *getV1(int eventId = 0, QVector<int> *eventIdList = 0, QMap<QString, QString> *period = 0);
+    QList<Analysis_V2*> *getV2(int eventId = 0, QVector<int> *eventIdList = 0, QMap<QString, QString> *period = 0);
+    QList<Analysis_V3 *> *getV3(int eventId = 0, QVector<int> *eventIdList = 0, QMap<QString, QString> *period = 0);
 
 
     void short_face_analysis(int eventId);

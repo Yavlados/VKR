@@ -945,12 +945,12 @@ void For_analysis::ClearAll()
     match_counter.clear();
 }
 
-void For_analysis::getDataFromBaseFace(int eventId, QVector<int> *eventIdList)
+void For_analysis::getDataFromBaseFace(int eventId, QVector<int> *eventIdList, QMap<QString, QString> *period)
 {
     this->analysisResult.clear();
-    this->v1Result = this->getV1(eventId, eventIdList);
-    this->v2Result = this->getV2(eventId, eventIdList);
-    this->v3Result = this->getV3(eventId, eventIdList);
+    this->v1Result = this->getV1(eventId, eventIdList, period);
+    this->v2Result = this->getV2(eventId, eventIdList, period);
+    this->v3Result = this->getV3(eventId, eventIdList, period);
 
     for(int i=0; i< this->v1Result->size(); i++ ){
         Analysis_V1 *v =  this->v1Result->at(i);
@@ -978,12 +978,12 @@ void For_analysis::getDataFromBaseFace(int eventId, QVector<int> *eventIdList)
     }
 }
 
-void For_analysis::getDataFromBaseTelephone(int eventId, QVector<int> *eventIdList)
+void For_analysis::getDataFromBaseTelephone(int eventId, QVector<int> *eventIdList, QMap<QString, QString> *period)
 {
     this->analysisResult.clear();
-    this->v1Result = this->getV1(eventId, eventIdList);
-    this->v2Result = this->getV2(eventId, eventIdList);
-    this->v3Result = this->getV3(eventId, eventIdList);
+    this->v1Result = this->getV1(eventId, eventIdList, period);
+    this->v2Result = this->getV2(eventId, eventIdList, period);
+    this->v3Result = this->getV3(eventId, eventIdList, period);
 
     for(int i=0; i< this->v1Result->size(); i++ ){
         Analysis_V1 *v =  this->v1Result->at(i);
@@ -1011,12 +1011,12 @@ void For_analysis::getDataFromBaseTelephone(int eventId, QVector<int> *eventIdLi
     }
 }
 
-void For_analysis::getDataFromBaseFullFace(int eventId, QVector<int> *eventIdList)
+void For_analysis::getDataFromBaseFullFace(int eventId, QVector<int> *eventIdList, QMap<QString, QString> *period)
 {
     this->analysisResultFull.clear();
-    this->v1Result = this->getV1(eventId, eventIdList);
-    this->v2Result = this->getV2(eventId, eventIdList);
-    this->v3Result = this->getV3(eventId, eventIdList);
+    this->v1Result = this->getV1(eventId, eventIdList, period);
+    this->v2Result = this->getV2(eventId, eventIdList, period);
+    this->v3Result = this->getV3(eventId, eventIdList, period);
 
     for (int i=0; i< this->v1Result->size(); i++ ) {
         Analysis_V1 *v =  this->v1Result->at(i);
@@ -1040,12 +1040,12 @@ void For_analysis::getDataFromBaseFullFace(int eventId, QVector<int> *eventIdLis
     }
 }
 
-void For_analysis::getDataFromBaseFullTelephone(int eventId, QVector<int> *eventIdList)
+void For_analysis::getDataFromBaseFullTelephone(int eventId, QVector<int> *eventIdList, QMap<QString, QString> *period)
 {
     this->analysisResultFull.clear();
-    this->v1Result = this->getV1(eventId, eventIdList);
-    this->v2Result = this->getV2(eventId, eventIdList);
-    this->v3Result = this->getV3(eventId, eventIdList);
+    this->v1Result = this->getV1(eventId, eventIdList, period);
+    this->v2Result = this->getV2(eventId, eventIdList, period);
+    this->v3Result = this->getV3(eventId, eventIdList, period);
 
     for (int i=0; i< this->v1Result->size(); i++ ) {
         Analysis_V1 *v =  this->v1Result->at(i);
@@ -1069,7 +1069,7 @@ void For_analysis::getDataFromBaseFullTelephone(int eventId, QVector<int> *event
     }
 }
 
-QList<Analysis_V1*> *For_analysis::getV1(int eventId, QVector<int> *eventIdList)
+QList<Analysis_V1*> *For_analysis::getV1(int eventId, QVector<int> *eventIdList, QMap<QString, QString> *period)
 {
     if( !db_connection::instance()->db_connect() )
         return 0;
@@ -1078,10 +1078,14 @@ QList<Analysis_V1*> *For_analysis::getV1(int eventId, QVector<int> *eventIdList)
 
     bool isOk = db_connection::instance()->db().database(cname).transaction();
     QSqlQuery temp(db_connection::instance()->db());
-    if(eventIdList == 0)
-        temp.prepare(AnalysisModels::instance()->v1(QString::number(eventId)));
-    else
+    if(eventIdList != 0){
         temp.prepare(AnalysisModels::instance()->v1(QString::number(eventId), eventIdList));
+    }
+    else if(period != 0){
+        temp.prepare(AnalysisModels::instance()->v1(QString::number(eventId), period));
+    }else {
+        temp.prepare(AnalysisModels::instance()->v1(QString::number(eventId)));
+    }
 
     if (!temp.exec())
     {
@@ -1135,7 +1139,7 @@ QList<Analysis_V1*> *For_analysis::getV1(int eventId, QVector<int> *eventIdList)
     return v1Result;
 }
 
-QList<Analysis_V2*> *For_analysis::getV2(int eventId, QVector<int> *eventIdList)
+QList<Analysis_V2*> *For_analysis::getV2(int eventId, QVector<int> *eventIdList,QMap<QString, QString> *period)
 {
     if( !db_connection::instance()->db_connect() )
         return 0;
@@ -1144,10 +1148,14 @@ QList<Analysis_V2*> *For_analysis::getV2(int eventId, QVector<int> *eventIdList)
 
     bool isOk = db_connection::instance()->db().database(cname).transaction();
     QSqlQuery temp(db_connection::instance()->db());
-    if(eventIdList == 0)
-        temp.prepare(AnalysisModels::instance()->v2(QString::number(eventId)));
-    else
+    if(eventIdList != 0){
         temp.prepare(AnalysisModels::instance()->v2(QString::number(eventId), eventIdList));
+    }
+    else if(period != 0){
+        temp.prepare(AnalysisModels::instance()->v2(QString::number(eventId), period));
+    }else {
+        temp.prepare(AnalysisModels::instance()->v2(QString::number(eventId)));
+    }
 
     if (!temp.exec())
     {
@@ -1202,7 +1210,7 @@ QList<Analysis_V2*> *For_analysis::getV2(int eventId, QVector<int> *eventIdList)
     return v2Result;
 }
 
-QList<Analysis_V3 *> *For_analysis::getV3(int eventId, QVector<int> *eventIdList)
+QList<Analysis_V3 *> *For_analysis::getV3(int eventId, QVector<int> *eventIdList,QMap<QString, QString> *period)
 {
     if( !db_connection::instance()->db_connect() )
         return 0;
@@ -1211,10 +1219,14 @@ QList<Analysis_V3 *> *For_analysis::getV3(int eventId, QVector<int> *eventIdList
 
     bool isOk = db_connection::instance()->db().database(cname).transaction();
     QSqlQuery temp(db_connection::instance()->db());
-    if(eventIdList == 0)
-        temp.prepare(AnalysisModels::instance()->v3(QString::number(eventId)));
-    else
+    if(eventIdList != 0){
         temp.prepare(AnalysisModels::instance()->v3(QString::number(eventId), eventIdList));
+    }
+    else if(period != 0){
+        temp.prepare(AnalysisModels::instance()->v3(QString::number(eventId), period));
+    }else {
+        temp.prepare(AnalysisModels::instance()->v3(QString::number(eventId)));
+    }
 
     if (!temp.exec())
     {

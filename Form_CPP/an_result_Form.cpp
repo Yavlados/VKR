@@ -90,28 +90,29 @@ void An_result::Recieve_long_tel_analysis(QVector<int> *vector, int zk_id)
     an->ClearAll();
 }
 
-void An_result::Recieve_short_face_analysis(QString DateFrom, QString DateTo, int id)
+void An_result::Recieve_short_face_analysis(QMap<QString, QString> *period, int zk_id)
 {
-//    an->short_face_analysis_all_db(DateFrom, DateTo, id);
-//    FinalResult += an->analysis_res+"\r\n \r\n";
-//    an->ClearAll();
+    an->getDataFromBaseFace(zk_id, 0, period);
+    an->short_face_analysis(zk_id);
+    FinalResult += an->analysis_res+"\r\n \r\n";
+    an->ClearAll();
 }
 
-void An_result::Recieve_short_tel_analysis(QString DateFrom, QString DateTo, int id)
+void An_result::Recieve_short_tel_analysis(QMap<QString, QString> *period, int zk_id)
 {
 //    an->short_tel_analysis_all_db(DateFrom, DateTo, id);
 //    FinalResult += an->analysis_res+"\r\n \r\n";
 //    an->ClearAll();
 }
 
-void An_result::Recieve_long_face_analysis(QString DateFrom, QString DateTo, int id)
+void An_result::Recieve_long_face_analysis(QMap<QString, QString> *period, int zk_id)
 {
 //    an->long_face_analysis_all_db(DateFrom, DateTo, id);
 //    FinalResult += an->analysis_res+"\r\n \r\n";
 //    an->ClearAll();
 }
 
-void An_result::Recieve_long_tel_analysis(QString DateFrom, QString DateTo, int id)
+void An_result::Recieve_long_tel_analysis(QMap<QString, QString> *period, int zk_id)
 {
 //    an->long_tel_analysis_all_db(DateFrom, DateTo, id);
 //    FinalResult += an->analysis_res+"\r\n \r\n";
