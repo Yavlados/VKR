@@ -28,7 +28,7 @@ void An_result::closeEvent(QCloseEvent *event)
 
 void An_result::Recieve_short_face_analysis_all_db(int zk_id)
 {
-    an->getDataFromBase(zk_id);
+    an->getDataFromBaseFace(zk_id);
     an->short_face_analysis_all_db(zk_id);
     FinalResult += an->analysis_res+"\r\n \r\n";
     an->ClearAll();
@@ -36,6 +36,7 @@ void An_result::Recieve_short_face_analysis_all_db(int zk_id)
 
 void An_result::Recieve_short_tel_analysis_all_db(int zk_id)
 {
+    an->getDataFromBaseTelephone(zk_id);
     an->short_tel_analysis_all_db(zk_id);
     FinalResult += an->analysis_res+"\r\n \r\n";
     an->ClearAll();
@@ -43,72 +44,74 @@ void An_result::Recieve_short_tel_analysis_all_db(int zk_id)
 
 void An_result::Recieve_long_face_analysis_all_db(int zk_id)
 {
-    an->long_face_analysis_all_db(zk_id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->long_face_analysis_all_db(zk_id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_long_tel_analysis_all_db(int zk_id)
 {
-    an->long_tel_analysis_all_db(zk_id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+      an->getDataFromBaseFace(zk_id);
+      an->long_face_analysis(zk_id);
+      FinalResult += an->analysis_res+"\r\n \r\n";
+      an->ClearAll();
 }
 
 void An_result::Recieve_short_face_analysis_all_db(QVector<int>* vector, int zk_id)
 {
-    an->short_face_analysis_all_db(*vector, zk_id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->short_face_analysis_all_db(*vector, zk_id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_short_tel_analysis_all_db(QVector<int>*vector, int zk_id)
 {
-    an->short_tel_analysis_all_db(*vector, zk_id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->getDataFromBaseTelephone(zk_id);
+//    an->short_tel_analysis_all_db(zk_id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_long_face_analysis_all_db(QVector<int> *vector, int zk_id)
 {
-    an->long_face_analysis_all_db(*vector, zk_id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->long_face_analysis_all_db(*vector, zk_id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_long_tel_analysis_all_db(QVector<int> *vector, int zk_id)
 {
-    an->long_tel_analysis_all_db(*vector, zk_id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->long_tel_analysis_all_db(*vector, zk_id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_short_face_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
-    an->short_face_analysis_all_db(DateFrom, DateTo, id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->short_face_analysis_all_db(DateFrom, DateTo, id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_short_tel_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
-    an->short_tel_analysis_all_db(DateFrom, DateTo, id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->short_tel_analysis_all_db(DateFrom, DateTo, id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_long_face_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
-    an->long_face_analysis_all_db(DateFrom, DateTo, id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->long_face_analysis_all_db(DateFrom, DateTo, id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_long_tel_analysis_all_db(QString DateFrom, QString DateTo, int id)
 {
-    an->long_tel_analysis_all_db(DateFrom, DateTo, id);
-    FinalResult += an->analysis_res+"\r\n \r\n";
-    an->ClearAll();
+//    an->long_tel_analysis_all_db(DateFrom, DateTo, id);
+//    FinalResult += an->analysis_res+"\r\n \r\n";
+//    an->ClearAll();
 }
 
 void An_result::Recieve_search_result(QString Search_res)
