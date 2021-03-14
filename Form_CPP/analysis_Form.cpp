@@ -197,25 +197,25 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По базе; Краткий; К лицу;     //////////////////
         if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
         {
-            ar->Recieve_short_face_analysis_all_db(zk_id_num);
+            ar->Recieve_short_face_analysis(zk_id_num);
         }
 
         //////////////////     По базе; Краткий; К номеру;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
         {
-            ar->Recieve_short_tel_analysis_all_db(zk_id_num);
+            ar->Recieve_short_tel_analysis(zk_id_num);
         }
 
         //////////////////     По базе; Полный; К лицу;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
         {
-            ar->Recieve_long_face_analysis_all_db(zk_id_num);
+            ar->Recieve_long_face_analysis(zk_id_num);
         }
 
         //////////////////    По базе; Полный; К номеру;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
        {
-            ar->Recieve_long_tel_analysis_all_db(zk_id_num);
+            ar->Recieve_long_tel_analysis(zk_id_num);
        }
 
         //////////////////     По выбранным; Краткий; К лицу;    //////////////////
@@ -229,7 +229,7 @@ void Analysis::on_pushButton_clicked()
             }
             Analysis::uniq_array();
 
-            ar->Recieve_short_face_analysis_all_db(&vector,zk_id_num);
+            ar->Recieve_short_face_analysis(&vector,zk_id_num);
             vector.clear();
        }
 
@@ -244,7 +244,7 @@ void Analysis::on_pushButton_clicked()
 
        Analysis::uniq_array();
 
-       ar->Recieve_short_tel_analysis_all_db(&vector,zk_id_num);
+       ar->Recieve_short_tel_analysis(&vector,zk_id_num);
        vector.clear();
       }
 
@@ -259,7 +259,7 @@ void Analysis::on_pushButton_clicked()
 
       Analysis::uniq_array();
 
-      ar->Recieve_long_face_analysis_all_db(&vector,zk_id_num);
+      ar->Recieve_long_face_analysis(&vector,zk_id_num);
       vector.clear();
      }
 
@@ -274,7 +274,7 @@ void Analysis::on_pushButton_clicked()
 
       Analysis::uniq_array();
 
-      ar->Recieve_long_tel_analysis_all_db(&vector,zk_id_num);
+      ar->Recieve_long_tel_analysis(&vector,zk_id_num);
       vector.clear();
 
      }
@@ -284,7 +284,7 @@ void Analysis::on_pushButton_clicked()
      {
         if(get_date_from() < get_date_to())
         {
-            ar->Recieve_short_face_analysis_all_db(Date_From, Date_To, zk_id_num);
+            ar->Recieve_short_face_analysis(Date_From, Date_To, zk_id_num);
         }
         else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
@@ -296,7 +296,7 @@ void Analysis::on_pushButton_clicked()
     {
         if(!get_date_from().isEmpty() || !get_date_to().isEmpty())
         {
-           ar->Recieve_short_tel_analysis_all_db(Date_From, Date_To, zk_id_num);
+           ar->Recieve_short_tel_analysis(Date_From, Date_To, zk_id_num);
        }
        else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
@@ -308,7 +308,7 @@ void Analysis::on_pushButton_clicked()
     {
       if(get_date_from() < get_date_to())
         {
-           ar->Recieve_long_face_analysis_all_db(Date_From, Date_To, zk_id_num);
+           ar->Recieve_long_face_analysis(Date_From, Date_To, zk_id_num);
         }
         else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
@@ -320,7 +320,7 @@ void Analysis::on_pushButton_clicked()
     {
         if(get_date_from() < get_date_to())
           {
-               ar->Recieve_long_tel_analysis_all_db(Date_From, Date_To, zk_id_num);
+               ar->Recieve_long_tel_analysis(Date_From, Date_To, zk_id_num);
           }
           else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");

@@ -124,7 +124,7 @@ AnalysisModels *AnalysisModels::instance()
 
 QString AnalysisModels::v1(QString eventId, QVector<int> *eventIdList)
 {
-    QString mainQuery = "SELECT DISTINCT 	f_t.from_event_id as from_event_id,"
+    QString mainQuery = "SELECT DISTINCT f_t.from_event_id as from_event_id,"
                         "f_t.from_event_category as from_event_category,"
                         "f_t.from_event_detention_date as from_event_detention_date,"
                         "f_t.from_event_detention_time as from_event_detention_time,"
@@ -206,8 +206,7 @@ QString AnalysisModels::v1(QString eventId, QVector<int> *eventIdList)
             "                        AND e.id != "+eventId+"                                          ";
     for (int i=0; i<eventIdList->size(); i++){
         if(i==0) mainQuery += "AND (";
-
-        mainQuery += "e.id == "+QString(eventIdList->at(i));
+        mainQuery += "e.id = "+QString::number(eventIdList->at(i));
         if(i<eventIdList->size()-1) mainQuery += " OR ";
         if(i == eventIdList->size()-1) mainQuery += ");";
     }
@@ -323,7 +322,7 @@ QString AnalysisModels::v2(QString eventId, QVector<int> *eventIdList)
      for (int i=0; i<eventIdList->size(); i++){
          if(i==0) mainQuery += "AND (";
 
-         mainQuery += "event.id == "+QString(eventIdList->at(i));
+         mainQuery += "event.id = "+QString::number(eventIdList->at(i));
          if(i<eventIdList->size()-1) mainQuery += " OR ";
          if(i == eventIdList->size()-1) mainQuery += ");";
      }
@@ -449,7 +448,7 @@ QString AnalysisModels::v3(QString eventId, QVector<int> *eventIdList)
     for (int i=0; i<eventIdList->size(); i++){
         if(i==0) mainQuery += "AND (";
 
-        mainQuery += "e.id == "+QString(eventIdList->at(i));
+        mainQuery += "e.id = "+QString::number(eventIdList->at(i));
         if(i<eventIdList->size()-1) mainQuery += " OR ";
         if(i == eventIdList->size()-1) mainQuery += ");";
     }

@@ -33,29 +33,29 @@ public slots:
     void closeEvent(QCloseEvent *event);
 
     //User slots
-    void Recieve_short_face_analysis_all_db(int);
+    void Recieve_short_face_analysis(int);
 
-    void Recieve_short_tel_analysis_all_db(int);
+    void Recieve_short_tel_analysis(int);
 
-    void Recieve_long_face_analysis_all_db(int);
+    void Recieve_long_face_analysis(int);
 
-    void Recieve_long_tel_analysis_all_db(int);
+    void Recieve_long_tel_analysis(int);
 
-    void Recieve_short_face_analysis_all_db(QVector<int>*, int);
+    void Recieve_short_face_analysis(QVector<int>*, int);
 
-    void Recieve_short_tel_analysis_all_db(QVector<int>*, int);
+    void Recieve_short_tel_analysis(QVector<int>*, int);
 
-    void Recieve_long_face_analysis_all_db(QVector<int>*, int);
+    void Recieve_long_face_analysis(QVector<int>*, int);
 
-    void Recieve_long_tel_analysis_all_db(QVector<int>*, int);
+    void Recieve_long_tel_analysis(QVector<int>*, int);
 
-    void Recieve_short_face_analysis_all_db(QString DateFrom, QString DateTo, int);
+    void Recieve_short_face_analysis(QString DateFrom, QString DateTo, int);
 
-    void Recieve_short_tel_analysis_all_db(QString DateFrom, QString DateTo, int);
+    void Recieve_short_tel_analysis(QString DateFrom, QString DateTo, int);
 
-    void Recieve_long_face_analysis_all_db(QString DateFrom, QString DateTo, int);
+    void Recieve_long_face_analysis(QString DateFrom, QString DateTo, int);
 
-    void Recieve_long_tel_analysis_all_db(QString DateFrom, QString DateTo, int);
+    void Recieve_long_tel_analysis(QString DateFrom, QString DateTo, int);
 
     void Recieve_search_result(QString);
 

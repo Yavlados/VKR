@@ -87,6 +87,7 @@ public:
     void short_face_analysis(int eventId);
     void short_tel_analysis(int eventId);
     void long_face_analysis(int eventId);
+    void long_tel_analysis(int eventId);
 
 };
 
