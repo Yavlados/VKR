@@ -297,7 +297,7 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По дате; Краткий; К номеру;     //////////////////
         else if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
     {
-            if( this->isToGreaterFrom(get_date_from(), get_date_to()) )
+         if( this->isToGreaterFrom(get_date_from(), get_date_to()) )
         {
             QMap <QString, QString> *date_map = new QMap <QString, QString>();
             date_map->insert("start", Date_From);
@@ -312,9 +312,12 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По дате; Полный; К лицу;     //////////////////
         else if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
     {
-      if(get_date_from() < get_date_to())
+        if( this->isToGreaterFrom(get_date_from(), get_date_to()) )
         {
-//           ar->Recieve_long_face_analysis(Date_From, Date_To, zk_id_num);
+            QMap <QString, QString> *date_map = new QMap <QString, QString>();
+            date_map->insert("start", Date_From);
+            date_map->insert("end", Date_To);
+            ar->Recieve_long_face_analysis(date_map, zk_id_num);
         }
         else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
@@ -324,9 +327,12 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По дате; Полный; К номеру;      //////////////////
     else if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
     {
-        if(get_date_from() < get_date_to())
+       if( this->isToGreaterFrom(get_date_from(), get_date_to()) )
           {
-//               ar->Recieve_long_tel_analysis(Date_From, Date_To, zk_id_num);
+           QMap <QString, QString> *date_map = new QMap <QString, QString>();
+           date_map->insert("start", Date_From);
+           date_map->insert("end", Date_To);
+           ar->Recieve_long_tel_analysis(date_map, zk_id_num);
           }
           else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
