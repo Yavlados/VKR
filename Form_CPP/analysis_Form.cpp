@@ -197,25 +197,25 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По базе; Краткий; К лицу;     //////////////////
         if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
         {
-            ar->Recieve_short_face_analysis_all_db(zk_id_num);
+            ar->Recieve_short_face_analysis(zk_id_num);
         }
 
         //////////////////     По базе; Краткий; К номеру;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
         {
-            ar->Recieve_short_tel_analysis_all_db(zk_id_num);
+            ar->Recieve_short_tel_analysis(zk_id_num);
         }
 
         //////////////////     По базе; Полный; К лицу;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
         {
-            ar->Recieve_long_face_analysis_all_db(zk_id_num);
+            ar->Recieve_long_face_analysis(zk_id_num);
         }
 
         //////////////////    По базе; Полный; К номеру;     //////////////////
         else if(ui->rb_all_base->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
        {
-            ar->Recieve_long_tel_analysis_all_db(zk_id_num);
+            ar->Recieve_long_tel_analysis(zk_id_num);
        }
 
         //////////////////     По выбранным; Краткий; К лицу;    //////////////////
@@ -229,7 +229,7 @@ void Analysis::on_pushButton_clicked()
             }
             Analysis::uniq_array();
 
-            ar->Recieve_short_face_analysis_all_db(&vector,zk_id_num);
+            ar->Recieve_short_face_analysis(&vector,zk_id_num);
             vector.clear();
        }
 
@@ -244,7 +244,7 @@ void Analysis::on_pushButton_clicked()
 
        Analysis::uniq_array();
 
-       ar->Recieve_short_tel_analysis_all_db(&vector,zk_id_num);
+       ar->Recieve_short_tel_analysis(&vector,zk_id_num);
        vector.clear();
       }
 
@@ -259,7 +259,7 @@ void Analysis::on_pushButton_clicked()
 
       Analysis::uniq_array();
 
-      ar->Recieve_long_face_analysis_all_db(&vector,zk_id_num);
+      ar->Recieve_long_face_analysis(&vector,zk_id_num);
       vector.clear();
      }
 
@@ -274,7 +274,7 @@ void Analysis::on_pushButton_clicked()
 
       Analysis::uniq_array();
 
-      ar->Recieve_long_tel_analysis_all_db(&vector,zk_id_num);
+      ar->Recieve_long_tel_analysis(&vector,zk_id_num);
       vector.clear();
 
      }
@@ -282,9 +282,12 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По дате; Краткий; К лицу;     //////////////////
         else if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_face->isChecked())
      {
-        if(get_date_from() < get_date_to())
+        if( this->isToGreaterFrom(get_date_from(), get_date_to()) )
         {
-            ar->Recieve_short_face_analysis_all_db(Date_From, Date_To, zk_id_num);
+            QMap <QString, QString> *date_map = new QMap <QString, QString>();
+            date_map->insert("start", Date_From);
+            date_map->insert("end", Date_To);
+            ar->Recieve_short_face_analysis(date_map, zk_id_num);
         }
         else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
@@ -294,9 +297,12 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По дате; Краткий; К номеру;     //////////////////
         else if(ui->rb_date->isChecked() && ui->rb_short->isChecked() && ui->rb_to_num->isChecked())
     {
-        if(!get_date_from().isEmpty() || !get_date_to().isEmpty())
+         if( this->isToGreaterFrom(get_date_from(), get_date_to()) )
         {
-           ar->Recieve_short_tel_analysis_all_db(Date_From, Date_To, zk_id_num);
+            QMap <QString, QString> *date_map = new QMap <QString, QString>();
+            date_map->insert("start", Date_From);
+            date_map->insert("end", Date_To);
+           ar->Recieve_short_tel_analysis(date_map, zk_id_num);
        }
        else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
@@ -306,9 +312,12 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По дате; Полный; К лицу;     //////////////////
         else if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_face->isChecked())
     {
-      if(get_date_from() < get_date_to())
+        if( this->isToGreaterFrom(get_date_from(), get_date_to()) )
         {
-           ar->Recieve_long_face_analysis_all_db(Date_From, Date_To, zk_id_num);
+            QMap <QString, QString> *date_map = new QMap <QString, QString>();
+            date_map->insert("start", Date_From);
+            date_map->insert("end", Date_To);
+            ar->Recieve_long_face_analysis(date_map, zk_id_num);
         }
         else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
@@ -318,9 +327,12 @@ void Analysis::on_pushButton_clicked()
         //////////////////     По дате; Полный; К номеру;      //////////////////
     else if(ui->rb_date->isChecked() && ui->rb_long->isChecked() && ui->rb_to_num->isChecked())
     {
-        if(get_date_from() < get_date_to())
+       if( this->isToGreaterFrom(get_date_from(), get_date_to()) )
           {
-               ar->Recieve_long_tel_analysis_all_db(Date_From, Date_To, zk_id_num);
+           QMap <QString, QString> *date_map = new QMap <QString, QString>();
+           date_map->insert("start", Date_From);
+           date_map->insert("end", Date_To);
+           ar->Recieve_long_tel_analysis(date_map, zk_id_num);
           }
           else {
             QMessageBox::critical(this,QObject::tr("Ошибка"), "Дата начала периода позже его окончания!");
@@ -470,6 +482,49 @@ void Analysis::keyPressEvent(QKeyEvent *event)
         on_pb_del_zk_clicked();
         return;
     }
+}
+
+bool Analysis::isToGreaterFrom(QString from, QString to)
+{
+    if(from == "" || to == "") return true;
+
+    auto fromDate = this->decomposeDate(from);
+    auto toDate = this->decomposeDate(to);
+
+    bool dayGreater = toDate["day"] >= fromDate["day"];
+    bool dayEqual = toDate["day"] == fromDate["day"];
+    bool dayLess = toDate["day"] < fromDate["day"];
+
+    bool monthGreater = toDate["month"] >= fromDate["month"];
+    bool monthEqual = toDate["month"] == fromDate["month"];
+    bool monthLess = toDate["month"] < fromDate["month"];
+
+    bool yearGreater = toDate["year"] >= fromDate["year"];
+    bool yearEqual = toDate["year"] == fromDate["year"];
+    bool yearLess = toDate["year"] < fromDate["year"];
+
+    if(yearGreater) return true;
+    else if(yearLess) return false;
+    else if(yearEqual){
+        if(monthGreater) return true;
+        else if(monthLess) return false;
+        else if(monthEqual){
+            if(dayGreater || dayEqual) return true;
+            else if(dayLess) return false;
+        }
+    }
+
+    return false;
+}
+
+QMap<QString, int> Analysis::decomposeDate(QString date)
+{
+    QMap<QString, int> result;
+    auto dateList = date.split('-');
+    result["year"] = dateList[0].toInt();
+    result["month"] = dateList[1].toInt();
+    result["day"] = dateList[2].toInt();
+    return result;
 }
 
 void Analysis::set_tab_orders()

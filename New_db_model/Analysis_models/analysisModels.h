@@ -205,9 +205,14 @@ class AnalysisModels {
     QString v1(QString eventId);
     QString v2(QString eventId);
     QString v3(QString eventId);
+
     QString v1(QString eventId, QVector<int> *eventIdList);
     QString v2(QString eventId, QVector<int> *eventIdList);
     QString v3(QString eventId, QVector<int> *eventIdList);
+
+    QString v1(QString eventId, QMap<QString, QString> *period);
+    QString v2(QString eventId, QMap<QString, QString> *period);
+    QString v3(QString eventId, QMap<QString, QString> *period);
 
     Analysis_general *convert(Analysis_V1 *an);
     Analysis_general *convert(Analysis_V2 *an);

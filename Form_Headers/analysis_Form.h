@@ -8,7 +8,7 @@
 #include <QFont>
 #include "date_form.h"
 #include <QKeyEvent>
-
+#include <QString>
 /**
  * @file analysis_Form.h
  * @brief Форма анализа
@@ -76,6 +76,9 @@ private slots:
     void on_pb_del_zk_clicked();
 
     void keyPressEvent(QKeyEvent *event);
+
+    bool isToGreaterFrom(QString from, QString to);
+    QMap<QString, int> decomposeDate(QString date);
 
 signals:
 
