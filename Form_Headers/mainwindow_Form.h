@@ -103,9 +103,6 @@ public:
 
      int zk_id = 0;
      QString cont_num = 0;
-//     QList<Contacts*> *contactList = new QList<Contacts*>;
-//     QList<Owners_tel*> *otList = new QList<Owners_tel*>;
-
 
     ///Указатель на класс для экспорта
     For_export *form_exprt = 0;

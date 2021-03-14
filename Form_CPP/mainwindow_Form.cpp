@@ -270,71 +270,11 @@ void MainWindow::RefreshTab()
         ui->eventTable->setModel(eventModel);
     }
 
-//        ui->eventTable->resizeColumnsToContents();
         ui->eventTable->setWordWrap(false);
         ui->eventTable->resizeColumnToContents(0);
         ui->eventTable->resizeColumnToContents(2);
         ui->eventTable->resizeColumnToContents(3);
-//   // Settings_connection::instance()->Set_settings();
-//    if (crud_model != 0)
-//    {
-//        delete crud_model;
-//        crud_model = 0;
-//     }
 
-//    crud_model = new  MTM_Crud;
-//    //QHeaderView *header =crud_model->headerData();
-//    QList<Crud*> *crudlist = new QList<Crud*>;
-//    if(Crud::selectAll(crudlist)) ///Вызов статичной функции
-//    {
-//        crud_model->setCrudlist(crudlist);
-
-//        Add_pagination_buttons();
-
-//        ui->tableView->setModel(crud_model);
-//        ui->tabWidget->setCurrentIndex(0);
-//        ui->tableView->resizeColumnToContents(0);
-//        ui->tableView->resizeColumnToContents(1);
-//        ui->tableView->resizeColumnToContents(2);
-//        ui->tableView->setWordWrap(false);
-
-//        while(ui->hl_label_crud->count())
-//        {
-//            QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-//            delete item->widget();
-//        }
-
-//        QLabel *lb = new QLabel;
-//        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
-//                QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
-//        lb->setText(str);
-//        ui->hl_label_crud->addWidget(lb);
-//    }
-
-//    m_c_s = All_unchecked;
-//    ot_model->reset_OTModel();
-//    contacts_model->reset_ContactModel();
-
-//    QLayout *layout = ui->vl_cancel_button->layout();
-//    while (layout->count() != 0)
-//        {
-//            QLayoutItem *item = layout->takeAt(0);
-//            delete item->widget();
-//            pb_clear_search = 0;
-//            ui->lineEdit->setFocus();
-//            if (p_b_counter > 0)
-//            {
-//                p_b_counter--;
-//            }
-//        }
-//    while(ui->hl_label_owt->count())
-//    {
-//        QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-//        delete item->widget();
-//    }
-
-//    ui->lineEdit->clear();
-//    set_validators();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
@@ -353,30 +293,6 @@ void MainWindow::on_action_add_triggered()
                               Util::instance()->editEventList()->at(Util::instance()->editEventList()->size()-1),
                               "Создание нового события");
     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
-
-
-//    if( addlist == 0)
-//    {
-//        addlist = new QList<Update*>;
-//        Update *add = new Update;
-//        add->frm_t = Add_form;
-//        addlist->append(add);
-
-//        ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,addlist->at(0),"Добавление новой ЗК");
-//        addlist->at(0)->Fill_table_in_add();
-//        ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
-//        connect (addlist->at(0), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
-//        connect(addlist->at(0), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
-//        connect(addlist->at(0), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
-//        add->set_tab_orders();
-//    }
-//    else
-//        ui->tabWidget->setCurrentIndex( ui->tabWidget->indexOf(addlist->at(0)));
-
-//    addlist->at(0)->focus_on_widget();
-
-
-
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_delete_triggered()
@@ -480,16 +396,6 @@ void MainWindow::on_action_update_triggered()
     else {
             QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали событие для изменения!")); ///Хвалимся
         }
-//    if(index_tab1.isValid() && index_tab1 == ui->tableView->currentIndex())
-//    {
-//        //index_tab1 = ui->tableView->currentIndex();
-
-//        open_upd_tab(crud_model->actcrudlist.at(index_tab1.row()));
-//    }
-//    else {
-//        QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("Вы не выбрали ЗК для изменения!")); ///Хвалимся
-//    }
-
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_analysis_triggered()
@@ -752,7 +658,7 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
             }
         }
     }
-//    ui->tabWidget->setCurrentWidget(ui->tabWidget->widget(index-1));
+    this->RefreshTab();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_2_tabCloseRequested(int index)

@@ -46,7 +46,8 @@ bool Event::selectAll(QList<Event *> *eventList)
                  "keeping_place,"
                  "additional,"
                  "id"
-                 " FROM notebook2.event;");
+                 " FROM notebook2.event"
+                 " ORDER BY id;");
     if (!temp.exec())
     {
         qDebug() << "Event::selectAll" << temp.lastError();

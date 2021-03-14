@@ -29,10 +29,10 @@ void editEvent::setEventAndType(Event *e, editEventState s)
     ui->le_detention_by->   setText(e->detention_by);
     ui->le_keeping_place->  setText(e->keeping_place);
     if(this->state == updateEvent){
-        QStringList list = e->detention_date.split(".");
-        this->d->set_day(list[0]);
+        QStringList list = e->detention_date.split("-");
+        this->d->set_day(list[2]);
         this->d->set_month(list[1]);
-        this->d->set_year(list[2]);
+        this->d->set_year(list[0]);
         this->updateCardsLayout();
     }
 }
