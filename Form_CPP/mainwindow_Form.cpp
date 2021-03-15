@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    connect(ui->tableView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(header_clicked(int)));
 
     ui->tabWidget->setAttribute(Qt::WA_StyledBackground, true);
-        ui->tabWidget_2->setAttribute(Qt::WA_StyledBackground, true);
+    ui->tabWidget_2->setAttribute(Qt::WA_StyledBackground, true);
 
 //        ui->tableView->setType(zkTable);
 //        ui->tableView_2->setType(otTable);
@@ -750,7 +750,7 @@ void MainWindow::on_actionexport_triggered()
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,exprt,"Экспорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
         connect(exprt,SIGNAL(rb_zk_clicked()),this, SLOT(on_action_search_triggered()));
-        connect(exprt, SIGNAL(prepareExport(SimpleCrypt, ExportType)), this, SLOT(testing_export(SimpleCrypt, ExportType)));
+        connect(exprt, SIGNAL(prepareExport(SimpleCrypt, ExportType, QString)), this, SLOT(prepare_export(SimpleCrypt, ExportType, QString)));
 //        connect(exprt, SIGNAL(TESTING_export(QString,QString, bool, bool, bool)),this,SLOT(testing_export(QString, QString, bool, bool, bool)));
         connect(exprt, SIGNAL(closeThis(QString)), this, SLOT(findIndexByNameTab2(QString)));
     }
@@ -764,77 +764,104 @@ void MainWindow::on_actionexport_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk)
 {
-    if( for_exprt == 0)
-    {
-        for_exprt = new For_export();
+//    if( for_exprt == 0)
+//    {
+//        for_exprt = new For_export();
 
-        if (filename.isEmpty())
-        {
-            QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Вы не указали путь!")); ///Хвалимся
-            return;
-        }
+//        if (filename.isEmpty())
+//        {
+//            QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Вы не указали путь!")); ///Хвалимся
+//            return;
+//        }
 
-        QList<Crud*> *crud = new  QList<Crud*> ;
-        QList<Off_tels*> *offtel = new QList<Off_tels*>;
-        zk_links *links_for_export = new zk_links;
-        QList<int> *exported_id = new QList<int>;
-        for_exprt->list->set_counters();
+//        QList<Crud*> *crud = new  QList<Crud*> ;
+//        QList<Off_tels*> *offtel = new QList<Off_tels*>;
+//        zk_links *links_for_export = new zk_links;
+//        QList<int> *exported_id = new QList<int>;
+//        for_exprt->list->set_counters();
 
-        if(cb_zk)
-            for (int i=0;i<crud_model->crudlist->size();i++) // пробегаюсь по отображаемому списку
-            {
-                if (crud_model->crudlist->at(i)->checkState_ == Checked)
-                {
-                    //form_exprt->exported_zk_id.append( crud_model->crudlist->at(i)->zk_id);
-                    //form_exprt->list->fill_crud_list(crud, crud_model->crudlist->at(i)->zk_id, PSQLtype);
-                    exported_id->append(crud_model->crudlist->at(i)->zk_id);
-                }
-            }
-        else if (cb_off_tels)
-            for_exprt->list->fill_off_tels(offtel,PSQLtype);
+//        if(cb_zk)
+//            for (int i=0;i<crud_model->crudlist->size();i++) // пробегаюсь по отображаемому списку
+//            {
+//                if (crud_model->crudlist->at(i)->checkState_ == Checked)
+//                {
+//                    //form_exprt->exported_zk_id.append( crud_model->crudlist->at(i)->zk_id);
+//                    //form_exprt->list->fill_crud_list(crud, crud_model->crudlist->at(i)->zk_id, PSQLtype);
+//                    exported_id->append(crud_model->crudlist->at(i)->zk_id);
+//                }
+//            }
+//        else if (cb_off_tels)
+//            for_exprt->list->fill_off_tels(offtel,PSQLtype);
 
-        if(!exported_id->isEmpty())
-        {
-            for (int i=0; i<exported_id->size();i++)
-                for_exprt->list->fill_crud_list(crud, exported_id->at(i), PSQLtype);
+//        if(!exported_id->isEmpty())
+//        {
+//            for (int i=0; i<exported_id->size();i++)
+//                for_exprt->list->fill_crud_list(crud, exported_id->at(i), PSQLtype);
 
-            links_for_export->take_links(exported_id);
-            delete exported_id;
-        }
+//            links_for_export->take_links(exported_id);
+//            delete exported_id;
+//        }
 
 
-        if(!crud->isEmpty() || !offtel->isEmpty())
-        {
-            if( for_exprt->Do_export(filename, crud, password, cb_off_tels, cb_set_password, offtel, links_for_export))
-            {
-                if(!crud->isEmpty())
-                    QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
-                                                                                    " ЗК экспортировано: %2 .").arg(filename).arg(QString::number(crud->size()))); ///Хвалимся
-                else
-                    if(!offtel->isEmpty())
-                    QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
-                                                                                    " Служебных телефонов экспортировано: %2 .").arg(filename).arg(QString::number(offtel->size()))); ///Хвалимся
+//        if(!crud->isEmpty() || !offtel->isEmpty())
+//        {
+//            if( for_exprt->Do_export(filename, crud, password, cb_off_tels, cb_set_password, offtel, links_for_export))
+//            {
+//                if(!crud->isEmpty())
+//                    QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
+//                                                                                    " ЗК экспортировано: %2 .").arg(filename).arg(QString::number(crud->size()))); ///Хвалимся
+//                else
+//                    if(!offtel->isEmpty())
+//                    QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
+//                                                                                    " Служебных телефонов экспортировано: %2 .").arg(filename).arg(QString::number(offtel->size()))); ///Хвалимся
 
-            }
-            else
-                QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Во время экспорта данных что-то пошло не так!")); ///Хвалимся
-        }
-        else {
-            QMessageBox::warning(exprt,QObject::tr("Внимание"),QObject::tr("Экспорт не был выполнен, так как вы не выбрали данные!")); ///Хвалимся
-        }
-        for_exprt =0;
-        delete offtel;
-        delete crud;
-    }
+//            }
+//            else
+//                QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Во время экспорта данных что-то пошло не так!")); ///Хвалимся
+//        }
+//        else {
+//            QMessageBox::warning(exprt,QObject::tr("Внимание"),QObject::tr("Экспорт не был выполнен, так как вы не выбрали данные!")); ///Хвалимся
+//        }
+//        for_exprt =0;
+//        delete offtel;
+//        delete crud;
+//    }
 }
 //-----------------------------------------------------------------------------------//
-void MainWindow::testing_export(SimpleCrypt crypt, ExportType type){
-    crypt;
-    type;
-    if( this->for_exprt == 0){
-        this->for_exprt = new For_export();
+void MainWindow::prepare_export(SimpleCrypt crypt, ExportType type, QString filePath){
+    if (filePath.isEmpty())
+    {
+        QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Вы не указали путь!"));
+        return;
+    }
+
+    QString messageStart;
+    QString exportedFilePath;
+
+    if(type == events || type == eventsPassword){
+        QList<Event*> *checkedEvents = this->getSelectedEvents();
+
+        if(checkedEvents->size() == 0){
+           QMessageBox::warning(exprt,QObject::tr("Внимание"),QObject::tr("Экспорт не был выполнен, так как вы не выбрали данные!"));
+           return;
+        }
+
+        exportedFilePath = this->for_exprt.exportEvents(checkedEvents, crypt, type, filePath);
+        delete checkedEvents;
+        switch (type){
+        case events:
+            messageStart = "Дела экспортированы успешно без пароля. Данные сохранены в файл: ";
+            break;
+        case eventsPassword:
+            messageStart = "Дела экспортированы и зашифрованы паролем успешно. Данные сохранены в файл: ";
+            break;
+        }
+    }
+    else if( type == official || type == officialPassword){
 
     }
+    QMessageBox::information(exprt,QObject::tr("Успех"), messageStart + exportedFilePath);
+
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::testing_opening(QString filename, QString password, bool folder, bool of_t)
@@ -1682,4 +1709,28 @@ void MainWindow::closeEditEvent(editEvent *ee)
                 i++;
         }
     }
+}
+
+QList<Event *> *MainWindow::getSelectedEvents()
+{
+    QList<Event *> *events = new QList<Event *>();
+
+    for (int a = 0; a<this->eventModel->eventList->size(); a++) {
+        Event * ev = this->eventModel->eventList->at(a);
+        if( ev->checkState_ == Unchecked_) continue;
+        else{
+            Person::selectByEventId(ev->persons(), ev->id);
+            for (int b = 0; b<ev->persons()->size();b++) {
+                Person *per = ev->persons()->at(b);
+                Telephone::selectTelephone(per->telephones(), per->id);
+                for (int c=0; c<per->telephones()->size(); c++) {
+                    Telephone *tel =    per->telephones()->at(c);
+                    Contact::selectContacts(tel->cont(), tel->id);
+                }
+            }
+        }
+        events->append(ev);
+    }
+
+    return events;
 }

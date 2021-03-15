@@ -70,13 +70,13 @@ void Master_export_Form::on_pb_directory_clicked()
                            this,
                            tr("Save Document"),
                            QDir::currentPath(),
-                           tr("Dump database (*.db)") );
+                           tr("Notebook data *.nbd") );
     else
         filename = QFileDialog::getSaveFileName(
                            this,
                            tr("Save Document"),
                            file_path,
-                           tr("Dump database (*.db)") );
+                           tr("Notebook data *.nbd") );
 
     int x = filename.lastIndexOf("/");
     file_path = filename.left(x);
@@ -95,7 +95,7 @@ void Master_export_Form::on_pb_Export_clicked()
     SimpleCrypt crypt(key.toLongLong());
     auto exportType = this->getExportType();
 
-    emit prepareExport(crypt, exportType);
+    emit prepareExport(crypt, exportType, ui->le_file_path->text());
 
 
 //    emit TESTING_export(ui->le_file_path->text(), ui->le_password->text(),

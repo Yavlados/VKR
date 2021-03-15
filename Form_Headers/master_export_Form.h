@@ -63,7 +63,7 @@ signals:
     void closeThis(QString);
 
     /// NEW
-    void prepareExport(SimpleCrypt crypt, ExportType type);
+    void prepareExport(SimpleCrypt crypt, ExportType type, QString filename);
 };
 
 #endif // MASTER_EXPORT_FORM_H

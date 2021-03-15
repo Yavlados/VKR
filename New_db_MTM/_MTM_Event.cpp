@@ -75,20 +75,22 @@ QVariant MTM_Event::headerData(int section, Qt::Orientation orientation, int rol
              switch (section)
            {
              case 0:
-                 return "ID";
+                 return "Выбрать все";
              case 1:
-                 return "Категория";
+                 return "ID";
              case 2:
-                 return "Дата";
+                 return "Категория";
              case 3:
-                 return "Время";
+                 return "Дата";
              case 4:
-                 return "Причина";
+                 return "Время";
              case 5:
-                 return "Задержан";
+                 return "Причина";
              case 6:
-                 return "Место";
+                 return "Задержан";
              case 7:
+                 return "Место";
+             case 8:
                  return "Доп. инфо";
              }
      return QVariant(); /// вот сюда внимание в случае краша

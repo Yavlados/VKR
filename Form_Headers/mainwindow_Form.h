@@ -105,7 +105,7 @@ public:
      QString cont_num = 0;
 
     ///Указатель на класс для экспорта
-    For_export *for_exprt = 0;
+    For_export for_exprt;
 
     ///Указатель на индекс первой таблицы
     QModelIndex eventTableIndex;
@@ -181,7 +181,7 @@ private slots:
 
     void testing_export(QString, QString, bool, bool, bool);
 
-    void testing_export(SimpleCrypt crypt, ExportType type);
+    void prepare_export(SimpleCrypt crypt, ExportType type, QString filePath);
 
     void testing_opening(QString, QString, bool, bool of_t);
 
@@ -276,7 +276,7 @@ private slots:
     void closePersonEdit(EditPerson*);
     void on_eventTable_doubleClicked(const QModelIndex &index);
     void closeEditEvent(editEvent*);
-
+     QList<Event *> *getSelectedEvents();
 signals:
     void Send_data(Crud *cr, int index);
 

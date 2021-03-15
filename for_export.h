@@ -3,6 +3,8 @@
 #include "_Off_tels.h"
 #include "list_master.h"
 #include "_Zk_links.h"
+#include "_Event.h"
+#include "simplecrypt.h"
 
 #include <QString>
 #include <QFile>
@@ -11,7 +13,7 @@
 #include <QDate>
 #include <QFileInfo>
 #include <QTextCodec>
-
+#include <QXmlStreamWriter>
 
 /**
  * \file for_export.h
@@ -34,7 +36,15 @@ public:
     QList<int> exported_zk_id;
 
     /// NEW
-    void prepareExport();
+    QString exportEvents(QList<Event*> *events, SimpleCrypt crypt, ExportType type, QString filePath);
+    QString exportOfficial(QList<Off_tels*> *officials, SimpleCrypt crypt, ExportType type, QString filePath);
+
+    QString changeFileExtension(ExportType type, QString filePath);
+
+    QXmlStreamAttributes getEventAttributes(Event* ev);
+    QXmlStreamAttributes getPersonAttributes(Person *per);
+    QXmlStreamAttributes getTelephoneAttributes(Telephone *tel);
+    QXmlStreamAttributes getContactAttributes(Contact *cont);
 private:
     QFile db_file;
     QFile export_report;
