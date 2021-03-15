@@ -105,7 +105,7 @@ public:
      QString cont_num = 0;
 
     ///Указатель на класс для экспорта
-    For_export *form_exprt = 0;
+    For_export *for_exprt = 0;
 
     ///Указатель на индекс первой таблицы
     QModelIndex eventTableIndex;
@@ -180,6 +180,8 @@ private slots:
     void on_actionexport_triggered();
 
     void testing_export(QString, QString, bool, bool, bool);
+
+    void testing_export(SimpleCrypt crypt, ExportType type);
 
     void testing_opening(QString, QString, bool, bool of_t);
 

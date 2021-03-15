@@ -23,6 +23,12 @@ public:
     /// Переопределение количества строк модели
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
+    /// Установка флагов
+    virtual Qt::ItemFlags flags ( const QModelIndex & index ) const;
+
+    /// Метод изменения данных в таблице
+    virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+
     /// Список указателей для работы (является указателем)
     QList<Event*> *eventList;
 

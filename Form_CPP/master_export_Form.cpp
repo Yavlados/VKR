@@ -36,6 +36,21 @@ void Master_export_Form::on_cb_off_tel_clicked()
     ui->rb_check->setVisible(false);
 }
 
+ExportType Master_export_Form::getExportType()
+{
+    bool isEventsChecked = ui->cb_zk->isChecked();
+    bool isOfficialChecked = ui->cb_off_tel->isChecked();
+    bool isPasswordChecked = ui->cb_set_password->isChecked();
+
+    if(isPasswordChecked){
+        if(isEventsChecked) return eventsPassword;
+        else if(isOfficialChecked) return officialPassword;
+    } else{
+        if(isEventsChecked) return events;
+        else if(isOfficialChecked) return official;
+    }
+}
+
 void Master_export_Form::on_rb_check_clicked()
 {
    emit rb_zk_clicked();
@@ -71,8 +86,20 @@ void Master_export_Form::on_pb_directory_clicked()
 
 void Master_export_Form::on_pb_Export_clicked()
 {
-    emit TESTING_export(ui->le_file_path->text(), ui->le_password->text(),
-                        ui->cb_off_tel->isChecked(), ui->cb_set_password->isChecked(), ui->cb_zk->isChecked());
+    // preparing encryption tool
+    QString key;
+    if(ui->cb_set_password->checkState())
+         key = this->convertKey(ui->le_password->text());
+    else
+         key = "12345";
+    SimpleCrypt crypt(key.toLongLong());
+    auto exportType = this->getExportType();
+
+    emit prepareExport(crypt, exportType);
+
+
+//    emit TESTING_export(ui->le_file_path->text(), ui->le_password->text(),
+//                        ui->cb_off_tel->isChecked(), ui->cb_set_password->isChecked(), ui->cb_zk->isChecked());
 }
 
 void Master_export_Form::on_cb_set_password_clicked()
@@ -127,4 +154,16 @@ void Master_export_Form::set_tab_orders()
      setTabOrder(  ui->cb_set_password, ui->le_password);
      setTabOrder(  ui->le_password, ui->pb_Export);
      setTabOrder(  ui->pb_Export,  ui->hided_le);
+}
+
+QString Master_export_Form::convertKey(QString key)
+{
+    QString convertedKey = "";
+    // text key to num convertation
+    for (int a =0; a < key.size(); a++) {
+           QChar ch = key[a];
+           auto un = ch.unicode();
+           convertedKey += QString::number(un);
+    }
+    return convertedKey;
 }

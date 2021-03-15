@@ -750,7 +750,8 @@ void MainWindow::on_actionexport_triggered()
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,exprt,"Экспорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
         connect(exprt,SIGNAL(rb_zk_clicked()),this, SLOT(on_action_search_triggered()));
-        connect(exprt, SIGNAL(TESTING_export(QString,QString, bool, bool, bool)),this,SLOT(testing_export(QString, QString, bool, bool, bool)));
+        connect(exprt, SIGNAL(prepareExport(SimpleCrypt, ExportType)), this, SLOT(testing_export(SimpleCrypt, ExportType)));
+//        connect(exprt, SIGNAL(TESTING_export(QString,QString, bool, bool, bool)),this,SLOT(testing_export(QString, QString, bool, bool, bool)));
         connect(exprt, SIGNAL(closeThis(QString)), this, SLOT(findIndexByNameTab2(QString)));
     }
     else
@@ -763,9 +764,9 @@ void MainWindow::on_actionexport_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk)
 {
-    if( form_exprt == 0)
+    if( for_exprt == 0)
     {
-        form_exprt = new For_export();
+        for_exprt = new For_export();
 
         if (filename.isEmpty())
         {
@@ -777,7 +778,7 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
         QList<Off_tels*> *offtel = new QList<Off_tels*>;
         zk_links *links_for_export = new zk_links;
         QList<int> *exported_id = new QList<int>;
-        form_exprt->list->set_counters();
+        for_exprt->list->set_counters();
 
         if(cb_zk)
             for (int i=0;i<crud_model->crudlist->size();i++) // пробегаюсь по отображаемому списку
@@ -790,12 +791,12 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
                 }
             }
         else if (cb_off_tels)
-            form_exprt->list->fill_off_tels(offtel,PSQLtype);
+            for_exprt->list->fill_off_tels(offtel,PSQLtype);
 
         if(!exported_id->isEmpty())
         {
             for (int i=0; i<exported_id->size();i++)
-                form_exprt->list->fill_crud_list(crud, exported_id->at(i), PSQLtype);
+                for_exprt->list->fill_crud_list(crud, exported_id->at(i), PSQLtype);
 
             links_for_export->take_links(exported_id);
             delete exported_id;
@@ -804,7 +805,7 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
 
         if(!crud->isEmpty() || !offtel->isEmpty())
         {
-            if( form_exprt->Do_export(filename, crud, password, cb_off_tels, cb_set_password, offtel, links_for_export))
+            if( for_exprt->Do_export(filename, crud, password, cb_off_tels, cb_set_password, offtel, links_for_export))
             {
                 if(!crud->isEmpty())
                     QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
@@ -821,9 +822,18 @@ void MainWindow::testing_export(QString filename, QString password, bool cb_off_
         else {
             QMessageBox::warning(exprt,QObject::tr("Внимание"),QObject::tr("Экспорт не был выполнен, так как вы не выбрали данные!")); ///Хвалимся
         }
-        form_exprt =0;
+        for_exprt =0;
         delete offtel;
         delete crud;
+    }
+}
+//-----------------------------------------------------------------------------------//
+void MainWindow::testing_export(SimpleCrypt crypt, ExportType type){
+    crypt;
+    type;
+    if( this->for_exprt == 0){
+        this->for_exprt = new For_export();
+
     }
 }
 //-----------------------------------------------------------------------------------//

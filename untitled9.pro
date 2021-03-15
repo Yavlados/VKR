@@ -31,6 +31,7 @@ win32:RC_ICONS += png/MainPic.ico
 
 SOURCES += \
     EditPerson.cpp \
+    Encrypt/simplecrypt.cpp \
     Form_Headers/PersonCard.cpp \
     New_db_MTM/_MTM_Contact.cpp \
     New_db_MTM/_MTM_Event.cpp \
@@ -80,6 +81,7 @@ SOURCES += \
 
 HEADERS += \
     EditPerson.h \
+    Encrypt/simplecrypt.h \
     Form_Headers/PersonCard.h \
     New_db_MTM/_MTM_Contact.h \
     New_db_MTM/_MTM_Event.h \
@@ -167,3 +169,5 @@ INCLUDEPATH += $$PWD\
                New_db_MTM\
                Singletons\
                New_db_model/Analysis_models\
+               Encrypt\
+               misc\

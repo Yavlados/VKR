@@ -12,6 +12,7 @@ Event::Event()
     this->additional        = "";
     this->id                = "";
     this->state             = IsNewing;
+    this->checkState_       = Unchecked_;
 }
 
 QList<Person *> *Event::persons()

@@ -32,6 +32,9 @@ public:
 
     QString info_text;
     QList<int> exported_zk_id;
+
+    /// NEW
+    void prepareExport();
 private:
     QFile db_file;
     QFile export_report;

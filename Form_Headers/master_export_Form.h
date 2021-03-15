@@ -2,10 +2,12 @@
 #define MASTER_EXPORT_FORM_H
 
 #include "search_Form.h"
+#include "enums.h"
 
 #include <QWidget>
 #include <QFileDialog>
-
+#include <QCryptographicHash>
+#include "simplecrypt.h"
 /**
  * \file master_export_Form.h
  * \brief Форма экспорта данных
@@ -31,7 +33,7 @@ public:
 
     void focus_on_widget();
     void set_tab_orders();
-
+    QString convertKey(QString key);
 private slots:
     void on_cb_zk_clicked();
 
@@ -52,11 +54,16 @@ private slots:
 private:
     Ui::master_export_Form *ui;
     QString file_path;
+    ExportType getExportType();
 signals:
     void rb_zk_clicked();
     void rb_check_all();
     void TESTING_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk_tels);
+
     void closeThis(QString);
+
+    /// NEW
+    void prepareExport(SimpleCrypt crypt, ExportType type);
 };
 
 #endif // MASTER_EXPORT_FORM_H

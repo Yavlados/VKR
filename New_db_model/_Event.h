@@ -19,6 +19,8 @@ public:
     QString keeping_place;
     QString additional;
     QString id;
+    CheckStateEvent checkState_;
+
     DbState state;
     QList<Person *> *persons();
     static bool selectAll(QList<Event*> *eventList);

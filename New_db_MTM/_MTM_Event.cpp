@@ -4,8 +4,8 @@ MTM_Event::MTM_Event(QObject *parent):
     QAbstractTableModel(parent)
 {
     this->eventList = 0  ;
-    this->showing_count = 50;
-    this->columnsCount = 8;
+    this->showing_count = Settings_connection::instance()->showing_count;
+    this->columnsCount = 9;
 }
 
 void MTM_Event::setEventList(QList<Event *> *eventList)
@@ -35,24 +35,33 @@ QVariant MTM_Event::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
     {
         switch (col) {
-            case 0:
-                return this->actEventList.at(row)->id;
             case 1:
-                return this->actEventList.at(row)->category;
+                return this->actEventList.at(row)->id;
             case 2:
-                return this->actEventList.at(row)->detention_date;
+                return this->actEventList.at(row)->category;
             case 3:
-                return this->actEventList.at(row)->detention_time;
+                return this->actEventList.at(row)->detention_date;
             case 4:
-                return this->actEventList.at(row)->detention_reason;
+                return this->actEventList.at(row)->detention_time;
             case 5:
-                return this->actEventList.at(row)->detention_by;
+                return this->actEventList.at(row)->detention_reason;
             case 6:
-                return this->actEventList.at(row)->keeping_place;
+                return this->actEventList.at(row)->detention_by;
             case 7:
+                return this->actEventList.at(row)->keeping_place;
+            case 8:
                 return this->actEventList.at(row)->additional;
         }
     }
+    if (role == Qt::CheckStateRole && col == 0)  // this shows the checkbox
+            {
+                bool aBool = actEventList.at(row)->checkState_;
+                if (aBool)
+                        return Qt::Checked;
+                else
+                        return Qt::Unchecked;
+            }
+
     return QVariant();
 }
 
@@ -100,4 +109,38 @@ int MTM_Event::rowCount(const QModelIndex &parent) const
     if (this->eventList == 0)
         return 0;
     else return this->actEventList.size();
+}
+
+Qt::ItemFlags MTM_Event::flags(const QModelIndex &index) const
+{
+    if( !index.isValid() || this->eventList==0 )
+        return Qt::NoItemFlags;
+    else
+        return  Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
+}
+
+bool MTM_Event::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if( !index.isValid() || this->eventList == 0 )
+        return false;
+
+    int row = index.row();      ///целочисленные указатели на строку
+    int col = index.column();   /// и столбец
+
+    if( row>this->actEventList.size() || row<0 )
+            return false;
+
+    if (role == Qt::CheckStateRole)
+     {
+      if (this->actEventList.at(row)->checkState_ == Unchecked_)
+           this->actEventList.at(row)->checkState_ = Checked_;
+       else
+        if (this->actEventList.at(row)->checkState_ == Checked_)
+              this->actEventList.at(row)->checkState_= Unchecked_;
+
+        emit dataChanged(index,index);
+          return true;
+      }
+         return false;
+
 }
