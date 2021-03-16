@@ -338,7 +338,30 @@ QString For_export::exportEvents(QList<Event*> *eventsList, SimpleCrypt crypt, E
 
 QString For_export::exportOfficial(QList<Off_tels *> *officials, SimpleCrypt crypt, ExportType type, QString filePath)
 {
-
+    // Official telephones encoding
+    QString exportData;
+    QXmlStreamWriter stream(&exportData);
+    stream.writeStartDocument();
+    stream.writeStartElement("Official_telephones");
+        for (int a =0; a<officials->size(); a++) {
+            Off_tels* off = officials->at(a);
+            stream.writeStartElement("official_telephone");
+            stream.writeAttributes( this->getOfficialTelephoneAttributes(off));
+            stream.writeEndElement();
+        }
+    stream.writeEndElement();
+    stream.writeEndDocument();
+    // ----------------------
+    QString exportDataPath = this->changeFileExtension(type, filePath);
+    QFile exportDataFile(exportDataPath);
+    QString exportEventData = type==official ? exportData : crypt.encryptToString(exportData);
+    if (exportDataFile.open(QIODevice::WriteOnly)){
+        QTextStream in(&exportDataFile);
+        if(exportDataFile.isOpen())
+            in << exportEventData;
+    }
+    exportDataFile.close();
+    return exportDataPath;
 }
 
 QString For_export::changeFileExtension(ExportType type, QString filePath)
@@ -418,6 +441,16 @@ QXmlStreamAttributes For_export::getContactAttributes(Contact *cont)
     attrib.append("number", cont->number);
 
     return attrib;
+}
+
+QXmlStreamAttributes For_export::getOfficialTelephoneAttributes(Off_tels *offtel)
+{
+    QXmlStreamAttributes attrib;
+    attrib.append("id", QString::number(offtel->of_t_id) );
+    attrib.append("name", offtel->service_name);
+    attrib.append("num", offtel->tel_num);
+
+     return attrib;
 }
 
 

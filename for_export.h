@@ -45,6 +45,8 @@ public:
     QXmlStreamAttributes getPersonAttributes(Person *per);
     QXmlStreamAttributes getTelephoneAttributes(Telephone *tel);
     QXmlStreamAttributes getContactAttributes(Contact *cont);
+
+    QXmlStreamAttributes getOfficialTelephoneAttributes(Off_tels *offtel);
 private:
     QFile db_file;
     QFile export_report;

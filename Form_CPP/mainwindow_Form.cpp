@@ -858,7 +858,25 @@ void MainWindow::prepare_export(SimpleCrypt crypt, ExportType type, QString file
         }
     }
     else if( type == official || type == officialPassword){
+        QList<Off_tels*> *offList = new QList<Off_tels*>();
 
+        if(Off_tels::selectOffTel(offList)){
+            exportedFilePath = this->for_exprt.exportOfficial(offList, crypt, type, filePath);
+            delete offList;
+
+            switch (type){
+            case official:
+                messageStart = "Служебные телефоны экспортированы успешно без пароля. Данные сохранены в файл: ";
+                break;
+            case officialPassword:
+                messageStart = "Служебные телефоны экспортированы и зашифрованы паролем успешно. Данные сохранены в файл: ";
+                break;
+            }
+        }
+        else{
+            QMessageBox::warning(exprt,QObject::tr("Внимание"),QObject::tr("Экспорт не был выполнен, так как во время выгрузки данных из базы возникли неполадки!"));
+            return;
+        }
     }
     QMessageBox::information(exprt,QObject::tr("Успех"), messageStart + exportedFilePath);
 
