@@ -43,6 +43,7 @@ SOURCES += \
     New_db_model/_Telephone.cpp \
     Singletons/Util.cpp \
     editEvent.cpp \
+    for_import.cpp \
         main.cpp \
     for_analysis.cpp \
     db_connection.cpp \
@@ -115,6 +116,7 @@ HEADERS += \
     for_export.h \
     Model_Headers/_MTM_Off_tels.h \
     Form_Headers/Import_Form.h \
+    for_import.h \
     list_master.h \
     Form_Headers/master_import_Form.h \
     Form_Headers/settings_Form.h \

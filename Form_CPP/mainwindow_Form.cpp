@@ -881,174 +881,180 @@ void MainWindow::prepare_export(SimpleCrypt crypt, ExportType type, QString file
     QMessageBox::information(exprt,QObject::tr("Успех"), messageStart + exportedFilePath);
 
 }
-//-----------------------------------------------------------------------------------//
+
 void MainWindow::testing_opening(QString filename, QString password, bool folder, bool of_t)
 {
-    ///Класс для импорта
-    Text_handler::instance()->clear_text();
-
-    if(folder)
-    {
-        QDir direcotry(filename);
-        QStringList filelist = direcotry.entryList(QStringList("*"), QDir::Files);
-        Text_handler::instance()->set_mode(zk_report);
-        foreach (QString file, filelist )
-        {
-            QString filename2 = filename;
-            filename2 += "/" + file;
-            Import_Form *import_form = new Import_Form; //необходим доступ для
-            import_form->form_state = zk;
-            connect(import_form,SIGNAL(Refresh_tab()),this,SLOT(RefreshTab()));
-
-        Text_handler::instance()->set_zk_folder_line();
-            if (import_form->Testing_open_db( filename2,password, of_t)) //Если есть совпадение, то
-            {
-                ///Идем сравнивать выгруженный в список дамп с БД
-                /// Метод алгоритма сравнения и импорта
-                if(import_form->begin_import())
-                   {
-                    //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
-
-                    QDialog *d = new QDialog(this);
-                    d->setWindowTitle("Мастер импорта");
-                    QVBoxLayout *l = new QVBoxLayout(d);
-                    QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-                    dbb->button(QDialogButtonBox::Ok)->setVisible(false);
-                    dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
-                    l->addWidget(import_form);
-                    l->addWidget(dbb);
-                    d->showMaximized();
-                    QSize sz = d->size();
-                    d->setFixedSize(sz);
-                    //передаю уровнем ниже указатель на кнопки
-                    //для имитации accept и rejected
-                    import_form->ddb = dbb;
-
-
-                    connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
-                    connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
-                    switch (d->exec())
-                    {
-                    case QDialog::Rejected:
-                        QMessageBox::critical(this,"Внимание","Импорт из папки был прерван");
-                        delete l;
-                        d->close();
-                        delete d;
-                        //delete import_form;
-                        return;
-                   case QDialog::Accepted:
-                        //QMessageBox::information(this,"Успех","Импорт прошел успешно");
-                        delete l;
-                        d->close();
-                        delete d;
-                        //delete import_form;
-                        continue;
-                    }
-               }
-            }
-        }
-        An_result::import_report(Text_handler::instance()->get_text());
-    RefreshTab();
-    }
-    else
-    {
-        Import_Form *import_form = new Import_Form; //необходим доступ для
-
-        if (import_form->Testing_open_db( filename,password, of_t)) //Если есть совпадение, то
-        {
-            ///Идем сравнивать выгруженный в список дамп с БД
-            /// Метод алгоритма сравнения и импорта
-           if(!of_t)
-           {
-               import_form->form_state = zk;
-               Text_handler::instance()->set_mode(zk_report);
-
-               if(import_form->begin_import())
-               {
-                   //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
-
-                   QDialog *d = new QDialog(this);
-                   d->setWindowTitle("Мастер импорта");
-                   QVBoxLayout *l = new QVBoxLayout(d);
-                   QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-                   dbb->button(QDialogButtonBox::Ok)->setVisible(false);
-                   dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
-                   l->addWidget(import_form);
-                   l->addWidget(dbb);
-                   d->showMaximized();
-                   QSize sz = d->size();
-                   d->setFixedSize(sz);
-                   //передаю уровнем ниже указатель на кнопки
-                   //для имитации accept и rejected
-                   import_form->ddb = dbb;
-
-
-                   connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
-                   connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
-                   switch (d->exec())
-                   {
-                   case QDialog::Rejected:
-                       delete l;
-                       d->close();
-                       delete d;
-                       return;
-                   case QDialog::Accepted:
-                       delete l;
-                       d->close();
-                       delete d;
-                   }
-               }
-
-               An_result::import_report(Text_handler::instance()->get_text());
-               RefreshTab();
-
-           }
-           else {
-               import_form->form_state = official_tel;
-               Text_handler::instance()->set_mode(off_report);
-               if(import_form->begin_import_of_t())
-               {
-                   //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
-
-                   QDialog *d = new QDialog(this);
-                   d->setWindowTitle("Мастер импорта");
-                   QVBoxLayout *l = new QVBoxLayout(d);
-                   QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-                   dbb->button(QDialogButtonBox::Ok)->setVisible(false);
-                   dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
-                   l->addWidget(import_form);
-                   l->addWidget(dbb);
-                   d->showMaximized();
-                   QSize sz = d->size();
-                   d->setFixedSize(sz);
-                   //передаю уровнем ниже указатель на кнопки
-                   //для имитации accept и rejected
-                   import_form->ddb = dbb;
-
-
-                   connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
-                   connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
-                   switch (d->exec())
-                   {
-                   case QDialog::Rejected:
-                       delete l;
-                       RefreshTab();
-                       d->close();
-                       delete d;
-                       return;
-                   case QDialog::Accepted:
-                       RefreshTab();
-                       delete l;
-                       d->close();
-                       delete d;
-                   }
-               }
-               An_result::import_report(Text_handler::instance()->get_text());
-               RefreshTab();
-           }
-        }
-    }
+    this->for_import
 }
+
+//-----------------------------------------------------------------------------------//
+//void MainWindow::testing_opening(QString filename, QString password, bool folder, bool of_t)
+//{
+//    ///Класс для импорта
+//    Text_handler::instance()->clear_text();
+
+//    if(folder)
+//    {
+//        QDir direcotry(filename);
+//        QStringList filelist = direcotry.entryList(QStringList("*"), QDir::Files);
+//        Text_handler::instance()->set_mode(zk_report);
+//        foreach (QString file, filelist )
+//        {
+//            QString filename2 = filename;
+//            filename2 += "/" + file;
+//            Import_Form *import_form = new Import_Form; //необходим доступ для
+//            import_form->form_state = zk;
+//            connect(import_form,SIGNAL(Refresh_tab()),this,SLOT(RefreshTab()));
+
+//        Text_handler::instance()->set_zk_folder_line();
+//            if (import_form->Testing_open_db( filename2,password, of_t)) //Если есть совпадение, то
+//            {
+//                ///Идем сравнивать выгруженный в список дамп с БД
+//                /// Метод алгоритма сравнения и импорта
+//                if(import_form->begin_import())
+//                   {
+//                    //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
+
+//                    QDialog *d = new QDialog(this);
+//                    d->setWindowTitle("Мастер импорта");
+//                    QVBoxLayout *l = new QVBoxLayout(d);
+//                    QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+//                    dbb->button(QDialogButtonBox::Ok)->setVisible(false);
+//                    dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
+//                    l->addWidget(import_form);
+//                    l->addWidget(dbb);
+//                    d->showMaximized();
+//                    QSize sz = d->size();
+//                    d->setFixedSize(sz);
+//                    //передаю уровнем ниже указатель на кнопки
+//                    //для имитации accept и rejected
+//                    import_form->ddb = dbb;
+
+
+//                    connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
+//                    connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
+//                    switch (d->exec())
+//                    {
+//                    case QDialog::Rejected:
+//                        QMessageBox::critical(this,"Внимание","Импорт из папки был прерван");
+//                        delete l;
+//                        d->close();
+//                        delete d;
+//                        //delete import_form;
+//                        return;
+//                   case QDialog::Accepted:
+//                        //QMessageBox::information(this,"Успех","Импорт прошел успешно");
+//                        delete l;
+//                        d->close();
+//                        delete d;
+//                        //delete import_form;
+//                        continue;
+//                    }
+//               }
+//            }
+//        }
+//        An_result::import_report(Text_handler::instance()->get_text());
+//    RefreshTab();
+//    }
+//    else
+//    {
+//        Import_Form *import_form = new Import_Form; //необходим доступ для
+
+//        if (import_form->Testing_open_db( filename,password, of_t)) //Если есть совпадение, то
+//        {
+//            ///Идем сравнивать выгруженный в список дамп с БД
+//            /// Метод алгоритма сравнения и импорта
+//           if(!of_t)
+//           {
+//               import_form->form_state = zk;
+//               Text_handler::instance()->set_mode(zk_report);
+
+//               if(import_form->begin_import())
+//               {
+//                   //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
+
+//                   QDialog *d = new QDialog(this);
+//                   d->setWindowTitle("Мастер импорта");
+//                   QVBoxLayout *l = new QVBoxLayout(d);
+//                   QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+//                   dbb->button(QDialogButtonBox::Ok)->setVisible(false);
+//                   dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
+//                   l->addWidget(import_form);
+//                   l->addWidget(dbb);
+//                   d->showMaximized();
+//                   QSize sz = d->size();
+//                   d->setFixedSize(sz);
+//                   //передаю уровнем ниже указатель на кнопки
+//                   //для имитации accept и rejected
+//                   import_form->ddb = dbb;
+
+
+//                   connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
+//                   connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
+//                   switch (d->exec())
+//                   {
+//                   case QDialog::Rejected:
+//                       delete l;
+//                       d->close();
+//                       delete d;
+//                       return;
+//                   case QDialog::Accepted:
+//                       delete l;
+//                       d->close();
+//                       delete d;
+//                   }
+//               }
+
+//               An_result::import_report(Text_handler::instance()->get_text());
+//               RefreshTab();
+
+//           }
+//           else {
+//               import_form->form_state = official_tel;
+//               Text_handler::instance()->set_mode(off_report);
+//               if(import_form->begin_import_of_t())
+//               {
+//                   //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
+
+//                   QDialog *d = new QDialog(this);
+//                   d->setWindowTitle("Мастер импорта");
+//                   QVBoxLayout *l = new QVBoxLayout(d);
+//                   QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+//                   dbb->button(QDialogButtonBox::Ok)->setVisible(false);
+//                   dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
+//                   l->addWidget(import_form);
+//                   l->addWidget(dbb);
+//                   d->showMaximized();
+//                   QSize sz = d->size();
+//                   d->setFixedSize(sz);
+//                   //передаю уровнем ниже указатель на кнопки
+//                   //для имитации accept и rejected
+//                   import_form->ddb = dbb;
+
+
+//                   connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
+//                   connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
+//                   switch (d->exec())
+//                   {
+//                   case QDialog::Rejected:
+//                       delete l;
+//                       RefreshTab();
+//                       d->close();
+//                       delete d;
+//                       return;
+//                   case QDialog::Accepted:
+//                       RefreshTab();
+//                       delete l;
+//                       d->close();
+//                       delete d;
+//                   }
+//               }
+//               An_result::import_report(Text_handler::instance()->get_text());
+//               RefreshTab();
+//           }
+//        }
+//    }
+//}
 
 
 //-----------------------------------------------------------------------------------//

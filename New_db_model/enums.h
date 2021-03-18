@@ -13,5 +13,13 @@ enum ExportType {
 enum CheckStateEvent {  Checked_ =1,
                         Unchecked_ = 0};
 
+enum importType {
+    events_,
+    eventsPassword_,
+    official_,
+    officialPassword_,
+    oldMultiple_,
+    oldFolder_
+};
 
 #endif // ENUMS_H

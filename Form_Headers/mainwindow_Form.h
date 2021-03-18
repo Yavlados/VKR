@@ -27,6 +27,7 @@
 #include "_Event.h"
 #include "_MTM_Event.h"
 #include "PersonCard.h"
+#include "for_import.h"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -106,6 +107,7 @@ public:
 
     ///Указатель на класс для экспорта
     For_export for_exprt;
+    For_import for_import;
 
     ///Указатель на индекс первой таблицы
     QModelIndex eventTableIndex;
@@ -183,7 +185,10 @@ private slots:
 
     void prepare_export(SimpleCrypt crypt, ExportType type, QString filePath);
 
-    void testing_opening(QString, QString, bool, bool of_t);
+    /// DEPRECATED
+//    void testing_opening(QString, QString, bool, bool of_t);
+
+    void testing_opening(QString filename, QString password, bool folder, bool of_t);
 
     void on_action_import_triggered();
 

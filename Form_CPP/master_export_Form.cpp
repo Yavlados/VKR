@@ -70,13 +70,13 @@ void Master_export_Form::on_pb_directory_clicked()
                            this,
                            tr("Save Document"),
                            QDir::currentPath(),
-                           tr("Notebook data *.nbd") );
+                           tr("*.nbd; *.nbds; *.nbod; *.nbods") );
     else
         filename = QFileDialog::getSaveFileName(
                            this,
                            tr("Save Document"),
                            file_path,
-                           tr("Notebook data *.nbd") );
+                           tr("*.nbd; *.nbds; *.nbod; *.nbods") );
 
     int x = filename.lastIndexOf("/");
     file_path = filename.left(x);

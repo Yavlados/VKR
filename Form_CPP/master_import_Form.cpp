@@ -90,7 +90,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                                     this,
                                     tr("Save Document"),
                                     QDir::currentPath(),
-                                    tr("Dump database (*)"), 0, QFileDialog::DontUseNativeDialog  );
+                                    tr("*.nbd; *.nbds; *.nbod; *.nbods"), 0, QFileDialog::DontUseNativeDialog  );
                         int x = filename.lastIndexOf("/");
                         file_path = filename.left(x);
                         folder = false;
@@ -104,7 +104,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                                     this,
                                     tr("Save Document"),
                                     file_path,
-                                    tr("Dump database (*)"), 0, QFileDialog::DontUseNativeDialog  );
+                                    tr("*.nbd; *.nbds; *.nbod; *.nbods"), 0, QFileDialog::DontUseNativeDialog  );
                         int x = filename.lastIndexOf("/");
                         file_path = filename.left(x);
                         folder = false;
@@ -129,7 +129,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                           this,
                           tr("Save Document"),
                           QDir::currentPath(),
-                          tr("Dump database (*.db)"), 0, QFileDialog::DontUseNativeDialog  );
+                          tr("*.nbd; *.nbds; *.nbod; *.nbods"), 0, QFileDialog::DontUseNativeDialog  );
               int x = filename.lastIndexOf("/");
               file_path = filename.left(x);
               folder = false;
@@ -149,7 +149,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                           this,
                           tr("Save Document"),
                           file_path,
-                          tr("Dump database (*.db)"), 0, QFileDialog::DontUseNativeDialog  );
+                          tr("*.nbd; *.nbds; *.nbod; *.nbods"), 0, QFileDialog::DontUseNativeDialog  );
               int x = filename.lastIndexOf("/");
               file_path = filename.left(x);
               folder = false;
