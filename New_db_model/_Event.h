@@ -11,6 +11,7 @@ class Event
 {
 public:
     Event();
+    ~Event();
     QString category;
     QString detention_date;
     QString detention_time;

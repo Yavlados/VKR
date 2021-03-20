@@ -19,6 +19,7 @@ public:
     DbState     state;
 
     Telephone();
+    ~Telephone();
 
     QList<Contact *> *cont();
 

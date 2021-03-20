@@ -11,6 +11,15 @@ Telephone::Telephone()
     this->_cont = 0;
 }
 
+Telephone::~Telephone()
+{
+    if (this->_cont == 0)
+    {
+        return;
+    }
+    delete this->_cont;
+}
+
 
 QList<Contact *> *Telephone::cont()
 {

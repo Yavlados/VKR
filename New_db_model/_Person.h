@@ -9,6 +9,7 @@ class Person
 {
 public:
     Person();
+    ~Person();
     QString lastname;
     QString name;
     QString midname;

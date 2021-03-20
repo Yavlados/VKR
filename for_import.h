@@ -16,12 +16,16 @@ struct eventReaderCounter {
     int telephoneIndex;
 };
 
+struct importResult {
+    importState state;
+    QString message;
+};
 
 class For_import
 {
 public:
     For_import();
-    void openFile(QString filepath, QString password, bool isFolder);
+    importResult openFile(QString filepath, QString password, bool isFolder);
 private:
     QList<Off_tels*> *official_telephonesList;
     QList<Event*> *eventsList;

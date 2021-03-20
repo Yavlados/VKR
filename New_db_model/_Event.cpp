@@ -15,6 +15,12 @@ Event::Event()
     this->checkState_       = Unchecked_;
 }
 
+Event::~Event()
+{
+    if (_persons == 0)return;
+    delete this->_persons;
+}
+
 QList<Person *> *Event::persons()
 {
     if (_persons == 0)

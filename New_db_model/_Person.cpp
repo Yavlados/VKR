@@ -11,6 +11,15 @@ Person::Person()
     this->state       =IsNewing;
 }
 
+Person::~Person()
+{
+    if (this->_telephones == 0)
+    {
+       return;
+    }
+    delete this->_telephones;
+}
+
 QList<Telephone *> *Person::telephones()
 {
     if (this->_telephones == 0)

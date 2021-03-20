@@ -23,4 +23,12 @@ enum importType {
     oldFolder_
 };
 
+enum importState {
+    wrongPassword,
+    readFileError,
+    uploadFileError,
+    accessReadFileError,
+    success
+};
+
 #endif // ENUMS_H
