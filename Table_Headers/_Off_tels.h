@@ -18,9 +18,9 @@ public:
     Off_tels();
     Off_tels(int,QString,QString );
 
-    int of_t_id;
-    QString service_name;
-    QString tel_num;
+    int         of_t_id;
+    QString     service_name;
+    QString     tel_num;
     oft_st state;
 
    static bool search(QList<Off_tels *> *list, QString tel_num, QString name);

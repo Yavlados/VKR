@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QCryptographicHash>
 #include "simplecrypt.h"
+#include "Util.h"
 /**
  * \file master_export_Form.h
  * \brief Форма экспорта данных
@@ -33,7 +34,7 @@ public:
 
     void focus_on_widget();
     void set_tab_orders();
-    QString convertKey(QString key);
+
 private slots:
     void on_cb_zk_clicked();
 

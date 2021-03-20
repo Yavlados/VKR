@@ -884,7 +884,7 @@ void MainWindow::prepare_export(SimpleCrypt crypt, ExportType type, QString file
 
 void MainWindow::testing_opening(QString filename, QString password, bool folder, bool of_t)
 {
-    this->for_import
+    this->for_import.openFile(filename, password, folder);
 }
 
 //-----------------------------------------------------------------------------------//

@@ -75,7 +75,7 @@ QVariant MTM_Event::headerData(int section, Qt::Orientation orientation, int rol
              switch (section)
            {
              case 0:
-                 return "Выбрать все";
+                 return "Все";
              case 1:
                  return "ID";
              case 2:

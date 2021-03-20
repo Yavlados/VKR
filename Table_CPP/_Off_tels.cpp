@@ -2,7 +2,7 @@
 
 Off_tels::Off_tels()
 {
-
+    this->state = Newing;
 }
 
 Off_tels::Off_tels(int id, QString num, QString name)

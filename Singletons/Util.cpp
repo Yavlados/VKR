@@ -112,6 +112,20 @@ editEvent *Util::getManagerParent(EditPerson *ep)
     }
 }
 
+
+QString Util::convertKey(QString key)
+{
+    QString convertedKey = "";
+    // text key to num convertation
+    for (int a =0; a < key.size(); a++) {
+           QChar ch = key[a];
+           auto un = ch.unicode();
+           convertedKey += QString::number(un);
+    }
+    return convertedKey;
+}
+
+
 AddEventManager::AddEventManager()
 {
     this->childs = new QList<EditPerson*>;

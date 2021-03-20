@@ -89,7 +89,7 @@ void Master_export_Form::on_pb_Export_clicked()
     // preparing encryption tool
     QString key;
     if(ui->cb_set_password->checkState())
-         key = this->convertKey(ui->le_password->text());
+         key = Util::instance()->convertKey(ui->le_password->text());
     else
          key = "12345";
     SimpleCrypt crypt(key.toLongLong());
@@ -156,14 +156,3 @@ void Master_export_Form::set_tab_orders()
      setTabOrder(  ui->pb_Export,  ui->hided_le);
 }
 
-QString Master_export_Form::convertKey(QString key)
-{
-    QString convertedKey = "";
-    // text key to num convertation
-    for (int a =0; a < key.size(); a++) {
-           QChar ch = key[a];
-           auto un = ch.unicode();
-           convertedKey += QString::number(un);
-    }
-    return convertedKey;
-}

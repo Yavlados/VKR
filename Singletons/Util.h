@@ -31,6 +31,9 @@ public:
     /// Срабатывает при закрытии EditPerson
     editEvent *getManagerParent(EditPerson*);
 
+    /// Конвертирует стринг в набор чисел, нужно для ключа
+    QString convertKey(QString key);
+
 private:
      Util();
      static Util *_instance;

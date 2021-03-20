@@ -8,7 +8,8 @@ enum ExportType {
     events = 0,
     official,
     eventsPassword,
-    officialPassword
+    officialPassword,
+    wrong
 };
 enum CheckStateEvent {  Checked_ =1,
                         Unchecked_ = 0};

@@ -178,7 +178,7 @@ bool Person::createPerson(Person *person, QString eventId)
     {
         person->id = temp.value(0).toString();
 
-        if(!Person::handleTelephones(person->telephones(), person->id) &&
+        if(!Person::handleTelephones(person->telephones(), person->id) ||
                 !Person::linkEventPerson(eventId, person->id)){
             db_connection::instance()->db().database(cname).rollback();
             return false;
@@ -295,7 +295,7 @@ bool Person::linkEventPerson(QString eventId, QString personId)
         db_connection::instance()->db().database(cname).rollback();
         return false;
     }else {
-        db_connection::instance()->db().database(cname).commit();
+//        db_connection::instance()->db().database(cname).commit();
         return true;
     }
 }
