@@ -7,6 +7,8 @@ Contact::Contact()
     this->alias         ="";
     this->id            ="";
     this->telephone_id  ="";
+    this->internum = false;
+    this->oldnum = false;
 }
 
 bool Contact::selectContacts(QList<Contact *> *list, QString tel_id)

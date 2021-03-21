@@ -23,7 +23,7 @@ public:
 
     QSize actual_size;
     bool folder = false;
-    bool of_t = false;
+    bool oldData = false;
 
     void keyPressEvent(QKeyEvent *event);
     void set_tab_orders();

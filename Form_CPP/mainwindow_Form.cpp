@@ -257,11 +257,6 @@ void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и ре
 //-----------------------------------------------------------------------------------//
 void MainWindow::RefreshTab()
 {
-    if (this->crud_model != 0)
-        {
-            delete this->crud_model;
-            this->crud_model = 0;
-        }
     this->eventModel = new MTM_Event();
 
     QList<Event*> *list = new QList<Event*>;
@@ -271,10 +266,7 @@ void MainWindow::RefreshTab()
     }
 
         ui->eventTable->setWordWrap(false);
-        ui->eventTable->resizeColumnToContents(0);
-        ui->eventTable->resizeColumnToContents(2);
-        ui->eventTable->resizeColumnToContents(3);
-
+        ui->eventTable->resizeColumnsToContents();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
@@ -882,13 +874,15 @@ void MainWindow::prepare_export(SimpleCrypt crypt, ExportType type, QString file
 
 }
 
-void MainWindow::testing_opening(QString filename, QString password, bool folder, bool of_t)
+void MainWindow::testing_opening(QString filename, QString password, bool folder, bool oldData)
 {
-    auto importResults= this->for_import.openFile(filename, password, folder);
+    auto importResults= this->for_import.openFile(filename, password, folder, oldData);
+
     if(importResults.state == success)
         QMessageBox::information(this,QObject::tr("Успех"), importResults.message);
     else
         QMessageBox::warning(this,QObject::tr("Ошибка"),  importResults.message);
+    this->RefreshTab();
 }
 
 //-----------------------------------------------------------------------------------//

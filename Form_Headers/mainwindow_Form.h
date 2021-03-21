@@ -188,7 +188,7 @@ private slots:
     /// DEPRECATED
 //    void testing_opening(QString, QString, bool, bool of_t);
 
-    void testing_opening(QString filename, QString password, bool folder, bool of_t);
+    void testing_opening(QString filename, QString password, bool folder, bool oldData);
 
     void on_action_import_triggered();
 

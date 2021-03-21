@@ -22,7 +22,7 @@ Master_import_form::~Master_import_form()
 }
 void Master_import_form::on_pushButton_clicked()
 {
-    emit TESTING_open(ui->le_file_path_2->text(), ui->le_password_2->text(), folder, of_t );
+    emit TESTING_open(ui->le_file_path_2->text(), ui->le_password_2->text(), this->folder, this->oldData );
 }
 
 void Master_import_form::on_pb_directory_2_clicked()
@@ -30,11 +30,10 @@ void Master_import_form::on_pb_directory_2_clicked()
     QMessageBox msgbx;
     msgbx.setWindowTitle("Сделайте выбор");
     msgbx.setText("Выберите, откуда будет производиться импорт");
-    msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Yes  |  QMessageBox::Save |  QMessageBox::Cancel);
+    msgbx.setStandardButtons(QMessageBox::Ok |  QMessageBox::Save |  QMessageBox::Cancel);
 
-    msgbx.setButtonText(QMessageBox::Yes, "Импорт служебных телефонов");
     msgbx.setButtonText(QMessageBox::Save, "Импорт из старой ЗК");
-    msgbx.setButtonText(QMessageBox::Ok, "Импорт ЗК");
+    msgbx.setButtonText(QMessageBox::Ok, "Импорт ЗК/Служебных телефонов");
     msgbx.setButtonText(QMessageBox::Cancel, "Отмена");
 
 
@@ -54,6 +53,8 @@ void Master_import_form::on_pb_directory_2_clicked()
                 {
                 //Ипорт из ПАПКИ!!!
                     case QMessageBox::Ok :
+                    this->folder = true;
+                    this->oldData = true;
                     if(file_path == 0)
                     {
                         filename = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
@@ -63,7 +64,6 @@ void Master_import_form::on_pb_directory_2_clicked()
                         file_path = filename;
                         if( !filename.isNull() )
                         {
-                            folder = true;
                             ui->le_file_path_2->setText(filename);
                         }
                         return;
@@ -78,19 +78,20 @@ void Master_import_form::on_pb_directory_2_clicked()
                         file_path = filename;
                         if( !filename.isNull() )
                         {
-                            folder = true;
                             ui->le_file_path_2->setText(filename);
                         }
                         return;
                     }
                 case QMessageBox::Cancel:
+                 // Импорт старых ЗК
+                    this->oldData = true;
                     if(file_path == 0)
                     {
                         filename = QFileDialog::getOpenFileName(
                                     this,
                                     tr("Save Document"),
                                     QDir::currentPath(),
-                                    tr("*.nbd; *.nbds; *.nbod; *.nbods"));
+                                    tr("**"));
                         int x = filename.lastIndexOf("/");
                         file_path = filename.left(x);
                         folder = false;
@@ -104,7 +105,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                                     this,
                                     tr("Save Document"),
                                     file_path,
-                                    tr("*.nbd; *.nbds; *.nbod; *.nbods") );
+                                    tr("**") );
                         int x = filename.lastIndexOf("/");
                         file_path = filename.left(x);
                         folder = false;
@@ -121,8 +122,11 @@ void Master_import_form::on_pb_directory_2_clicked()
 
     }
     else
-    if(ret == QMessageBox::Ok || ret == QMessageBox::Yes)
+    if(ret == QMessageBox::Ok)
         {
+        // ЗК/Служебные
+        this->folder =false;
+        this->oldData=false;
           if(file_path == 0)
           {
               filename = QFileDialog::getOpenFileName(
@@ -136,10 +140,7 @@ void Master_import_form::on_pb_directory_2_clicked()
 
               if( !filename.isNull() )
                   ui->le_file_path_2->setText(filename);
-              if(ret == QMessageBox::Yes)
-                  of_t = true;
-              else
-                  of_t = false;
+
               return;
           }
           else
@@ -156,10 +157,7 @@ void Master_import_form::on_pb_directory_2_clicked()
 
               if( !filename.isNull() )
                   ui->le_file_path_2->setText(filename);
-              if(ret == QMessageBox::Yes)
-                  of_t = true;
-              else
-                  of_t = false;
+
               return;
           }
     }

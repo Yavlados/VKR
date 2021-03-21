@@ -6,89 +6,21 @@ For_import::For_import()
     this->eventsList = 0;
 }
 
-importResult For_import::openFile(QString filepath, QString password, bool isFolder)
+importResult For_import::openFile(QString filepath, QString password, bool isFolder, bool oldData)
 {
-    importResult result;
-    ExportType loadedDataType;
-    if(!isFolder){
-        QFile file(filepath);
-        QString fileContent = "";
-        if(!file.open(QIODevice::ReadOnly)){
-            qDebug() << "Cannot read file!";
-            result.state = readFileError;
-            result.message = "Системная ошибка: Программа не может прочитать файл "+filepath+", проверьте доступ. Импорт был прерван.";
-            return result;
-        }else{
-            //--- reading file
-           QTextStream in(&file);
-           while (!in.atEnd()) {
-                   QString line = in.readLine();
-                   fileContent += line;
-               }
-            // ---
-           if(isFileEncoded(fileContent)){
-                fileContent =this->decodeFileContent(fileContent, password);
-                if(fileContent.isEmpty()) {
-                    qDebug() << "Wrong password!";
-                    result.state = wrongPassword;
-                    result.message = "Вы ввели неверный пароль. Импорт из файла "+filepath+" был прерван.";
-                    return result;
-                }
-             }
-            loadedDataType = this->getDataType(fileContent);
-            bool importFlag = false;
-            switch (loadedDataType){
-            case events:
-                importFlag = this->getEventsList(fileContent);
-                break;
-            case official:
-                importFlag = this->getOfficialsList(fileContent);
-                break;
+    if(!isFolder && !oldData){
+        return this->importEventOrOfficial(filepath,password);
+    } else if(oldData){
+        if(isFolder) return this->importOldFromFolder(filepath);
+        else{
+            auto res = this->importOld(filepath);
+            if(res.extractedEvent == 0) return res.result;
+            if(!Event::createEvent(res.extractedEvent)){
+                res.result.state = uploadFileError;
+                res.result.message = "Во время загрузки данных в базу возникли проблемы!";
             }
-            if(!importFlag){
-                qDebug() << "Some errors appears";
-                result.state = readFileError;
-                result.message = "Во время чтения файла "+filepath+" возникли ошибки. Импорт был прерван.";
-                return result;
-            }
-            switch (loadedDataType){
-            case events:
-                importFlag = this->uploadEvents();
-                break;
-            case official:
-                importFlag = this->uploadOfficials();
-                break;
-            }
-            if(!importFlag){ qDebug() << "Some errors appears";
-                result.state = uploadFileError;
-                result.message = "Ошибка загрузки данных в базу. Импорт был прерван.";
-                return result;
-            }
+            return res.result;
         }
-        QString fileType;
-        int importedRowsCount;
-        switch(loadedDataType){
-        case events:
-            fileType = "данные о событиях";
-            importedRowsCount = this->eventsList->size();
-            break;
-         case official:
-            fileType = "данные о служебных телефонах";
-            importedRowsCount = this->official_telephonesList->size();
-            break;
-        }
-        if(this->eventsList != 0){
-            delete this->eventsList;
-            this->eventsList = 0;
-        }
-        if(this->official_telephonesList != 0){
-             delete this->official_telephonesList;
-            this->official_telephonesList = 0;
-        }
-
-        result.state = success;
-        result.message ="Файл "+filepath+" содержал "+ fileType + ",  успешно импортировано "+QString::number(importedRowsCount)+" записей";
-        return result;
     }
 }
 
@@ -309,7 +241,235 @@ bool For_import::uploadOfficials()
         flag = Off_tels::add_off_tel(of);
         if(!flag) return flag;
      }
-    return true;
+     return true;
+}
+
+importResult For_import::importEventOrOfficial(QString filepath, QString password)
+{
+    importResult result;
+    ExportType loadedDataType;
+    QFile file(filepath);
+    QString fileContent = "";
+    if(!file.open(QIODevice::ReadOnly)){
+        qDebug() << "Cannot read file!";
+        result.state = readFileError;
+        result.message = "Системная ошибка: Программа не может прочитать файл "+filepath+", проверьте доступ. Импорт был прерван.";
+        return result;
+    }else{
+        //--- reading file
+       QTextStream in(&file);
+       while (!in.atEnd()) {
+               QString line = in.readLine();
+               fileContent += line;
+           }
+        // ---
+       if(isFileEncoded(fileContent)){
+            fileContent =this->decodeFileContent(fileContent, password);
+            if(fileContent.isEmpty()) {
+                qDebug() << "Wrong password!";
+                result.state = wrongPassword;
+                result.message = "Вы ввели неверный пароль. Импорт из файла "+filepath+" был прерван.";
+                return result;
+            }
+         }
+        loadedDataType = this->getDataType(fileContent);
+        bool importFlag = false;
+        switch (loadedDataType){
+        case events:
+            importFlag = this->getEventsList(fileContent);
+            break;
+        case official:
+            importFlag = this->getOfficialsList(fileContent);
+            break;
+        }
+        if(!importFlag){
+            qDebug() << "Some errors appears";
+            result.state = readFileError;
+            result.message = "Во время чтения файла "+filepath+" возникли ошибки. Импорт был прерван.";
+            return result;
+        }
+        switch (loadedDataType){
+        case events:
+            importFlag = this->uploadEvents();
+            break;
+        case official:
+            importFlag = this->uploadOfficials();
+            break;
+        }
+        if(!importFlag){ qDebug() << "Some errors appears";
+            result.state = uploadFileError;
+            result.message = "Ошибка загрузки данных в базу. Импорт был прерван.";
+            return result;
+        }
+    }
+    file.close();
+    QString fileType;
+    int importedRowsCount;
+    switch(loadedDataType){
+    case events:
+        fileType = "данные о событиях";
+        importedRowsCount = this->eventsList->size();
+        break;
+     case official:
+        fileType = "данные о служебных телефонах";
+        importedRowsCount = this->official_telephonesList->size();
+        break;
+    }
+    if(this->eventsList != 0){
+        delete this->eventsList;
+        this->eventsList = 0;
+    }
+    if(this->official_telephonesList != 0){
+         delete this->official_telephonesList;
+        this->official_telephonesList = 0;
+    }
+
+    result.state = success;
+    result.message ="Файл "+filepath+" содержал "+ fileType + ",  успешно импортировано "+QString::number(importedRowsCount)+" записей";
+    return result;
+}
+
+importResult For_import::importOldFromFolder(QString filepath)
+{
+    importResult importRes;
+    importRes.message = "<style>th,td{padding:5px 5px;}</style><table><tr><th>#</th><th>Файл</th><th>Результат</th></tr>";
+    importRes.state = success;
+    QDir direcotry(filepath);
+    QStringList filelist = direcotry.entryList(QStringList("*"), QDir::Files);
+    QList<oldDbImportResult> list;
+
+    foreach (QString file, filelist )
+    {
+        auto result = this->importOld(filepath+"/"+file);
+        list.append(result);
+    }
+    for (int a = 0; a<list.size(); a++) {
+        auto res = list.at(a);
+        if(res.extractedEvent != 0) {
+            if(!Event::createEvent(res.extractedEvent)){
+                res.result.state = uploadFileError;
+                res.result.message = "Во время загрузки данных в базу возникли проблемы!";
+            }
+        }
+        importRes.message += "<tr><td>"+QString::number(a+1)+"</td><td>"+res.result.filepath+"</td><td>"+res.result.message+"</td></tr>";
+    }
+    importRes.message += "</table>";
+    return importRes;
+}
+
+oldDbImportResult For_import::importOld(QString filepath)
+{
+    auto importMeta = this->readOldZk(filepath);
+    importMeta.result.filepath = filepath;
+    return importMeta;
+}
+
+oldDbImportResult For_import::readOldZk(QString filepath)
+{
+    oldDbImportResult responce;
+    importResult result;
+    ExportType loadedDataType;
+    QFile file(filepath);
+    QString fileContent = "";
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Unbuffered)){
+        qDebug() << "Cannot read file!";
+        result.state = readFileError;
+        result.message = "Системная ошибка: Программа не может прочитать файл "+filepath+", проверьте доступ. Импорт был прерван.";
+        responce.result = result    ;
+        responce.extractedEvent = 0;
+        return responce;
+    }
+
+    QByteArray arr=file.readAll();
+    if(arr.count()==0)
+    {
+        result.state = readFileError;
+        result.message = "Файл либо не подходит под формат old_db, либо пуст!";
+        responce.result = result    ;
+        responce.extractedEvent = 0;
+        return responce;
+    }
+
+    if( !this->testHeadFile(&arr) ||
+            arr[0xC2]==0 )
+    {
+        result.state = readFileError;
+        result.message ="Файл не подходит под формат old_db";
+        responce.result = result    ;
+        responce.extractedEvent = 0;
+        return responce;
+    }else
+    {
+        OldDbService *service;
+        OldDbZk *zk = new OldDbZk();
+        int pos = 0xC2;
+        if (service->Open_Old_db(zk,pos,arr))
+        {
+              Event *e = this->convertOldEventToNew(zk);
+              file.close();
+              result.state = success;
+              result.message ="Данные из файла успешно импортированы в базу данных";
+              responce.result = result    ;
+              responce.extractedEvent = e;
+              return responce;
+        }
+
+    }
+}
+
+bool For_import::testHeadFile(QByteArray *arr)
+{
+    return arr->mid(3,6)=="prolog";
+}
+
+Event* For_import::convertOldEventToNew(OldDbZk *zk)
+{
+    Event *ev = new Event();
+    ev->category = zk->category;
+    ev->detention_date = zk->data_zad;
+    ev->keeping_place = zk->keep_place;
+    ev->detention_reason = zk->povod_zad;
+    ev->additional = zk->person.dopinfo;
+
+    // TODO: add new fields: address, dopInfo
+    Person *p = new Person();
+    p->name = zk->person.imya;
+    p->lastname = zk->person.famil;
+    p->midname = zk->person.otchestvo;
+    p->alias = zk->person.klichka;
+
+    this->handleOldTelephone( p->telephones(), zk->person.tel1);
+    this->handleOldTelephone( p->telephones(), zk->person.tel2);
+    this->handleOldTelephone( p->telephones(), zk->person.tel3);
+    this->handleOldTelephone( p->telephones(), zk->person.tel4);
+    this->handleOldTelephone( p->telephones(), zk->person.tel5);
+
+    if(p->telephones()->size() > 0){
+        auto telephone = p->telephones()->at(0);
+        for (int a =0; a<zk->contacts.size(); a++) {
+            this->handleOldTelephone(telephone->cont(), zk->contacts.at(a));
+        }
+    }
+    ev->persons()->append(p);
+    return ev;
+}
+
+void For_import::handleOldTelephone(QList<Telephone *> *t, QString telephone)
+{
+    if(telephone.isEmpty()) return;
+
+    Telephone *tel = new Telephone();
+    tel->num = telephone;
+
+    t->append(tel);
+}
+
+void For_import::handleOldTelephone(QList<Contact *> *t, OldDbAbonent *abonent)
+{
+    Contact *cnt = new Contact;
+    cnt->number = abonent->tel1;
+    cnt->alias = abonent->famil+" "+abonent->imya+" "+abonent->otchestvo+" \""+abonent->klichka+"\"";
+    t->append(cnt);
 }
 
 eventReaderCounter::eventReaderCounter()
@@ -318,5 +478,6 @@ eventReaderCounter::eventReaderCounter()
     this->personIndex = 0;
     this->telephoneIndex = 0;
 }
+
 
 
