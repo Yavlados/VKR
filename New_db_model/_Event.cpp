@@ -218,6 +218,8 @@ bool Event::createEvent(Event *event)
 
 bool Event::deleteEvent(Event *event)
 {
+    if(!Event::deleteLinkedPersons(event->id)) return false;
+
     QString cname = db_connection::instance()->db().connectionName();
 
     bool isOk = db_connection::instance()->db().database(cname).transaction();
@@ -235,5 +237,46 @@ bool Event::deleteEvent(Event *event)
     } else{
         db_connection::instance()->db().database(cname).commit();
         return true;
+    }
+}
+
+bool Event::deleteLinkedPersons(QString eventId)
+{
+    QString cname = db_connection::instance()->db().connectionName();
+    // select all linked pesons
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare("SELECT person_id FROM notebook2.event_person WHERE event_id=(:id)");
+
+    temp.bindValue(":id", eventId);
+
+    if (!temp.exec())
+    {
+        qDebug()  << "Event::deleteLinkedPersons"<< temp.lastError() << temp.executedQuery();
+        db_connection::instance()->lastError = "Event::deleteLinkedPersons " + temp.lastError().text();
+        db_connection::instance()->db().database(cname).rollback();
+        return false ;
+    } else{
+        QString query = "DELETE FROM notebook2.person ";
+        QList<QString> linkedPersonsId;
+        while(temp.next()){
+          linkedPersonsId.append(temp.value(0).toString());
+        }
+        for (int a = 0; a<linkedPersonsId.size(); a++) {
+            if(a==0) query+=" WHERE id="+linkedPersonsId.at(a);
+            else query += " OR id="+linkedPersonsId.at(a);
+        }
+
+        QSqlQuery queryForDelete(db_connection::instance()->db());
+
+        queryForDelete.prepare(query);
+        if(!queryForDelete.exec()){
+            qDebug()  << "Event::deleteLinkedPersons, queryForDelete"<< temp.lastError() << queryForDelete.executedQuery();
+            db_connection::instance()->lastError = "Event::deleteEvent, queryForDelete" + queryForDelete.lastError().text();
+            db_connection::instance()->db().database(cname).rollback();
+        } else{
+            db_connection::instance()->db().database(cname).commit();
+            return true;
+        }
     }
 }

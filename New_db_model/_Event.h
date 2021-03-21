@@ -28,6 +28,7 @@ public:
     static bool updateEvent(Event *event);
     static bool createEvent(Event *event);
     static bool deleteEvent(Event *event);
+    static bool deleteLinkedPersons(QString eventId);
 private:
     QList<Person*> *_persons;
 };
