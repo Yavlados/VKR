@@ -5,6 +5,9 @@
 #include <QSqlQueryModel>
 #include "an_result_Form.h"
 #include "date_form.h"
+#include "for_search.h"
+#include "Util.h"
+
 /**
  * \file search_Form.h
  * \brief Форма поиска
@@ -27,6 +30,10 @@ public:
 
     void set_tab_orders();
 
+    // NEW
+    bool detentionDateState;
+    bool detentionTimeState;
+    bool detentionIntervalState;
 signals:
 
      void closeThis(QString);
@@ -60,8 +67,15 @@ private slots:
     QString get_date_query(QString date, int flag);
 
     void set_date_forms();
-    ///СЛОТЫ ДЛЯ ФОКУСА
     void bd_edited();
+
+    // NEW
+    void updateStates();
+    void detentionVisibility();
+    void serializeFields(For_search *fs);
+    void on_checkBox_detention_time_toggled(bool checked);
+    void on_checkBox_detention_date_toggled(bool checked);
+    void on_checkBox_detention_interval_toggled(bool checked);
 
 private:
     Ui::Search *ui;

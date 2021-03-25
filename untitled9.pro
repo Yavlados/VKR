@@ -42,10 +42,12 @@ SOURCES += \
     New_db_model/_Person.cpp \
     New_db_model/_Telephone.cpp \
     Singletons/Util.cpp \
+    custom_date_edit.cpp \
     editEvent.cpp \
-    for_import.cpp \
+    Utility/for_import.cpp \
+    Utility/for_search.cpp \
         main.cpp \
-    for_analysis.cpp \
+    Utility/for_analysis.cpp \
     db_connection.cpp \
     Table_CPP/_Contacts.cpp \
     Table_CPP/_Crud.cpp \
@@ -61,7 +63,7 @@ SOURCES += \
     Model_CPP/_MTM_Crud.cpp \
     Model_CPP/_MTM_OwTel.cpp \
     Form_CPP/master_export_Form.cpp \
-    for_export.cpp \
+    Utility/for_export.cpp \
     Table_CPP/_Off_tels.cpp \
     Model_CPP/_MTM_Off_tels.cpp \
     Form_CPP/Import_Form.cpp \
@@ -95,9 +97,10 @@ HEADERS += \
     New_db_model/enums.h \
     Singletons/Util.h \
     Singletons/index.h \
+    custom_date_edit.h \
     db_connection.h \
     editEvent.h \
-    for_analysis.h \
+    Utility/for_analysis.h \
     Table_Headers/_Contacts.h \
     Table_Headers/_Owners_tel.h \
     Table_Headers/_Crud.h \
@@ -113,10 +116,11 @@ HEADERS += \
     Model_Headers/_MTM_Crud.h \
     Model_Headers/_MTM_OwTel.h \
     Form_Headers/master_export_Form.h \
-    for_export.h \
+    Utility/for_export.h \
     Model_Headers/_MTM_Off_tels.h \
     Form_Headers/Import_Form.h \
-    for_import.h \
+    Utility/for_import.h \
+    Utility/for_search.h \
     list_master.h \
     Form_Headers/master_import_Form.h \
     Form_Headers/settings_Form.h \
@@ -173,3 +177,4 @@ INCLUDEPATH += $$PWD\
                New_db_model/Analysis_models\
                Encrypt\
                misc\
+               Utility\

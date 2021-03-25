@@ -125,6 +125,15 @@ QString Util::convertKey(QString key)
     return convertedKey;
 }
 
+QString Util::modifyForSearch(QString value)
+{
+    QString newValue = value;
+    newValue = newValue.toLower();
+    newValue = newValue.replace("?", "_");
+    newValue = newValue.replace("*", "%");
+    return  newValue;
+}
+
 
 AddEventManager::AddEventManager()
 {

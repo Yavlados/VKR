@@ -34,6 +34,8 @@ public:
     /// Конвертирует стринг в набор чисел, нужно для ключа
     QString convertKey(QString key);
 
+    /// Преобразует wildcards и lowercase для входящего значения (нужно для поискового запроса)
+    QString modifyForSearch(QString value);
 private:
      Util();
      static Util *_instance;
