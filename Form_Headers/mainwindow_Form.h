@@ -281,6 +281,8 @@ private slots:
     void closePersonEdit(EditPerson*);
     void on_eventTable_doubleClicked(const QModelIndex &index);
     void closeEditEvent(editEvent*);
+    void searchedResults(QList<QString> searchedIds);
+    void cancelSearchResults();
      QList<Event *> *getSelectedEvents();
 signals:
     void Send_data(Crud *cr, int index);

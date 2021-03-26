@@ -4,7 +4,7 @@
 #include "_Person.h"
 #include "db_connection.h"
 #include "enums.h"
-
+#include <QString>
 #include <QList>
 
 class Event
@@ -29,8 +29,11 @@ public:
     static bool createEvent(Event *event);
     static bool deleteEvent(Event *event);
     static bool deleteLinkedPersons(QString eventId);
+
+    static bool selectSearchedIds(QList<Event*> *eventList, QList<QString> searchedIds);
 private:
     QList<Person*> *_persons;
+    static QString selectQuery;
 };
 
 #endif // EVENT_H

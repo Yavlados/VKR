@@ -15,6 +15,19 @@ Event::Event()
     this->checkState_       = Unchecked_;
 }
 
+QString Event::selectQuery =
+        "SELECT "
+        "category, "
+        "detention_date, "
+        "detention_time,"
+        "detention_reason,"
+        "detention_by,"
+        "keeping_place,"
+        "additional,"
+        "id"
+        " FROM notebook2.event ";
+
+
 Event::~Event()
 {
     if (_persons == 0)return;
@@ -44,16 +57,7 @@ bool Event::selectAll(QList<Event *> *eventList)
         return false;
 
     QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("SELECT "
-                 "category, "
-                 "detention_date, "
-                 "detention_time,"
-                 "detention_reason,"
-                 "detention_by,"
-                 "keeping_place,"
-                 "additional,"
-                 "id"
-                 " FROM notebook2.event"
+    temp.prepare(Event::selectQuery +
                  " ORDER BY id;");
     if (!temp.exec())
     {
@@ -279,4 +283,47 @@ bool Event::deleteLinkedPersons(QString eventId)
             return true;
         }
     }
+}
+
+bool Event::selectSearchedIds(QList<Event *> *eventList, QList<QString> searchedIds)
+{
+    qDeleteAll(*eventList);
+    eventList->clear();
+
+    if( !db_connection::instance()->db_connect() )
+        return false;
+    QString newQuery = "";
+    for (int a = 0; a < searchedIds.size(); a++) {
+        if(a==0)
+            newQuery += " WHERE id = " + searchedIds.at(a);
+        else
+            newQuery += " OR id = " + searchedIds.at(a);
+    }
+
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare(Event::selectQuery +newQuery);
+    if (!temp.exec())
+    {
+        qDebug() << "Event::selectSearchedIds" << temp.lastError();
+         db_connection::instance()->lastError = "Event::selectSearchedIds " + temp.lastError().text();
+         return false;
+    }
+    while (temp.next())
+    {
+        Event *e = new Event();
+        e->category = temp.value(0).toString();
+        e->detention_date = temp.value(1).toString();
+        e->detention_time = temp.value(2).toString();
+        e->detention_reason = temp.value(3).toString();
+        e->detention_by = temp.value(4).toString();
+        e->keeping_place = temp.value(5).toString();
+        e->additional = temp.value(6).toString();
+        e->id = temp.value(7).toString();
+        e->state = IsReaded;
+        eventList->append(e);
+    }
+    if(eventList->isEmpty())
+        return false;
+
+    return true;
 }

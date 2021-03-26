@@ -44,6 +44,9 @@ signals:
 
     void Cancel_search();
 
+    // NEW
+    void showSearchedEvents(QList<QString> searchedIds);
+
 private slots:
     void keyPressEvent(QKeyEvent *event);
     QString create_new_date(QString str);

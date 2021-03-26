@@ -416,8 +416,9 @@ void MainWindow::on_action_search_triggered()
          ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,sr,"Расширенный поиск");
          ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
          connect(sr, SIGNAL(Show_search_result(QList<Crud*>*)),this, SLOT(Search_result(QList<Crud*>*)));
-         connect(sr,SIGNAL(Cancel_search()),this, SLOT(RefreshTab()));
+         connect(sr,SIGNAL(Cancel_search()),this, SLOT(cancelSearchResults()));
          connect(sr, SIGNAL(closeThis(QString)), this, SLOT(findIndexByNameTab2(QString)));
+         connect(sr, SIGNAL(showSearchedEvents(QList<QString>)), this, SLOT(searchedResults(QList<QString>)));
 
          sr->set_tab_orders();
     }
@@ -1331,35 +1332,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 }
 
-//void MainWindow::on_tableView_3_clicked(const QModelIndex &index)
-//{/*
-//    if(contacts_model->actlist.at(index.row())->linked_id != 0)
-//    {
-//        if(ui->vl_for_search_contact->count())
-//        {
-//            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
-//            delete item->widget();
-//            pbGetZkVar2 = 0;
-//        }
-
-//        pbGetZkVar2 = new QPushButton();
-//        zk_id = contacts_model->actlist.at(index.row())->linked_id;
-//        pbGetZkVar2->setText("Перейти к ЗК №" + QString::number(zk_id));
-//        ui->vl_for_search_contact->addWidget(pbGetZkVar2);
-//        connect(pbGetZkVar2, SIGNAL(clicked()), this, SLOT(find_linked_zk()));
-//        cont_num = contacts_model->actlist.at(index.row())->contact_tel_num;
-//  }
-//    else
-//    {
-//        while(ui->vl_for_search_contact->count())
-//        {
-//            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
-//            delete item->widget();
-//            pbGetZkVar2 = 0;
-//        }
-//    }*/
-//}
-
 void MainWindow::find_linked_zk()
 {
 //    RefreshTab();
@@ -1731,6 +1703,35 @@ void MainWindow::closeEditEvent(editEvent *ee)
                 i++;
         }
     }
+}
+
+void MainWindow::searchedResults(QList<QString> searchedIds)
+{
+    QLabel *lb = new QLabel;
+    QString str = "Результаты поиска: "+QString::number(searchedIds.size())+" записей";
+    lb->setText(str);
+    QPushButton *pb = new QPushButton;
+    pb->setText("Сбросить");
+    connect( pb, SIGNAL(clicked()),this, SLOT(cancelSearchResults()));
+
+    ui->searched_data_layout->addWidget(lb);
+    ui->searched_data_layout->addWidget(pb);
+
+    QList<Event*> *list = new QList<Event*>;
+    if(Event::selectSearchedIds(list, searchedIds)){
+        eventModel->setEventList(list);
+        ui->eventTable->setModel(eventModel);
+    }
+}
+
+void MainWindow::cancelSearchResults()
+{
+    auto size = ui->searched_data_layout->count();
+    for (int a = 0; a< size; a++) {
+        QLayoutItem *item = ui->searched_data_layout->takeAt(0);
+        delete item->widget();
+    }
+    this->RefreshTab();
 }
 
 QList<Event *> *MainWindow::getSelectedEvents()
