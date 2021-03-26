@@ -14,6 +14,8 @@ struct searchState{
 class For_search
 {
 public:
+    // id list with searched events
+    QList<QString> searchedIds;
 
     QString event_id;
     QString event_category;
@@ -48,7 +50,6 @@ public:
 
 private:
     QString query;
-    QList<QString> searchedIds;
     void setInitialQuery();
 };
 
