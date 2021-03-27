@@ -51,20 +51,16 @@ MainWindow::MainWindow(QWidget *parent) :
     add_splitter_lines();
     //Settings_connection::instance();
 
-    size_list = ui->splitter->sizes();
-
-//    connect(ui->tableView->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(header_clicked(int)));
+    this->size_list = ui->splitter->sizes();
+    this->m_c_s = All_unchecked;
+    connect(ui->eventTable->horizontalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(header_clicked(int)));
 
     ui->tabWidget->setAttribute(Qt::WA_StyledBackground, true);
     ui->tabWidget_2->setAttribute(Qt::WA_StyledBackground, true);
 
-//        ui->tableView->setType(zkTable);
-//        ui->tableView_2->setType(otTable);
-//        ui->tableView_3->setType(contactTable);
-
-        set_label();
-        set_tab_orders();
-        setTableConnections();
+    set_label();
+    set_tab_orders();
+    setTableConnections();
 }
 //-----------------------------------------------------------------------------------//
 MainWindow::~MainWindow()
@@ -75,153 +71,40 @@ MainWindow::~MainWindow()
 //-----------------------------------------------------------------------------------//
 void MainWindow::Add_pagination_buttons()
 {
-//    while(ui->hl_for_pagination_button_back->count() != 0)
-//    {
-//        QLayoutItem *item = ui->hl_for_pagination_button_back->takeAt(0);
-//        delete item->widget();
-//        p_b_back = 0;
-//    }
-//    while(ui->hl_for_pagination_button_next->count() != 0)
-//    {
-//        QLayoutItem *item = ui->hl_for_pagination_button_next->takeAt(0);
-//        delete item->widget();
-//        p_b_forward = 0;
-//    }
+    while(ui->button_layout_back->count() != 0)
+    {
+        QLayoutItem *item = ui->button_layout_back->takeAt(0);
+        delete item->widget();
+        p_b_back = 0;
+    }
+    while(ui->button_layout_forward->count() != 0)
+    {
+        QLayoutItem *item = ui->button_layout_forward->takeAt(0);
+        delete item->widget();
+        p_b_forward = 0;
+    }
 
 
-//     if(crud_model->actcrudlist.size() < crud_model->crudlist->size())
-//    {
-//        if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(0)) != 0)
-//        {
-//            p_b_back = new QPushButton;
-//            p_b_back->setText("<<");
-//            ui->hl_for_pagination_button_back->addWidget(p_b_back);
-//            connect(p_b_back,SIGNAL(clicked()),this,SLOT(previous_page()));
-//        }
+     if(this->eventModel->actEventList.size() < this->eventModel->eventList->size())
+    {
+        if(this->eventModel->eventList->indexOf(this->eventModel->actEventList.at(0)) != 0)
+        {
+            p_b_back = new QPushButton;
+            p_b_back->setText("<<");
+            ui->button_layout_back->addWidget(p_b_back);
+            connect(p_b_back,SIGNAL(clicked()),this,SLOT(previous_page()));
+        }
 
-//        if(crud_model->crudlist->indexOf(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)) < crud_model->crudlist->size()-1)
-//        {
-//            p_b_forward = new QPushButton;
-//            p_b_forward->setText(">>");
-//            ui->hl_for_pagination_button_next->addWidget(p_b_forward);
-//            connect(p_b_forward,SIGNAL(clicked()),this,SLOT(next_page()));
-//        }
-//    }
+        if(this->eventModel->eventList->indexOf(this->eventModel->actEventList.at(this->eventModel->actEventList.size()-1))
+                < this->eventModel->eventList->size()-1)
+        {
+            p_b_forward = new QPushButton;
+            p_b_forward->setText(">>");
+            ui->button_layout_forward->addWidget(p_b_forward);
+            connect(p_b_forward,SIGNAL(clicked()),this,SLOT(next_page()));
+        }
+    }
 }
-//-----------------------------------------------------------------------------------//
-//void MainWindow::on_tableView_clicked(const QModelIndex &index, QString num) //Обрабатываем клик по таблице с Владельцами номеров
-//{
-//    (void)index;
-//    index_tab1 = ui->tableView->currentIndex();
-//    if(index_tab1.isValid())
-//    {
-//       ui->action_delete->setEnabled(true);
-//       ui->action_update->setEnabled(true); //включаю кнопку редактировать
-
-//       if (!ot_model->mark_rows.isEmpty()) //Чищу список подсвечивания
-//           ot_model->mark_rows.clear();
-
-//            CheckState local_state = crud_model->actcrudlist.at(index_tab1.row())->checkState_;
-
-//           if(Owners_tel::selectZkTelForAdd(crud_model->actcrudlist.at(index_tab1.row())->owt(), crud_model->actcrudlist.at(index_tab1.row())->zk_id))
-//           {
-
-//               ot_model->setOTList(crud_model->actcrudlist.at(index_tab1.row())->owt());
-//               if(!num.isNull())
-//               {
-//                 for (int i = 0; i < ot_model->actotlist.size(); i++)
-//                 {
-//                     if(ot_model->actotlist.at(i)->tel_num == num)
-//                         ot_model->mark_rows.append(i);
-//                 }
-//               }
-//            if(ot_model->actotlist.at(0)->tel_num.isEmpty())
-//                ot_model->actotlist.removeAt(0);//Костыль, тк не могу не отображать пустые номера
-//        }
-//        ui->tableView_2->setModel(ot_model);
-
-//        ui->tableView_2->resizeColumnToContents(0);
-//        ui->tableView_2->resizeColumnToContents(1);
-//         ui->tableView_2->resizeColumnToContents(2);
-//         ui->tableView_2->setWordWrap(false);
-//         ui->tableView_2->horizontalHeader()->setStretchLastSection(true);
-
-//        Table_show_delegate *dl = new Table_show_delegate(this);
-//        for(int row = 0; row < ot_model->actotlist.size(); row++)
-//        {
-//            if(ot_model->actotlist.at(row)->oldnum == false && ot_model->actotlist.at(row)->internum == false)
-//                ui->tableView->setItemDelegateForRow(row,dl);
-//        }
-
-//        contacts_model->reset_ContactModel();
-//        crud_model->actcrudlist.at(index_tab1.row())->checkState_ = local_state;
-
-//        while(ui->hl_label_contact->count())
-//        {
-//            QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-//            delete item->widget();
-//        }
-
-//        while(ui->hl_label_owt->count())
-//        {
-//            QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-//            delete item->widget();
-//        }
-
-//        QLabel *lb = new QLabel;
-//        QString str = "Всего записей: "+QString::number(ot_model->actotlist.size());
-//        lb->setText(str);
-//        ui->hl_label_owt->addWidget(lb);
-//    }
-//    else
-//    {
-//        ui->action_delete->setEnabled(false);
-//        ui->action_update->setEnabled(false); //выключаю кнопку редактировать
-//    }
-//}
-//-----------------------------------------------------------------------------------//
-//void MainWindow::on_tableView_2_clicked(const QModelIndex &index) //Обрабатываем клик по таблице с Номерами владельцев
-//{
-//    if (index_tab1.isValid())
-//    {
-//        if(Contacts::selectTelContacts(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont(),
-//                                       crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->tel_id))
-//        {
-//            contacts_model->setContactList(crud_model->actcrudlist.at(index_tab1.row())->owt()->at(index.row())->cont());
-
-//        }
-
-
-//        if(ui->vl_for_search_contact->count())
-//        {
-//            QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
-//            delete item->widget();
-//        }
-
-//        ui->tableView_3->setModel(contacts_model);
-//        ui->tableView_3->resizeColumnToContents(0);
-//        ui->tableView_3->resizeColumnToContents(1);
-//        ui->tableView_3->resizeColumnToContents(2);
-//        ui->tableView_3->setWordWrap(false);
-//       ui->tableView_3->horizontalHeader()->setStretchLastSection(true);
-
-
-
-//       while(ui->hl_label_contact->count())
-//       {
-//           QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-//           delete item->widget();
-//       }
-
-//       QLabel *lb = new QLabel;
-//       QString str = "Всего записей: "+QString::number(contacts_model->actlist.size());
-//       lb->setText(str);
-//       ui->hl_label_contact->addWidget(lb);
-
-//        //ui->tableView_3->setColumnWidth(0,250);
-//       // ui->tableView_3->setColumnWidth(1,250);
-//    }
-//}
 //-----------------------------------------------------------------------------------//
 void MainWindow::ShowThisTab(int zk_id) //Открытие main окна и рефреш таблиц
 {
@@ -267,6 +150,10 @@ void MainWindow::RefreshTab()
 
         ui->eventTable->setWordWrap(false);
         ui->eventTable->resizeColumnsToContents();
+
+        this->Add_pagination_buttons();
+        this->clearLabel();
+        this->createLabel();
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
@@ -1086,81 +973,33 @@ void MainWindow::on_action_Settings_triggered()
 //-----------------------------------------------------------------------------------//
 void MainWindow::next_page()
 {
-//    if(ui->hl_for_pagination_button_next->count() >0)
-//    {
-//        crud_model->next_page_crud();
-//        ui->tableView->setModel(crud_model);
-//        Add_pagination_buttons();
-//        ot_model->reset_OTModel();
-//        contacts_model->reset_ContactModel();
+    if(ui->button_layout_forward->count() >0)
+    {
+        this->eventModel->next_page();
+        ui->eventTable->setModel(this->eventModel);
+        Add_pagination_buttons();
 
-//        while(ui->hl_label_contact->count())
-//        {
-//            QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-//            delete item->widget();
-//        }
-
-//        while(ui->hl_label_owt->count())
-//        {
-//            QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-//            delete item->widget();
-//        }
-//        while(ui->hl_label_crud->count())
-//        {
-//            QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-//            delete item->widget();
-//        }
-
-//        QLabel *lb = new QLabel;
-//        QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
-//                QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
-//        lb->setText(str);
-//        ui->hl_label_crud->addWidget(lb);
-//        QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-//        QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
-//        ui->tableView->selectionModel()->select(tempIndex, flags);
-//        ui->tableView->setFocus();
-//    }
+        this->clearLabel();
+        this->createLabel();
+    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::previous_page()
 {
-//   if(ui->hl_for_pagination_button_back->count() >0)
-//   {
-//       crud_model->previous_page_crud();
-//       ui->tableView->setModel(crud_model);
-//       Add_pagination_buttons();
-//       ot_model->reset_OTModel();
-//       contacts_model->reset_ContactModel();
+   if(ui->button_layout_back->count() >0)
+   {
+       this->eventModel->previous_page();
+       ui->eventTable->setModel(this->eventModel);
+       Add_pagination_buttons();
 
-//       while(ui->hl_label_contact->count())
-//       {
-//           QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-//           delete item->widget();
-//       }
-
-//       while(ui->hl_label_owt->count())
-//       {
-//           QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-//           delete item->widget();
-//       }
-//       while(ui->hl_label_crud->count())
-//       {
-//           QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-//           delete item->widget();
-//       }
-
-//       QLabel *lb = new QLabel;
-//       QString str = "Всего записей: "+QString::number(crud_model->crudlist->size()) +" ("+QString::number(crud_model->actcrudlist.at(0)->zk_id)+"..."+
-//               QString::number(crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)+")";
-//       lb->setText(str);
-//       ui->hl_label_crud->addWidget(lb);
+       this->clearLabel();
+       this->createLabel();
 
 //       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
 //       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
 //       ui->tableView->selectionModel()->select(tempIndex, flags);
 //       ui->tableView->setFocus();
-//   }
+   }
 
 }
 //-----------------------------------------------------------------------------------//
@@ -1240,26 +1079,26 @@ void MainWindow::set_normal_width(int size)
 
 void MainWindow::header_clicked(int id)
 {
-//    if(id != 0)
-//        return;
-//    else
-//    {
-//        switch (m_c_s)
-//        {
-//        case All_unchecked:
-//            crud_model->setCheckedCrudlist(crud_model->crudlist);
-//            ui->tableView->setModel(crud_model);
-//            m_c_s = All_checked;
-//            Add_pagination_buttons();
-//        return;
-//        case All_checked:
-//            crud_model->setUnCheckedCrudlist(crud_model->crudlist);
-//            ui->tableView->setModel(crud_model);
-//            m_c_s = All_unchecked;
-//            Add_pagination_buttons();
-//        return;
-//        }
-//    }
+    if(id != 0)
+        return;
+    else
+    {
+        switch (m_c_s)
+        {
+        case All_unchecked:
+            this->eventModel->changeCheckedStateEventList(true);
+            ui->eventTable->setModel(this->eventModel);
+            m_c_s = All_checked;
+            Add_pagination_buttons();
+        return;
+        case All_checked:
+            this->eventModel->changeCheckedStateEventList(false);
+            ui->eventTable->setModel(this->eventModel);
+            m_c_s = All_unchecked;
+            Add_pagination_buttons();
+        return;
+        }
+    }
 }
 
 void MainWindow::on_action_4_analysis_triggered()
@@ -1676,7 +1515,6 @@ void MainWindow::closePersonEdit(EditPerson *ep)
     }
 }
 
-
 void MainWindow::on_eventTable_doubleClicked(const QModelIndex &index)
 {
     this->eventTableIndex = index;
@@ -1756,4 +1594,22 @@ QList<Event *> *MainWindow::getSelectedEvents()
     }
 
     return events;
+}
+
+void MainWindow::clearLabel()
+{
+    while(ui->label_layout->count())
+    {
+        QLayoutItem *item = ui->label_layout->takeAt(0);
+        delete item->widget();
+    }
+}
+
+void MainWindow::createLabel()
+{
+    QLabel *lb = new QLabel;
+    QString str = "Всего записей: "+QString::number(this->eventModel->eventList->size()) +" ("+this->eventModel->actEventList.at(0)->id+"..."+
+            this->eventModel->actEventList.at(this->eventModel->actEventList.size()-1)->id+")";
+    lb->setText(str);
+    ui->label_layout->addWidget(lb);
 }

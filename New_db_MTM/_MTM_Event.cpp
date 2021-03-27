@@ -146,3 +146,73 @@ bool MTM_Event::setData(const QModelIndex &index, const QVariant &value, int rol
          return false;
 
 }
+
+void MTM_Event::next_page()
+{
+    beginResetModel();
+    int a;
+    a = this->eventList->indexOf(this->actEventList.at(this->actEventList.size()-1)); //индекс последнего элемента
+    int b = a+1; //индекс добавления
+    this->actEventList.clear();
+
+    if(this->eventList!=0)
+    {
+        while (b < a+this->showing_count+1 && b < this->eventList->size())
+        {
+            if( this->eventList->at(b)->state!=IsRemoved )
+            {
+                this->actEventList.append(this->eventList->at(b));
+                b++;
+            }
+        }
+    }
+
+    endResetModel();
+}
+
+void MTM_Event::previous_page()
+{
+    beginResetModel();
+    int a;
+    a = this->eventList->indexOf(this->actEventList.at(0)); //индекс последнего элемента
+    int b = a-this->showing_count; //индекс добавления
+
+    this->actEventList.clear();
+
+    if(this->eventList!=0)
+    {
+        while (b < a)
+        {
+          if( this->eventList->at(b)->state!=IsRemoved )
+          {
+              this->actEventList.append(this->eventList->at(b));
+              b++;
+          }
+        }
+    }
+    endResetModel();
+}
+
+void MTM_Event::changeCheckedStateEventList(bool checkState)
+{
+    beginResetModel();
+
+    this->actEventList.clear();
+    int iterator = 0;
+
+    if(this->eventList!=0)
+    {
+        for(int i=0; i < this->eventList->size(); i++)
+            if( this->eventList->at(i)->state!=IsRemoved )
+            {
+                this->eventList->at(i)->checkState_ = checkState ? Checked_ : Unchecked_;
+                if (iterator < showing_count && iterator < this->eventList->size())
+                {
+                    this->actEventList.append(this->eventList->at(iterator));
+                    iterator++;
+                }
+            }
+    }
+
+    endResetModel();
+}

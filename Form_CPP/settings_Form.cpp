@@ -16,6 +16,10 @@ Settings_Form::Settings_Form(QWidget *parent) :
     ui->setupUi(this);
     set_settings_from_ini();
     set_tab_orders();
+    ui->groupBox->setVisible(false);
+    ui->groupBox_2->setVisible(false);
+    ui->groupBox_3->setVisible(false);
+
 }
 
 Settings_Form::~Settings_Form()
@@ -157,7 +161,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.dop_info = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_CITY"))
+    foreach (QCheckBox *cb , ui->groupBox_2->findChildren<QCheckBox*>("LIV_CITY"))
     {
         if(cb->isChecked())
         {
@@ -169,7 +173,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.liv_city = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_STREET"))
+    foreach (QCheckBox *cb , ui->groupBox_2->findChildren<QCheckBox*>("LIV_STREET"))
     {
         if(cb->isChecked())
         {
@@ -181,7 +185,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.liv_street = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_HOME"))
+    foreach (QCheckBox *cb , ui->groupBox_2->findChildren<QCheckBox*>("LIV_HOME"))
     {
         if(cb->isChecked())
         {
@@ -193,7 +197,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.liv_home = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_CORP"))
+    foreach (QCheckBox *cb , ui->groupBox_2->findChildren<QCheckBox*>("LIV_CORP"))
     {
         if(cb->isChecked())
         {
@@ -205,7 +209,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.liv_corp = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_FLAT"))
+    foreach (QCheckBox *cb , ui->groupBox_2->findChildren<QCheckBox*>("LIV_FLAT"))
     {
         if(cb->isChecked())
         {
@@ -217,7 +221,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.liv_flat = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_CITY"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("REG_CITY"))
     {
         if(cb->isChecked())
         {
@@ -229,7 +233,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.reg_city = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_STREET"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("REG_STREET"))
     {
         if(cb->isChecked())
         {
@@ -241,7 +245,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.reg_street = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_HOME"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("REG_HOME"))
     {
         if(cb->isChecked())
         {
@@ -253,7 +257,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.reg_home = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_CORP"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("REG_CORP"))
     {
         if(cb->isChecked())
         {
@@ -265,7 +269,7 @@ void Settings_Form::on_pb_save_settings_clicked()
         }else
             Settings_connection::instance()->instance()->content.reg_corp = false;
     }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_FLAT"))
+    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("REG_FLAT"))
     {
         if(cb->isChecked())
         {
@@ -347,13 +351,13 @@ void Settings_Form::set_settings_from_ini()
             ui->REG_HOME->isChecked() == false && ui->REG_CORP->isChecked() == false &&
             ui->REG_FLAT->isChecked() == false)
     {
-        ui->groupBox_4->setChecked(false);
+        ui->groupBox_3->setChecked(false);
     }
     if(ui->LIV_CITY->isChecked() == false && ui->LIV_STREET->isChecked() == false &&
             ui->LIV_HOME->isChecked() == false && ui->LIV_CORP->isChecked() == false &&
             ui->LIV_FLAT->isChecked() == false)
     {
-        ui->groupBox_3->setChecked(false);
+        ui->groupBox_2->setChecked(false);
     }
 }
 
@@ -361,13 +365,13 @@ void Settings_Form::on_groupBox_3_toggled(bool arg1)
 {
     if(!arg1)
     {
-        foreach(QCheckBox *cb, ui->groupBox_3->findChildren<QCheckBox*>())
+        foreach(QCheckBox *cb, ui->groupBox_2->findChildren<QCheckBox*>())
         {
             cb->setCheckState(Qt::Unchecked);
         }
     } else
     {
-        foreach(QCheckBox *cb, ui->groupBox_3->findChildren<QCheckBox*>())
+        foreach(QCheckBox *cb, ui->groupBox_2->findChildren<QCheckBox*>())
         {
             cb->setCheckState(Qt::Checked);
         }
@@ -378,13 +382,13 @@ void Settings_Form::on_groupBox_4_toggled(bool arg1)
 {
     if(!arg1)
     {
-        foreach(QCheckBox *cb, ui->groupBox_4->findChildren<QCheckBox*>())
+        foreach(QCheckBox *cb, ui->groupBox_3->findChildren<QCheckBox*>())
         {
             cb->setCheckState(Qt::Unchecked);
         }
     } else
     {
-        foreach(QCheckBox *cb, ui->groupBox_4->findChildren<QCheckBox*>())
+        foreach(QCheckBox *cb, ui->groupBox_3->findChildren<QCheckBox*>())
         {
             cb->setCheckState(Qt::Checked);
         }
@@ -416,20 +420,20 @@ void Settings_Form::set_tab_orders()
     setTabOrder(ui->DOP_INFO, ui->ADD_DATE);
     setTabOrder(ui->ADD_DATE, ui->NICKNAME);
     setTabOrder(ui->NICKNAME, ui->ADD_TIME);
-    setTabOrder(ui->ADD_TIME, ui->groupBox_3);
-     if(ui->groupBox_3->isChecked())
+    setTabOrder(ui->ADD_TIME, ui->groupBox_2);
+     if(ui->groupBox_2->isChecked())
      {
-         setTabOrder(ui->groupBox_3, ui->LIV_CITY);
+         setTabOrder(ui->groupBox_2, ui->LIV_CITY);
          setTabOrder(ui->LIV_CITY, ui->LIV_STREET);
          setTabOrder(ui->LIV_STREET, ui->LIV_HOME);
          setTabOrder(ui->LIV_HOME, ui->LIV_CORP);
          setTabOrder(ui->LIV_CORP, ui->LIV_FLAT);
          setTabOrder(ui->LIV_CORP, ui->LIV_FLAT);
-         setTabOrder(ui->LIV_FLAT, ui->groupBox_4);
+         setTabOrder(ui->LIV_FLAT, ui->groupBox_3);
      }
-     if(ui->groupBox_4->isChecked())
+     if(ui->groupBox_3->isChecked())
      {
-         setTabOrder(ui->groupBox_4, ui->REG_CITY);
+         setTabOrder(ui->groupBox_3, ui->REG_CITY);
          setTabOrder(ui->REG_CITY, ui->REG_STREET);
          setTabOrder(ui->REG_STREET, ui->REG_HOME);
          setTabOrder(ui->REG_HOME, ui->REG_CORP);

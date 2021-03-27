@@ -283,7 +283,9 @@ private slots:
     void closeEditEvent(editEvent*);
     void searchedResults(QList<QString> searchedIds);
     void cancelSearchResults();
-     QList<Event *> *getSelectedEvents();
+    QList<Event *> *getSelectedEvents();
+    void clearLabel();
+    void createLabel();
 signals:
     void Send_data(Crud *cr, int index);
 

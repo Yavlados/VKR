@@ -35,6 +35,14 @@ public:
     /// Список указателей для отображения (является переменной)
     QList<Event*> actEventList;
 
+    /// Загрузка записных книг следующей страницы
+    virtual void next_page();
+
+    /// Загрузка записных книг предыдущей страницы
+    virtual void previous_page();
+
+    void changeCheckedStateEventList(bool checkState);
+
     int showing_count;
     int columnsCount;
 };

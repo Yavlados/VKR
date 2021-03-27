@@ -137,7 +137,7 @@ color:rgb(77, 62, 62)
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>406</width>
+                  <width>405</width>
                   <height>681</height>
                  </rect>
                 </property>
@@ -413,7 +413,7 @@ color:rgb(77, 62, 62)
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
-               <widget class="QWidget" name="">
+               <widget class="QWidget" name="layoutWidget">
                 <layout class="QVBoxLayout" name="verticalLayout_3">
                  <item>
                   <layout class="QHBoxLayout" name="searched_data_layout"/>
@@ -424,6 +424,36 @@ color:rgb(77, 62, 62)
                     <enum>QAbstractItemView::SelectRows</enum>
                    </property>
                   </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout">
+                   <item>
+                    <layout class="QVBoxLayout" name="label_layout"/>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_3">
+                     <item>
+                      <layout class="QHBoxLayout" name="button_layout_back"/>
+                     </item>
+                     <item>
+                      <layout class="QHBoxLayout" name="button_layout_forward"/>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </widget>
@@ -455,7 +485,7 @@ color:rgb(77, 62, 62)
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>256</width>
+                      <width>257</width>
                       <height>647</height>
                      </rect>
                     </property>
