@@ -16,10 +16,7 @@ Master_export_Form::Master_export_Form(QWidget *parent) :
 
     ui->le_password->setEchoMode(QLineEdit::Password);
     on_cb_set_password_clicked();
-        actual_size = this->size();
-//        ui->le_password->setVisible(false);
-//        ui->label->setVisible(false);
-//        ui->cb_set_password->setVisible(false);
+    this->actual_size = this->size();
 }
 
 Master_export_Form::~Master_export_Form()
@@ -56,12 +53,6 @@ void Master_export_Form::on_rb_check_clicked()
    emit rb_zk_clicked();
 }
 
-void Master_export_Form::on_rb_check_all_clicked()
-{
-    if(!ui->rb_check->isChecked())
-            emit rb_check_all();
-}
-
 void Master_export_Form::on_pb_directory_clicked()
 {
     QString filename ;
@@ -96,10 +87,6 @@ void Master_export_Form::on_pb_Export_clicked()
     auto exportType = this->getExportType();
 
     emit prepareExport(crypt, exportType, ui->le_file_path->text());
-
-
-//    emit TESTING_export(ui->le_file_path->text(), ui->le_password->text(),
-//                        ui->cb_off_tel->isChecked(), ui->cb_set_password->isChecked(), ui->cb_zk->isChecked());
 }
 
 void Master_export_Form::on_cb_set_password_clicked()
@@ -131,11 +118,6 @@ void Master_export_Form::keyPressEvent(QKeyEvent *event)
                                       "<p><b>\"ENTER\"</b> для начала экспорта</p>"
                                       "<p><b>\"ESC\"</b> для закрытия окна мастера экспорта</p>", rightMenu);
  }
-}
-
-void Master_export_Form::add_file_path(QString path_from_main)
-{
-    file_path = path_from_main;
 }
 
 void Master_export_Form::focus_on_widget()

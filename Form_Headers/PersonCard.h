@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "EditPerson.h"
 #include <QKeyEvent>
+#include <QDebug>
+/// REFACTORED
 
 namespace Ui {
 class PersonCard;
@@ -21,13 +23,11 @@ public:
 
 signals:
     void openEditWindow(Person*);
-    void resetCardsLayout();
+    void removePerson(Person *);
 //    void close
 
 private slots:
     void on_editButton_clicked();
-//    void keyPressEvent(QKeyEvent *event);
-
     void on_pb_button_clicked();
 
 private:

@@ -87,6 +87,7 @@ void Util::unlinkAddEventPerson(editEvent *ee)
     for(int i=0; i<this->addEventManager()->size(); i++){
         AddEventManager *aem = this->addEventManager()->at(i);
         if(aem->parent->localEvent->id == id){
+            delete this->addEventManager()->at(i);
             this->addEventManager()->removeAt(i);
             return;
         }
@@ -98,15 +99,38 @@ editEvent *Util::getManagerParent(EditPerson *ep)
     int i = this->addEventManager()->size();
     for(int a=0; a<i; a++){
         AddEventManager *local = this->addEventManager()->at(a);
-        int b = local->childs->size();
+        int childsSize = local->childs->size();
 
-        for( int c=0; c<b; c++){
+        for( int c=0; c<childsSize; c++){
             EditPerson *child = local->childs->at(c);
 
             if(child->person->id == ep->person->id){
-
+                delete local->childs->at(c);
                 local->childs->removeAt(c);
                 return local->parent;
+            }
+        }
+    }
+}
+
+AddEventManager *Util::getEventManager(editEvent *ee)
+{
+    for (int a =0; a < this->addEventManager()->size(); a++) {
+        auto aem = this->addEventManager()->at(a);
+        if(aem->parent->localEvent->id == ee->localEvent->id)
+            return aem;
+    }
+}
+
+void Util::unlinkEditPersonFromEditEvent(EditPerson *ep)
+{
+    for (int a = 0; a< this->addEventManager()->size(); a++) {
+        auto aem = this->addEventManager()->at(a);
+        for(int b = 0; b<aem->childs->size(); b++){
+            auto pe = aem->childs->at(b);
+            if(pe->editablePerson->id == ep->editablePerson->id){
+                aem->childs->removeAt(b);
+                return;
             }
         }
     }

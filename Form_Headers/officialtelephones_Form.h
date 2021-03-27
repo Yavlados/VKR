@@ -8,6 +8,9 @@
  * \file officialtelephones_Form.h
  * \brief Форма служебных телефонов
 */
+
+/// REFACTORED
+
 namespace Ui {
 class OfficialTelephones;
 }

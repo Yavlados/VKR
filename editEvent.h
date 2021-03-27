@@ -5,7 +5,7 @@
 #include "PersonCard.h"
 #include <QWidget>
 #include <QMessageBox>
-
+#include "QDebug"
 
 enum editEventState {
     updateEvent,
@@ -33,10 +33,10 @@ public:
 
 public slots:
     void updateCardsLayout();
-    void clearLayout();
+    void clearLayout(QLayout *layout);
     void addNewPerson(Person *p);
     void closeWidget();
-
+    void setPersonToRemove(Person *pers);
 private slots:
     void on_pb_add_person_clicked();
 

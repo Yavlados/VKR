@@ -2,18 +2,16 @@
 #include "ui_master_import_form.h"
 #include "popup.h"
 
+/// REFACTORED
+
 Master_import_form::Master_import_form(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Master_import_form)
 {
-//    parent_win = qobject_cast<parent>();
-//    parent_win = parent->qt;
     ui->setupUi(this);
     ui->le_password_2->setEchoMode(QLineEdit::Password);
-    actual_size = this->size();
-//    ui->label_6->setVisible(false);
-//    ui->le_password_2->setVisible(false);
-    setTabOrder(ui->le_file_path_2, ui->le_password_2);
+    this->actual_size = this->size();
+    this->setTabOrder(ui->le_file_path_2, ui->le_password_2);
 }
 
 Master_import_form::~Master_import_form()
@@ -55,13 +53,13 @@ void Master_import_form::on_pb_directory_2_clicked()
                     case QMessageBox::Ok :
                     this->folder = true;
                     this->oldData = true;
-                    if(file_path == 0)
+                    if(this->file_path == 0)
                     {
                         filename = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
                                                                        "/home",
                                                                        QFileDialog::ShowDirsOnly
                                                                        | QFileDialog::DontResolveSymlinks);
-                        file_path = filename;
+                        this->file_path = filename;
                         if( !filename.isNull() )
                         {
                             ui->le_file_path_2->setText(filename);
@@ -75,7 +73,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                                                                      QFileDialog::ShowDirsOnly
                                                                      | QFileDialog::DontResolveSymlinks);
 
-                        file_path = filename;
+                        this->file_path = filename;
                         if( !filename.isNull() )
                         {
                             ui->le_file_path_2->setText(filename);
@@ -85,7 +83,7 @@ void Master_import_form::on_pb_directory_2_clicked()
                 case QMessageBox::Cancel:
                  // Импорт старых ЗК
                     this->oldData = true;
-                    if(file_path == 0)
+                    if(this->file_path == 0)
                     {
                         filename = QFileDialog::getOpenFileName(
                                     this,
@@ -93,8 +91,8 @@ void Master_import_form::on_pb_directory_2_clicked()
                                     QDir::currentPath(),
                                     tr("**"));
                         int x = filename.lastIndexOf("/");
-                        file_path = filename.left(x);
-                        folder = false;
+                        this->file_path = filename.left(x);
+                        this->folder = false;
                         if( !filename.isNull() )
                             ui->le_file_path_2->setText(filename);
                         return;
@@ -104,11 +102,11 @@ void Master_import_form::on_pb_directory_2_clicked()
                         filename = QFileDialog::getOpenFileName(
                                     this,
                                     tr("Save Document"),
-                                    file_path,
+                                    this->file_path,
                                     tr("**") );
                         int x = filename.lastIndexOf("/");
-                        file_path = filename.left(x);
-                        folder = false;
+                        this->file_path = filename.left(x);
+                        this->folder = false;
 
                         if( !filename.isNull() )
                         {
@@ -127,7 +125,7 @@ void Master_import_form::on_pb_directory_2_clicked()
         // ЗК/Служебные
         this->folder =false;
         this->oldData=false;
-          if(file_path == 0)
+          if(this->file_path == 0)
           {
               filename = QFileDialog::getOpenFileName(
                           this,
@@ -135,8 +133,8 @@ void Master_import_form::on_pb_directory_2_clicked()
                           QDir::currentPath(),
                           tr("*.nbd; *.nbds; *.nbod; *.nbods") );
               int x = filename.lastIndexOf("/");
-              file_path = filename.left(x);
-              folder = false;
+              this->file_path = filename.left(x);
+              this->folder = false;
 
               if( !filename.isNull() )
                   ui->le_file_path_2->setText(filename);
@@ -149,11 +147,11 @@ void Master_import_form::on_pb_directory_2_clicked()
               filename = QFileDialog::getOpenFileName(
                           this,
                           tr("Save Document"),
-                          file_path,
+                          this->file_path,
                           tr("*.nbd; *.nbds; *.nbod; *.nbods") );
               int x = filename.lastIndexOf("/");
-              file_path = filename.left(x);
-              folder = false;
+              this->file_path = filename.left(x);
+              this->folder = false;
 
               if( !filename.isNull() )
                   ui->le_file_path_2->setText(filename);
@@ -188,7 +186,6 @@ void Master_import_form::set_tab_orders()
     setTabOrder(ui->pb_directory_2, ui->le_password_2);
     setTabOrder(ui->le_password_2, ui->pushButton);
     setTabOrder(ui->pushButton,  ui->hided_le);
-
 }
 
 void Master_import_form::focus_on_widget()

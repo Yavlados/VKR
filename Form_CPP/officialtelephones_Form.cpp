@@ -29,7 +29,6 @@ void OfficialTelephones::set_tab_orders()
     setTabOrder(ui->pb_del, ui->pushButton_3);
     setTabOrder(ui->pushButton_3, ui->pushButton_4);
     setTabOrder( ui->pushButton_4, ui->hided_le);
-    //setTabOrder(ui->pushButton_3, ui->le_search_num);
 }
 
 void OfficialTelephones::set_label(QList<Off_tels *> list)
@@ -79,13 +78,6 @@ void OfficialTelephones::on_pb_add_clicked()
     of_t->tel_num = ui->le_set_num->text();
     if (Off_tels::add_off_tel(of_t))
     {//или просто добавлять указатель в список
-//        delete of_model;
-//        of_model = 0;
-//        delete ofTlist;
-//        ofTlist = 0;
-
-//        Fill_table();
-
         ofTlist->append(of_t);
          of_model->setOffTList(ofTlist);
 

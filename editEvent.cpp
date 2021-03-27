@@ -39,28 +39,34 @@ void editEvent::setEventAndType(Event *e, editEventState s)
 
 void editEvent::updateCardsLayout()
 {
-    this->clearLayout();
-    for ( int i =0; i < localEvent->persons()->size(); i++){
-        Person *p = localEvent->persons()->at(i);
+    this->clearLayout(ui->cardsLayout);
+    for ( int i =0; i < this->localEvent->persons()->size(); i++){
+        Person *p = this->localEvent->persons()->at(i);
+        qDebug() << p->state;
 
         if(p->state != IsRemoved){
             PersonCard *card = new PersonCard();
+            connect(card, SIGNAL(removePerson(Person*)), this, SLOT(setPersonToRemove(Person*)));
             card->setPerson(p);
 //            connect(card, SIGNAL(openEditWindow(Person*)), this, SLOT(openEditWindow(Person*)));
-            connect(card, SIGNAL(resetCardsLayout()), this, SLOT(updateCardsLayout()));
             ui->cardsLayout->addWidget(card);
         }
     }
 }
 
-void editEvent::clearLayout()
+void editEvent::clearLayout(QLayout *layout)
 {
-    QLayout *layout = ui->cardsLayout;
-    int size = layout->count();
-    for(int i=0; i< size; i++){
-        QLayoutItem *witem = layout->itemAt(0);
-        delete witem->widget();
-    }
+    QLayoutItem *item;
+        while((item = layout->takeAt(0))) {
+            if (item->layout()) {
+                clearLayout(item->layout());
+                delete item->layout();
+            }
+            if (item->widget()) {
+               delete item->widget();
+            }
+            delete item;
+        }
 }
 
 void editEvent::on_pb_add_person_clicked()
@@ -100,6 +106,18 @@ void editEvent::addNewPerson(Person *p)
 void editEvent::closeWidget()
 {
     emit closeThis(this);
+}
+
+void editEvent::setPersonToRemove(Person *pers)
+{
+    for(int a = 0; a<this->localEvent->persons()->size(); a++ ){
+        auto person = this->localEvent->persons()->at(a);
+        if(person->id == pers->id){
+            person->state = IsRemoved;
+            this->updateCardsLayout();
+            return;
+        }
+    }
 }
 
 void editEvent::on_pb_save_clicked()

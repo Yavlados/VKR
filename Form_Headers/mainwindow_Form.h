@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include "analysis_Form.h"
-#include "update_Form.h"
 #include "search_Form.h"
 
 #include "master_export_Form.h"
@@ -90,9 +89,6 @@ public:
 
     Model_check_state m_c_s;
 
-    QList<Update*> *updlist = 0;
-    QList<Update*> *addlist = 0;
-
      MTM_Event *eventModel;
 
     ///Указатель на класс для экспорта
@@ -128,8 +124,6 @@ private slots:
      * \ref settings_Form.h
      */
     void Add_pagination_buttons();
-
-    void ShowThisTab(int);
 
     void RefreshTab();
 
@@ -221,6 +215,7 @@ private slots:
     void closePersonEdit(EditPerson*);
     void on_eventTable_doubleClicked(const QModelIndex &index);
     void closeEditEvent(editEvent*);
+    void closeLinkedEditPersons(QList<EditPerson*> *epList);
     void searchedResults(QList<QString> searchedIds);
     void cancelSearchResults();
     QList<Event *> *getSelectedEvents();

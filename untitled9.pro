@@ -57,7 +57,6 @@ SOURCES += \
     Form_CPP/analysis_Form.cpp \
     Form_CPP/mainwindow_Form.cpp \
     Form_CPP/search_Form.cpp \
-    Form_CPP/update_Form.cpp \
     Form_CPP/officialtelephones_Form.cpp \
     Model_CPP/_MTM_Contacts.cpp \
     Model_CPP/_MTM_Crud.cpp \
@@ -110,7 +109,6 @@ HEADERS += \
     Form_Headers/analysis_Form.h \
     Form_Headers/mainwindow_Form.h \
     Form_Headers/search_Form.h \
-    Form_Headers/update_Form.h \
     Form_Headers/officialtelephones_Form.h \
     Model_Headers/_MTM_Contacts.h \
     Model_Headers/_MTM_Crud.h \
@@ -142,7 +140,6 @@ FORMS += \
     editEvent.ui \
         mainwindow.ui \
     analysis.ui \
-    update.ui \
     search.ui \
     an_result.ui \
     officialtelephones.ui \

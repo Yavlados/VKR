@@ -9,6 +9,9 @@
  * \file master_import_Form.h
  * \brief Форма импорта данных
 */
+
+/// REFACTORED
+
 namespace Ui {
 class Master_import_form;
 }
@@ -35,7 +38,6 @@ private slots:
     void on_pb_directory_2_clicked();
 
 private:
-    QWidget *parent_win;
     Ui::Master_import_form *ui;
    QString file_path = 0;
 signals:

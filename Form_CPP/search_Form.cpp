@@ -5,6 +5,8 @@
 #include <QRegExpValidator>
 #include "popup.h"
 
+/// REFACTORED
+
 Search::Search(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Search)
@@ -12,33 +14,18 @@ Search::Search(QWidget *parent) :
     ui->setupUi(this);
         actual_size = this->size();
     this->updateStates();
-
-//        ui->frame_2->setVisible(false);
-//        ui->frame_3->setVisible(false);
-//        ui->frame_4->setVisible(false);
-//        ui->frame_5->setVisible(false);
-
-//        //
-
-//        ui->frame_widg->setLayout(layout);
-
-//         set_date_forms();
-
-          this->set_tab_orders();
-//         //ui->le_zk_id->setCursorPosition(0);
-
+    this->set_tab_orders();
 }
 
 Search::~Search()
 {
-  on_pushButton_clicked();
-
+  this->on_pushButton_clicked();
   delete ui;
 }
 
 void Search::keyPressEvent(QKeyEvent *event)
 {
-       switch(event->key())
+    switch(event->key())
     {
      case Qt::Key_Enter:
         on_pb_search_clicked();
@@ -63,31 +50,6 @@ void Search::set_tab_orders()
     ui->lineEdit_id->setFocus();
     ui->hided_le->setFocusProxy(ui->lineEdit_id);
     setTabOrder( ui->pb_search, ui->hided_le);
-}
-
-QString Search::create_new_date(QString str)
-{
-//        if(!str.isEmpty() && str != "--")
-//        {
-//            if(str.size() < 10)
-//            {
-//                return "";
-//            }
-
-//            //str.replace("*","%");
-//            //str.replace("?","_");
-
-////              QString  bd = str;
-////            ///ФОРМИРУЕМ
-////            QString year = bd.right(4);
-////            bd.chop(5);
-////            QString month = bd.right(2);
-////            bd.chop(3);
-////            bd = year+ "-"+month + "-" +bd;
-//            return  str;
-//        }
-//        else
-//            return "";
 }
 
 void Search::on_pb_search_clicked()
@@ -219,33 +181,8 @@ void Search::on_pb_search_clicked()
 //    }
 }
 
-void Search::Create_search_report(QList<Crud *> *crudlist)
-{
-//    An_result *an = new An_result;
-//    QString search_report;
-//    for (int i = 0; i <crudlist->size(); i++)
-//    {
-//        search_report+="Записная книжка № "+QString::number(crudlist->at(i)->zk_id)+" \r\n Владелец: "+
-//                crudlist->at(i)->lastname+" "+crudlist->at(i)->name+" "+crudlist->at(i)->mid_name+
-//                ", "+crudlist->at(i)->birth_date+", ";
-
-//            if(ui->rb_reg->isChecked())
-//                search_report+= "адрес регистрации:";
-//             else if(ui->rb_liv->isChecked())
-//                search_report+= "адрес проживания:";
-
-//            search_report += "г."+
-//                crudlist->at(i)->reg_city+" ул. "+crudlist->at(i)->reg_street+" д. "+
-//               crudlist->at(i)->reg_home+" к. "+crudlist->at(i)->reg_corp+" кв. "+
-//                crudlist->at(i)->reg_corp+" \r\n  \r\n ";
-//    }
-//    connect(this, SIGNAL(Send_search_result(QString)), an , SLOT(Recieve_search_result(QString)));
-//   emit Send_search_result(search_report);
-}
-
 void Search::on_pb_back_tomain_clicked()
 {
-    ///Переделать
    this->close();
 }
 
@@ -259,42 +196,6 @@ void Search::on_pushButton_clicked()
     }
 
     emit Cancel_search();
-}
-
-QString Search::create_search_query(Crud *search_crud)
-{
-
-}
-
-QString Search::get_date_from()
-{
-
-}
-
-QString Search::get_date_to()
-{
-
-}
-
-QString Search::get_date(QString year, QString month, QString day )
-{
-
-}
-
-QString Search::get_date_query(QString date, int flag)
-{
-
-}
-
-void Search::set_date_forms()
-{
-
-
-}
-
-void Search::bd_edited()
-{
-    //    ui->le_reg_city->setFocus();
 }
 
 void Search::updateStates()

@@ -30,14 +30,12 @@ public:
     Person *person;
     Person *editablePerson;
     formStates state;
-//    editEvent *parent;
 
     MTM_Telephone *ot_model;
     MTM_Contact *contacts_model;
 
     void keyPressEvent(QKeyEvent *event);
     void setType(formStates s);
-//    void setParent(editEvent *);
 
     void setFocus();
 

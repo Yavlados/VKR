@@ -13,6 +13,9 @@
  * \file master_export_Form.h
  * \brief Форма экспорта данных
 */
+
+/// REFACTORED
+
 namespace Ui {
 class master_export_Form;
 }
@@ -28,8 +31,6 @@ public:
     explicit Master_export_Form(QWidget *parent = 0);
     ~Master_export_Form();
 
-    void add_file_path(QString path_from_main);
-
     QSize actual_size;
 
     void focus_on_widget();
@@ -39,8 +40,6 @@ private slots:
     void on_cb_zk_clicked();
 
     void on_rb_check_clicked();
-
-    void on_rb_check_all_clicked();
 
     void on_pb_directory_clicked();
 
@@ -58,12 +57,7 @@ private:
     ExportType getExportType();
 signals:
     void rb_zk_clicked();
-    void rb_check_all();
-    void TESTING_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk_tels);
-
     void closeThis(QString);
-
-    /// NEW
     void prepareExport(SimpleCrypt crypt, ExportType type, QString filename);
 };
 
