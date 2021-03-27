@@ -5,6 +5,9 @@
 #include <QDate>
 #include "for_analysis.h"
 
+/// REFACTORED
+
+
 /**
  * \file an_result_Form.h
  * \brief Форма вывода справок

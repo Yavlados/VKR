@@ -43,7 +43,6 @@ class Import_Form : public QWidget ///Форма импорта
     Q_OBJECT
 
 public:
-    QWidget *parent_win;
     bool old_db = false;
     bool skip_all = false;
 

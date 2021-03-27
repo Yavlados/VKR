@@ -9,6 +9,9 @@
 #include "date_form.h"
 #include <QKeyEvent>
 #include <QString>
+
+/// REFACTORED
+
 /**
  * @file analysis_Form.h
  * @brief Форма анализа
@@ -52,7 +55,6 @@ private slots:
 
     void on_pb_add_le_clicked();
 
-   //user slots
     void del_le();
 
     void clear_rb_2();

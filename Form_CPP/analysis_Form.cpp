@@ -8,6 +8,8 @@
 #include "search.h"
 #include "popup.h"
 
+/// REFACTORED
+
 Analysis::Analysis(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Analysis)

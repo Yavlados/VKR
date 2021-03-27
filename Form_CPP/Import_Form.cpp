@@ -6,7 +6,6 @@ Import_Form::Import_Form(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Import_Form)
 {
-    parent_win = parent;
     ui->setupUi(this);
 
     event = 0;//Зануляю, тк игнорируется компилятором в методе

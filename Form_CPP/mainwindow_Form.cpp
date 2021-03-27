@@ -36,20 +36,13 @@ MainWindow::MainWindow(QWidget *parent) :
     auto tabbar2 = ui->tabWidget_2->tabBar();
     tabbar2->tabButton(0,QTabBar::RightSide)->deleteLater();
     tabbar2->setTabButton(0, QTabBar::RightSide, 0);
-//    QDesktopWidget* widget = qApp->desktop();
 
     ///---Фиксирую размер окна
         showMaximized();
         int difference = this->frameGeometry().height() - this->geometry().height();
         int height = QApplication::desktop()->availableGeometry().height() - difference;
         this->setFixedSize( QApplication::desktop()->screenGeometry().width(), height);
-    ///---
-
-//    ui->tableView->selectRow(0);
-//    on_tableView_clicked();
-    //set_fonts();
-    add_splitter_lines();
-    //Settings_connection::instance();
+    ///
 
     this->size_list = ui->splitter->sizes();
     this->m_c_s = All_unchecked;
@@ -57,10 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tabWidget->setAttribute(Qt::WA_StyledBackground, true);
     ui->tabWidget_2->setAttribute(Qt::WA_StyledBackground, true);
-
-    set_label();
     set_tab_orders();
-    setTableConnections();
 }
 //-----------------------------------------------------------------------------------//
 MainWindow::~MainWindow()
@@ -158,7 +148,6 @@ void MainWindow::RefreshTab()
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_triggered()
 {
-
     Event *newEvent = new Event();
 
     editEvent *ee = new editEvent;
@@ -316,142 +305,6 @@ void MainWindow::on_action_search_triggered()
     }
 
     set_normal_width(sr->actual_size.width());
-}
-//-----------------------------------------------------------------------------------//
-void MainWindow::Search_result(QList<Crud*> *crudlist)
-{
-//    crud_model->setCrudlist(crudlist);
-//    ui->tableView->setModel(crud_model);
-//    Add_pagination_buttons();
-//    MainWindow::add_cancel_button();
-
-//    while(ui->hl_label_crud->count())
-//    {
-//        QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-//        delete item->widget();
-//    }
-
-//    QLabel *lb = new QLabel;
-//    QString str = "Найдено записей: "+QString::number(crudlist->size());
-//    lb->setText(str);
-//    ui->hl_label_crud->addWidget(lb);
-
-}
-//-----------------------------------------------------------------------------------//
-void MainWindow::on_pushButton_clicked()
-{
-//    if (ui->lineEdit->text() == QString(""))
-//    {
-//        RefreshTab();
-//    }
-//    else {
-//   ///Проверяю условие: если в результате поиска, полученная книга = переданному айди
-//        Crud *cr = Crud::id_zk_search(ui->lineEdit->text().toInt());
-//        if (cr == 0)
-//            QMessageBox::critical(this,QObject::tr("Внимание"),QObject::tr("По вашему запросу ничего не найдено!")); ///Ругаемся
-//        else
-//        {
-//            crud_model->setOneCrud(cr);
-//            ui->tableView->setModel(crud_model);
-//            ui->tabWidget->setCurrentIndex(0);
-
-//            ot_model->reset_OTModel();
-//            contacts_model->reset_ContactModel();
-
-//            while(ui->hl_label_contact->count())
-//            {
-//                QLayoutItem *item = ui->hl_label_contact->takeAt(0);
-//                delete item->widget();
-//            }
-
-//            while(ui->hl_label_owt->count())
-//            {
-//                QLayoutItem *item = ui->hl_label_owt->takeAt(0);
-//                delete item->widget();
-//            }
-
-//            MainWindow::add_cancel_button();
-//            while(ui->hl_label_crud->count())
-//            {
-//                QLayoutItem *item = ui->hl_label_crud->takeAt(0);
-//                delete item->widget();
-//            }
-
-//            QLabel *lb = new QLabel;
-//            QString str = "Найдено записей: "+QString::number(crud_model->actcrudlist.size());
-//            lb->setText(str);
-//            ui->hl_label_crud->addWidget(lb);
-//        }
-//    }
-}
-//-----------------------------------------------------------------------------------//
-void MainWindow::add_cancel_button()
-{
-    if (p_b_counter < 1)
-       {
-    pb_clear_search = new QPushButton;
-    pb_clear_search->setText("Сброс параметров поиска");
-    ui->vl_cancel_button->addWidget(pb_clear_search);
-
-    setTabOrder( ui->pushButton, pb_clear_search);
-    setTabOrder(pb_clear_search , ui->pb_refresh);
-
-    p_b_counter++;
-
-    connect(pb_clear_search, SIGNAL(clicked()), this ,SLOT(RefreshTab()));
-    }
-}
-//-----------------------------------------------------------------------------------//
-void MainWindow::open_upd_tab(Crud *cr)
-{
-//        if(updlist == 0)
-//        {
-//            updlist = new QList<Update*>;
-//        }
-
-//        for (int i=0; i<updlist->size(); i++)
-//        {
-//            if(updlist->at(i)->new_cr->zk_id == cr->zk_id)
-//            {
-//                ui->tabWidget->setCurrentIndex(i+1);
-//                return;
-//            }
-//        }
-
-//        Update *upd = new Update; //указатель на форму добавления
-//        upd->frm_t = Update_form;
-//        upd->imprt_t = Update_pg_data;
-
-//        //connect(this,SIGNAL(Send_data(Crud*, int)), updlist->at(updlist->size()-1), SLOT(Recieve_data(Crud*, int)));
-//        ///создание списка обусловлено работой класса листмастер
-//        /// он работает только со списками
-//        QList<Crud*> *crudlist = new QList<Crud*>;
-//        List_master *list = new List_master(Main_window_for_Update);
-//        list->set_counters();
-//        //Загрузка ВСЕХ данных выбранной ЗК
-//        list->fill_crud_list(crudlist,cr->zk_id, PSQLtype);
-//        //emit Send_data(crudlist->at(0), updlist->size()-1);
-
-//        if(crudlist->isEmpty())
-//        {
-//            QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Возможно выбранной записи нет в базе. Попробуйте обновить таблицы")); ///Хвалимся
-//            return;
-//        }
-
-//        updlist->append(upd);
-//        upd->Recieve_data(crudlist->at(0));
-//        upd->take_linked_zk(crudlist->at(0));
-//        connect (updlist->at(updlist->size()-1), SIGNAL (open_update_tab(Crud *)), this, SLOT(open_upd_tab(Crud *)));
-//        connect(updlist->at(updlist->size()-1), SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
-//        connect(updlist->at(updlist->size()-1), SIGNAL(open_confluence_upd(Crud*,Crud*,Crud*)), this, SLOT(open_confluence_form(Crud*,Crud*,Crud*)));
-//        ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,updlist->at(updlist->size()-1),"Редактировать ЗК № "+QString::number(updlist->at(updlist->size()-1)->new_cr->zk_id));
-//        ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
-//        upd->focus_on_widget();
-}
-//-----------------------------------------------------------------------------------//
-void MainWindow::set_validators()
-{
-//    ui->lineEdit->setValidator(new QIntValidator(crud_model->crudlist->first()->zk_id,crud_model->crudlist->last()->zk_id));
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_tabWidget_tabCloseRequested(int index)
@@ -626,7 +479,6 @@ void MainWindow::on_actionexport_triggered()
     if(exprt == 0)
     {
         exprt = new Master_export_Form;
-        exprt->add_file_path(file_path);
         ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,exprt,"Экспорт данных");
         ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
         connect(exprt,SIGNAL(rb_zk_clicked()),this, SLOT(on_action_search_triggered()));
@@ -640,72 +492,6 @@ void MainWindow::on_actionexport_triggered()
     set_normal_width(exprt->actual_size.width());
     exprt->focus_on_widget();
 
-}
-//-----------------------------------------------------------------------------------//
-void MainWindow::testing_export(QString filename, QString password, bool cb_off_tels, bool cb_set_password, bool cb_zk)
-{
-//    if( for_exprt == 0)
-//    {
-//        for_exprt = new For_export();
-
-//        if (filename.isEmpty())
-//        {
-//            QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Вы не указали путь!")); ///Хвалимся
-//            return;
-//        }
-
-//        QList<Crud*> *crud = new  QList<Crud*> ;
-//        QList<Off_tels*> *offtel = new QList<Off_tels*>;
-//        zk_links *links_for_export = new zk_links;
-//        QList<int> *exported_id = new QList<int>;
-//        for_exprt->list->set_counters();
-
-//        if(cb_zk)
-//            for (int i=0;i<crud_model->crudlist->size();i++) // пробегаюсь по отображаемому списку
-//            {
-//                if (crud_model->crudlist->at(i)->checkState_ == Checked)
-//                {
-//                    //form_exprt->exported_zk_id.append( crud_model->crudlist->at(i)->zk_id);
-//                    //form_exprt->list->fill_crud_list(crud, crud_model->crudlist->at(i)->zk_id, PSQLtype);
-//                    exported_id->append(crud_model->crudlist->at(i)->zk_id);
-//                }
-//            }
-//        else if (cb_off_tels)
-//            for_exprt->list->fill_off_tels(offtel,PSQLtype);
-
-//        if(!exported_id->isEmpty())
-//        {
-//            for (int i=0; i<exported_id->size();i++)
-//                for_exprt->list->fill_crud_list(crud, exported_id->at(i), PSQLtype);
-
-//            links_for_export->take_links(exported_id);
-//            delete exported_id;
-//        }
-
-
-//        if(!crud->isEmpty() || !offtel->isEmpty())
-//        {
-//            if( for_exprt->Do_export(filename, crud, password, cb_off_tels, cb_set_password, offtel, links_for_export))
-//            {
-//                if(!crud->isEmpty())
-//                    QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
-//                                                                                    " ЗК экспортировано: %2 .").arg(filename).arg(QString::number(crud->size()))); ///Хвалимся
-//                else
-//                    if(!offtel->isEmpty())
-//                    QMessageBox::information(exprt,QObject::tr("Успех"),QObject::tr("Отчет по результатам экспорта и данные сохранены в файл, расположенный по пути : %1 \r\n "
-//                                                                                    " Служебных телефонов экспортировано: %2 .").arg(filename).arg(QString::number(offtel->size()))); ///Хвалимся
-
-//            }
-//            else
-//                QMessageBox::critical(exprt,QObject::tr("Ошибка"),QObject::tr("Во время экспорта данных что-то пошло не так!")); ///Хвалимся
-//        }
-//        else {
-//            QMessageBox::warning(exprt,QObject::tr("Внимание"),QObject::tr("Экспорт не был выполнен, так как вы не выбрали данные!")); ///Хвалимся
-//        }
-//        for_exprt =0;
-//        delete offtel;
-//        delete crud;
-//    }
 }
 //-----------------------------------------------------------------------------------//
 void MainWindow::prepare_export(SimpleCrypt crypt, ExportType type, QString filePath){
@@ -761,7 +547,7 @@ void MainWindow::prepare_export(SimpleCrypt crypt, ExportType type, QString file
     QMessageBox::information(exprt,QObject::tr("Успех"), messageStart + exportedFilePath);
 
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::testing_opening(QString filename, QString password, bool folder, bool oldData)
 {
     auto importResults= this->for_import.openFile(filename, password, folder, oldData);
@@ -772,177 +558,6 @@ void MainWindow::testing_opening(QString filename, QString password, bool folder
         QMessageBox::warning(this,QObject::tr("Ошибка"),  importResults.message);
     this->RefreshTab();
 }
-
-//-----------------------------------------------------------------------------------//
-//void MainWindow::testing_opening(QString filename, QString password, bool folder, bool of_t)
-//{
-//    ///Класс для импорта
-//    Text_handler::instance()->clear_text();
-
-//    if(folder)
-//    {
-//        QDir direcotry(filename);
-//        QStringList filelist = direcotry.entryList(QStringList("*"), QDir::Files);
-//        Text_handler::instance()->set_mode(zk_report);
-//        foreach (QString file, filelist )
-//        {
-//            QString filename2 = filename;
-//            filename2 += "/" + file;
-//            Import_Form *import_form = new Import_Form; //необходим доступ для
-//            import_form->form_state = zk;
-//            connect(import_form,SIGNAL(Refresh_tab()),this,SLOT(RefreshTab()));
-
-//        Text_handler::instance()->set_zk_folder_line();
-//            if (import_form->Testing_open_db( filename2,password, of_t)) //Если есть совпадение, то
-//            {
-//                ///Идем сравнивать выгруженный в список дамп с БД
-//                /// Метод алгоритма сравнения и импорта
-//                if(import_form->begin_import())
-//                   {
-//                    //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
-
-//                    QDialog *d = new QDialog(this);
-//                    d->setWindowTitle("Мастер импорта");
-//                    QVBoxLayout *l = new QVBoxLayout(d);
-//                    QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-//                    dbb->button(QDialogButtonBox::Ok)->setVisible(false);
-//                    dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
-//                    l->addWidget(import_form);
-//                    l->addWidget(dbb);
-//                    d->showMaximized();
-//                    QSize sz = d->size();
-//                    d->setFixedSize(sz);
-//                    //передаю уровнем ниже указатель на кнопки
-//                    //для имитации accept и rejected
-//                    import_form->ddb = dbb;
-
-
-//                    connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
-//                    connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
-//                    switch (d->exec())
-//                    {
-//                    case QDialog::Rejected:
-//                        QMessageBox::critical(this,"Внимание","Импорт из папки был прерван");
-//                        delete l;
-//                        d->close();
-//                        delete d;
-//                        //delete import_form;
-//                        return;
-//                   case QDialog::Accepted:
-//                        //QMessageBox::information(this,"Успех","Импорт прошел успешно");
-//                        delete l;
-//                        d->close();
-//                        delete d;
-//                        //delete import_form;
-//                        continue;
-//                    }
-//               }
-//            }
-//        }
-//        An_result::import_report(Text_handler::instance()->get_text());
-//    RefreshTab();
-//    }
-//    else
-//    {
-//        Import_Form *import_form = new Import_Form; //необходим доступ для
-
-//        if (import_form->Testing_open_db( filename,password, of_t)) //Если есть совпадение, то
-//        {
-//            ///Идем сравнивать выгруженный в список дамп с БД
-//            /// Метод алгоритма сравнения и импорта
-//           if(!of_t)
-//           {
-//               import_form->form_state = zk;
-//               Text_handler::instance()->set_mode(zk_report);
-
-//               if(import_form->begin_import())
-//               {
-//                   //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
-
-//                   QDialog *d = new QDialog(this);
-//                   d->setWindowTitle("Мастер импорта");
-//                   QVBoxLayout *l = new QVBoxLayout(d);
-//                   QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-//                   dbb->button(QDialogButtonBox::Ok)->setVisible(false);
-//                   dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
-//                   l->addWidget(import_form);
-//                   l->addWidget(dbb);
-//                   d->showMaximized();
-//                   QSize sz = d->size();
-//                   d->setFixedSize(sz);
-//                   //передаю уровнем ниже указатель на кнопки
-//                   //для имитации accept и rejected
-//                   import_form->ddb = dbb;
-
-
-//                   connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
-//                   connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
-//                   switch (d->exec())
-//                   {
-//                   case QDialog::Rejected:
-//                       delete l;
-//                       d->close();
-//                       delete d;
-//                       return;
-//                   case QDialog::Accepted:
-//                       delete l;
-//                       d->close();
-//                       delete d;
-//                   }
-//               }
-
-//               An_result::import_report(Text_handler::instance()->get_text());
-//               RefreshTab();
-
-//           }
-//           else {
-//               import_form->form_state = official_tel;
-//               Text_handler::instance()->set_mode(off_report);
-//               if(import_form->begin_import_of_t())
-//               {
-//                   //ДИАЛОГ ДЛЯ ИМИТАЦИИ EXEC()
-
-//                   QDialog *d = new QDialog(this);
-//                   d->setWindowTitle("Мастер импорта");
-//                   QVBoxLayout *l = new QVBoxLayout(d);
-//                   QDialogButtonBox *dbb = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-//                   dbb->button(QDialogButtonBox::Ok)->setVisible(false);
-//                   dbb->button(QDialogButtonBox::Cancel)->setVisible(false);
-//                   l->addWidget(import_form);
-//                   l->addWidget(dbb);
-//                   d->showMaximized();
-//                   QSize sz = d->size();
-//                   d->setFixedSize(sz);
-//                   //передаю уровнем ниже указатель на кнопки
-//                   //для имитации accept и rejected
-//                   import_form->ddb = dbb;
-
-
-//                   connect(dbb, SIGNAL(accepted()), d, SLOT(accept()));
-//                   connect(dbb, SIGNAL(rejected()), d, SLOT(reject()));
-//                   switch (d->exec())
-//                   {
-//                   case QDialog::Rejected:
-//                       delete l;
-//                       RefreshTab();
-//                       d->close();
-//                       delete d;
-//                       return;
-//                   case QDialog::Accepted:
-//                       RefreshTab();
-//                       delete l;
-//                       d->close();
-//                       delete d;
-//                   }
-//               }
-//               An_result::import_report(Text_handler::instance()->get_text());
-//               RefreshTab();
-//           }
-//        }
-//    }
-//}
-
-
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_import_triggered()
 {
@@ -994,11 +609,6 @@ void MainWindow::previous_page()
 
        this->clearLabel();
        this->createLabel();
-
-//       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-//       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
-//       ui->tableView->selectionModel()->select(tempIndex, flags);
-//       ui->tableView->setFocus();
    }
 
 }
@@ -1007,34 +617,6 @@ void MainWindow::set_fonts()
 {
 
 }
-//-----------------------------------------------------------------------------------//
-void MainWindow::add_splitter_lines()
-{
-//    QSplitterHandle *handle = ui->splitter_3->handle(1);
-//    QVBoxLayout *layout = new QVBoxLayout(handle);
-//    layout->setSpacing(0);
-//    layout->setMargin(0);
-
-//    QFrame *line = new QFrame(handle);
-//    line->setFrameShape(QFrame::VLine);
-//    line->setFrameShadow(QFrame::Sunken);
-//    layout->addWidget(line);
-
-//    QSplitterHandle *handle_2 = ui->splitter_2->handle(1);
-//    QVBoxLayout *layout_2 = new QVBoxLayout(handle_2);
-//    layout_2->setSpacing(0);
-//    layout_2->setMargin(0);
-
-//    QFrame *line_2 = new QFrame(handle_2);
-//    line_2->setFrameShape(QFrame::HLine);
-//    line_2->setFrameShadow(QFrame::Sunken);
-//    layout_2->addWidget(line_2);
-}
-//-----------------------------------------------------------------------------------//
-void MainWindow::on_tabWidget_tabBarClicked(int index)
-{
-}
-
 //-----------------------------------------------------------------------------------//
 void MainWindow::on_action_add_1_triggered()
 {
@@ -1056,19 +638,6 @@ void MainWindow::on_action_5_show_triggered()
        ui->tabWidget->setCurrentIndex(0);
 }
 //-----------------------------------------------------------------------------------//
-void MainWindow::open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *added_cr)
-{
-        Update *upd = new Update;
-        upd->frm_t = Confluence_form;
-        upd->imprt_t = Update_pg_data;
-
-        connect(this,SIGNAL(Send_data(Crud*)), upd, SLOT(recieve_import_data(Crud*)));
-        connect(upd,SIGNAL(add_import_crud(Crud*)), this, SLOT(recieve_added_import_crud(Crud*)));
-        connect(upd, SIGNAL(Ready_for_update(int)), this, SLOT(ShowThisTab(int)));
-        upd->start_confluence(cnfl_cr, main_crud,added_cr);
-        upd->show();
-}
-//-----------------------------------------------------------------------------------//
 void MainWindow::set_normal_width(int size)
 {
     QList<int> size_list;
@@ -1076,7 +645,7 @@ void MainWindow::set_normal_width(int size)
     size_list.append(this->size().width() - size);
     ui->splitter->setSizes(size_list);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::header_clicked(int id)
 {
     if(id != 0)
@@ -1100,45 +669,44 @@ void MainWindow::header_clicked(int id)
         }
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_4_analysis_triggered()
 {
     on_action_analysis_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_6_triggered()
 {
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget_2->setCurrentIndex(0);
     ui->splitter->setSizes(size_list);
-
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_8_triggered()
 {
     on_action_search_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_9_triggered()
 {
     on_action_official_tel_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_10_triggered()
 {
     on_actionexport_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_12_triggered()
 {
     on_action_import_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_action_13_triggered()
 {
     on_action_Settings_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key())
@@ -1146,8 +714,6 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Enter:
             if(mainwindowFocus == FocusOnRight && this->eventTableIndex.isValid())
                 on_action_update_triggered();
-            else if(mainwindowFocus == FocusOnLeft)
-                on_pushButton_clicked();
             return;
 
          case Qt::Key_PageUp:
@@ -1170,59 +736,12 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
 
 }
-
-void MainWindow::find_linked_zk()
-{
-//    RefreshTab();
-//            while (zk_id > crud_model->actcrudlist.at(crud_model->actcrudlist.size()-1)->zk_id)
-//            {
-//                crud_model->next_page_crud();
-//                ui->tableView->setModel(crud_model);
-//                Add_pagination_buttons();
-//            }
-
-//            while (zk_id < crud_model->actcrudlist.at(0)->zk_id)
-//            {
-//                crud_model->previous_page_crud();
-//                ui->tableView->setModel(crud_model);
-//                Add_pagination_buttons();
-//            }
-
-//            for (int i = 0; i < crud_model->actcrudlist.size(); i++)
-//            {
-//                if(crud_model->actcrudlist.at(i)->zk_id == zk_id)
-//                {
-//                    zk_id = i;
-//                    break;
-//                }
-//            }
-
-//            index_tab1 = crud_model->index(zk_id,0);
-//            ui->tableView->setCurrentIndex(index_tab1);
-//            on_tableView_clicked(index_tab1, cont_num);
-//            //Delete
-//            if(ui->vl_for_search_contact->count())
-//            {
-//                QLayoutItem *item = ui->vl_for_search_contact->takeAt(0);
-//                delete item->widget();
-//            }
-//       QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-//       QModelIndex tempIndex = ui->tableView->model()->index(0, 0);
-//       ui->tableView->selectionModel()->select(tempIndex, flags);
-//       ui->tableView->setFocus();
-}
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_pb_refresh_clicked()
 {
     RefreshTab();
 }
-
-//void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
-//{
-////    index_tab1 = index;
-////    on_action_update_triggered();
-//}
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::openPopUp(){
     PopUp::instance()->setPopupText("<h2 align=\"middle\">Навигация в главном окне</h2>"
                                     "<p><b>\"CTRL\"+\"Q\" и \"CTRL\"+\"W\"</b> для переключения вкладок правого окна</p>"
@@ -1235,7 +754,7 @@ void MainWindow::openPopUp(){
                                     "<p><b>\"Z\"</b> для перемещения фокуса налево по горизонтали</p>"
                                     "<p><b>\"X\"</b> для перемещения фокуса направо по горизонтали</p>", leftMenu);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::set_shortcuts()
 {
     new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this, SLOT(next_tab()));
@@ -1246,17 +765,14 @@ void MainWindow::set_shortcuts()
     new QShortcut(QKeySequence(Qt::Key_F2), this, SLOT(on_action_update_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(on_action_add_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F4), this, SLOT(on_action_6_triggered()));
-    //new QShortcut(QKeySequence(Qt::Key_F5), this, SLOT());
-    ///???????????????????????????????????
     new QShortcut(QKeySequence(Qt::Key_F6), this, SLOT(on_action_analysis_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F7), this, SLOT(on_action_search_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F8), this, SLOT(on_action_delete_triggered()));
-    //new QShortcut(QKeySequence(Qt::Key_F9), this, SLOT(()));
     new QShortcut(QKeySequence(Qt::Key_F10), this, SLOT(on_actionexport_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(on_action_import_triggered()));
     new QShortcut(QKeySequence(Qt::Key_F12), this, SLOT(on_action_Settings_triggered()));
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::   next_tab()
 {
     ui->tabWidget->setCurrentIndex(ui->tabWidget->currentIndex() + 1);
@@ -1264,7 +780,7 @@ void MainWindow::   next_tab()
     QString widgetName = widget->objectName();
     setFocusOnTab(widgetName, widget);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::prev_tab()
 {
     ui->tabWidget->setCurrentIndex(ui->tabWidget->currentIndex() - 1);
@@ -1272,7 +788,7 @@ void MainWindow::prev_tab()
     QString widgetName = widget->objectName();
     setFocusOnTab(widgetName, widget);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::next_tab_tab2()
 {
     ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->currentIndex() + 1);
@@ -1280,7 +796,7 @@ void MainWindow::next_tab_tab2()
     QString widgetName = widget->objectName();
     setFocusOnTab(widgetName, widget);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::prev_tab_tab2()
 {
     ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->currentIndex() - 1);
@@ -1288,11 +804,7 @@ void MainWindow::prev_tab_tab2()
     QString widgetName = widget->objectName();
     setFocusOnTab(widgetName, widget);
 }
-
-void MainWindow::on_tabWidget_currentChanged(int index)
-{
-}
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::setFocusOnTab(QString widgetName, QWidget *widgetOnTab)
 {
     ///Ветвления от имени виджета
@@ -1312,11 +824,6 @@ void MainWindow::setFocusOnTab(QString widgetName, QWidget *widgetOnTab)
     {
         mainwindowFocus = FocusOnRight;
         QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-//        QModelIndex tempIndex =
-//                ui->tableView->model()->index( ui->tableView->currentIndex().row(),
-//                                               ui->tableView->currentIndex().column());
-//        ui->tableView->selectionModel()->select(tempIndex, flags);
-//        ui->tableView->setFocus();
         return;
     }
     else if(widgetName =="Analysis")
@@ -1352,14 +859,7 @@ void MainWindow::setFocusOnTab(QString widgetName, QWidget *widgetOnTab)
         return;
     }
 }
-
-void MainWindow::set_label()
-{
-//    QLabel *lb = new QLabel("<p><b>(CTRL+Q) и (CTRL+W)</b> для переключения вкладок правого окна</p>"
-//                            "<p><b>(CTRL+S) и (CTRL+D)</b> для преключения вкладок левого окна</p>");
-    //    ui->vl_shortcut_info->addWidget(lb);
-}
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::set_tab_orders()
 {
     ui->pb_hided->setFocusProxy(ui->lineEdit);
@@ -1369,67 +869,7 @@ void MainWindow::set_tab_orders()
     setTabOrder( ui->pb_refresh, ui->pb_hided);
 
 }
-
-void MainWindow::focusOnOT()
-{
-//    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-//    QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
-//    ui->tableView_2->selectionModel()->select(tempIndex, flags);
-//    ui->tableView_2->setFocus();
-}
-void MainWindow::focusOnZK()
-{
-//    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-//    ui->tableView->selectionModel()->select(this->index_tab1, flags);
-//    ui->tableView->setFocus();
-}
-
-
-void MainWindow::setTableConnections()
-{
-//    connect (ui->tableView, SIGNAL(openUpdateForm(QModelIndex)), this,
-//             SLOT(on_tableView_doubleClicked(const QModelIndex)));
-//    connect (ui->tableView, SIGNAL(nextPage()), this, SLOT(next_page()));
-//    connect (ui->tableView, SIGNAL(previousPage()), this, SLOT(previous_page()));
-//    connect (ui->tableView, SIGNAL(getOt(QModelIndex)), this, SLOT(getOt(QModelIndex)));
-
-//    connect(ui->tableView_2, SIGNAL(backOnZk()), this, SLOT(focusOnZK()));
-//    connect(ui->tableView_2, SIGNAL(getCont(QModelIndex)), this, SLOT(getCont(QModelIndex)));
-
-//    connect(ui->tableView_3, SIGNAL(backOnOt()), this, SLOT(focusOnOT()));
-//    connect(ui->tableView_3, SIGNAL(getVar2Zk()), this, SLOT(find_linked_zk()));
-//    connect(ui->tableView_3, SIGNAL(clickOnContact(QModelIndex)), this, SLOT(on_tableView_3_clicked(QModelIndex)));
-
-//    connect(ui->tableView, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
-//    connect(ui->tableView_2, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
-//    connect(ui->tableView_3, SIGNAL( f1Pressed() ), this, SLOT( openPopUp()));
-}
-
-void MainWindow::getOt(QModelIndex index)
-{
-//    on_tableView_clicked(index, 0);
-//    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-//    QModelIndex tempIndex = ui->tableView_2->model()->index(0, 0);
-//    ui->tableView_2->selectionModel()->select(tempIndex, flags);
-//    ui->tableView_2->setFocus();
-}
-
-void MainWindow::getCont(QModelIndex index)
-{
-//    on_tableView_2_clicked(index);
-//    ui->tableView_3->setFocus();
-//     if(ui->tableView_3->currentIndex().row() != -1)
-//     {
-//         QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows;
-//         QModelIndex tempIndex = ui->tableView_3->model()->index(0, 0);
-//         ui->tableView_3->selectionModel()->select(tempIndex, flags);
-//         ui->tableView_3->setFocus();
-//         on_tableView_3_clicked(ui->tableView_3->currentIndex());
-//     }
-//     else
-//         ui->tableView_2->setFocus();
-}
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_eventTable_clicked(const QModelIndex &index)
 {
     this->eventTableIndex = index;
@@ -1441,10 +881,9 @@ void MainWindow::on_eventTable_clicked(const QModelIndex &index)
         card->setPerson(localEvent->persons()->at(i));
         ui->cardsLayout->addWidget(card);
         connect(card, SIGNAL(openEditWindow(Person*)), this, SLOT(openEditPersonWindow(Person*)));
-
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::openEditPersonWindow(Person *p)
 {
 
@@ -1469,7 +908,7 @@ void MainWindow::openEditPersonWindow(Person *p)
                               "Редактирование фигуранта "+p->name + " "+ p->lastname + " " + p->midname);
     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::openAddPersonWindow(Person *p, editEvent *ee)
 {
     EditPerson *ep = new EditPerson;
@@ -1486,7 +925,7 @@ void MainWindow::openAddPersonWindow(Person *p, editEvent *ee)
                               "Добавление нового фигуранта для дела "+ee->localEvent->id);
     ui->tabWidget->setCurrentIndex(ui->tabWidget->count()-1);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::personIsAdded(EditPerson *ep)
 {
     editEvent *ee = Util::instance()->getManagerParent(ep);
@@ -1498,7 +937,7 @@ void MainWindow::personIsAdded(EditPerson *ep)
     QString widgetName = widget->objectName();
     this->setFocusOnTab(widgetName, widget);
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::closePersonEdit(EditPerson *ep)
 {
     if(Util::instance()->editPersonList() != 0){
@@ -1514,13 +953,13 @@ void MainWindow::closePersonEdit(EditPerson *ep)
         }
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::on_eventTable_doubleClicked(const QModelIndex &index)
 {
     this->eventTableIndex = index;
     this->on_action_update_triggered();
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::closeEditEvent(editEvent *ee)
 {
     if(Util::instance()->editEventList() != 0){
@@ -1542,7 +981,7 @@ void MainWindow::closeEditEvent(editEvent *ee)
         }
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::searchedResults(QList<QString> searchedIds)
 {
     QLabel *lb = new QLabel;
@@ -1561,7 +1000,7 @@ void MainWindow::searchedResults(QList<QString> searchedIds)
         ui->eventTable->setModel(eventModel);
     }
 }
-
+//-----------------------------------------------------------------------------------//
 void MainWindow::cancelSearchResults()
 {
     auto size = ui->searched_data_layout->count();

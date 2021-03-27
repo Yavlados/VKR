@@ -2,6 +2,8 @@
 #include "ui_an_result.h"
 #include <QTextCodec>
 
+/// REFACTORED
+
 An_result::An_result(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::An_result)

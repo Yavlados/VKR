@@ -12,10 +12,6 @@
 #include "db_connection.h"
 #include "list_master.h" //При редактировании подгружаю круд целиком
 
-#include "_MTM_Contacts.h"
-#include "_MTM_Crud.h"
-#include "_MTM_OwTel.h"
-
 #include "officialtelephones_Form.h"
 #include "for_export.h" // ->_Crud.h->_Owners_tel.h->_Contacts.h->db_connection
 #include "Import_Form.h"
@@ -97,29 +93,20 @@ public:
     QList<Update*> *updlist = 0;
     QList<Update*> *addlist = 0;
 
-     MTM_Contacts *contacts_model = new MTM_Contacts;
-     MTM_OwTel *ot_model = new MTM_OwTel;
-     MTM_Crud *crud_model = 0;
      MTM_Event *eventModel;
-
-     int zk_id = 0;
-     QString cont_num = 0;
 
     ///Указатель на класс для экспорта
     For_export for_exprt;
     For_import for_import;
 
-    ///Указатель на индекс первой таблицы
-    QModelIndex eventTableIndex;
-
     ///Счетчик для кнопки
     int p_b_counter = 0;
 
+    ///Указатель на индекс первой таблицы
+    QModelIndex eventTableIndex;
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-    QString file_path = 0;
 
 public slots:
 
@@ -129,8 +116,6 @@ private:
     QList<int> size_list;
     QPushButton *p_b_forward = 0;
     QPushButton *p_b_back = 0;
-    QPushButton *pb_clear_search = 0;
-    QPushButton *pbGetZkVar2 = 0;
 
     void setFocusOnTab(QString widgetName , QWidget *widgetOnTab);
     focusOnMain mainwindowFocus = FocusOnLeft;
@@ -143,13 +128,6 @@ private slots:
      * \ref settings_Form.h
      */
     void Add_pagination_buttons();
-
-    void focusOnOT();
-    void focusOnZK();
-
-//    void on_tableView_clicked(const QModelIndex &index_tab1, QString num = 0);
-
-//    void on_tableView_2_clicked(const QModelIndex &index);
 
     void ShowThisTab(int);
 
@@ -165,28 +143,13 @@ private slots:
 
     void on_action_search_triggered();
 
-    void Search_result(QList<Crud*> *crudlist);
-
-    void on_pushButton_clicked();
-
-    void add_cancel_button();
-
-    void open_upd_tab(Crud *cr);
-
-    void set_validators();
-
     void on_tabWidget_tabCloseRequested(int index);
 
     void on_action_official_tel_triggered();
 
     void on_actionexport_triggered();
 
-    void testing_export(QString, QString, bool, bool, bool);
-
     void prepare_export(SimpleCrypt crypt, ExportType type, QString filePath);
-
-    /// DEPRECATED
-//    void testing_opening(QString, QString, bool, bool of_t);
 
     void testing_opening(QString filename, QString password, bool folder, bool oldData);
 
@@ -200,10 +163,6 @@ private slots:
 
     void set_fonts();
 
-    void add_splitter_lines();
-
-    void on_tabWidget_tabBarClicked(int index);
-
     void on_tabWidget_2_tabCloseRequested(int index);
 
     void on_action_add_1_triggered();
@@ -213,8 +172,6 @@ private slots:
     void on_action_3_del_triggered();
 
     void on_action_5_show_triggered();
-
-    void open_confluence_form(Crud *cnfl_cr, Crud *main_crud, Crud *added_cr);
 
     void set_normal_width(int size);
 
@@ -236,13 +193,7 @@ private slots:
 
     void keyPressEvent(QKeyEvent *event);
 
-//    void on_tableView_3_clicked(const QModelIndex &index);
-
-    void find_linked_zk();
-
     void on_pb_refresh_clicked();
-
-//    void on_tableView_doubleClicked(const QModelIndex &index);
 
     void set_shortcuts();
 
@@ -254,17 +205,7 @@ private slots:
 
     void prev_tab_tab2();
 
-    void on_tabWidget_currentChanged(int index);
-    //NEW
-    void set_label();//инфо о шорткатах
-
     void set_tab_orders();
-
-    void setTableConnections();
-
-    void getOt(QModelIndex index);
-
-    void getCont(QModelIndex index);
 
     void openPopUp();
 
@@ -277,7 +218,6 @@ private slots:
     void openEditPersonWindow(Person *p);
     void openAddPersonWindow(Person *p, editEvent *ee);
     void personIsAdded(EditPerson *ep);
-
     void closePersonEdit(EditPerson*);
     void on_eventTable_doubleClicked(const QModelIndex &index);
     void closeEditEvent(editEvent*);
@@ -287,8 +227,6 @@ private slots:
     void clearLabel();
     void createLabel();
 signals:
-    void Send_data(Crud *cr, int index);
-
     void Set_validators_an();
 
     void Fill_table_of();
