@@ -2,7 +2,6 @@
 
 For_analysis::For_analysis()
 {
-    list = new List_master(Analysis);
     this->v1Result = 0;
     this->v2Result = 0;
     this->v3Result = 0;

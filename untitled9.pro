@@ -42,6 +42,7 @@ SOURCES += \
     New_db_model/_Person.cpp \
     New_db_model/_Telephone.cpp \
     Singletons/Util.cpp \
+    Table_CPP/_Off_tels.cpp \
     custom_date_edit.cpp \
     editEvent.cpp \
     Utility/for_import.cpp \
@@ -49,28 +50,18 @@ SOURCES += \
         main.cpp \
     Utility/for_analysis.cpp \
     db_connection.cpp \
-    Table_CPP/_Contacts.cpp \
-    Table_CPP/_Crud.cpp \
-    Table_CPP/_Owners_tel.cpp \
-    Table_CPP/_Zk_links.cpp \
     Form_CPP/an_result_Form.cpp \
     Form_CPP/analysis_Form.cpp \
     Form_CPP/mainwindow_Form.cpp \
     Form_CPP/search_Form.cpp \
     Form_CPP/officialtelephones_Form.cpp \
-    Model_CPP/_MTM_Contacts.cpp \
-    Model_CPP/_MTM_Crud.cpp \
-    Model_CPP/_MTM_OwTel.cpp \
     Form_CPP/master_export_Form.cpp \
     Utility/for_export.cpp \
-    Table_CPP/_Off_tels.cpp \
     Model_CPP/_MTM_Off_tels.cpp \
     Form_CPP/Import_Form.cpp \
-    list_master.cpp \
     Form_CPP/master_import_Form.cpp \
     Form_CPP/settings_Form.cpp \
     settings_connection.cpp \
-    table_line_delegate.cpp \
     olddbservice.cpp \
     dialog_conflict.cpp \
     table_show_delegate.cpp \
@@ -100,30 +91,21 @@ HEADERS += \
     db_connection.h \
     editEvent.h \
     Utility/for_analysis.h \
-    Table_Headers/_Contacts.h \
-    Table_Headers/_Owners_tel.h \
-    Table_Headers/_Crud.h \
     Table_Headers/_Off_tels.h \
-    Table_Headers/_Zk_links.h \
     Form_Headers/an_result_Form.h \
     Form_Headers/analysis_Form.h \
     Form_Headers/mainwindow_Form.h \
     Form_Headers/search_Form.h \
     Form_Headers/officialtelephones_Form.h \
-    Model_Headers/_MTM_Contacts.h \
-    Model_Headers/_MTM_Crud.h \
-    Model_Headers/_MTM_OwTel.h \
     Form_Headers/master_export_Form.h \
     Utility/for_export.h \
     Model_Headers/_MTM_Off_tels.h \
     Form_Headers/Import_Form.h \
     Utility/for_import.h \
     Utility/for_search.h \
-    list_master.h \
     Form_Headers/master_import_Form.h \
     Form_Headers/settings_Form.h \
     settings_connection.h \
-    table_line_delegate.h \
     olddbservice.h \
     dialog_conflict.h \
     table_show_delegate.h \

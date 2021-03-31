@@ -36,38 +36,38 @@ void Text_handler::clear_text()
     counter = 1;
 }
 
-void Text_handler::set_save_import_text(Crud *cr_imp, Crud *cr_pg)
-{
-     report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
-             " импортирована, #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
-             " удалена из базы\r\n";
-}
+//void Text_handler::set_save_import_text(Crud *cr_imp, Crud *cr_pg)
+//{
+//     report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
+//             " импортирована, #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
+//             " удалена из базы\r\n";
+//}
 
-void Text_handler::set_save_main_text(Crud *cr_imp, Crud *cr_pg)
-{
-    report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
-            " отброшена, #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
-            " оставлена в базе\r\n";
-}
+//void Text_handler::set_save_main_text(Crud *cr_imp, Crud *cr_pg)
+//{
+//    report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
+//            " отброшена, #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
+//            " оставлена в базе\r\n";
+//}
 
-void Text_handler::set_skip_All_text(Crud *cr_imp)
-{
-    report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
-            " отброшена \r\n";
-}
+//void Text_handler::set_skip_All_text(Crud *cr_imp)
+//{
+//    report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
+//            " отброшена \r\n";
+//}
 
-void Text_handler::set_make_link_text(Crud *cr_imp, Crud *cr_pg)
-{
-    report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
-            " связана с #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
-            "\r\n";
-}
+//void Text_handler::set_make_link_text(Crud *cr_imp, Crud *cr_pg)
+//{
+//    report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
+//            " связана с #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
+//            "\r\n";
+//}
 
-void Text_handler::set_successful_add_text(Crud *cr_imp)
-{
-    report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
-            " успешно добавлена \r\n";
-}
+//void Text_handler::set_successful_add_text(Crud *cr_imp)
+//{
+//    report_text += "#"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
+//            " успешно добавлена \r\n";
+//}
 
 void Text_handler::set_successful_add_text(Off_tels *off_t)
 {
@@ -93,10 +93,10 @@ void Text_handler::set_off_t_add_import(Off_tels *off_t)
             " успешно добавлен \r\n";
 }
 
-void Text_handler::set_merge_text(Crud *cr_imp, Crud *cr_pg)
-{
-    report_text += "СЛИЯНИЕ #"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
-            "(основная) с #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
-            "\r\n";
-}
+//void Text_handler::set_merge_text(Crud *cr_imp, Crud *cr_pg)
+//{
+//    report_text += "СЛИЯНИЕ #"+QString::number(cr_imp->zk_id)+" - "+cr_imp->lastname+" "+cr_imp->name+" "+cr_imp->mid_name+
+//            "(основная) с #"+QString::number(cr_pg->zk_id)+" - "+cr_pg->lastname+" "+cr_pg->name+" "+cr_pg->mid_name+
+//            "\r\n";
+//}
 

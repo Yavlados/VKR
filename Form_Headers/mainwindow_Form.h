@@ -9,12 +9,9 @@
 #include "settings_Form.h"
 
 #include "db_connection.h"
-#include "list_master.h" //При редактировании подгружаю круд целиком
-
 #include "officialtelephones_Form.h"
 #include "for_export.h" // ->_Crud.h->_Owners_tel.h->_Contacts.h->db_connection
 #include "Import_Form.h"
-#include "_Zk_links.h"
 #include "text_handler.h"
 #include "an_result_Form.h"
 

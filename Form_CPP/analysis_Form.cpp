@@ -4,7 +4,6 @@
 #include <QDebug>
 #include "an_result_Form.h"
 #include <QValidator>
-#include  "_Crud.h"
 #include "search.h"
 #include "popup.h"
 

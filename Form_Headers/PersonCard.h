@@ -24,7 +24,6 @@ public:
 signals:
     void openEditWindow(Person*);
     void removePerson(Person *);
-//    void close
 
 private slots:
     void on_editButton_clicked();

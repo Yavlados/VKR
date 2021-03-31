@@ -42,7 +42,6 @@ void editEvent::updateCardsLayout()
     this->clearLayout(ui->cardsLayout);
     for ( int i =0; i < this->localEvent->persons()->size(); i++){
         Person *p = this->localEvent->persons()->at(i);
-        qDebug() << p->state;
 
         if(p->state != IsRemoved){
             PersonCard *card = new PersonCard();

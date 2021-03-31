@@ -2,8 +2,6 @@
 #define FOR_ANALYSIS_H
 
 #include "db_connection.h"
-#include "list_master.h"
-
 #include <QSqlQueryModel>
 #include <QSqlQuery>
 #include <QDebug>
@@ -32,9 +30,6 @@ public:
     QMessageBox msgbx;
 
     QVector<int> match_counter;
-
-    List_master *list;
-
     QSqlQueryModel *model = new QSqlQueryModel();
     void ClearAll();
 

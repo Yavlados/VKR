@@ -1,7 +1,5 @@
 #include "search_Form.h"
 #include "ui_search.h"
-#include "_Crud.h"
-#include "list_master.h"
 #include <QRegExpValidator>
 #include "popup.h"
 
