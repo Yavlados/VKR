@@ -45,10 +45,10 @@ SOURCES += \
     New_db_model/_Off_tels.cpp \
     Custom/custom_date_edit.cpp \
     Forms/editEvent.cpp \
-    Utility/for_import.cpp \
-    Utility/for_search.cpp \
+    Utils/for_import.cpp \
+    Utils/for_search.cpp \
         main.cpp \
-    Utility/for_analysis.cpp \
+    Utils/for_analysis.cpp \
     Singletons/db_connection.cpp \
     Forms/an_result_Form.cpp \
     Forms/analysis_Form.cpp \
@@ -56,18 +56,18 @@ SOURCES += \
     Forms/search_Form.cpp \
     Forms/officialtelephones_Form.cpp \
     Forms/master_export_Form.cpp \
-    Utility/for_export.cpp \
+    Utils/for_export.cpp \
     New_db_MTM/_MTM_Off_tels.cpp \
     Forms/Import_Form.cpp \
     Forms/master_import_Form.cpp \
     Forms/settings_Form.cpp \
     Singletons/settings_connection.cpp \
-    Utility/olddbservice.cpp \
+    Utils/olddbservice.cpp \
     Forms/dialog_conflict.cpp \
     Custom/table_show_delegate.cpp \
     Forms/component.cpp \
     Forms/dialog_settings.cpp \
-    Utility/text_handler.cpp \
+    Utils/text_handler.cpp \
     Forms/date_form.cpp \
     Custom/customtableview.cpp \
     Singletons/popup.cpp
@@ -84,12 +84,12 @@ HEADERS += \
     New_db_model/_Event.h \
     New_db_model/_Person.h \
     New_db_model/_Telephone.h \
-    New_db_model/enums.h \
+    Utils/enums.h \
     Singletons/Util.h \
     Custom/custom_date_edit.h \
     Singletons/db_connection.h \
     Forms/editEvent.h \
-    Utility/for_analysis.h \
+    Utils/for_analysis.h \
     New_db_model/_Off_tels.h \
     Forms/an_result_Form.h \
     Forms/analysis_Form.h \
@@ -97,20 +97,20 @@ HEADERS += \
     Forms/search_Form.h \
     Forms/officialtelephones_Form.h \
     Forms/master_export_Form.h \
-    Utility/for_export.h \
+    Utils/for_export.h \
     New_db_MTM/_MTM_Off_tels.h \
     Forms/Import_Form.h \
-    Utility/for_import.h \
-    Utility/for_search.h \
+    Utils/for_import.h \
+    Utils/for_search.h \
     Forms/master_import_Form.h \
     Forms/settings_Form.h \
     Singletons/settings_connection.h \
-    Utility/olddbservice.h \
+    Utils/olddbservice.h \
     Forms/dialog_conflict.h \
     Custom/table_show_delegate.h \
     Forms/component.h \
     Forms/dialog_settings.h \
-    Utility/text_handler.h \
+    Utils/text_handler.h \
     Forms/date_form.h \
     Custom/customtableview.h \
     Singletons/popup.h
@@ -150,4 +150,4 @@ INCLUDEPATH += $$PWD\
                New_db_model/Analysis_models\
                Encrypt\
                Custom\
-               Utility\
+               Utils\

@@ -4,6 +4,8 @@
 #include <QCheckBox>
 #include <QItemDelegate>
 
+/// UNUSED
+
 class Table_show_delegate: public QItemDelegate       ///Класс делегата CheckBox
 {
     Q_OBJECT

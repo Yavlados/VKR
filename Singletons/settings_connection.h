@@ -11,34 +11,34 @@ struct Columns      ///Структура для колонок
 
 struct Col_contents //последние настройки - подкачка
 {
-    bool zk_id;
-    bool lastname;
-    bool name;
-    bool mid_name;
-    bool birth_date;
-    bool check_for;
-    bool dop_info;
+//    bool zk_id;
+//    bool lastname;
+//    bool name;
+//    bool mid_name;
+//    bool birth_date;
+//    bool check_for;
+//    bool dop_info;
 
-    //Адрес регистрации
-    bool reg_city;
-    bool reg_street;
-    bool reg_home;
-    bool reg_corp;
-    bool reg_flat;
+//    //Адрес регистрации
+//    bool reg_city;
+//    bool reg_street;
+//    bool reg_home;
+//    bool reg_corp;
+//    bool reg_flat;
 
-    //Адрес проживания
-    bool liv_city;
-    bool liv_street;
-    bool liv_home;
-    bool liv_corp;
-    bool liv_flat;
+//    //Адрес проживания
+//    bool liv_city;
+//    bool liv_street;
+//    bool liv_home;
+//    bool liv_corp;
+//    bool liv_flat;
 
-    //Дата и время сейчас
-    bool date_add;
-    bool time_add;
+//    //Дата и время сейчас
+//    bool date_add;
+//    bool time_add;
 
     // new
-    bool nickname;
+//    bool nickname;
 
     Col_contents();
 };

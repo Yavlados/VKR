@@ -1,7 +1,6 @@
 #include "mainwindow_Form.h"
 #include "ui_mainwindow.h"
 #include "db_connection.h"
-#include "table_show_delegate.h"
 #include "popup.h"
 
 #include <QGuiApplication>

@@ -77,246 +77,246 @@ void Dialog_settings::on_pushButton_clicked()
     settings->sync();
     settings->endArray();
     settings->beginWriteArray("COLUMNS_ARRAY");
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ZK_ID"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.zk_id = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.zk_id = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LASTNAME"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.lastname = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.lastname = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("NAME"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.name = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.name = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("MID_NAME"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.mid_name = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.mid_name = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("BIRTH_DATE"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.birth_date = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.birth_date = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ADD_DATE"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.date_add = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.date_add = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ADD_TIME"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.time_add = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.time_add = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("CHECK_FOR"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.check_for = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.check_for = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("DOP_INFO"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.dop_info = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.dop_info = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_CITY"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.liv_city = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.liv_city = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_STREET"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.liv_street = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.liv_street = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_HOME"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.liv_home = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.liv_home = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_CORP"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.liv_corp = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.liv_corp = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_FLAT"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.liv_flat = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.liv_flat = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_CITY"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.reg_city = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.reg_city = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_STREET"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.reg_street = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.reg_street = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_HOME"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.reg_home = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.reg_home = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_CORP"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.reg_corp = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.reg_corp = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_FLAT"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.reg_flat = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.reg_flat = false;
-    }
-    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("NICKNAME"))
-    {
-        if(cb->isChecked())
-        {
-            settings->setArrayIndex(i);
-            settings->setValue("ColumnName",cb->objectName());
-            settings->setValue("ColumnIndex", i);
-            Settings_connection::instance()->instance()->content.nickname = true;
-            i++;
-        }else
-            Settings_connection::instance()->instance()->content.nickname = false;
-    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ZK_ID"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.zk_id = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.zk_id = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("LASTNAME"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.lastname = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.lastname = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("NAME"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.name = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.name = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("MID_NAME"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.mid_name = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.mid_name = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("BIRTH_DATE"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.birth_date = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.birth_date = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ADD_DATE"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.date_add = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.date_add = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("ADD_TIME"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.time_add = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.time_add = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("CHECK_FOR"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.check_for = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.check_for = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("DOP_INFO"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.dop_info = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.dop_info = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_CITY"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.liv_city = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.liv_city = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_STREET"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.liv_street = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.liv_street = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_HOME"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.liv_home = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.liv_home = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_CORP"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.liv_corp = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.liv_corp = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_3->findChildren<QCheckBox*>("LIV_FLAT"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.liv_flat = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.liv_flat = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_CITY"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.reg_city = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.reg_city = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_STREET"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.reg_street = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.reg_street = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_HOME"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.reg_home = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.reg_home = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_CORP"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.reg_corp = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.reg_corp = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox_4->findChildren<QCheckBox*>("REG_FLAT"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.reg_flat = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.reg_flat = false;
+//    }
+//    foreach (QCheckBox *cb , ui->groupBox->findChildren<QCheckBox*>("NICKNAME"))
+//    {
+//        if(cb->isChecked())
+//        {
+//            settings->setArrayIndex(i);
+//            settings->setValue("ColumnName",cb->objectName());
+//            settings->setValue("ColumnIndex", i);
+//            Settings_connection::instance()->instance()->content.nickname = true;
+//            i++;
+//        }else
+//            Settings_connection::instance()->instance()->content.nickname = false;
+//    }
 
    settings->endArray();
    settings->beginGroup("PAGE_COUNT");
