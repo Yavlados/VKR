@@ -30,9 +30,9 @@ win32:RC_ICONS += png/MainPic.ico
 # CONFIG += release
 
 SOURCES += \
-    EditPerson.cpp \
+    Forms/EditPerson.cpp \
     Encrypt/simplecrypt.cpp \
-    Form_Headers/PersonCard.cpp \
+    Forms/PersonCard.cpp \
     New_db_MTM/_MTM_Contact.cpp \
     New_db_MTM/_MTM_Event.cpp \
     New_db_MTM/_MTM_Telephone.cpp \
@@ -42,40 +42,40 @@ SOURCES += \
     New_db_model/_Person.cpp \
     New_db_model/_Telephone.cpp \
     Singletons/Util.cpp \
-    Table_CPP/_Off_tels.cpp \
-    custom_date_edit.cpp \
-    editEvent.cpp \
+    New_db_model/_Off_tels.cpp \
+    Custom/custom_date_edit.cpp \
+    Forms/editEvent.cpp \
     Utility/for_import.cpp \
     Utility/for_search.cpp \
         main.cpp \
     Utility/for_analysis.cpp \
-    db_connection.cpp \
-    Form_CPP/an_result_Form.cpp \
-    Form_CPP/analysis_Form.cpp \
-    Form_CPP/mainwindow_Form.cpp \
-    Form_CPP/search_Form.cpp \
-    Form_CPP/officialtelephones_Form.cpp \
-    Form_CPP/master_export_Form.cpp \
+    Singletons/db_connection.cpp \
+    Forms/an_result_Form.cpp \
+    Forms/analysis_Form.cpp \
+    Forms/mainwindow_Form.cpp \
+    Forms/search_Form.cpp \
+    Forms/officialtelephones_Form.cpp \
+    Forms/master_export_Form.cpp \
     Utility/for_export.cpp \
-    Model_CPP/_MTM_Off_tels.cpp \
-    Form_CPP/Import_Form.cpp \
-    Form_CPP/master_import_Form.cpp \
-    Form_CPP/settings_Form.cpp \
-    settings_connection.cpp \
-    olddbservice.cpp \
-    dialog_conflict.cpp \
-    table_show_delegate.cpp \
-    component.cpp \
-    dialog_settings.cpp \
-    text_handler.cpp \
-    date_form.cpp \
-    customtableview.cpp \
-    popup.cpp
+    New_db_MTM/_MTM_Off_tels.cpp \
+    Forms/Import_Form.cpp \
+    Forms/master_import_Form.cpp \
+    Forms/settings_Form.cpp \
+    Singletons/settings_connection.cpp \
+    Utility/olddbservice.cpp \
+    Forms/dialog_conflict.cpp \
+    Custom/table_show_delegate.cpp \
+    Forms/component.cpp \
+    Forms/dialog_settings.cpp \
+    Utility/text_handler.cpp \
+    Forms/date_form.cpp \
+    Custom/customtableview.cpp \
+    Singletons/popup.cpp
 
 HEADERS += \
-    EditPerson.h \
+    Forms/EditPerson.h \
     Encrypt/simplecrypt.h \
-    Form_Headers/PersonCard.h \
+    Forms/PersonCard.h \
     New_db_MTM/_MTM_Contact.h \
     New_db_MTM/_MTM_Event.h \
     New_db_MTM/_MTM_Telephone.h \
@@ -86,39 +86,38 @@ HEADERS += \
     New_db_model/_Telephone.h \
     New_db_model/enums.h \
     Singletons/Util.h \
-    Singletons/index.h \
-    custom_date_edit.h \
-    db_connection.h \
-    editEvent.h \
+    Custom/custom_date_edit.h \
+    Singletons/db_connection.h \
+    Forms/editEvent.h \
     Utility/for_analysis.h \
-    Table_Headers/_Off_tels.h \
-    Form_Headers/an_result_Form.h \
-    Form_Headers/analysis_Form.h \
-    Form_Headers/mainwindow_Form.h \
-    Form_Headers/search_Form.h \
-    Form_Headers/officialtelephones_Form.h \
-    Form_Headers/master_export_Form.h \
+    New_db_model/_Off_tels.h \
+    Forms/an_result_Form.h \
+    Forms/analysis_Form.h \
+    Forms/mainwindow_Form.h \
+    Forms/search_Form.h \
+    Forms/officialtelephones_Form.h \
+    Forms/master_export_Form.h \
     Utility/for_export.h \
-    Model_Headers/_MTM_Off_tels.h \
-    Form_Headers/Import_Form.h \
+    New_db_MTM/_MTM_Off_tels.h \
+    Forms/Import_Form.h \
     Utility/for_import.h \
     Utility/for_search.h \
-    Form_Headers/master_import_Form.h \
-    Form_Headers/settings_Form.h \
-    settings_connection.h \
-    olddbservice.h \
-    dialog_conflict.h \
-    table_show_delegate.h \
-    component.h \
-    dialog_settings.h \
-    text_handler.h \
-    date_form.h \
-    customtableview.h \
-    popup.h
+    Forms/master_import_Form.h \
+    Forms/settings_Form.h \
+    Singletons/settings_connection.h \
+    Utility/olddbservice.h \
+    Forms/dialog_conflict.h \
+    Custom/table_show_delegate.h \
+    Forms/component.h \
+    Forms/dialog_settings.h \
+    Utility/text_handler.h \
+    Forms/date_form.h \
+    Custom/customtableview.h \
+    Singletons/popup.h
 
 FORMS += \
     EditPerson.ui \
-    Form_Headers/PersonCard.ui \
+    PersonCard.ui \
     editEvent.ui \
         mainwindow.ui \
     analysis.ui \
@@ -144,16 +143,11 @@ RESOURCES += \
     resource.qrc
 
 INCLUDEPATH += $$PWD\
-               Table_CPP\
-               Form_CPP\
-               Model_CPP\
-               Table_Headers\
-               Form_Headers\
-               Model_Headers\
+               Forms\
                New_db_model\
                New_db_MTM\
                Singletons\
                New_db_model/Analysis_models\
                Encrypt\
-               misc\
+               Custom\
                Utility\

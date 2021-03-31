@@ -260,7 +260,6 @@ void MainWindow::on_action_search_triggered()
          sr = new Search;
          ui->tabWidget_2->insertTab( ui->tabWidget_2->count()+1 ,sr,"Расширенный поиск");
          ui->tabWidget_2->setCurrentIndex(ui->tabWidget_2->count()-1);
-         connect(sr, SIGNAL(Show_search_result(QList<Crud*>*)),this, SLOT(Search_result(QList<Crud*>*)));
          connect(sr,SIGNAL(Cancel_search()),this, SLOT(cancelSearchResults()));
          connect(sr, SIGNAL(closeThis(QString)), this, SLOT(findIndexByNameTab2(QString)));
          connect(sr, SIGNAL(showSearchedEvents(QList<QString>)), this, SLOT(searchedResults(QList<QString>)));
