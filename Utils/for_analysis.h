@@ -30,7 +30,7 @@ public:
     QMessageBox msgbx;
 
     QVector<int> match_counter;
-    QSqlQueryModel *model = new QSqlQueryModel();
+    QSqlQueryModel *model;
     void ClearAll();
 
 

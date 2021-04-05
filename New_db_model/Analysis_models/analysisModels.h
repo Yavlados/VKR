@@ -3,6 +3,7 @@
 #include <QString>
 #include <QList>
 #include <QVector>
+#include <QMap>
 
 struct Analysis_ContactData{
     QString from_contact;

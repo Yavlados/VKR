@@ -110,7 +110,7 @@ void editEvent::closeWidget()
 void editEvent::setPersonToRemove(Person *pers)
 {
     for(int a = 0; a<this->localEvent->persons()->size(); a++ ){
-        auto person = this->localEvent->persons()->at(a);
+        Person *person = this->localEvent->persons()->at(a);
         if(person->id == pers->id){
             person->state = IsRemoved;
             this->updateCardsLayout();

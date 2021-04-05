@@ -116,7 +116,7 @@ editEvent *Util::getManagerParent(EditPerson *ep)
 AddEventManager *Util::getEventManager(editEvent *ee)
 {
     for (int a =0; a < this->addEventManager()->size(); a++) {
-        auto aem = this->addEventManager()->at(a);
+        AddEventManager *aem = this->addEventManager()->at(a);
         if(aem->parent->localEvent->id == ee->localEvent->id)
             return aem;
     }
@@ -125,9 +125,9 @@ AddEventManager *Util::getEventManager(editEvent *ee)
 void Util::unlinkEditPersonFromEditEvent(EditPerson *ep)
 {
     for (int a = 0; a< this->addEventManager()->size(); a++) {
-        auto aem = this->addEventManager()->at(a);
+         AddEventManager *aem = this->addEventManager()->at(a);
         for(int b = 0; b<aem->childs->size(); b++){
-            auto pe = aem->childs->at(b);
+            EditPerson *pe = aem->childs->at(b);
             if(pe->editablePerson->id == ep->editablePerson->id){
                 aem->childs->removeAt(b);
                 return;
@@ -143,7 +143,7 @@ QString Util::convertKey(QString key)
     // text key to num convertation
     for (int a =0; a < key.size(); a++) {
            QChar ch = key[a];
-           auto un = ch.unicode();
+           ushort un = ch.unicode();
            convertedKey += QString::number(un);
     }
     return convertedKey;

@@ -5,6 +5,7 @@ For_analysis::For_analysis()
     this->v1Result = 0;
     this->v2Result = 0;
     this->v3Result = 0;
+    this->model = new QSqlQueryModel();
 }
 
 void For_analysis::ClearAll()
@@ -385,7 +386,7 @@ void For_analysis::short_tel_analysis(int eventId)
     this->analysis_res +="\t КРАТКАЯ СПРАВКА ПРИВЯЗКА К ТЕЛЕФОНАМ СОБЫТИЕ #"+QString::number(eventId)+" \r\n";
      for(int i=0; i<this->analysisResult.keys().size(); i++ ){
          QString key = this->analysisResult.keys().at(i);
-         auto metaData = key.split(';');
+         QStringList metaData = key.split(';');
          QList<Analysis_general> list = this->analysisResult[key];
          this->analysis_res +=  "\r\nНомер телефона " +metaData.at(0)+", принадлежащий владельцу записной книжки " +
                  metaData.at(1) + "обнаружен в ";
@@ -477,7 +478,7 @@ void For_analysis::long_tel_analysis(int eventId)
     this->analysis_res +="\t ПОЛНАЯ СПРАВКА ПРИВЯЗКА К НОМЕРАМ СОБЫТИЕ #"+QString::number(eventId)+" ";
      for(int i =0; i<this->analysisResultFull.keys().size(); i++){
          QString key = this->analysisResultFull.keys().at(i);
-         auto metaData = key.split(';');
+         QStringList metaData = key.split(';');
          this->analysis_res += "\r\n\r\nНомер телефона "+metaData.at(0) +", в записной книжке, владельцем которой является  "+
                  metaData.at(1) + ", обнаружен среди записей: ";
 

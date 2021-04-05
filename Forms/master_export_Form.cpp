@@ -84,7 +84,7 @@ void Master_export_Form::on_pb_Export_clicked()
     else
          key = "12345";
     SimpleCrypt crypt(key.toLongLong());
-    auto exportType = this->getExportType();
+    ExportType exportType = this->getExportType();
 
     emit prepareExport(crypt, exportType, ui->le_file_path->text());
 }

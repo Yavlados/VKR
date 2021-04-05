@@ -3,7 +3,6 @@
 #include "db_connection.h"
 #include "popup.h"
 
-#include <QGuiApplication>
 #include <QDesktopWidget>
 #include <QRect>
 #include <QSqlDatabase>
@@ -11,6 +10,7 @@
 #include <QKeyEvent>
 #include <QDialogButtonBox>
 #include <QShortcut>
+#include <QTabBar>
 
 #include "settings_connection.h"
 /**
@@ -28,14 +28,24 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tableView->setFocus();
     set_shortcuts();
 
-    RefreshTab();
-    auto tabbar = ui->tabWidget->tabBar();
-    tabbar->tabButton(0,QTabBar::RightSide)->deleteLater();
-    tabbar->setTabButton(0, QTabBar::RightSide, 0);
+    this->sr = 0;
+    this->exprt = 0;
+    this->imprt = 0;
+    this->of = 0;
+    this->an = 0;
+    this->p_b_counter = 0;
+    this->p_b_forward = 0;
+    this->p_b_back = 0;
+    this->mainwindowFocus = FocusOnLeft;
 
-    auto tabbar2 = ui->tabWidget_2->tabBar();
-    tabbar2->tabButton(0,QTabBar::RightSide)->deleteLater();
-    tabbar2->setTabButton(0, QTabBar::RightSide, 0);
+    RefreshTab();
+//    QTabBar *tabbar = ui->tabWidget->tabBar();
+//    tabbar->tabButton(0,QTabBar::RightSide)->deleteLater();
+//    tabbar->setTabButton(0, QTabBar::RightSide, 0);
+
+//    QTabBar *tabbar2 = ui->tabWidget_2->tabBar();
+//    tabbar2->tabButton(0,QTabBar::RightSide)->deleteLater();
+//    tabbar2->setTabButton(0, QTabBar::RightSide, 0);
 
     ///---Фиксирую размер окна
         showMaximized();
@@ -152,8 +162,8 @@ void MainWindow::on_action_delete_triggered()
                     AddEventManager* aem =  Util::instance()->addEventManager()->at(a);
                     if(aem->parent->localEvent->id == selectedEvent->id){
                         for(int i=0; i<ui->tabWidget->count(); i++){
-                            auto tab = ui->tabWidget->widget(i);
-                            auto tabName = tab->objectName();
+                            QWidget *tab = ui->tabWidget->widget(i);
+                            QString tabName = tab->objectName();
 
                             if(tabName=="editEvent"){
                                 editEvent *localEE = dynamic_cast<editEvent*>(tab);
@@ -457,7 +467,7 @@ void MainWindow::prepare_export(SimpleCrypt crypt, ExportType type, QString file
 //-----------------------------------------------------------------------------------//
 void MainWindow::testing_opening(QString filename, QString password, bool folder, bool oldData)
 {
-    auto importResults= this->for_import.openFile(filename, password, folder, oldData);
+    importResult importResults= this->for_import.openFile(filename, password, folder, oldData);
 
     if(importResults.state == success)
         QMessageBox::information(this,QObject::tr("Успех"), importResults.message);
@@ -787,7 +797,6 @@ void MainWindow::on_eventTable_clicked(const QModelIndex &index)
 //-----------------------------------------------------------------------------------//
 void MainWindow::openEditPersonWindow(Person *p)
 {
-    auto UtilState = Util::instance();
     for (int i=0; i < Util::instance()->editPersonList()->size(); i++)
     {
         if(Util::instance()->editPersonList()->at(i)->person->id == p->id)
@@ -841,8 +850,6 @@ void MainWindow::personIsAdded(EditPerson *ep)
 //-----------------------------------------------------------------------------------//
 void MainWindow::closePersonEdit(EditPerson *ep)
 {
-//    QString eventIdInTab =  ep->editablePerson->id;
-    auto utilState = Util::instance();
     int i = 0;
     QString personIdInTab =  ep->person->id;
     while( i< Util::instance()->editPersonList()->size()){
@@ -888,7 +895,7 @@ void MainWindow::closeEditEvent(editEvent *ee)
 {
     if(Util::instance()->editEventList() != 0){
         // removing all linked editPerson tabs
-        auto aem = Util::instance()->getEventManager(ee);
+        AddEventManager *aem = Util::instance()->getEventManager(ee);
         if(aem != 0)
             this->closeLinkedEditPersons(aem->childs);
 
@@ -946,7 +953,7 @@ void MainWindow::searchedResults(QList<QString> searchedIds)
 //-----------------------------------------------------------------------------------//
 void MainWindow::cancelSearchResults()
 {
-    auto size = ui->searched_data_layout->count();
+    int size = ui->searched_data_layout->count();
     for (int a = 0; a< size; a++) {
         QLayoutItem *item = ui->searched_data_layout->takeAt(0);
         delete item->widget();

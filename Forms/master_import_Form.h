@@ -25,8 +25,8 @@ public:
     ~Master_import_form();
 
     QSize actual_size;
-    bool folder = false;
-    bool oldData = false;
+    bool folder;
+    bool oldData;
 
     void keyPressEvent(QKeyEvent *event);
     void set_tab_orders();
@@ -39,7 +39,7 @@ private slots:
 
 private:
     Ui::Master_import_form *ui;
-   QString file_path = 0;
+   QString file_path;
 signals:
     void TESTING_open(QString filename, QString password, bool folder, bool of_t);
     void closeThis(QString);

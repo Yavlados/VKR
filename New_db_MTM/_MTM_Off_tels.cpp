@@ -3,7 +3,8 @@
 MTM_Off_Tels::MTM_Off_Tels(QObject *parent):
        QAbstractTableModel(parent)
 {
-    offlist = 0;
+    this->offlist = 0;
+    this->state = Edit_mode;
 }
 
 int MTM_Off_Tels::columnCount(const QModelIndex &parent) const

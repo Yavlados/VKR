@@ -8,6 +8,8 @@ OfficialTelephones::OfficialTelephones(QWidget *parent) :
     ui(new Ui::OfficialTelephones)
 {
     ui->setupUi(this);
+    this->of_model = 0;
+    this->ofTlist = 0;
 }
 
 OfficialTelephones::~OfficialTelephones()

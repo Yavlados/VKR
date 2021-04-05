@@ -13,7 +13,7 @@ importResult For_import::openFile(QString filepath, QString password, bool isFol
     } else if(oldData){
         if(isFolder) return this->importOldFromFolder(filepath);
         else{
-            auto res = this->importOld(filepath);
+            oldDbImportResult res = this->importOld(filepath);
             if(res.extractedEvent == 0) return res.result;
             if(!Event::createEvent(res.extractedEvent)){
                 res.result.state = uploadFileError;
@@ -26,7 +26,7 @@ importResult For_import::openFile(QString filepath, QString password, bool isFol
 
 QString For_import::decodeFileContent(QString fileContent, QString password)
 {
-   auto encodedPass = Util::instance()->convertKey(password);
+   QString encodedPass = Util::instance()->convertKey(password);
    SimpleCrypt crypt(encodedPass.toLongLong());
    return crypt.decryptToString(fileContent);
 }
@@ -35,7 +35,7 @@ ExportType For_import::getDataType(QString fileContent)
 {
     QXmlStreamReader reader(fileContent);
     while(!reader.atEnd() && !reader.hasError()){
-        auto token = reader.readNext();
+        QXmlStreamReader::TokenType token = reader.readNext();
         if (token == QXmlStreamReader::StartDocument)
             continue;
         if (token == QXmlStreamReader::StartElement){
@@ -56,7 +56,7 @@ bool For_import::getEventsList(QString fileContent)
 
     QXmlStreamReader reader(fileContent);
     while(!reader.atEnd() && !reader.hasError()){
-        auto token = reader.readNext();
+        QXmlStreamReader::TokenType token = reader.readNext();
         if (token == QXmlStreamReader::StartDocument)
             continue;
         if (token == QXmlStreamReader::StartElement){
@@ -66,9 +66,9 @@ bool For_import::getEventsList(QString fileContent)
 
            if( reader.name() == "event"){
                 Event *e = new Event();
-                auto attributes = reader.attributes();
+                QXmlStreamAttributes attributes = reader.attributes();
                 for(int a=0; a < attributes.size(); a++){
-                    auto attr = attributes.at(a);
+                    QXmlStreamAttribute attr = attributes.at(a);
                     this->setEventFields(e, attr.name().toString(), attr.value().toString());
                     }
                 this->eventsList->append(e);
@@ -78,35 +78,35 @@ bool For_import::getEventsList(QString fileContent)
            }
            else if( reader.name() == "person"){
                Person *p = new Person();
-               auto attributes = reader.attributes();
+               QXmlStreamAttributes attributes = reader.attributes();
                for(int a=0; a < attributes.size(); a++){
-                   auto attr = attributes.at(a);
+                   QXmlStreamAttribute attr = attributes.at(a);
                    this->setPersonFields(p, attr.name().toString(), attr.value().toString());
                    }
-               auto currentEvent = this->eventsList->at(counter.eventIndex);
+               Event *currentEvent = this->eventsList->at(counter.eventIndex);
                currentEvent->persons()->append(p);
                counter.personIndex = currentEvent->persons()->length()-1;
                counter.telephoneIndex = 0;
            }
            else if( reader.name() == "telephone"){
                Telephone *t = new Telephone();
-               auto attributes = reader.attributes();
+               QXmlStreamAttributes attributes = reader.attributes();
                for(int a=0; a < attributes.size(); a++){
-                   auto attr = attributes.at(a);
+                   QXmlStreamAttribute attr = attributes.at(a);
                    this->setTelephoneFields(t, attr.name().toString(), attr.value().toString());
                    }
-               auto currentPerson = this->eventsList->at(counter.eventIndex)->persons()->at(counter.personIndex);
+               Person *currentPerson = this->eventsList->at(counter.eventIndex)->persons()->at(counter.personIndex);
                currentPerson->telephones()->append(t);
                counter.telephoneIndex = currentPerson->telephones()->length()-1;
            }
            else if( reader.name() == "contact"){
                Contact *c = new Contact();
-               auto attributes = reader.attributes();
+               QXmlStreamAttributes attributes = reader.attributes();
                for(int a=0; a < attributes.size(); a++){
-                   auto attr = attributes.at(a);
+                   QXmlStreamAttribute attr = attributes.at(a);
                    this->setContactFields(c, attr.name().toString(), attr.value().toString());
                    }
-               auto currentTelephone = this->eventsList->at(counter.eventIndex)->persons()->at(counter.personIndex)->telephones()->at(counter.telephoneIndex);
+               Telephone *currentTelephone = this->eventsList->at(counter.eventIndex)->persons()->at(counter.personIndex)->telephones()->at(counter.telephoneIndex);
                currentTelephone->cont()->append(c);
            }
         }
@@ -122,7 +122,7 @@ bool For_import::getOfficialsList(QString fileContent)
 
         QXmlStreamReader reader(fileContent);
         while(!reader.atEnd() && !reader.hasError()){
-            auto token = reader.readNext();
+            QXmlStreamReader::TokenType token = reader.readNext();
             if (token == QXmlStreamReader::StartDocument)
                 continue;
             if (token == QXmlStreamReader::StartElement){
@@ -131,9 +131,9 @@ bool For_import::getOfficialsList(QString fileContent)
                 }
                 if(reader.name()== "official_telephone"){
                     Off_tels *of = new Off_tels();
-                    auto attributes = reader.attributes();
+                    QXmlStreamAttributes attributes = reader.attributes();
                     for(int a=0; a < attributes.size(); a++){
-                        auto attr = attributes.at(a);
+                        QXmlStreamAttribute attr = attributes.at(a);
                         this->setOfficialFields(of, attr.name().toString(), attr.value().toString());
                         }
                     this->official_telephonesList->append(of);
@@ -226,7 +226,7 @@ bool For_import::uploadEvents()
 {
     bool flag = true;
      for(int a=0; a<this->eventsList->size(); a++){
-        auto ev = this->eventsList->at(a);
+        Event *ev = this->eventsList->at(a);
         flag = Event::createEvent(ev);
         if(!flag) return flag;
      }
@@ -237,7 +237,7 @@ bool For_import::uploadOfficials()
 {
     bool flag = true;
      for(int a=0; a<this->official_telephonesList->size(); a++){
-        auto of = this->official_telephonesList->at(a);
+        Off_tels *of = this->official_telephonesList->at(a);
         flag = Off_tels::add_off_tel(of);
         if(!flag) return flag;
      }
@@ -340,11 +340,11 @@ importResult For_import::importOldFromFolder(QString filepath)
 
     foreach (QString file, filelist )
     {
-        auto result = this->importOld(filepath+"/"+file);
+        oldDbImportResult result = this->importOld(filepath+"/"+file);
         list.append(result);
     }
     for (int a = 0; a<list.size(); a++) {
-        auto res = list.at(a);
+        oldDbImportResult res = list.at(a);
         if(res.extractedEvent != 0) {
             if(!Event::createEvent(res.extractedEvent)){
                 res.result.state = uploadFileError;
@@ -359,7 +359,7 @@ importResult For_import::importOldFromFolder(QString filepath)
 
 oldDbImportResult For_import::importOld(QString filepath)
 {
-    auto importMeta = this->readOldZk(filepath);
+    oldDbImportResult importMeta = this->readOldZk(filepath);
     importMeta.result.filepath = filepath;
     return importMeta;
 }
@@ -445,7 +445,7 @@ Event* For_import::convertOldEventToNew(OldDbZk *zk)
     this->handleOldTelephone( p->telephones(), zk->person.tel5);
 
     if(p->telephones()->size() > 0){
-        auto telephone = p->telephones()->at(0);
+        Telephone *telephone = p->telephones()->at(0);
         for (int a =0; a<zk->contacts.size(); a++) {
             this->handleOldTelephone(telephone->cont(), zk->contacts.at(a));
         }

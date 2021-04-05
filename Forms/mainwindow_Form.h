@@ -71,11 +71,11 @@ class MainWindow : public QMainWindow ///Форма главного окна
     Q_OBJECT
 
 public:
-    Search *sr = 0;                 //форма поиска
-    Master_export_Form *exprt = 0;  //форма экспорта
-    Master_import_form *imprt = 0;  //форма импорта
-    OfficialTelephones *of = 0;     //форма служебных телефонов
-    class Analysis *an = 0;         //форма анализа
+    Search *sr;                 //форма поиска
+    Master_export_Form  *exprt;  //форма экспорта
+    Master_import_form  *imprt;  //форма импорта
+    OfficialTelephones *of;     //форма служебных телефонов
+    class Analysis *an;         //форма анализа
 
     ///Атрибут класса MessageBox
     /**
@@ -93,7 +93,7 @@ public:
     For_import for_import;
 
     ///Счетчик для кнопки
-    int p_b_counter = 0;
+    int p_b_counter;
 
     ///Указатель на индекс первой таблицы
     QModelIndex eventTableIndex;
@@ -107,11 +107,11 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QList<int> size_list;
-    QPushButton *p_b_forward = 0;
-    QPushButton *p_b_back = 0;
+    QPushButton *p_b_forward;
+    QPushButton *p_b_back;
 
     void setFocusOnTab(QString widgetName , QWidget *widgetOnTab);
-    focusOnMain mainwindowFocus = FocusOnLeft;
+    focusOnMain mainwindowFocus;
 
 private slots:
     ///Добавление кнопок пагинации

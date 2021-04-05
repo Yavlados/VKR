@@ -12,6 +12,9 @@ Master_import_form::Master_import_form(QWidget *parent) :
     ui->le_password_2->setEchoMode(QLineEdit::Password);
     this->actual_size = this->size();
     this->setTabOrder(ui->le_file_path_2, ui->le_password_2);
+    this->folder = false;
+    this->oldData = false;
+    this->file_path = "";
 }
 
 Master_import_form::~Master_import_form()

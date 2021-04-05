@@ -74,7 +74,7 @@ void Search::on_pb_search_clicked()
         }
         else{
             // created copy of searched ids
-            auto searchedIds = sd->searchedIds;
+            QList<QString> searchedIds = sd->searchedIds;
 
             msg.setText("По введенным условиям поиска найдено " + QString::number(sd->searchedIds.length()) +" записей");
             msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
@@ -188,7 +188,7 @@ void Search::on_pushButton_clicked()
 {
     foreach(QLineEdit *l, this->findChildren<QLineEdit*>())
     {
-        auto name = l->objectName();
+        QString name = l->objectName();
         if(name.startsWith("lineEdit"))
             l->clear();
     }
@@ -224,10 +224,10 @@ void Search::serializeFields(For_search *fs)
     if(this->detentionTimeState)
         fs->event_detention_time = ui->timeEdit_detention_time->time().toString("hh:mm");
     if(this->detentionDateState)
-        fs->event_detention_date= ui->dateEdit_detention_date->date().toString(Qt::DateFormat::ISODate);
+        fs->event_detention_date= ui->dateEdit_detention_date->date().toString(Qt::ISODate);
     if(this->detentionIntervalState){
-        fs->event_detention_from = ui->dateEdit_detention_date_from->date().toString(Qt::DateFormat::ISODate);
-        fs->event_detention_to = ui->dateEdit_detention_date_to->date().toString(Qt::DateFormat::ISODate); ;
+        fs->event_detention_from = ui->dateEdit_detention_date_from->date().toString(Qt::ISODate);
+        fs->event_detention_to = ui->dateEdit_detention_date_to->date().toString(Qt::ISODate); ;
     }
 
     fs->person_name = Util::instance()->modifyForSearch(ui->lineEdit_name->text().toLower());

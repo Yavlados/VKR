@@ -23,9 +23,9 @@ public:
     explicit OfficialTelephones(QWidget *parent = 0);
     ~OfficialTelephones();
 
-    MTM_Off_Tels *of_model = 0;
+    MTM_Off_Tels     *of_model;
 
-    QList<Off_tels*> *ofTlist = 0;
+    QList<Off_tels*> *ofTlist;
 
     void set_tab_orders();
 

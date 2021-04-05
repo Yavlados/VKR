@@ -12,25 +12,25 @@ QString For_export::exportEvents(QList<Event*> *eventsList, SimpleCrypt crypt, E
     stream.writeStartElement("Events");
     for (int a = 0; a < eventsList->size(); a++) {
         Event *ev = eventsList->at(a);
-        auto eventAttribs = this->getEventAttributes(ev);
+        QXmlStreamAttributes eventAttribs = this->getEventAttributes(ev);
         stream.writeStartElement("event");
             stream.writeAttributes(eventAttribs);
 
             for (int b =0; b<ev->persons()->size(); b++) {
                 Person  *per = ev->persons()->at(b);
-                auto personAttribs = this->getPersonAttributes(per);
+                QXmlStreamAttributes personAttribs = this->getPersonAttributes(per);
 
                 stream.writeStartElement("person");
                 stream.writeAttributes(personAttribs);
                 for (int c=0; c<per->telephones()->size(); c++) {
                     Telephone *tel = per->telephones()->at(c);
-                    auto telAttribs = this->getTelephoneAttributes(tel);
+                    QXmlStreamAttributes telAttribs = this->getTelephoneAttributes(tel);
 
                     stream.writeStartElement("telephone");
                     stream.writeAttributes(telAttribs);
                     for (int d=0; d<tel->cont()->size(); d++) {
                          Contact *cont = tel->cont()->at(d);
-                         auto contAttribs = this->getContactAttributes(cont);
+                         QXmlStreamAttributes contAttribs = this->getContactAttributes(cont);
 
                          stream.writeStartElement("contact");
                          stream.writeAttributes(contAttribs);
@@ -89,7 +89,7 @@ QString For_export::exportOfficial(QList<Off_tels *> *officials, SimpleCrypt cry
 QString For_export::changeFileExtension(ExportType type, QString filePath)
 {
     QString newExtension;
-    auto pathList = filePath.split(".");
+    QStringList pathList = filePath.split(".");
     switch(type){
     case events:
         newExtension = "nbd";
@@ -105,7 +105,7 @@ QString For_export::changeFileExtension(ExportType type, QString filePath)
         break;
     }
     pathList[pathList.size()-1] = newExtension;
-    auto path = pathList.join(".");
+    QString path = pathList.join(".");
     return path;
 }
 

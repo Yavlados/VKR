@@ -48,7 +48,7 @@ public:
     QList<Off_tels*> actofflist;  ///<  отображаемый список
 
 private:
-    offt_m_state state = Edit_mode;
+    offt_m_state state ;
 };
 
 #endif // _MTM_OFF_TELS_H

@@ -489,8 +489,8 @@ bool Analysis::isToGreaterFrom(QString from, QString to)
 {
     if(from == "" || to == "") return true;
 
-    auto fromDate = this->decomposeDate(from);
-    auto toDate = this->decomposeDate(to);
+    QMap<QString,int> fromDate = this->decomposeDate(from);
+    QMap<QString,int> toDate = this->decomposeDate(to);
 
     bool dayGreater = toDate["day"] >= fromDate["day"];
     bool dayEqual = toDate["day"] == fromDate["day"];
@@ -521,7 +521,7 @@ bool Analysis::isToGreaterFrom(QString from, QString to)
 QMap<QString, int> Analysis::decomposeDate(QString date)
 {
     QMap<QString, int> result;
-    auto dateList = date.split('-');
+    QStringList dateList = date.split('-');
     result["year"] = dateList[0].toInt();
     result["month"] = dateList[1].toInt();
     result["day"] = dateList[2].toInt();
