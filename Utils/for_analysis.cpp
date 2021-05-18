@@ -396,7 +396,7 @@ void For_analysis::short_tel_analysis(int eventId)
                      this->analysis_res += " записной книжке: \r\n \r\n";
           for(int a=0; a<list.size();a++){
               Analysis_general res = list.at(a);
-              this->analysis_res += "\t #"+ res.to_event_id + " сформированной " + res.to_event_detention_date + " " + res.to_event_detention_time+
+              this->analysis_res += "\t СОБЫТИЕ#"+ res.to_event_id + " сформированной " + res.to_event_detention_date + " " + res.to_event_detention_time+
                       " в отношении: "+ res.to_lastname + " " + res.to_name + " " + res.to_midname + ", по окраске: ???, в интересах "+
                       res.to_event_keeping_place;
               if(res.to_event_keeping_additional != "")
@@ -421,7 +421,7 @@ void For_analysis::long_face_analysis(int eventId)
             for(int a=0; a<var1List.size();a++){
                 Analysis_general res = var1List.at(a);
 
-                this->analysis_res += " \r\n \t ЗК#"+res.to_event_id +" "  + " Номер телефона"+
+                this->analysis_res += " \r\n \t СОБЫТИЕ#"+res.to_event_id +" "  + " Номер телефона"+
                         res.from_telephone + " ";
                 if( res.from_telephone_oldnum || res.from_telephone_internum ){
                     this->analysis_res += "(";
@@ -448,7 +448,7 @@ void For_analysis::long_face_analysis(int eventId)
             this->analysis_res += "\r\n 2 ВАРИАНТ: ";
             for(int a=0; a<var2List.size();a++){
               Analysis_general res = var2List.at(a);
-              this->analysis_res += " \r\n \t ЗК#" + res.to_event_id +" телефонный номер " +
+              this->analysis_res += " \r\n \t СОБЫТИЕ#" + res.to_event_id +" телефонный номер " +
                       "списка контактов "+
                       res.from_contact +", с пометкой " + res.from_contact_alias + " в записной книжке, "+
                       "владельцем которой является " + fio + " обнаружен, как "+
@@ -462,7 +462,7 @@ void For_analysis::long_face_analysis(int eventId)
             this->analysis_res += "\r\n 3 ВАРИАНТ: ";
             for(int a=0; a<var3List.size();a++){
                 Analysis_general res = var3List.at(a);
-                this->analysis_res += " \r\n \t ЗК#"+res.to_event_id;
+                this->analysis_res += " \r\n \t СОБЫТИЕ#"+res.to_event_id;
                 this->analysis_res += " Номер телефона "+ res.to_contact + " с пометкой "
                         + res.from_contact_alias +", обнаруженный в списке контактов "
                         + fio + " был также обнаружен в списке контактов с пометкой "+
@@ -489,7 +489,7 @@ void For_analysis::long_tel_analysis(int eventId)
              for(int a=0; a<var1List.size();a++){
                  Analysis_general res = var1List.at(a);
 
-                 this->analysis_res += " \r\n \t ЗК#"+res.to_event_id +" "  + "Номер телефона"+
+                 this->analysis_res += " \r\n \t СОБЫТИЕ#"+res.to_event_id +" "  + "Номер телефона"+
                          res.from_telephone + " ";
                  if( res.from_telephone_oldnum || res.from_telephone_internum ){
                      this->analysis_res += "(";
@@ -516,7 +516,7 @@ void For_analysis::long_tel_analysis(int eventId)
              this->analysis_res += "\r\n 2 ВАРИАНТ: ";
              for(int a=0; a<var2List.size();a++){
                Analysis_general res = var2List.at(a);
-               this->analysis_res += " \r\n \t ЗК#" + res.to_event_id +" телефонный номер " +
+               this->analysis_res += " \r\n \t СОБЫТИЕ#" + res.to_event_id +" телефонный номер " +
                        "списка контактов "+
                        res.from_contact +", с пометкой " + res.from_contact_alias + " в записной книжке, "+
                        "владельцем которой является " + metaData.at(1) + " обнаружен, как "+
@@ -530,7 +530,7 @@ void For_analysis::long_tel_analysis(int eventId)
              this->analysis_res += "\r\n 3 ВАРИАНТ: ";
              for(int a=0; a<var3List.size();a++){
                  Analysis_general res = var3List.at(a);
-                 this->analysis_res += " \r\n \t ЗК#"+res.to_event_id;
+                 this->analysis_res += " \r\n \t СОБЫТИЕ#"+res.to_event_id;
                  this->analysis_res += " Номер телефона "+ res.to_contact + " с пометкой "
                          + res.from_contact_alias +", обнаруженный в списке контактов "
                          + metaData.at(1) + " был также обнаружен в списке контактов с пометкой "+
