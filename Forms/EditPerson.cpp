@@ -36,7 +36,6 @@ void EditPerson::setPerson(Person *person)
     this->person = person;
     this->editablePerson = person;
     this->fillFields();
-
 }
 
 EditPerson::~EditPerson()
@@ -415,6 +414,26 @@ void EditPerson::fillFields()
     ui->le_mid_name->setText(this->editablePerson->midname);
     ui->le_last_name->setText(this->editablePerson->lastname);
 
+    //Address
+    ui->le_liv_country->setText(this->editablePerson->country.liv);
+    ui->le_reg_country->setText(this->editablePerson->country.reg);
+
+    ui->le_liv_city->setText(this->editablePerson->city.liv);
+    ui->le_reg_city->setText(this->editablePerson->city.reg);
+
+    ui->le_liv_street->setText(this->editablePerson->street.liv);
+    ui->le_reg_street->setText(this->editablePerson->street.reg);
+
+
+    ui->le_liv_house->setText(this->editablePerson->house.liv);
+    ui->le_reg_house->setText(this->editablePerson->house.reg);
+
+    ui->le_liv_corp->setText(this->editablePerson->corp.liv);
+    ui->le_reg_corp->setText(this->editablePerson->corp.reg);
+
+    ui->le_liv_flat->setText(this->editablePerson->flat.liv);
+    ui->le_reg_flat->setText(this->editablePerson->flat.reg);
+
     if(     this->state == updatePerson &&
             this->editablePerson->telephones()->isEmpty()){
         Telephone::selectTelephone(this->editablePerson->telephones(), this->editablePerson->id);
@@ -457,6 +476,28 @@ void EditPerson::on_pb_save_clicked()
     this->editablePerson->alias = ui->le_alias->text();
     this->editablePerson->midname = ui->le_mid_name->text();
     this->editablePerson->lastname = ui->le_last_name->text();
+
+    // Address
+    this->editablePerson->country.liv = ui->le_liv_country->text();
+    this->editablePerson->country.reg = ui->le_reg_country->text();
+
+    this->editablePerson->city.liv = ui->le_liv_city->text();
+    this->editablePerson->city.reg = ui->le_reg_city->text();
+
+    this->editablePerson->street.liv = ui->le_liv_street->text();
+    this->editablePerson->street.reg = ui->le_reg_street->text();
+
+
+    this->editablePerson->house.liv = ui->le_liv_house->text();
+    this->editablePerson->house.reg = ui->le_reg_house->text();
+
+    this->editablePerson->corp.liv = ui->le_liv_corp->text();
+    this->editablePerson->corp.reg = ui->le_reg_corp->text();
+
+    this->editablePerson->flat.liv = ui->le_liv_flat->text();
+    this->editablePerson->flat.reg = ui->le_reg_flat->text();
+
+    if(ui->gb_adress_liv->isChecked()) this->copyAdresses();
 
     msgbx.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
     if(this->state==updatePerson)
@@ -505,102 +546,6 @@ void EditPerson::on_pb_save_clicked()
         break;
     }
     ///ПРОВЕРКА НОВЫХ НОМЕРОВ
-//        switch (imprt_t) {
-//        case Update_import_data:
-//            break;
-//        case Add_import_data:
-//            break;
-
-//        case Update_pg_data:            //Проверку номеров с базой
-//          if(new_cr->zk_id == main_cr->zk_id)
-//          {
-//              if (!compare_tel_num())     //Делаем только в случае редактирования
-//              {
-//                  return;
-//              }
-//                  break;
-//          }
-//                break;
-
-//        case Update_pg_data_import:
-//            break;
-//             }
-
-
-
-
-//    this->editablePerson->check_for = ui->le_check_for->text();
-//    this->editablePerson->dop_info = ui->le_dop_info->toPlainText();
-//    this->editablePerson->reg_city = ui->le_reg_city->text();
-//    this->editablePerson->reg_street = ui->le_reg_street->text();
-//    this->editablePerson->reg_home = ui->le_reg_house->text();
-//    this->editablePerson->reg_corp = ui->le_reg_corp ->text();
-//    this->editablePerson->reg_flat = ui->le_reg_flat->text();
-//    this->editablePerson->nickname = ui->le_nickname->text();
-//    if (ui->cb_adres->checkState() == Qt::Checked)
-//    {
-//        this->editablePerson->liv_city = new_cr->reg_city;
-//        this->editablePerson->liv_street = this->editablePerson->reg_street;
-//        this->editablePerson->liv_home = this->editablePerson->reg_home;
-//        this->editablePerson->liv_corp = this->editablePerson->reg_corp;
-//        this->editablePerson->liv_flat = this->editablePerson->reg_flat;
-//    }
-//    else
-//    {
-//        this->editablePerson->liv_city = ui->le_liv_city->text();
-//        this->editablePerson->liv_street = ui->le_liv_street->text();
-//        new_cr->liv_home = ui->le_liv_house->text();
-//        this->editablePerson->liv_corp = ui->le_liv_corp->text();
-//        this->editablePerson->liv_flat = ui->le_liv_flat->text();
-//    }
-
-//        if(frm_t == Confluence_form)
-//        {
-//            if(new_cr->zk_id == 0)
-//            {
-//                Add_zk_into_base();
-//                return;
-//            }else
-//                Crud::del_zk(added_cr->zk_id);
-//        }
-//        if( new_cr->update_zk(linked_crud_id) )
-//        {
-//            if(Crud::save_all_crud(new_cr)) /// Если сохранили телефоны
-//            {
-//                if(list_for_destroy != 0)
-//                {
-//                    Crud *m_cr = list_for_destroy->at(0);
-
-//                    for(int a = 1; a<list_for_destroy->size(); a++)
-//                    {
-//                        for(int b = 0 ; b< linked_crud_id->size(); b++)
-//                        {
-//                            if( list_for_destroy->at(a)->zk_id == linked_crud_id->at(b))
-//                            {
-//                                linked_crud_id->removeAt(b);
-//                                break;
-//                            }
-//                        }
-//                        destroy_link(m_cr,list_for_destroy->at(a));
-//                    }
-//                }
-
-//                QMessageBox::information(this,QObject::tr("Успех"),QObject::tr("Данные сохранены в БД!")); ///Хвалимся
-//               clear_ALL();
-//            }
-//            else
-//            {        /// Если не удалось добавить телефоны
-//         QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить обновление данных!"));
-//                 clea r_ALL();
-//            }
-//        }
-//        else {
-//            QMessageBox::critical(this,QObject::tr("Ошибка"),QObject::tr("Не удалось выполнить обновление данных!"));
-//                  clear_ALL();
-//             }
-//             return;
-
-//    }
 
 }
 
@@ -629,3 +574,46 @@ void EditPerson::closeWidget()
 {
     emit closeThis(this);
 }
+
+void EditPerson::on_gb_adress_liv_toggled(bool arg1)
+{
+    if(!arg1)
+        ui->gb_adress_liv->setTitle("Адрес проживания");
+    else
+    {
+        ui->gb_adress_liv->setTitle("Адрес проживания (совпадает с адресом регистрации)");
+        this->copyAdresses();
+    }
+
+    QList<QLineEdit*> livList = ui->gb_adress_liv->findChildren<QLineEdit*>();
+        for (int i =0; i < livList.length(); i++) {
+          QLineEdit *le = livList.at(i);
+          le->setEnabled(!arg1);
+        }
+}
+
+void EditPerson::copyAdresses()
+{
+    this->editablePerson->country.reg   =   ui->le_reg_country->text();
+    this->editablePerson->city.reg  =   ui->le_reg_city->text();
+    this->editablePerson->street.reg  =   ui->le_reg_street->text();     ;
+    this->editablePerson->house.reg  =   ui->le_reg_house->text();     ;
+    this->editablePerson->corp.reg  =   ui->le_reg_corp->text();     ;
+    this->editablePerson->flat.reg  =   ui->le_reg_flat->text();     ;
+
+    this->editablePerson->country.liv   = this->editablePerson->country.reg;
+    this->editablePerson->city.liv      = this->editablePerson->city.reg;
+    this->editablePerson->street.liv    = this->editablePerson->street.reg;
+    this->editablePerson->house.liv     = this->editablePerson->house.reg;
+    this->editablePerson->corp.liv      = this->editablePerson->corp.reg;
+    this->editablePerson->flat.liv      = this->editablePerson->flat.reg;
+
+    ui->le_liv_country->setText(this->editablePerson->country.liv);
+    ui->le_liv_city->setText(this->editablePerson->city.liv    );
+    ui->le_liv_street->setText(this->editablePerson->street.liv  );
+    ui->le_liv_house->setText(this->editablePerson->house.liv   );
+    ui->le_liv_corp->setText(this->editablePerson->corp.liv    );
+    ui->le_liv_flat->setText(this->editablePerson->flat.liv);
+}
+
+

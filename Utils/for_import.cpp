@@ -165,7 +165,7 @@ void For_import::setEventFields(Event *e, QString field, QString data)
 }
 
 void For_import::setPersonFields(Person *p, QString field, QString data)
-{
+{   
     if(field == "id"){
          p->id = data;
     } else if(field == "alias"){
@@ -176,6 +176,42 @@ void For_import::setPersonFields(Person *p, QString field, QString data)
         p->name = data;
    }else if(field == "lastname"){
         p->lastname = data;
+   }
+
+    else if(field == "country_liv"){
+        p->country.liv = data;
+   }else if(field == "country_reg"){
+        p->country.reg = data;
+   }
+
+    else if(field == "city_liv"){
+            p->city.liv = data;
+    }else if(field == "city_reg"){
+        p->city.reg = data;
+   }
+
+    else if(field == "street_liv"){
+            p->street.liv = data;
+    }else if(field == "street_reg"){
+        p->street.reg = data;
+   }
+
+    else if(field == "house_liv"){
+            p->house.liv = data;
+    }else if(field == "house_reg"){
+        p->house.reg = data;
+   }
+
+    else if(field == "corp_liv"){
+            p->corp.liv = data;
+    }else if(field == "corp_reg"){
+        p->corp.reg = data;
+   }
+
+    else if(field == "flat_liv"){
+            p->flat.liv = data;
+    }else if(field == "flat_reg"){
+        p->flat.reg = data;
    }
 }
 

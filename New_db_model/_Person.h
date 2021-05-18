@@ -5,6 +5,14 @@
 #include "db_connection.h"
 #include "_Telephone.h"
 
+struct Adress {
+    QString liv;
+    QString reg;
+    Adress();
+    void setData(QString sqlRow);
+};
+
+
 class Person
 {
 public:
@@ -17,6 +25,12 @@ public:
     QString id;
     DbState state;
     QList<Telephone*> *_telephones;
+    Adress country;
+    Adress city;
+    Adress street;
+    Adress house;
+    Adress corp;
+    Adress flat;
 
     QList<Telephone *> *telephones();
     static bool selectByEventId(QList<Person*> *personsList, QString eventId);

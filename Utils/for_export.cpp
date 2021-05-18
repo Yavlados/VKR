@@ -135,6 +135,24 @@ QXmlStreamAttributes For_export::getPersonAttributes(Person *per)
     attrib.append("name", per->name);
     attrib.append("lastname", per->lastname);
 
+    attrib.append("country_liv", per->country.liv);
+    attrib.append("country_reg", per->country.reg);
+
+    attrib.append("city_liv", per->city.liv);
+    attrib.append("city_reg", per->city.reg);
+
+    attrib.append("street_liv", per->street.liv);
+    attrib.append("street_reg", per->street.reg);
+
+    attrib.append("house_liv", per->house.liv);
+    attrib.append("house_reg", per->house.reg);
+
+    attrib.append("corp_liv", per->corp.liv);
+    attrib.append("corp_reg", per->corp.reg);
+
+    attrib.append("flat_liv", per->flat.liv);
+    attrib.append("flat_reg", per->flat.reg);
+
     return attrib;
 }
 

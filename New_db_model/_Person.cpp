@@ -45,12 +45,18 @@ bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)
 
     QSqlQuery temp(db_connection::instance()->db());
     temp.prepare("SELECT "
-                 "p.name, "
-                 "p.midname,"
-                 "p.lastname,"
-                 "p.alias, "
-                 "p.id "
-                 "FROM notebook2.person as p, "
+                 " p.name, "
+                 " p.midname,"
+                 " p.lastname,"
+                 " p.alias, "
+                 " p.id, "
+                 " p.country,"
+                 " p.city,"
+                 " p.street,"
+                 " p.house,"
+                 " p.corp,"
+                 " p.flat "
+                 " FROM notebook2.person as p, "
                  " notebook2.event_person "
                  " WHERE event_person.person_id = p.id "
                  " AND event_person.event_id = (:event_id)");
@@ -74,6 +80,14 @@ bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)
          person->id = temp.value(4).toString();
          person->state = IsReaded;
 
+         // Adress
+         person->country.setData(temp.value(5).toString());
+         person->city.setData(temp.value(6).toString());
+         person->street.setData(temp.value(7).toString());
+         person->house.setData(temp.value(8).toString());
+         person->corp.setData(temp.value(9).toString());
+         person->flat.setData(temp.value(10).toString());
+
          personsList->append(person);
      }
 
@@ -95,14 +109,39 @@ bool Person::updatePerson(Person *person)
                  " SET lastname = (:lastname),"
                       " name = (:name),"
                       " midname = (:midname),"
-                      " alias = (:alias) "
-                 " WHERE id = (:id) ");
+                      " alias = (:alias)    , "
+                      " country =   ROW((:liv_country), (:reg_country)),"
+                      " city =      ROW((:liv_city), (:reg_city)),"
+                      " street =    ROW((:liv_street), (:reg_street)),"
+                      " house =     ROW((:liv_house), (:reg_house)),"
+                      " corp =      ROW((:liv_corp), (:reg_corp)),"
+                      " flat =      ROW((:liv_flat), (:reg_flat))"
+                      " WHERE id = (:id) ");
 
      temp.bindValue(":lastname", person->lastname);
      temp.bindValue(":name", person->name);
      temp.bindValue(":midname", person->midname);
      temp.bindValue(":alias", person->alias);
      temp.bindValue(":id", person->id.toInt());
+
+     // Adress
+     temp.bindValue(":liv_country", person->country.liv);
+     temp.bindValue(":reg_country", person->country.reg);
+
+     temp.bindValue(":liv_city", person->city.liv);
+     temp.bindValue(":reg_city", person->city.reg);
+
+     temp.bindValue(":liv_street", person->street.liv);
+     temp.bindValue(":reg_street", person->street.reg);
+
+     temp.bindValue(":liv_house", person->house.liv);
+     temp.bindValue(":reg_house", person->house.reg);
+
+     temp.bindValue(":liv_corp", person->corp.liv);
+     temp.bindValue(":reg_corp", person->corp.reg);
+
+     temp.bindValue(":liv_flat", person->flat.liv);
+     temp.bindValue(":reg_flat", person->flat.reg);
 
      if (!temp.exec())
      {
@@ -118,7 +157,6 @@ bool Person::updatePerson(Person *person)
              db_connection::instance()->db().database(cname).rollback();
              return false;
          }
-
 
 //         for( int i=0; i<person->telephones()->size(); i++){
 //             Telephone *tel = person->telephones()->at(i);
@@ -163,16 +201,48 @@ bool Person::createPerson(Person *person, QString eventId)
     QSqlQuery temp(db_connection::instance()->db());
 
     temp.prepare("INSERT INTO notebook2.person ( "
-                     "lastname,"
-                     "name,"
-                     "midname, "
-                     "alias)"
-                 " VALUES ( (:lastname), (:name), (:midname),  (:alias))"
+                "lastname,"
+                 "name,"
+                 "midname, "
+                 "alias, "
+                 "country, "
+                 "city, "
+                 "street, "
+                 "house, "
+                 "corp, "
+                 "flat )"
+                 " VALUES ( (:lastname), (:name), (:midname),  (:alias),"
+                 " ROW((:liv_country), (:reg_country)),"
+                 " ROW((:liv_city), (:reg_city)),"
+                 " ROW((:liv_street), (:reg_street)),"
+                 " ROW((:liv_house), (:reg_house)),"
+                 " ROW((:liv_corp), (:reg_corp)),"
+                 " ROW((:liv_flat), (:reg_flat))"
+                 ")"
                  " RETURNING id" );
     temp.bindValue(":lastname", person->lastname);
     temp.bindValue(":name",     person->name);
     temp.bindValue(":midname",  person->midname);
     temp.bindValue(":alias",    person->alias);
+
+    // Adress
+    temp.bindValue(":liv_country", person->country.liv);
+    temp.bindValue(":reg_country", person->country.reg);
+
+    temp.bindValue(":liv_city", person->city.liv);
+    temp.bindValue(":reg_city", person->city.reg);
+
+    temp.bindValue(":liv_street", person->street.liv);
+    temp.bindValue(":reg_street", person->street.reg);
+
+    temp.bindValue(":liv_house", person->house.liv);
+    temp.bindValue(":reg_house", person->house.reg);
+
+    temp.bindValue(":liv_corp", person->corp.liv);
+    temp.bindValue(":reg_corp", person->corp.reg);
+
+    temp.bindValue(":liv_flat", person->flat.liv);
+    temp.bindValue(":reg_flat", person->flat.reg);
 
     if (!temp.exec())
     {
@@ -192,35 +262,6 @@ bool Person::createPerson(Person *person, QString eventId)
             db_connection::instance()->db().database(cname).rollback();
             return false;
         }
-//        for( int i=0; i<person->telephones()->size(); i++){
-//            Telephone *tel = person->telephones()->at(i);
-//            bool a = false;
-//            switch (tel->state) {
-//               case IsNewing:
-//                a = Telephone::createTelephone(tel, person->id);
-//                break;
-//            case IsChanged:
-//                a = Telephone::updateTelephone(tel);
-//                break;
-//            case IsRemoved:
-//                a = Telephone::deleteTelephone(tel);
-//                break;
-//            case IsReaded:
-//                a=true;
-//                break;
-//            }
-
-//            if(!a){
-//                db_connection::instance()->db().database(cname).rollback();
-//                isOk = false;
-//                break;
-//            }
-//        }
-
-//        if(!Person::linkEventPerson(eventId, person->id)){
-//            db_connection::instance()->db().database(cname).rollback();
-//            return false;
-//        }
     }
 
 
@@ -307,4 +348,21 @@ bool Person::linkEventPerson(QString eventId, QString personId)
 //        db_connection::instance()->db().database(cname).commit();
         return true;
     }
+}
+
+Adress::Adress()
+{
+    this->liv = "";
+    this->reg = "";
+}
+
+void Adress::setData(QString sqlRow)
+{
+    auto sqlCopy = sqlRow;
+    QStringList splittedData = sqlCopy.split("\",\"");
+    if(splittedData.length() == 1)
+        splittedData = sqlCopy.split(",");
+    this->liv = static_cast<QString>(splittedData.at(0)).remove("(").remove("\"");
+    this->reg = static_cast<QString>(splittedData.at(1)).remove(")").remove("\"");
+    return;
 }

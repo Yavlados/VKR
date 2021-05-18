@@ -14,31 +14,31 @@ Off_tels::Off_tels(int id, QString num, QString name)
 
 bool Off_tels::search(QList<Off_tels *> *list, QString tel_num, QString name)
 {
-    if(list==0)
+        if(list==0)
         return false;
 
     qDeleteAll(*list);
     list->clear();
 
     QSqlQuery temp(db_connection::instance()->db());
-    QString temp_query = "SELECT Official_tel.of_t_id,"
-                         " Official_tel.service_name, "
-                         " Official_tel.tel_num"
-                         " FROM Official_tel";
+    QString temp_query = "SELECT id,"
+                         " name, "
+                         " number"
+                         " FROM notebook2.official_telephones";
     QString where_condition;
     if(!tel_num.isEmpty())
     {
         if(where_condition.isEmpty())
-            where_condition += " WHERE official_tel.tel_num LIKE ('"+tel_num+"')";
+            where_condition += " WHERE official_telephones.number LIKE ('"+tel_num+"')";
         else
-            where_condition += "AND official_tel.tel_num LIKE ('"+tel_num+"')";
+            where_condition += "AND official_telephones.number LIKE ('"+tel_num+"')";
     }
     if(!name.isEmpty())
     {
         if(where_condition.isEmpty())
-            where_condition += " WHERE LOWER(official_tel.service_name) LIKE LOWER('"+name+"')";
+            where_condition += " WHERE LOWER(official_telephones.name) LIKE LOWER('"+name+"')";
         else
-            where_condition += "AND LOWER(official_tel.service_name) LIKE LOWER('"+name+"')";
+            where_condition += "AND LOWER(official_telephones.name) LIKE LOWER('"+name+"')";
     }
     temp_query+= where_condition;
     temp.prepare(temp_query);
@@ -70,10 +70,10 @@ bool Off_tels::selectOffTel(QList<Off_tels *> *list)
         return false;
 
     QSqlQuery temp(db_connection::instance()->db());
-    temp.prepare("SELECT Official_tel.of_t_id,"
-                 " Official_tel.service_name, "
-                  "Official_tel.tel_num"
-                " FROM Official_tel");
+    temp.prepare( "SELECT id,"
+                  " name, "
+                  " number "
+                  " FROM notebook2.official_telephones");
     if (!temp.exec())
     {
         qDebug() << "Off_tels::selectOffTel" << temp.lastError();
@@ -96,11 +96,11 @@ bool Off_tels::selectOffTel(QList<Off_tels *> *list)
 bool Off_tels::add_off_tel (Off_tels *of_t)
 {
     QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("INSERT INTO official_tel "
-                   " (tel_num, service_name)"
+    querry.prepare(" INSERT INTO notebook2.official_telephones "
+                   " (number, name)"
                    " VALUES"
                    " ((:t_n), (:s_n))"
-                   " RETURNING official_tel.of_t_id");
+                   " RETURNING official_telephones.id");
     querry.bindValue(":t_n",of_t->tel_num);
     querry.bindValue(":s_n",of_t->service_name);
     if (!querry.exec())
@@ -118,8 +118,8 @@ bool Off_tels::add_off_tel (Off_tels *of_t)
 bool Off_tels::del_off_tel(Off_tels *of_t)
 {
     QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("DELETE FROM official_tel "
-                   " WHERE official_tel.of_t_id = (:id)");
+    querry.prepare("DELETE FROM notebook2.official_telephones "
+                   " WHERE official_telephones.id = (:id)");
 
     querry.bindValue(":id",of_t->of_t_id);
 
@@ -144,10 +144,10 @@ bool Off_tels::update(QList<Off_tels *> *list)
     QSqlQuery temp(db_connection::instance()->db());
     for (int a = 0 ; a < list->size(); a++)
     {
-        temp.prepare("UPDATE official_tel SET tel_num = (:tel_num), "
-                                " service_name = (:s_n)"
+        temp.prepare("UPDATE notebook2.official_telephones SET number = (:tel_num), "
+                                " name = (:s_n)"
                                 " WHERE "
-                                " of_t_id = (:id)");
+                                " id = (:id)");
           temp.bindValue(":tel_num", list->at(a)->tel_num);
           temp.bindValue(":s_n", list->at(a)->service_name);
           temp.bindValue(":id", list->at(a)->of_t_id);
@@ -175,7 +175,7 @@ QList<Off_tels *> *Off_tels::compare_with_base(QString query)
 {
     QList<Off_tels *> *list = 0;
     QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("SELECT tel_num, service_name, of_t_id from official_tel "
+    querry.prepare("SELECT number, name, id from notebook2.official_telephones "
                    "WHERE "+ query);
 
     if (!querry.exec())
@@ -208,8 +208,6 @@ void Off_tels::clear_list(QList<Off_tels *> *list)
         {
             for(QList<Off_tels *>::const_iterator it = list->begin(); it != list->end(); it++)
             {
-
-
                 delete *it;
 
             }
@@ -222,8 +220,8 @@ bool Off_tels::del_off_tel_by_id(int id)
 {
 
     QSqlQuery querry(db_connection::instance()->db());
-    querry.prepare("DELETE FROM official_tel "
-                   " WHERE official_tel.of_t_id = (:id)");
+    querry.prepare("DELETE FROM notebook2.official_telephones "
+                   " WHERE official_telephones.id = (:id)");
 
     querry.bindValue(":id",id);
 

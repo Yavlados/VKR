@@ -71,7 +71,9 @@ private slots:
     void on_pb_cancel_clicked();
 
     void closeWidget();
-    void ShowPopUp();
+    void ShowPopUp();    
+    void on_gb_adress_liv_toggled(bool arg1);
+    void copyAdresses();
 
 private:
     Ui::EditPerson *ui;
