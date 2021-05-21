@@ -49,6 +49,10 @@ public:
     static bool addHashRowToLinksTable(Person *person);
 
     static bool getLinkedPersons(Person *person);
+    static bool unlinkPersonOnDelete(Person *person);
+    static bool unlinkPersons(Person *person1, Person *person2);
+
+    static QString updateHashArray(QString hashes, QString hashToExclude);
 };
 
 #endif // PERSON_H

@@ -297,8 +297,14 @@ bool Person::deletePerson(Person *person)
         db_connection::instance()->db().database(cname).rollback();
         return false ;
     } else{
-        db_connection::instance()->db().database(cname).commit();
-        return true;
+        if(Person::unlinkPersonOnDelete(person)){
+            db_connection::instance()->db().database(cname).commit();
+            return true;
+        }
+        else {
+            db_connection::instance()->db().database(cname).rollback();
+            return false;
+        }
     }
 }
 
@@ -453,6 +459,105 @@ bool Person::getLinkedPersons(Person *person)
 
     db_connection::instance()->db().database(cname).commit();
     return true;
+}
+
+bool Person::unlinkPersonOnDelete(Person *person)
+{
+    QString query = ""
+          "  SELECT hash, links             "
+          "  FROM notebook2.person_links    "
+          "  WHERE                          "
+          "  '"+person->hash+"' = ANY(links)";
+
+    QString cname = db_connection::instance()->db().connectionName();
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+    QSqlQuery temp1(db_connection::instance()->db());
+
+    temp.prepare(query);
+    if(!temp.exec()){
+        db_connection::instance()->lastError = "Person::unlinkPersonOnDelete " + temp.lastError().text();
+        qDebug() << "Person::unlinkPersonOnDelete" << temp.lastError();
+        db_connection::instance()->db().database(cname).rollback();
+        return 0;
+    }
+
+    while(temp.next()){
+        QString hash = temp.value(0).toString();
+        QString links = temp.value(1).toString();
+
+        QString updateLinksQuery = ""
+                "    UPDATE notebook2.person_links                       "
+                "    SET links = ARRAY["+Person::updateHashArray(links,person->hash)+"]::uuid[]                "
+                "    WHERE hash = '"+hash+"' ";
+        temp1.prepare(updateLinksQuery);
+        if(!temp1.exec()){
+            db_connection::instance()->lastError = "Person::unlinkPersonOnDelete-updateLinksQuery " + temp1.lastError().text();
+            qDebug() << "Person::unlinkPersonOnDelete-updateLinksQuery " << temp1.lastError();
+            db_connection::instance()->db().database(cname).rollback();
+            return 0;
+        }
+    }
+    return true;
+}
+
+bool Person::unlinkPersons(Person *person1, Person *person2)
+{
+    QString query =
+           " SELECT hash, links                         "
+           " FROM notebook2.person_links                "
+           " WHERE hash = '"+person1->hash+"' OR hash = '"+person2->hash+"'";
+
+    QString cname = db_connection::instance()->db().connectionName();
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+    QSqlQuery temp1(db_connection::instance()->db());
+
+    temp.prepare(query);
+    if(!temp.exec()){
+        db_connection::instance()->lastError = "Person::unlinkPersons " + temp.lastError().text();
+        qDebug() << "Person::unlinkPersons " << temp.lastError();
+        db_connection::instance()->db().database(cname).rollback();
+        return 0;
+    }
+    while(temp.next()){
+        QString hash = temp.value(0).toString();
+        QString links = temp.value(1).toString();
+        QString updatedHashArray = "";
+        if(hash == person1->hash){
+            updatedHashArray = Person::updateHashArray(links, person2->hash);
+        } else if(hash == person2->hash){
+            updatedHashArray = Person::updateHashArray(links, person1->hash);
+        }
+
+        QString updateLinksQuery = ""
+                "    UPDATE notebook2.person_links                       "
+                "    SET links = ARRAY["+updatedHashArray+"]::uuid[]                "
+                "    WHERE hash = '"+hash+"' ";
+        temp1.prepare(updateLinksQuery);
+        if(!temp1.exec()){
+            db_connection::instance()->lastError = "Person::unlinkPersons-updateLinksQuery " + temp1.lastError().text();
+            qDebug() << "Person::unlinkPersons-updateLinksQuery " << temp1.lastError();
+            db_connection::instance()->db().database(cname).rollback();
+            return 0;
+        }
+    }
+    db_connection::instance()->db().database(cname).commit();
+    return true;
+}
+
+QString Person::updateHashArray(QString hashes, QString hashToExclude)
+{
+    QString res = "";
+    auto hashesList = hashes.remove("}").remove("{").split(",");
+    if(hashesList.length() != 1){
+        for (int i=0; i < hashesList.length(); i++) {
+            QString localHash = hashesList.at(i);
+            if(localHash != hashToExclude) res+="'"+localHash+"',";
+        }
+        res.chop(1);
+    }
+    return res;
 }
 
 Adress::Adress()

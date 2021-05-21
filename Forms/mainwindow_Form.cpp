@@ -806,10 +806,11 @@ void MainWindow::openEditPersonWindow(Person *p)
             return;
         }
     }
-
+    Person::getLinkedPersons(p);
     EditPerson *ep = new EditPerson;
     ep->setType(updatePerson);
     connect(ep, SIGNAL(closeThis(EditPerson*)), this, SLOT(closePersonEdit(EditPerson*)));
+    connect(ep, SIGNAL(openLinkedPerson(Person*)), this, SLOT(openEditPersonWindow(Person*)));
 
     ep->setPerson(p);
     Util::instance()->editPersonList()->append(ep);

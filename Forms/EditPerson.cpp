@@ -31,7 +31,7 @@ EditPerson::EditPerson(QWidget *parent) :
 
 //    ui->lv_linkedPersons.
     this->setFocus();
-
+    ui->label_editPerson_info->hide();
 }
 
 void EditPerson::setPerson(Person *person)
@@ -449,6 +449,38 @@ void EditPerson::fillFields()
     ui->tableView->resizeColumnToContents(3);
     ui->tableView->setWordWrap(false);
     ui->tableView->horizontalHeader()->setStretchLastSection(true);
+
+    this->fillLinkedPersons();
+}
+
+void EditPerson::fillLinkedPersons()
+{
+   if(this->editablePerson->linked_persons == 0 ||
+           this->editablePerson->linked_persons->size() == 0) {
+       ui->label_linked_persons->hide();
+       while(ui->vl_linked_info->count() != 0) {
+           QLayoutItem *item = ui->vl_linked_info->takeAt(0);
+           delete item->widget();
+       }
+       return;
+   } else{
+       if(ui->vl_linked_person)
+           while(ui->vl_linked_person->count() != 0) {
+               QLayoutItem *item = ui->vl_linked_person->takeAt(0);
+               delete item->widget();
+           }
+   }
+
+
+
+   for (int i=0; i < this->editablePerson->linked_persons->size(); i++) {
+       LinkedPerson *card = new LinkedPerson();
+       Person *p = this->editablePerson->linked_persons->at(i);
+       connect(card, SIGNAL(openPerson(Person*)), this, SLOT(emitOpenLinkedPerson(Person*)));
+       connect(card, SIGNAL(deleteLink(Person*)), this, SLOT(destroyLinkBetweenPersons(Person*)));
+       card->setPerson(p);
+       ui->vl_linked_person->addWidget(card);
+   }
 }
 
 void EditPerson::on_pb_save_clicked()
@@ -675,7 +707,56 @@ bool EditPerson::handleLinks()
         Person::getLinkedPersons(this->editablePerson);
     }
    delete list;
-   return true;
+    return true;
+}
+
+void EditPerson::emitOpenLinkedPerson(Person *person)
+{
+    QMessageBox msg;
+    msg.setWindowTitle("Внимание");
+    msg.setText("Вы действительно хотите перейти к редактированию фигуранта <b>"+person->lastname + "</b> <b>"+ person->name+ "</b> <b>" + person->midname+"</b>?");
+    msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msg.setButtonText(QMessageBox::Ok, "Перейти к редактированию");
+    msg.setButtonText(QMessageBox::Cancel, "Отмена");
+    int ret = msg.exec();
+
+    switch(ret){
+        case QMessageBox::Ok:
+        emit openLinkedPerson(person);
+        this->closeWidget();
+        break;
+    case QMessageBox::Cancel:
+        return;
+    }
+
+}
+
+void EditPerson::destroyLinkBetweenPersons(Person *person)
+{
+    QMessageBox msg;
+    QMessageBox msg1;
+    msg.setWindowTitle("Внимание");
+    msg.setText("Вы действительно хотите разорвать связь между <b>"+this->editablePerson->lastname + "</b> <b>"+ this->editablePerson->name+ "</b> <b>" + this->editablePerson->midname+"</b> и <b>"+person->lastname + "</b> <b>"+ person->name+ "</b> <b>" + person->midname+"</b>?");
+    msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msg.setButtonText(QMessageBox::Ok, "Да");
+    msg.setButtonText(QMessageBox::Cancel, "Отмена");
+    int ret = msg.exec();
+
+    switch(ret){
+    case QMessageBox::Ok:
+        if(Person::unlinkPersons(this->editablePerson, person) && Person::getLinkedPersons(this->editablePerson)){
+            this->fillLinkedPersons();
+            msg1.setText("Разрыв связи произошел успешно");
+        } else{
+            msg1.setText("Возникла ошибка при разрыве связи");
+            return;
+        }
+           msg1.exec();
+        break;
+    case QMessageBox::Cancel:
+        return;
+    }
+
 }
 
 

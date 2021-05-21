@@ -10,6 +10,7 @@
 #include "popup.h"
 #include "component.h"
 #include "linksmanager.h"
+#include "linkedperson.h"
 
 //#include "editEvent.h"
 
@@ -46,6 +47,7 @@ public:
 signals:
     void closeThis(EditPerson*);
     void personIsAdded(EditPerson*);
+    void openLinkedPerson(Person*);
 
 private slots:
     void on_tableView_clicked(const QModelIndex &index);
@@ -79,10 +81,12 @@ private slots:
     void copyAdresses();
     bool checkLinksBeforeSave();
     bool handleLinks();
-
+    void emitOpenLinkedPerson(Person *person);
+    void destroyLinkBetweenPersons(Person *person);
 private:
     Ui::EditPerson *ui;
     void fillFields();
+    void fillLinkedPersons();
 
 
 };

@@ -41,10 +41,7 @@ public slots:
 
 private slots:
     void on_pb_add_person_clicked();
-
     void on_pb_cancel_clicked();
-
-
     void on_pb_save_clicked();
 
 private:

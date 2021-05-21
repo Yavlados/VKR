@@ -70,7 +70,8 @@ SOURCES += \
     Forms/date_form.cpp \
     Custom/customtableview.cpp \
     Singletons/popup.cpp \
-    Singletons/linksmanager.cpp
+    Singletons/linksmanager.cpp \
+    Forms/linkedperson.cpp
 
 HEADERS += \
     Forms/EditPerson.h \
@@ -113,7 +114,8 @@ HEADERS += \
     Forms/date_form.h \
     Custom/customtableview.h \
     Singletons/popup.h \
-    Singletons/linksmanager.h
+    Singletons/linksmanager.h \
+    Forms/linkedperson.h
 
 FORMS += \
     EditPerson.ui \
@@ -131,7 +133,8 @@ FORMS += \
     component.ui \
     dialog_settings.ui \
     date_form.ui \
-    popup.ui
+    popup.ui \
+    Forms/linkedperson.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

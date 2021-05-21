@@ -18,6 +18,7 @@
         <file>png/edit.png</file>
         <file>png/delete.png</file>
         <file>png/user.png</file>
+        <file>png/cancel.png</file>
     </qresource>
     <qresource prefix="/config"/>
 </RCC>

@@ -10,11 +10,6 @@ LinksManager *LinksManager::instance()
     return _instance;
 }
 
-bool LinksManager::unlinkPerson(Person *person)
-{
-
-}
-
 QList<comparsionResult*> *LinksManager::findLinks(Person *editablePerson)
 {
     QString hashesToExclude = "";

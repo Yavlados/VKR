@@ -31,7 +31,7 @@ class LinksManager
 public:
    static LinksManager *instance();
 
-   static bool unlinkPerson(Person *person);
+
    static QList<comparsionResult*> *findLinks(Person *person);
    static int getPersonIndex(QList<Person*> *personsList, Person *person);
    QList<comparsionResult*> *updateMessages(QList<comparsionResult *> *compResults);
