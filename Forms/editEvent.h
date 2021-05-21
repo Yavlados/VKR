@@ -37,6 +37,8 @@ public slots:
     void addNewPerson(Person *p);
     void closeWidget();
     void setPersonToRemove(Person *pers);
+    void openEditPersonWindow(Person *pers);
+
 private slots:
     void on_pb_add_person_clicked();
 
@@ -52,6 +54,7 @@ private:
 signals:
     void addPerson(Person*, editEvent*);
     void closeThis(editEvent *);
+    void openEditPerson(Person *person);
 };
 
 #endif // EDITEVENT_H

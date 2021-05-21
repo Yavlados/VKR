@@ -85,7 +85,8 @@ void MainWindow::Add_pagination_buttons()
     }
 
 
-     if(this->eventModel->actEventList.size() < this->eventModel->eventList->size())
+     if(this->eventModel->eventList != 0 &&
+        this->eventModel->actEventList.size() < this->eventModel->eventList->size())
     {
         if(this->eventModel->eventList->indexOf(this->eventModel->actEventList.at(0)) != 0)
         {
@@ -231,7 +232,7 @@ void MainWindow::on_action_update_triggered()
         ee->setEventAndType(localEvent, updateEvent);
         connect(ee, SIGNAL(addPerson(Person*, editEvent*)), this, SLOT(openAddPersonWindow(Person*, editEvent*)));
         connect(ee, SIGNAL(closeThis(editEvent*)), this, SLOT(closeEditEvent(editEvent*)));
-
+        connect(ee, SIGNAL(openEditPerson(Person*)), this, SLOT(openEditPersonWindow(Person*)));
         Util::instance()->editEventList()->append(ee);
 
         ui->tabWidget->insertTab( ui->tabWidget->count()+1 ,
@@ -790,8 +791,8 @@ void MainWindow::on_eventTable_clicked(const QModelIndex &index)
     for ( int i =0; i < localEvent->persons()->size(); i++){
         PersonCard *card = new PersonCard();
         card->setPerson(localEvent->persons()->at(i));
+        card->setState(mainWindow);
         ui->cardsLayout->addWidget(card);
-        connect(card, SIGNAL(openEditWindow(Person*)), this, SLOT(openEditPersonWindow(Person*)));
     }
 }
 //-----------------------------------------------------------------------------------//
@@ -996,6 +997,8 @@ void MainWindow::clearLabel()
 
 void MainWindow::createLabel()
 {
+    if(this->eventModel->eventList == 0) return;
+
     QLabel *lb = new QLabel;
     QString str = "Всего записей: "+QString::number(this->eventModel->eventList->size()) +" ("+this->eventModel->actEventList.at(0)->id+"..."+
             this->eventModel->actEventList.at(this->eventModel->actEventList.size()-1)->id+")";

@@ -7,6 +7,11 @@
 #include <QDebug>
 /// REFACTORED
 
+enum personCardShowingState{
+    mainWindow,
+    editEventWindow
+};
+
 namespace Ui {
 class PersonCard;
 }
@@ -20,7 +25,7 @@ public:
     ~PersonCard();
     void setPerson(Person *person);
     void close();
-
+    void setState(personCardShowingState t);
 signals:
     void openEditWindow(Person*);
     void removePerson(Person *);
@@ -32,6 +37,7 @@ private slots:
 private:
     Ui::PersonCard *ui;
     Person *localPerson;
+    personCardShowingState state;
 };
 
 #endif // PERSONCARD_H

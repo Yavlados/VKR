@@ -9,6 +9,8 @@ Person::Person()
     this->alias       ="";
     this->id          ="";
     this->state       =IsNewing;
+    this->hash        ="";
+    this->linked_persons = 0;
 }
 
 Person::~Person()
@@ -55,7 +57,8 @@ bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)
                  " p.street,"
                  " p.house,"
                  " p.corp,"
-                 " p.flat "
+                 " p.flat,"
+                 " p.hash"
                  " FROM notebook2.person as p, "
                  " notebook2.event_person "
                  " WHERE event_person.person_id = p.id "
@@ -88,7 +91,11 @@ bool Person::selectByEventId(QList<Person *> *personsList, QString eventId)
          person->corp.setData(temp.value(9).toString());
          person->flat.setData(temp.value(10).toString());
 
+         // Hash
+         person->hash = temp.value(11).toString();
+         if(!Person::getLinkedPersons(person) )  return false;
          personsList->append(person);
+
      }
 
      if(personsList->isEmpty()){
@@ -210,16 +217,18 @@ bool Person::createPerson(Person *person, QString eventId)
                  "street, "
                  "house, "
                  "corp, "
-                 "flat )"
+                 "flat,"
+                 "hash )"
                  " VALUES ( (:lastname), (:name), (:midname),  (:alias),"
                  " ROW((:liv_country), (:reg_country)),"
                  " ROW((:liv_city), (:reg_city)),"
                  " ROW((:liv_street), (:reg_street)),"
                  " ROW((:liv_house), (:reg_house)),"
                  " ROW((:liv_corp), (:reg_corp)),"
-                 " ROW((:liv_flat), (:reg_flat))"
+                 " ROW((:liv_flat), (:reg_flat)),"
+                 " uuid_generate_v1()"
                  ")"
-                 " RETURNING id" );
+                 " RETURNING id, hash" );
     temp.bindValue(":lastname", person->lastname);
     temp.bindValue(":name",     person->name);
     temp.bindValue(":midname",  person->midname);
@@ -256,9 +265,11 @@ bool Person::createPerson(Person *person, QString eventId)
     while (temp.next())
     {
         person->id = temp.value(0).toString();
+        person->hash = temp.value(1).toString();
 
         if(!Person::handleTelephones(person->telephones(), person->id) ||
-                !Person::linkEventPerson(eventId, person->id)){
+                !Person::linkEventPerson(eventId, person->id) ||
+                !Person::addHashRowToLinksTable(person)){
             db_connection::instance()->db().database(cname).rollback();
             return false;
         }
@@ -313,9 +324,6 @@ bool Person::handleTelephones(QList<Telephone *> *telephones, QString personId)
 
         if(!a){
             return a;
-//            db_connection::instance()->db().database(cname).rollback();
-//            isOk = false;
-//            break;
         }
     }
     return true;
@@ -348,6 +356,103 @@ bool Person::linkEventPerson(QString eventId, QString personId)
 //        db_connection::instance()->db().database(cname).commit();
         return true;
     }
+}
+
+bool Person::addHashRowToLinksTable(Person *person)
+{
+    if( !db_connection::instance()->db_connect() )
+        return false;
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+
+    temp.prepare("INSERT INTO notebook2.person_links ( "
+                 " hash,"
+                 " links )"
+                 " VALUES ( (:hash), ARRAY[]::uuid[] )" );
+    temp.bindValue(":hash", person->hash);
+    if (!temp.exec())
+    {
+         db_connection::instance()->lastError = "Person::addHashRowToLinksTable " + temp.lastError().text();
+        qDebug() << "Person::addHashRowToLinksTable" << temp.lastError();
+        db_connection::instance()->db().database(cname).rollback();
+
+        return false;
+    }
+
+    return true;
+}
+
+bool Person::getLinkedPersons(Person *person)
+{
+    if(person->linked_persons != 0) delete person->linked_persons;
+
+    person->linked_persons = new QList<Person*>();
+
+    QString cname = db_connection::instance()->db().connectionName();
+
+    bool isOk = db_connection::instance()->db().database(cname).transaction();
+    QSqlQuery temp(db_connection::instance()->db());
+    temp.prepare(
+   " SELECT                                "
+   " p.name,                               "
+   " p.midname,                            "
+   " p.lastname,                           "
+   " p.alias,                              "
+   " p.id,                                 "
+   " p.country,                            "
+   " p.city,                               "
+   " p.street,                             "
+   " p.house,                              "
+   " p.corp,                               "
+   " p.flat,                               "
+   " p.hash                                "
+   " FROM notebook2.person as p            "
+   " INNER JOIN                            "
+   " (SELECT unnest(                       "
+   "     (SELECT links                     "
+   "         FROM notebook2.person_links   "
+   "         WHERE hash = (:person_hash) ) "
+   " ) as hashes) as links                 "
+   " ON links.hashes = p.hash              ");
+
+    temp.bindValue(":person_hash", person->hash);
+    if (!temp.exec())
+    {
+        db_connection::instance()->lastError = "Person::getLinkedPersons " + temp.lastError().text();
+        qDebug() << "Person::getLinkedPersons" << temp.lastError();
+        db_connection::instance()->db().database(cname).rollback();
+        return false;
+    }
+
+    while (temp.next())
+    {
+        Person *personLocal = new Person();
+        personLocal->name = temp.value(0).toString();
+        personLocal->midname = temp.value(1).toString();
+        personLocal->lastname = temp.value(2).toString();
+        personLocal->alias = temp.value(3).toString();
+        personLocal->id = temp.value(4).toString();
+        personLocal->state = IsReaded;
+
+        // Adress
+        personLocal->country.setData(temp.value(5).toString());
+        personLocal->city.setData(temp.value(6).toString());
+        personLocal->street.setData(temp.value(7).toString());
+        personLocal->house.setData(temp.value(8).toString());
+        personLocal->corp.setData(temp.value(9).toString());
+        personLocal->flat.setData(temp.value(10).toString());
+
+        // Hash
+        personLocal->hash = temp.value(11).toString();
+
+        person->linked_persons->append(personLocal);
+    }
+
+    db_connection::instance()->db().database(cname).commit();
+    return true;
 }
 
 Adress::Adress()

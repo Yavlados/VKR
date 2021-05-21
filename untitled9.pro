@@ -63,14 +63,14 @@ SOURCES += \
     Forms/settings_Form.cpp \
     Singletons/settings_connection.cpp \
     Utils/olddbservice.cpp \
-    Forms/dialog_conflict.cpp \
     Custom/table_show_delegate.cpp \
     Forms/component.cpp \
     Forms/dialog_settings.cpp \
     Utils/text_handler.cpp \
     Forms/date_form.cpp \
     Custom/customtableview.cpp \
-    Singletons/popup.cpp
+    Singletons/popup.cpp \
+    Singletons/linksmanager.cpp
 
 HEADERS += \
     Forms/EditPerson.h \
@@ -106,14 +106,14 @@ HEADERS += \
     Forms/settings_Form.h \
     Singletons/settings_connection.h \
     Utils/olddbservice.h \
-    Forms/dialog_conflict.h \
     Custom/table_show_delegate.h \
     Forms/component.h \
     Forms/dialog_settings.h \
     Utils/text_handler.h \
     Forms/date_form.h \
     Custom/customtableview.h \
-    Singletons/popup.h
+    Singletons/popup.h \
+    Singletons/linksmanager.h
 
 FORMS += \
     EditPerson.ui \
@@ -128,7 +128,6 @@ FORMS += \
     import_form.ui \
     master_import_form.ui \
     settings_form.ui \
-    dialog_conflict.ui \
     component.ui \
     dialog_settings.ui \
     date_form.ui \

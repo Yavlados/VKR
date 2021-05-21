@@ -9,6 +9,8 @@
 #include "_MTM_Contact.h"
 #include "popup.h"
 #include "component.h"
+#include "linksmanager.h"
+
 //#include "editEvent.h"
 
 namespace Ui {
@@ -29,6 +31,7 @@ public:
     ~EditPerson();
     Person *person;
     Person *editablePerson;
+    QList<comparsionResult*> *comparsion;
     formStates state;
 
     MTM_Telephone *ot_model;
@@ -74,6 +77,8 @@ private slots:
     void ShowPopUp();    
     void on_gb_adress_liv_toggled(bool arg1);
     void copyAdresses();
+    bool checkLinksBeforeSave();
+    bool handleLinks();
 
 private:
     Ui::EditPerson *ui;

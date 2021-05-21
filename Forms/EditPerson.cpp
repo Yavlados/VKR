@@ -9,6 +9,7 @@ EditPerson::EditPerson(QWidget *parent) :
 
     this->ot_model = new MTM_Telephone();
     this->contacts_model = new MTM_Contact();
+    this->comparsion = 0;
 
     ui->tableView->setType(UpdateOT);
     connect(ui->tableView, SIGNAL(getCont(QModelIndex)), this, SLOT(on_tableView_clicked(QModelIndex)));
@@ -28,7 +29,9 @@ EditPerson::EditPerson(QWidget *parent) :
     connect(ui->tableView_2, SIGNAL(deleteTelephone()), this, SLOT(on_pb_del_contact_line_clicked()));
     connect(ui->tableView_2, SIGNAL(addNewCont()), this, SLOT(on_pb_add_contact_line_clicked()));
 
+//    ui->lv_linkedPersons.
     this->setFocus();
+
 }
 
 void EditPerson::setPerson(Person *person)
@@ -516,10 +519,14 @@ void EditPerson::on_pb_save_clicked()
     case QMessageBox::Cancel:
         break;
     case QMessageBox::Ok:
+        if(this->checkLinksBeforeSave())
+            return;
 
         if(this->state == updatePerson){
             bool state = Person::updatePerson(this->editablePerson);
             if(state){
+                this->handleLinks();
+
                 msgbx.setText("<font size = '5'>Данные усешно сохранены.</font>");
                 msgbx.setWindowTitle("Успех");
                 msgbx.setStandardButtons(QMessageBox::Ok);
@@ -540,8 +547,6 @@ void EditPerson::on_pb_save_clicked()
             emit personIsAdded(this);
             this->closeWidget();
         }
-
-
 
         break;
     }
@@ -614,6 +619,63 @@ void EditPerson::copyAdresses()
     ui->le_liv_house->setText(this->editablePerson->house.liv   );
     ui->le_liv_corp->setText(this->editablePerson->corp.liv    );
     ui->le_liv_flat->setText(this->editablePerson->flat.liv);
+}
+
+bool EditPerson::checkLinksBeforeSave()
+{
+    QList<comparsionResult*> *comparsion = LinksManager::instance()->findLinks(this->editablePerson);
+    if(comparsion == 0) return false;
+    bool aborted = false;
+    for(int i =0; i< comparsion->length(); i++){
+        auto comp = comparsion->at(i);
+        QMessageBox msg;
+        msg.setWindowTitle("Внимание");
+        msg.setText(comp->message);
+        msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel | QMessageBox::Save);
+        msg.setButtonText(QMessageBox::Ok, "Связать фигурантов");
+        msg.setButtonText(QMessageBox::Cancel, "Отменить сохранение");
+        msg.setButtonText(QMessageBox::Save, "Не связывать");
+
+        int ret = msg.exec();
+
+        switch(ret){
+        case QMessageBox::Ok:
+            comp->solution = link_solution;
+            break;
+        case QMessageBox::Cancel:
+            aborted = true;
+            break;
+        case QMessageBox::Save:
+            comp->solution = ignore_solution;
+            break;
+        }
+        if(aborted) break;
+    }
+    if(aborted) return true;
+    this->comparsion = comparsion;
+    return false;
+}
+
+bool EditPerson::handleLinks()
+{
+    QList<comparsionResult*> *list = new QList<comparsionResult*>();
+    if( this->comparsion != 0 )
+        for (int i=0; i<this->comparsion->length(); i++ ) {
+            auto comp = this->comparsion->at(i);
+            switch(comp->solution){
+                case link_solution:
+                list->append(comp);
+                break;
+            case ignore_solution:
+                break;
+            }
+        }
+    if(list->size() > 0 ){
+        LinksManager::instance()->createLinks(this->editablePerson, list);
+        Person::getLinkedPersons(this->editablePerson);
+    }
+   delete list;
+   return true;
 }
 
 

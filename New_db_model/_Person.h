@@ -12,7 +12,6 @@ struct Adress {
     void setData(QString sqlRow);
 };
 
-
 class Person
 {
 public:
@@ -25,12 +24,18 @@ public:
     QString id;
     DbState state;
     QList<Telephone*> *_telephones;
+
+    // Adress
     Adress country;
     Adress city;
     Adress street;
     Adress house;
     Adress corp;
     Adress flat;
+
+    // Links
+    QString hash;
+    QList<Person*> *linked_persons;
 
     QList<Telephone *> *telephones();
     static bool selectByEventId(QList<Person*> *personsList, QString eventId);
@@ -41,6 +46,9 @@ public:
     static bool handleTelephones(QList<Telephone*> *telephones, QString personId);
 
     static bool linkEventPerson(QString eventId, QString personId);
+    static bool addHashRowToLinksTable(Person *person);
+
+    static bool getLinkedPersons(Person *person);
 };
 
 #endif // PERSON_H

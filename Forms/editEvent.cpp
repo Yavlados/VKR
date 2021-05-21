@@ -45,7 +45,9 @@ void editEvent::updateCardsLayout()
 
         if(p->state != IsRemoved){
             PersonCard *card = new PersonCard();
+            card->setState(editEventWindow);
             connect(card, SIGNAL(removePerson(Person*)), this, SLOT(setPersonToRemove(Person*)));
+            connect(card, SIGNAL(openEditWindow(Person*)), this, SLOT(openEditPersonWindow(Person*)));
             card->setPerson(p);
 //            connect(card, SIGNAL(openEditWindow(Person*)), this, SLOT(openEditWindow(Person*)));
             ui->cardsLayout->addWidget(card);
@@ -117,6 +119,11 @@ void editEvent::setPersonToRemove(Person *pers)
             return;
         }
     }
+}
+
+void editEvent::openEditPersonWindow(Person *pers)
+{
+    emit openEditPerson(pers);
 }
 
 void editEvent::on_pb_save_clicked()

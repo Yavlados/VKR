@@ -19,9 +19,22 @@ PersonCard::~PersonCard()
 void PersonCard::setPerson(Person *person)
 {
     this->localPerson = person;
-    ui->personFio->setText(this->localPerson->name + " " +
-                           this->localPerson->lastname + " " +
-                           this->localPerson->midname);
+    ui->label_name->setText(this->localPerson->name);
+    ui->label_lastname->setText(this->localPerson->lastname);
+    ui->label_midname->setText(this->localPerson->midname);
+}
+
+void PersonCard::setState(personCardShowingState t)
+{
+    this->state = t;
+    switch(this->state){
+    case mainWindow:
+        ui->pb_button->hide();
+        ui->editButton->hide();
+        break;
+    case editEventWindow:
+        break;
+    }
 }
 
 void PersonCard::on_editButton_clicked()

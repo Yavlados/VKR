@@ -15,6 +15,9 @@
         <file>png/refresh.png</file>
         <file>png/MainPic.png</file>
         <file>png/MainPic.ico</file>
+        <file>png/edit.png</file>
+        <file>png/delete.png</file>
+        <file>png/user.png</file>
     </qresource>
     <qresource prefix="/config"/>
 </RCC>
