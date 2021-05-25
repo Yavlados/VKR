@@ -551,13 +551,13 @@ void EditPerson::on_pb_save_clicked()
     case QMessageBox::Cancel:
         break;
     case QMessageBox::Ok:
-        if(this->checkLinksBeforeSave())
-            return;
 
         if(this->state == updatePerson){
+            if(this->checkLinksBeforeSave(true))
+                return;
+
             bool state = Person::updatePerson(this->editablePerson);
-            if(state){
-                this->handleLinks();
+            if(state && this->handleLinks()){
 
                 msgbx.setText("<font size = '5'>Данные усешно сохранены.</font>");
                 msgbx.setWindowTitle("Успех");
@@ -573,11 +573,29 @@ void EditPerson::on_pb_save_clicked()
                 msgbx.exec();
             }
         }else if(this->state == addPerson){
+            this->editResult = addPersonEPResult;
+
+            if(this->checkLinksBeforeSave(false))
+                return;
+
             QStringList list = this->editablePerson->id.split("raw");
             this->editablePerson->id = "new" + list[1];
-//            this->parent->clearLayout();
-            emit personIsAdded(this);
-            this->closeWidget();
+            if(this->handleLinks()) {
+                msgbx.setText("<font size = '5'>Данные усешно сохранены.</font>");
+                msgbx.setWindowTitle("Успех");
+                msgbx.setStandardButtons(QMessageBox::Ok);
+                msgbx.exec();
+
+                emit personIsAdded(this);
+                this->closeWidget();
+            } else {
+                msgbx.setText("<font size = '5'>Во время сохранения данных возникла следующая ошибка:"+
+                              db_connection::instance()->lastError+"</font>");
+                msgbx.setWindowTitle("Ошибка");
+                msgbx.setStandardButtons(QMessageBox::Ok);
+                msgbx.exec();
+            }
+
         }
 
         break;
@@ -653,35 +671,44 @@ void EditPerson::copyAdresses()
     ui->le_liv_flat->setText(this->editablePerson->flat.liv);
 }
 
-bool EditPerson::checkLinksBeforeSave()
+bool EditPerson::checkLinksBeforeSave(bool isUpdate)
 {
-    QList<comparsionResult*> *comparsion = LinksManager::instance()->findLinks(this->editablePerson);
+    QList<comparsionResult*> *comparsion = LinksManager::instance()->findLinks(this->editablePerson, isUpdate);
     if(comparsion == 0) return false;
     bool aborted = false;
+    bool merged = false;
     for(int i =0; i< comparsion->length(); i++){
         auto comp = comparsion->at(i);
-        QMessageBox msg;
-        msg.setWindowTitle("Внимание");
-        msg.setText(comp->message);
-        msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel | QMessageBox::Save);
-        msg.setButtonText(QMessageBox::Ok, "Связать фигурантов");
-        msg.setButtonText(QMessageBox::Cancel, "Отменить сохранение");
-        msg.setButtonText(QMessageBox::Save, "Не связывать");
-
+        CustomMsgBox msg;
+        msg.setMessage(comp->message);
+        msg.setText(linkPersons, "Связать фигурантов");
+        msg.setText(abortSaving, "Отменить сохранение");
+        msg.setText(doNotLink, "Не связывать");
+        msg.setText(mergeFirstIsParent, "Слияние: данные редактируемого фигуранта + телефоны совпавшего");
+        msg.setText(mergeSecondIsParent, "Слияние: данные совпавшего фигуранта + телефоны редактируемого");
         int ret = msg.exec();
 
         switch(ret){
-        case QMessageBox::Ok:
+        case linkPersons:
             comp->solution = link_solution;
             break;
-        case QMessageBox::Cancel:
+        case abortSaving:
             aborted = true;
             break;
-        case QMessageBox::Save:
+        case doNotLink:
             comp->solution = ignore_solution;
+            break;
+        case mergeFirstIsParent:
+            comp->solution = mergeFirst;
+            merged = true;
+            break;
+        case mergeSecondIsParent:
+            comp->solution = mergeSecond;
+            merged = true;
             break;
         }
         if(aborted) break;
+        if(merged) break;
     }
     if(aborted) return true;
     this->comparsion = comparsion;
@@ -691,14 +718,33 @@ bool EditPerson::checkLinksBeforeSave()
 bool EditPerson::handleLinks()
 {
     QList<comparsionResult*> *list = new QList<comparsionResult*>();
+    QList<Person*> *persons = new QList<Person*>();
+    Person *mergedPerson;
     if( this->comparsion != 0 )
         for (int i=0; i<this->comparsion->length(); i++ ) {
             auto comp = this->comparsion->at(i);
+            auto localList = comp->events->toList();
+            for (int i=0; i<localList.size(); i++) {
+             QString eventId = localList.at(i);
+             comp->person->linked_events()->insert(eventId);
+            }
             switch(comp->solution){
                 case link_solution:
                 list->append(comp);
                 break;
             case ignore_solution:
+                break;
+            case mergeFirst:
+                mergedPerson = Person::mergePersons(this->editablePerson, comp->person, firstIsParent);
+                persons->append(mergedPerson);
+                if(comp->person->state != IsNewing)
+                    persons->append(comp->person);
+                break;
+            case mergeSecond:
+                mergedPerson = Person::mergePersons(this->editablePerson, comp->person, secondIsParent);
+                persons->append(mergedPerson);
+                if(this->editablePerson->state != IsNewing)
+                    persons->append(this->editablePerson);
                 break;
             }
         }
@@ -706,7 +752,30 @@ bool EditPerson::handleLinks()
         LinksManager::instance()->createLinks(this->editablePerson, list);
         Person::getLinkedPersons(this->editablePerson);
     }
+
+
+    if(persons->size() > 0){
+        this->editResult =  personMergedEPResult;
+        bool finalState = false;
+        finalState = Person::handleListOfPersons(persons);
+        if(finalState){
+            if(mergedPerson->linked_persons != 0 && mergedPerson->linked_persons->size() > 0){
+               finalState = Person::setLinksForPerson(mergedPerson);
+            }
+        }
+
+        if(!finalState){
+         QMessageBox msg;
+         msg.setText("Во время слияния данных возникли неполадки!");
+         msg.exec();
+         return false;
+        }
+    }
+
+
+
    delete list;
+   delete persons;
     return true;
 }
 

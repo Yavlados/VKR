@@ -828,6 +828,7 @@ void MainWindow::openAddPersonWindow(Person *p, editEvent *ee)
     ep->setParent(ee);
     connect(ep, SIGNAL(closeThis(EditPerson*)), this, SLOT(closePersonEdit(EditPerson*)));
     connect(ep, SIGNAL(personIsAdded(EditPerson*)), this, SLOT(personIsAdded(EditPerson*)));
+    p->linked_events()->insert(ee->localEvent->id);
     ep->setPerson(p);
     Util::instance()->editPersonList()->append(ep);
     Util::instance()->linkAddEventPerson(ee,ep);
@@ -841,7 +842,8 @@ void MainWindow::openAddPersonWindow(Person *p, editEvent *ee)
 void MainWindow::personIsAdded(EditPerson *ep)
 {
     editEvent *ee = Util::instance()->getManagerParent(ep);
-    ee->addNewPerson(ep->person);
+    if(ep->editResult == addPersonEPResult)
+        ee->addNewPerson(ep->editablePerson);
     ee->updateCardsLayout();
     int a = ui->tabWidget->indexOf(ee);
     ui->tabWidget->setCurrentIndex(a);

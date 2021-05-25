@@ -105,7 +105,7 @@ editEvent *Util::getManagerParent(EditPerson *ep)
             EditPerson *child = local->childs->at(c);
 
             if(child->person->id == ep->person->id){
-                delete local->childs->at(c);
+//                delete local->childs->at(c);
                 local->childs->removeAt(c);
                 return local->parent;
             }

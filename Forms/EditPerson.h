@@ -11,6 +11,7 @@
 #include "component.h"
 #include "linksmanager.h"
 #include "linkedperson.h"
+#include "custommsgbox.h"
 
 //#include "editEvent.h"
 
@@ -20,6 +21,11 @@ class EditPerson;
 
 enum formStates { updatePerson =0,
                  addPerson};
+
+enum editPersonResults{
+    addPersonEPResult,
+    personMergedEPResult,
+};
 
 class EditPerson : public QWidget
 {
@@ -37,6 +43,7 @@ public:
 
     MTM_Telephone *ot_model;
     MTM_Contact *contacts_model;
+    editPersonResults editResult;
 
     void keyPressEvent(QKeyEvent *event);
     void setType(formStates s);
@@ -79,7 +86,7 @@ private slots:
     void ShowPopUp();    
     void on_gb_adress_liv_toggled(bool arg1);
     void copyAdresses();
-    bool checkLinksBeforeSave();
+    bool checkLinksBeforeSave(bool isUpdate);
     bool handleLinks();
     void emitOpenLinkedPerson(Person *person);
     void destroyLinkBetweenPersons(Person *person);
