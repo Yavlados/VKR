@@ -10,16 +10,18 @@ LinksManager *LinksManager::instance()
     return _instance;
 }
 
-QList<comparsionResult*> *LinksManager::findLinks(Person *editablePerson)
+QList<comparsionResult*> *LinksManager::findLinks(Person *editablePerson, bool isUpdate)
 {
     QString hashesToExclude = "";
 
     // create hashes condition
-    hashesToExclude += " AND p.hash != '"+editablePerson->hash+"' ";
-    if(editablePerson->linked_persons != 0){
-        for (int i=0; i<editablePerson->linked_persons->length(); i++) {
-            Person *linkedPerson = editablePerson->linked_persons->at(i);
-            hashesToExclude += " AND p.hash != '"+linkedPerson->hash+"' ";
+    if(isUpdate){
+        hashesToExclude += " AND p.hash != '"+editablePerson->hash+"' ";
+        if(editablePerson->linked_persons != 0){
+            for (int i=0; i<editablePerson->linked_persons->length(); i++) {
+                Person *linkedPerson = editablePerson->linked_persons->at(i);
+                hashesToExclude += " AND p.hash != '"+linkedPerson->hash+"' ";
+            }
         }
     }
 
@@ -75,13 +77,13 @@ QList<comparsionResult*> *LinksManager::findLinks(Person *editablePerson)
     else{
         for (int i =0 ; i < editablePerson->telephones()->length(); i++) {
             Telephone *tel = editablePerson->telephones()->at(i);
-            if(tel->num.length()>0){
-                if(i==0){
-                    query += " AND (t.number = '"+tel->num+"'";
-                }else if(i ==  editablePerson->telephones()->length()-1){
-                    query += " OR t.number = '"+tel->num+"')";
-                } else
-                    query += " OR t.number = '"+tel->num+"' ";
+            if(tel->num.length()>0 && tel->state != IsRemoved){
+                    if(i==0){
+                        query += " AND (t.number = '"+tel->num+"')";
+                    } else {
+                        query.chop(1);
+                        query += " OR t.number = '"+tel->num+"')";
+                    }
             } else {
                 // added incomplitable condition
                 query  += " AND 1=0";

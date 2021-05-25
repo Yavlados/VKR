@@ -12,7 +12,9 @@ enum linkReason {
 enum comparsionSolution{
     initial_solution,
     link_solution,
-    ignore_solution
+    ignore_solution,
+    mergeFirst,
+    mergeSecond
 };
 
 struct comparsionResult {
@@ -32,7 +34,7 @@ public:
    static LinksManager *instance();
 
 
-   static QList<comparsionResult*> *findLinks(Person *person);
+   static QList<comparsionResult*> *findLinks(Person *person, bool isUpdate);
    static int getPersonIndex(QList<Person*> *personsList, Person *person);
    QList<comparsionResult*> *updateMessages(QList<comparsionResult *> *compResults);
    static bool createLinks(Person *person, QList<comparsionResult*> *list);
