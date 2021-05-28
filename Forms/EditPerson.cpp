@@ -772,6 +772,8 @@ bool EditPerson::handleLinks()
         }
     }
 
+
+
    delete list;
    delete persons;
     return true;
