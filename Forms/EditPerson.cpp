@@ -786,7 +786,6 @@ void EditPerson::emitOpenLinkedPerson(Person *person)
     msg.setButtonText(QMessageBox::Ok, "Перейти к редактированию");
     msg.setButtonText(QMessageBox::Cancel, "Отмена");
     int ret = msg.exec();
-
     switch(ret){
         case QMessageBox::Ok:
         emit openLinkedPerson(person);
